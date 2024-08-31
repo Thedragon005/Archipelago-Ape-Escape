@@ -67,7 +67,7 @@ class ApeEscapeWorld(World):
         self.coin = self.options.coin
 
     def create_regions(self):
-        create_regions(self.multiworld, self.player)
+        create_regions(self.multiworld,self.options, self.player)
 
     def set_rules(self):
         set_rules(self.multiworld, self.player)
@@ -137,12 +137,12 @@ class ApeEscapeWorld(World):
             numberoflocations -= 12
 
 
-        if self.multiworld.coin[self.player].value == 0x01:
+        if self.options.coin.value == 0x01:
             numberoflocations -= 60
 
 
 
-        if self.multiworld.goal[self.player].value == 0x00:
+        if self.options.goal.value == 0x00:
             self.multiworld.get_location(AELocation.Specter.value, self.player).place_locked_item(victory)
             numberoflocations -= 1
         else:
@@ -171,7 +171,12 @@ class ApeEscapeWorld(World):
         self.multiworld.itempool += [self.create_item_filler(AEItem.Nothing.value) for i in range(0, numberoflocations)]
 
     def fill_slot_data(self):
-        return {}
+        return {
+            "debug": self.options.debug.value,
+            "goal": self.options.goal.value,
+            "logic": self.options.logic.value,
+            "coin": self.options.coin.value,
+        }
 
     def generate_output(self, output_directory: str):
         if self.multiworld.players != 1:
