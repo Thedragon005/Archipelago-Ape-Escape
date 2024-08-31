@@ -1,0 +1,78 @@
+CHANGES SINCE ACTUAL VERSION:
+
+apworld:
+
+==========================
+Crabby Beach:
+==========================
+4-1 Crabby Beach Monkey 8 - Puka : Send only after reentering/exiting the room
+AELocation.Puka.value L:OK G:0DF8C9 FIXED
+
+==========================
+Wabi Sabi Wall:
+==========================
+
+AELocation.Kong.value: 124 L:OK G:0x0DF980,FIXED
+AELocation.Phool.value: 125 : L:OK G:0x0DF981,FIXED
+
+==========================
+Crumbling Castle: (It's all CRUMBLING down at this point)
+==========================
+AELocation.Wilhelm.value: 130 L:0DFE19 G:0DF991 FIXED
+AELocation.Emmanuel.value: 131 L:0DFE1A G:0DF992 FIXED
+AELocation.SirCutty.value: 132 L:0DFE1B G:0DF993 FIXED
+AELocation.Deveneom.value: 135 G/L OK FIXED
+
+Deveneom have 2 addresses for 135,that maybe did an error that it did not send him
+(Fixed,it was the duplicate addresses)
+
+==========================
+City Park:
+==========================
+AELocation.Tino.value: 150, L:0DFE18 G:0DF9D0 FIXED
+AELocation.McManic.value: 152,L:0DFE1A G:0DF9D2 FIXED
+(Inverted between Tino and McManic)
+
+AELocation.Huener.value: 158, L:OK G:0DF9DD FIXED
+
+==========================
+Specter's Factory:
+==========================
+
+AELocation.VanillaS.value: 163, L:0DFE48 G:0DF9F8 FIXED
+AELocation.Shimbo.value: 165, L:0DFE4A G:0DF9FA FIXED
+AELocation.String.value: 167,L:0DFE79 G:0DFA09 FIXED
+AELocation.Khamo.value: 168, L:0DFE90 G:0DFA10 FIXED
+
+==========================
+Monkey Madness
+==========================
+
+Western Land
+AELocation.Nak.value: 186, L:OK G:0DFA88 FIXED
+AELocation.Cloy.value: 187, L:OK G:0DFA89 FIXED
+AELocation.Shaw.value: 188,L:OK G:0DFA8A FIXED
+AELocation.Flea.value: 189,L:OK G:0DFA8B FIXED
+
+AELocation.Schafette.value: 190,L:OK G:0DFA90 FIXED
+AELocation.Donovan.value: 191, L:0DFE18 G:0DFA98 FIXED
+AELocation.Laura.value: 192, L:0DFE19 G:0DFA99 FIXED
+
+AELocation.Uribe.value: 193,L:0DFE30 G:0DFAA0 FIXED
+AELocation.Gordo.value: 194, L:OK G:0DFAA1 FIXED
+AELocation.Raeski.value: 195,L:OK G:0DFAA2 FIXED
+AELocation.Poopie.value: 196,L:0DFE33 G:0DFAA3 FIXED
+AELocation.Teacup.value: 197,L:0DFE48 G:0DFAA8 FIXED
+AELocation.Shine.value: 198,L:0DFE49 G:0DFAA9 FIXED
+AELocation.Wrench.value: 199, L:0DFE60 G:0DFAB0 FIXED
+AELocation.Bronson.value: 200,L:0DFE61 G:0DFAB1 FIXED
+AELocation.Bungee.value: 201,L:0DFE90 G:0DFAC0 FIXED
+AELocation.Carro.value: 202, L:0DFE91 G:0DFAC1 FIXED
+AELocation.Carlito.value: 203,L:0DFE92 G:0DFAC2 FIXED
+AELocation.BG.value: 204, L:0DFEA8 G:0DFAC8 FIXED
+
+==============
+CORE
+==============
+-Added In-Level + "Sub-Level" detection for MM:Park Entry,since each area is a "Level"
+(Local detection)
