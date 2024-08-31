@@ -59,7 +59,7 @@ class ApeEscapeClient(BizHawkClient):
 
     def __init__(self) -> None:
         super().__init__()
-        self.game = "Ape Escape"
+        # self.game = "Ape Escape"
 
         self.local_checked_locations = set()
         self.local_set_events = {}
@@ -67,6 +67,21 @@ class ApeEscapeClient(BizHawkClient):
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
+        ape_identifier_ram_address: int = 0xBA92
+
+        # BASCUS-94423SYS in ASCII = Ape Escape I think??
+        bytes_expected: bytes = bytes.fromhex("4241534355532D3934343233535953")
+        try:
+            bytes_actual: bytes = (await bizhawk.read(ctx.bizhawk_ctx, [(
+                ape_identifier_ram_address, len(bytes_expected), "MainRAM"
+            )]))[0]
+            if bytes_actual != bytes_expected:
+                return False
+        except Exception:
+            return False
+
+        if not self.game == "Ape Escape":
+            return False
         ctx.game = self.game
         ctx.items_handling = 0b011
         return True
@@ -91,8 +106,7 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "StatusUpdate",
                         "status": ClientStatus.CLIENT_GOAL
                     }])
-                #elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["Rocket"]:
-                    
+                # elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["Rocket"]:
 
             if keyCountFromServer > self.worldkeycount:
                 self.worldkeycount = keyCountFromServer
@@ -112,6 +126,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, 1, "MainRAM"),
                 (RAM.currentRoomIdAddress, 1, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
+                (RAM.jakeVictoryAddress, 1, "MainRAM"),
                 (RAM.currentLevelAddress, 1, "MainRAM"),
                 (self.currentCoinAddress + 1, 1, "MainRAM"),
                 (self.currentCoinAddress, 1, "MainRAM"),
@@ -147,11 +162,19 @@ class ApeEscapeClient(BizHawkClient):
             gadgets = int.from_bytes(reads[1], byteorder="little")
             currentRoom = int.from_bytes(reads[2], byteorder="little")
             gameState = int.from_bytes(reads[3], byteorder="little")
-            currentLevel = int.from_bytes(reads[4], byteorder="little")
-            currentCoinState = int.from_bytes(reads[5], byteorder="little")
-            currentCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
-            coinCount = int.from_bytes(reads[7], byteorder="little")
+            jakeVictory = int.from_bytes(reads[4], byteorder="little")
+            currentLevel = int.from_bytes(reads[5], byteorder="little")
+            currentCoinState = int.from_bytes(reads[6], byteorder="little")
+            currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
+            coinCount = int.from_bytes(reads[8], byteorder="little")
 
+            # When starting client,prevents sending check once while not connected to AP
+            if self.roomglobal == 0:
+                localcondition = False
+                localMMcondition = False
+            else:
+                localcondition = (currentLevel == self.levelglobal and currentRoom != self.roomglobal)
+                localMMcondition = (currentLevel != self.levelglobal and 0x18 <= currentLevel < 0x1D)
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -178,12 +201,14 @@ class ApeEscapeClient(BizHawkClient):
 
             # elif changing room but still in level, use local list
             # if level stays the same, and room changes and in level
-            elif gameState == RAM.gameState[
-                "InLevel"] and currentLevel == self.levelglobal and currentRoom != self.roomglobal:
+
+            ##Monkey Madness first rooms are treated like sublevels in addition of rooms for some reason
+            ##If level is in the range of Park Square AND the state is "In-Level",it triggers a local update
+            ##(Between 0x18 and 0x1D)
+            elif gameState == RAM.gameState["InLevel"] and (localcondition or localMMcondition):
                 monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
-
                 addresses = []
 
                 for val in val_list:
@@ -202,7 +227,6 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeys_to_send)
                     }])
-
             # Check for victory conditions
             if RAM.gameState["Credits1"] == gameState:
                 await ctx.send_msgs([{
@@ -225,7 +249,7 @@ class ApeEscapeClient(BizHawkClient):
                 self.currentCoinAddress += 2
 
             # Check for Jake Victory
-            if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"]:
+            if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
                 coins.add(295 + self.offset)
                 coins.add(296 + self.offset)
@@ -236,7 +260,7 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
                 }])
-            elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"]:
+            elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
                 coins.add(290 + self.offset)
                 coins.add(291 + self.offset)
