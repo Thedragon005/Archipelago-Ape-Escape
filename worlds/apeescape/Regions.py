@@ -1,9 +1,10 @@
 from BaseClasses import MultiWorld, Region, Entrance
+from .Options import ApeEscapeOptions
 from .Locations import location_table, ApeEscapeLocation
 from .Strings import AEWorld, AERoom
 
 
-def create_regions(world: MultiWorld, player: int):
+def create_regions(world: MultiWorld,options: ApeEscapeOptions, player: int):
     # menu
     menu = Region("Menu", player, world)
 
@@ -796,7 +797,7 @@ def create_regions(world: MultiWorld, player: int):
                goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe,
                gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
 
-    if world.goal[player].value == 0x01:
+    if options.goal == 0x01:
         # 9-2
 
         l92 = Region(AERoom.W9L2Boss.value, player, world)
@@ -804,7 +805,7 @@ def create_regions(world: MultiWorld, player: int):
                           get_array([206])]
         regions += [l92]
 
-    if world.coin[player].value == 0x00:
+    if options.coin == 0x00:
         coin1 = Region(AERoom.Coin1.value, player, world)
         coin1.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin1) for loc_name
                             in get_array([301])]
