@@ -311,7 +311,7 @@ class ApeEscapeClient(BizHawkClient):
             ]
 
             # Special case to unequip club at game start. Only triggers if club is on triangle and not yet obtained.
-            # BUG: equippedGadgetsAddress check is broken and doesn't trigger.
+            # BUG: Spike still spawns with the Stun Club even if it's changed to another gadget.
             if ((equippedGadget == 0) and (gadgetStateFromServer % 2 == 0)):
                 if ctx.slot_data["gadget"] == GadgetOption.option_radar:
                     writes += [(RAM.equippedGadgetsAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
