@@ -189,6 +189,7 @@ class ApeEscapeClient(BizHawkClient):
             currentCoinState = int.from_bytes(reads[6], byteorder="little")
             currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
             coinCount = int.from_bytes(reads[8], byteorder="little")
+            equippedGadget = int.from_bytes(reads[9], byteorder="little")
 
             # When starting client,prevents sending check once while not connected to AP
             if self.roomglobal == 0:
@@ -311,7 +312,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # Special case to unequip club at game start. Only triggers if club is on triangle and not yet obtained.
             # BUG: equippedGadgetsAddress check is broken and doesn't trigger.
-            if ((RAM.equippedGadgetsAddress == 0) and (gadgetStateFromServer % 2 == 0)):
+            if ((equippedGadget == 0) and (gadgetStateFromServer % 2 == 0)):
                 if ctx.slot_data["gadget"] == GadgetOption.option_radar:
                     writes += [(RAM.equippedGadgetsAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
