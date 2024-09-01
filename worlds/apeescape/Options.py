@@ -100,6 +100,21 @@ class GadgetOption(Choice):
     option_punch = 0x06
     option_none = 0x08
     default = option_club
+
+
+class  SuperFlyerOption(Choice):
+    """Choose if the Super Flyer trick should be put into logic
+
+        true: super flyer is put into logic
+        false: super flyer is not put into logic
+
+        Supported values: true, false
+        Default value: false
+    """
+    display_name = "SuperFlyer"
+    option_true = 0x00
+    option_false = 0x01
+    default = option_false
     
 
 
@@ -110,3 +125,4 @@ class ApeEscapeOptions(PerGameCommonOptions):
     logic: LogicOption
     coin: CoinOption
     gadget: GadgetOption
+    superflyer: SuperFlyerOption

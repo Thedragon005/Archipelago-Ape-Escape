@@ -2,6 +2,7 @@ from worlds.apeescape import location_table
 from worlds.generic.Rules import add_rule, set_rule, forbid_item
 from BaseClasses import LocationProgressType
 from .Regions import connect_regions
+from .Options import SuperFlyerOption
 from .Strings import AEItem, AEWorld, AERoom
 
 
@@ -569,13 +570,13 @@ class NoIJ():
             connect_regions(world, player, AERoom.W2L2Fan.value, AERoom.Coin12.value, lambda state: NoRequirement())
             connect_regions(world, player, AERoom.W2L2Obelisk.value, AERoom.Coin13.value,
                             lambda state: (HasHoop(state, player) and HasFlyer(state, player)) or
-									HasRC(state, player) or HasPunch(state, player))
+                                    HasRC(state, player) or HasPunch(state, player))
             connect_regions(world, player, AERoom.W2L2Water.value, AERoom.Coin14.value,
                             lambda state: CanDive(state, player) and CanHitOnce(state, player))
             # 2-3
             connect_regions(world, player, AERoom.W2L3Main.value, AERoom.Coin17.value,
                             lambda state: CR_Inside(state, player) and
-									(CanSwim(state, player) or HasMobility(state, player)))
+                                    (CanSwim(state, player) or HasMobility(state, player)))
             # 3-1
             connect_regions(world, player, AEWorld.W3.value, AERoom.Coin19.value, lambda state: CanSwim(state, player))
 
@@ -594,7 +595,7 @@ class NoIJ():
                             lambda state: CanDive(state, player) and CanHitOnce(state, player))
             connect_regions(world, player, AERoom.W4L3Slide.value, AERoom.Coin28.value,
                             lambda state: (CanHitOnce(state, player)) or HasPunch(state, player))
-			#CanHitOnce and Net, if Net is shuffled.
+            #CanHitOnce and Net, if Net is shuffled.
 
             # 5-1
             connect_regions(world, player, AERoom.W5L1Main.value, AERoom.Coin29.value,
@@ -642,18 +643,18 @@ class NoIJ():
                             lambda state: CC_ButtonRoom(state, player))
             connect_regions(world, player, AERoom.W7L3Elevator.value, AERoom.Coin50.value,
                             lambda state: CC_5Monkeys(state, player) or CC_WaterRoom(state, player) or
-									(HasHoop(state, player) and HasFlyer(state, player)))
+                                    (HasHoop(state, player) and HasFlyer(state, player)))
 
             # 8-1
             connect_regions(world, player, AERoom.W8L1Outside.value, AERoom.Coin53.value,
                             lambda state: (CP_FrontBarrels(state, player) and CanDive(state, player)) or
-									HasFlyer(state, player))
+                                    HasFlyer(state, player))
             connect_regions(world, player, AERoom.W8L1Sewers.value, AERoom.Coin54.value,
                             lambda state: (CP_FrontSewer(state, player) or CP_BackSewer(state, player))
-									and HasRC(state, player))
+                                    and HasRC(state, player))
             connect_regions(world, player, AERoom.W8L1Barrel.value, AERoom.Coin55.value,
                             lambda state: (CP_FrontBarrels(state, player) or CP_BackSewer(state, player))
-									and HasFlyer(state, player))
+                                    and HasFlyer(state, player))
 
             # 8-2
             connect_regions(world, player, AERoom.W8L2RC.value, AERoom.Coin58.value,
@@ -728,9 +729,8 @@ def CanWaterCatch(state, player):
     return HasWaterNet(state, player)
 
 
-# Including this trick should be an option - setting up the logic to include it for now anyway.
 def SuperFlyer(state, player):
-    return HasFlyer(state, player) and (HasNet(state, player) or HasClub(state, player) or HasSling(state, player) or HasPunch(state, player)) and False
+    return HasFlyer(state, player) and (HasNet(state, player) or HasClub(state, player) or HasSling(state, player) or HasPunch(state, player)) and SuperFlyerOption
 
 
 def TJ_UFOEntry(state, player):

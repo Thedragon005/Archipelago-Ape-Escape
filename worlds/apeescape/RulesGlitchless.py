@@ -2,6 +2,7 @@ from worlds.apeescape import location_table
 from worlds.generic.Rules import add_rule, set_rule, forbid_item
 from BaseClasses import LocationProgressType
 from .Regions import connect_regions
+from .Options import SuperFlyerOption
 from .Strings import AEItem, AEWorld, AERoom
 
 
@@ -605,7 +606,7 @@ class Glitchless():
             connect_regions(world, player, AERoom.W4L3Slide.value, AERoom.Coin28.value,
                             lambda state: (CanSwim(state, player)) and (
                                     ((CanHitOnce(state, player))) or (HasPunch(state, player))))
-			#Punch or Net, if Net is shuffled.
+            #Punch or Net, if Net is shuffled.
 
             # 5-1
             connect_regions(world, player, AERoom.W5L1Main.value, AERoom.Coin29.value,
@@ -736,7 +737,11 @@ def CanWaterCatch(state, player):
 
 def SuperFlyer(state, player):
     return False
-	
+
+
+def SuperFlyer(state, player):
+    return False
+    
 
 def TJ_UFOEntry(state, player):
     return CanDive(state, player)
