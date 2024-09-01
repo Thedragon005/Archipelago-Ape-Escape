@@ -152,7 +152,8 @@ class ApeEscapeClient(BizHawkClient):
                 (self.currentCoinAddress + 1, 1, "MainRAM"),
                 (self.currentCoinAddress, 1, "MainRAM"),
                 (RAM.totalCoinsAddress, 1, "MainRAM"),
-                (RAM.equippedGadgetsAddress, 1, "MainRAM")
+                (RAM.equippedGadgetsAddress, 1, "MainRAM"),
+                (RAM.selectedGadgetAddress, 1, "MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -190,6 +191,7 @@ class ApeEscapeClient(BizHawkClient):
             currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
             coinCount = int.from_bytes(reads[8], byteorder="little")
             equippedGadget = int.from_bytes(reads[9], byteorder="little")
+            selectedGadget = int.from_bytes(reads[10], byteorder="little")
 
             # When starting client,prevents sending check once while not connected to AP
             if self.roomglobal == 0:
@@ -311,20 +313,25 @@ class ApeEscapeClient(BizHawkClient):
             ]
 
             # Special case to unequip club at game start. Only triggers if club is on triangle and not yet obtained.
-            # BUG: Spike still spawns with the Stun Club even if it's changed to another gadget.
-            if ((equippedGadget == 0) and (gadgetStateFromServer % 2 == 0)):
+            if ((selectedGadget == 0) and (gadgetStateFromServer % 2 == 0)):
                 if ctx.slot_data["gadget"] == GadgetOption.option_radar:
                     writes += [(RAM.equippedGadgetsAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
                     writes += [(RAM.equippedGadgetsAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
                     writes += [(RAM.equippedGadgetsAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
                     writes += [(RAM.equippedGadgetsAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_car:
                     writes += [(RAM.equippedGadgetsAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
                     writes += [(RAM.equippedGadgetsAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_none:
                     writes += [(RAM.equippedGadgetsAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     writes += [(RAM.selectedGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]

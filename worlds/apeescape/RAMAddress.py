@@ -708,10 +708,10 @@ class RAM:
 
     #A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
-    #triangle, square, circle, X on successive bytes
+    #the gadgets on triangle, square, circle, X on successive bytes
     #club = 0, net = 1, radar = 2, sling = 3, hoop = 4, punch = 5, flyer = 6, car = 7, empty = 255
     equippedGadgetsAddress = 0x0F51A8
-    #triangle = 0, X = 1, square = 2, circle = 3
+    #which gadget is currently selected for use
     selectedGadgetAddress = 0x0EC2D2
 
     trainingRoomProgressAddress = 0x0DFDCC
