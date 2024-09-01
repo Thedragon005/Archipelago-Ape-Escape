@@ -59,12 +59,14 @@ class ApeEscapeWorld(World):
         self.goal: Optional[int] = 0
         self.logic: Optional[int] = 0
         self.coin: Optional[int] = 0
+        self.gadget: Optional[int] = 0
 
     def generate_early(self) -> None:
         self.debug = self.options.debug
         self.goal = self.options.goal
         self.logic = self.options.logic
         self.coin = self.options.coin
+        self.gadget = self.options.gadget
 
     def create_regions(self):
         create_regions(self.multiworld,self.options, self.player)
@@ -103,14 +105,13 @@ class ApeEscapeWorld(World):
         numberoflocations -= 1
 
         self.multiworld.push_precollected(waternet)
-        self.multiworld.push_precollected(club)
 
         if self.multiworld.debug[self.player].value == 0x00:
-            self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
             self.multiworld.itempool += [self.create_item(AEItem.Key.value) for i in range(0, 6)]
-            numberoflocations -= 12
+            numberoflocations -= 6
         # DEBUG
         elif self.multiworld.debug[self.player].value == 0x01:
+            self.multiworld.push_precollected(club)
             self.multiworld.get_location(AELocation.Noonan.value, self.player).place_locked_item(radar)
             self.multiworld.get_location(AELocation.Jorjy.value, self.player).place_locked_item(shooter)
             self.multiworld.get_location(AELocation.Nati.value, self.player).place_locked_item(hoop)
@@ -121,6 +122,7 @@ class ApeEscapeWorld(World):
             numberoflocations -= 12
         # DEBUG
         elif self.multiworld.debug[self.player].value == 0x02:
+            self.multiworld.push_precollected(club)
             self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
             key1 = self.create_item("World Key")
             key2 = self.create_item("World Key")
@@ -135,6 +137,33 @@ class ApeEscapeWorld(World):
             self.multiworld.get_location(AELocation.DrMonk.value, self.player).place_locked_item(key5)
             self.multiworld.get_location(AELocation.Ahchoo.value, self.player).place_locked_item(key6)
             numberoflocations -= 12
+
+
+
+        if self.multiworld.gadget[self.player].value == 0x00:
+            self.multiworld.push_precollected(club)
+            self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
+        elif self.multiworld.gadget[self.player].value == 0x01:
+            self.multiworld.push_precollected(radar)
+            self.multiworld.itempool += [club, shooter, hoop, flyer, car, punch]
+        elif self.multiworld.gadget[self.player].value == 0x02:
+            self.multiworld.push_precollected(shooter)
+            self.multiworld.itempool += [club, radar, hoop, flyer, car, punch]
+        elif self.multiworld.gadget[self.player].value == 0x03:
+            self.multiworld.push_precollected(hoop)
+            self.multiworld.itempool += [club, radar, shooter, flyer, car, punch]
+        elif self.multiworld.gadget[self.player].value == 0x04:
+            self.multiworld.push_precollected(flyer)
+            self.multiworld.itempool += [club, radar, shooter, hoop, car, punch]
+        elif self.multiworld.gadget[self.player].value == 0x05:
+            self.multiworld.push_precollected(car)
+            self.multiworld.itempool += [club, radar, shooter, hoop, flyer, punch]
+        elif self.multiworld.gadget[self.player].value == 0x06:
+            self.multiworld.push_precollected(punch)
+            self.multiworld.itempool += [club, radar, shooter, hoop, flyer, car]
+        elif self.multiworld.gadget[self.player].value == 0x08:
+            self.multiworld.itempool += [club, radar, shooter, hoop, flyer, car, punch]
+
 
 
         if self.options.coin.value == 0x01:
@@ -176,6 +205,7 @@ class ApeEscapeWorld(World):
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
             "coin": self.options.coin.value,
+            "gadget": self.options.gadget.value,
         }
 
     def generate_output(self, output_directory: str):

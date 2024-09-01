@@ -27,6 +27,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
 from worlds.apeescape.RAMAddress import RAM
+from worlds.apeescape.Options import GadgetOption
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -84,17 +85,37 @@ class ApeEscapeClient(BizHawkClient):
             return False
         ctx.game = self.game
         ctx.items_handling = 0b011
+        ctx.want_slot_data = True
         return True
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
+        if ctx.slot_data is None:
+            return
+        
         try:
+            # Initialize unlocked gadgets
+            if ctx.slot_data["gadget"] == GadgetOption.option_club:
+                gadgetStateFromServer = 3
+            elif ctx.slot_data["gadget"] == GadgetOption.option_radar:
+                gadgetStateFromServer = 6
+            elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
+                gadgetStateFromServer = 10
+            elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
+                gadgetStateFromServer = 18
+            elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
+                gadgetStateFromServer = 66
+            elif ctx.slot_data["gadget"] == GadgetOption.option_car:
+                gadgetStateFromServer = 130
+            elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
+                gadgetStateFromServer = 34
+            elif ctx.slot_data["gadget"] == GadgetOption.option_none:
+                gadgetStateFromServer = 2
+            
             # Get items from server
-            gadgetStateFromServer = 3
             keyCountFromServer = 0
-
             for item in ctx.items_received:
                 if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
                     if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
@@ -130,7 +151,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentLevelAddress, 1, "MainRAM"),
                 (self.currentCoinAddress + 1, 1, "MainRAM"),
                 (self.currentCoinAddress, 1, "MainRAM"),
-                (RAM.totalCoinsAddress, 1, "MainRAM")
+                (RAM.totalCoinsAddress, 1, "MainRAM"),
+                (RAM.equippedGadgetsAddress, 1, "MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -281,10 +303,31 @@ class ApeEscapeClient(BizHawkClient):
 
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-                (RAM.unlockedGadgetsAddress, (gadgets | gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
+            # Original function would give stun club at game start, even if it wasn't starting inventory.
+            #   (RAM.unlockedGadgetsAddress, (gadgets | gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
+                (RAM.unlockedGadgetsAddress, (gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, hundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
+            # Special case to unequip club at game start. Only triggers if club is on triangle and not yet obtained.
+            # BUG: equippedGadgetsAddress check is broken and doesn't trigger.
+            if ((RAM.equippedGadgetsAddress == 0) and (gadgetStateFromServer % 2 == 0)):
+                if ctx.slot_data["gadget"] == GadgetOption.option_radar:
+                    writes += [(RAM.equippedGadgetsAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
+                    writes += [(RAM.equippedGadgetsAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
+                    writes += [(RAM.equippedGadgetsAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
+                    writes += [(RAM.equippedGadgetsAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                elif ctx.slot_data["gadget"] == GadgetOption.option_car:
+                    writes += [(RAM.equippedGadgetsAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
+                    writes += [(RAM.equippedGadgetsAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                elif ctx.slot_data["gadget"] == GadgetOption.option_none:
+                    writes += [(RAM.equippedGadgetsAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.selectedGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+            
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
 

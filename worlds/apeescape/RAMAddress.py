@@ -706,7 +706,14 @@ class RAM:
         91: 0xdfcb0
     }
 
+    #A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
+    #triangle, square, circle, X on successive bytes
+    #club = 0, net = 1, radar = 2, sling = 3, hoop = 4, punch = 5, flyer = 6, car = 7, empty = 255
+    equippedGadgetsAddress = 0x0F51A8
+    #triangle = 0, X = 1, square = 2, circle = 3
+    selectedGadgetAddress = 0x0EC2D2
+
     trainingRoomProgressAddress = 0x0DFDCC
     currentRoomIdAddress = 0x0F4476
     currentLevelAddress = 0x0F4474
