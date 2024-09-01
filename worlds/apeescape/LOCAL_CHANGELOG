@@ -79,3 +79,16 @@ CORE
 ==============
 -Added In-Level + "Sub-Level" detection for MM:Park Entry,since each area is a "Level"(Local detection)
 -Corrected the "validate_rom" function to check if it is REALLY Ape Escape you're playing
+==============
+OTHER
+==============
+-Updated logic files with all known fixes
+-Implemented Super Flyer logic for no IJ/IJ logics
+-Currently disabled for no IJ / enabled for IJ pending option
+
+==============
+STARTING GADGET OPTION
+==============
+-Implemented new option for random starting gadget
+-Fixed bug with gadget unlock handling
+-Set default for all existing Options
