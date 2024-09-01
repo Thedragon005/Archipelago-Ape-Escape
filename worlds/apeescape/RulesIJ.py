@@ -152,7 +152,7 @@ class IJ():
         connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Pally.value,
                         lambda state: CR_Inside(state, player))
         connect_regions(world, player, AERoom.W2L3Pillar.value, AERoom.W2L3Crash.value,
-                        lambda state: CR_Inside(state, player) and RCMonkey(state, player))
+                        lambda state: CR_Inside(state, player) and (RCMonkey(state, player) or SuperFlyer(state, player)))
 
         # 4-1
         connect_regions(world, player, AEWorld.W4.value, AERoom.W4L1FirstRoom.value, lambda state: True)
@@ -305,7 +305,7 @@ class IJ():
         connect_regions(world, player, AERoom.W7L1Temple.value, AERoom.W7L1Chunky.value,
                         lambda state: HasSling(state, player) or HasFlyer(state, player))
         connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1Voti.value,
-                        lambda state: HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player)))
+                        lambda state: HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player)) or SuperFlyer(state, player))
         connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1QuelTin.value, lambda state: NoRequirement())
         connect_regions(world, player, AERoom.W7L1Well.value, AERoom.W7L1Phaldo.value, lambda state: NoRequirement())
 
@@ -437,7 +437,7 @@ class IJ():
         connect_regions(world, player, AERoom.W8L2Factory.value, AERoom.W8L2Reznor.value,
                         lambda state: SF_MechRoom(state, player))
         connect_regions(world, player, AERoom.W8L2RC.value, AERoom.W8L2Urkel.value,
-                        lambda state: SF_CarRoom(state, player))
+                        lambda state: SF_CarRoom(state, player) or HasSling(state, player) or SuperFlyer(state, player))
         connect_regions(world, player, AERoom.W8L2Lava.value, AERoom.W8L2VanillaS.value,
                         lambda state: SF_MechRoom(state, player) and HasPunch(state, player))
         connect_regions(world, player, AERoom.W8L2Lava.value, AERoom.W8L2Radd.value,
@@ -643,7 +643,7 @@ class IJ():
             connect_regions(world, player, AERoom.W7L3Outside.value, AERoom.Coin45.value,
                             lambda state: HasClub(state, player) or HasSling(state, player) or HasHoop(state, player) or HasFlyer(state, player) or HasPunch(state, player))
             connect_regions(world, player, AERoom.W7L3Castle.value, AERoom.Coin46.value,
-                            lambda state: CC_5Monkeys(state, player) or HasSling(state, player))
+                            lambda state: CC_5Monkeys(state, player) or HasSling(state, player) or SuperFlyer(state, player))
             connect_regions(world, player, AERoom.W7L3Button.value, AERoom.Coin49.value,
                             lambda state: CC_ButtonRoom(state, player))
             connect_regions(world, player, AERoom.W7L3Elevator.value, AERoom.Coin50.value,
@@ -664,7 +664,7 @@ class IJ():
 
             # 8-2
             connect_regions(world, player, AERoom.W8L2RC.value, AERoom.Coin58.value,
-                            lambda state: SF_CarRoom(state, player))
+                            lambda state: SF_CarRoom(state, player) or SuperFlyer(state, player))
             connect_regions(world, player, AERoom.W8L2Lava.value, AERoom.Coin62.value,
                             lambda state: SF_MechRoom(state, player))
 
@@ -708,8 +708,7 @@ def NoRequirement():
 
 
 def CanHitOnce(state, player):
-    return HasClub(state, player) or HasRadar(state, player) or HasSling(state, player) or HasHoop(state,player) \
-        or HasFlyer(state, player) or HasRC(state, player) or HasPunch(state, player)
+    return HasClub(state, player) or HasRadar(state, player) or HasSling(state, player) or HasHoop(state,player) or HasFlyer(state, player) or HasRC(state, player) or HasPunch(state, player)
 
 
 def CanHitMultiple(state, player):
@@ -734,6 +733,10 @@ def CanDive(state, player):
 
 def CanWaterCatch(state, player):
     return HasWaterNet(state, player)
+
+
+def SuperFlyer(state, player):
+    return HasFlyer(state, player) and (HasNet(state, player) or HasClub(state, player) or HasSling(state, player) or HasPunch(state, player))
 
 
 def TJ_UFOEntry(state, player):
@@ -773,13 +776,11 @@ def WSW_FourthRoom(state, player):
 
 
 def CC_5Monkeys(state, player):
-    return HasClub(state, player) or HasSling(state, player) or HasHoop(state, player) or HasFlyer(state, player) \
-        or HasPunch(state, player)
+    return HasClub(state, player) or HasSling(state, player) or HasHoop(state, player) or HasFlyer(state, player) or HasPunch(state, player)
 
 
 def CC_WaterRoom(state, player):
-    return CanHitMultiple(state, player) or (CanDive(state, player) and (
-            HasSling(state, player) or HasFlyer(state, player) or HasPunch(state, player)))
+    return (CanHitMultiple(state, player) and HasNet(state, player)) or (CanDive(state, player) and (HasFlyer(state, player) or HasPunch(state, player))) or (HasFlyer(state, player) or HasHoop(state, player)) or HasSling(state, player) or SuperFlyer(state, player)
 
 
 def CC_ButtonRoom(state, player):
@@ -799,8 +800,7 @@ def CP_BackSewer(state, player):
 
 
 def SF_CarRoom(state, player):
-    return HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player)) or HasRC(state, player) \
-        or HasPunch(state, player)
+    return HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player)) or HasRC(state, player) or HasPunch(state, player)
 
 
 def SF_MechRoom(state, player):
@@ -849,7 +849,7 @@ def MM_SpaceMonkeys(state, player):
 
 
 def MM_FinalBoss(state, player):
-    return MM_UFODoor(state, player) and HasSling(state, player)
+    return MM_UFODoor(state, player) and (HasSling(state, player) or SuperFlyer(state, player))
 
 
 def HasClub(state, player):

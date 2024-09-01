@@ -734,6 +734,10 @@ def CanWaterCatch(state, player):
     return HasWaterNet(state, player)
 
 
+def SuperFlyer(state, player):
+    return False
+	
+
 def TJ_UFOEntry(state, player):
     return CanDive(state, player)
 
