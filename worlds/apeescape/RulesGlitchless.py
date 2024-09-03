@@ -78,11 +78,11 @@ class Glitchless():
                         lambda state: CanHitMultiple(state, player))
         connect_regions(world, player, AERoom.W2L1Entry.value, AERoom.W2L1George.value, lambda state: NoRequirement())
         connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Gonzo.value,
-                        lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                        lambda state: TJ_Mushroom(state, player))
         connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Zanzibar.value,
-                        lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                        lambda state: TJ_Mushroom(state, player))
         connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Alphonse.value,
-                        lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                        lambda state: TJ_Mushroom(state, player))
         connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Maki.value,
                         lambda state: TJ_FishEntry(state, player) and HasSling(state, player))
         connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Herb.value,
@@ -568,7 +568,7 @@ class Glitchless():
             connect_regions(world, player, AERoom.W2L1Entry.value, AERoom.Coin6.value,
                             lambda state: HasMobility(state, player))
             connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.Coin7.value,
-                            lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                            lambda state: TJ_Mushroom(state, player))
             connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.Coin8.value,
                             lambda state: (TJ_FishEntry(state, player)))
             connect_regions(world, player, AERoom.W2L1Tent.value, AERoom.Coin9.value,
@@ -756,7 +756,7 @@ def TJ_FishEntry(state, player):
 
 
 def TJ_Mushroom(state, player):
-    return HasMobility(state, player)
+    return HasMobility(state, player) and CanHitMultiple(state, player)
 
 
 def CR_Inside(state, player):

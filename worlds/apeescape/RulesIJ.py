@@ -74,11 +74,11 @@ class IJ():
                         lambda state: CanHitOnce(state, player))
         connect_regions(world, player, AERoom.W2L1Entry.value, AERoom.W2L1George.value, lambda state: NoRequirement())
         connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Gonzo.value,
-                        lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                        lambda state: TJ_Mushroom(state, player))
         connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Zanzibar.value,
-                        lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                        lambda state: TJ_Mushroom(state, player))
         connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.W2L1Alphonse.value,
-                        lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                        lambda state: TJ_Mushroom(state, player))
         connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.W2L1Maki.value,
                         lambda state: TJ_FishEntry(state, player) and (
                                 HasSling(state, player) or HasFlyer(state, player)))
@@ -565,7 +565,7 @@ class IJ():
             connect_regions(world, player, AERoom.W2L1Entry.value, AERoom.Coin6.value,
                             lambda state: HasMobility(state, player))
             connect_regions(world, player, AERoom.W2L1Mushroom.value, AERoom.Coin7.value,
-                            lambda state: TJ_Mushroom(state, player) and CanHitMultiple(state, player))
+                            lambda state: TJ_Mushroom(state, player))
             connect_regions(world, player, AERoom.W2L1Fish.value, AERoom.Coin8.value,
                             lambda state: (TJ_FishEntry(state, player)))
             connect_regions(world, player, AERoom.W2L1Tent.value, AERoom.Coin9.value,
@@ -657,8 +657,7 @@ class IJ():
                             lambda state: (CP_FrontBarrels(state, player) and CanDive(state, player)) or
                                     HasSling(state, player) or HasFlyer(state, player))
             connect_regions(world, player, AERoom.W8L1Sewers.value, AERoom.Coin54.value,
-                            lambda state: (CP_FrontSewer(state, player) or CP_BackSewer(state, player))
-                                    and HasRC(state, player) or HasSling(state, player))
+                            lambda state: (CP_FrontSewer(state, player) and (HasRC(state, player) or HasSling(state, player) or SuperFlyer(state, player))) or (CP_BackSewer(state, player) and HasRC(state, player) or HasSling(state, player)))
             connect_regions(world, player, AERoom.W8L1Barrel.value, AERoom.Coin55.value,
                             lambda state: (CP_FrontBarrels(state, player) or CP_BackSewer(state, player))
                                     and (HasSling(state, player) or HasFlyer(state, player)))
@@ -753,7 +752,7 @@ def TJ_FishEntry(state, player):
 
 
 def TJ_Mushroom(state, player):
-    return HasMobility(state, player)
+    return (HasMobility(state, player) and CanHitMultiple(state, player)) or SuperFlyer(state, player)
 
 
 def CR_Inside(state, player):
@@ -806,7 +805,7 @@ def SF_CarRoom(state, player):
 
 def SF_MechRoom(state, player):
     return HasSling(state, player) or (HasHoop(state, player) and HasFlyer(state, player)) or (
-            HasClub(state, player) and HasRC(state, player)) or HasPunch(state, player)
+            HasClub(state, player) and HasRC(state, player)) or HasPunch(state, player) or SuperFlyer(state, player)
 
 
 def TVT_HitButton(state, player):
