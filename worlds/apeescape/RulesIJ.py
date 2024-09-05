@@ -644,7 +644,7 @@ class IJ():
             connect_regions(world, player, AERoom.W7L3Outside.value, AERoom.Coin45.value,
                             lambda state: HasClub(state, player) or HasSling(state, player) or HasHoop(state, player) or HasFlyer(state, player) or HasPunch(state, player))
             connect_regions(world, player, AERoom.W7L3Castle.value, AERoom.Coin46.value,
-                            lambda state: CC_5Monkeys(state, player) or HasSling(state, player) or SuperFlyer(state, player))
+                            lambda state: CC_5Monkeys(state, player) or HasSling(state, player))
             connect_regions(world, player, AERoom.W7L3Button.value, AERoom.Coin49.value,
                             lambda state: CC_ButtonRoom(state, player))
             connect_regions(world, player, AERoom.W7L3Elevator.value, AERoom.Coin50.value,
