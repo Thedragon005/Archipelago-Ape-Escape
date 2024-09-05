@@ -60,7 +60,6 @@ class ApeEscapeClient(BizHawkClient):
 
     def __init__(self) -> None:
         super().__init__()
-        # self.game = "Ape Escape"
 
         self.local_checked_locations = set()
         self.local_set_events = {}
