@@ -92,6 +92,7 @@ class ApeEscapeWorld(World):
     def create_items(self):
         numberoflocations = len(location_table)
 
+        club = self.create_item(AEItem.Club.value)
         radar = self.create_item(AEItem.Radar.value)
         shooter = self.create_item(AEItem.Sling.value)
         hoop = self.create_item(AEItem.Hoop.value)
@@ -101,7 +102,6 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
-        club = self.create_item(AEItem.Club.value)
         numberoflocations -= 1
 
         self.multiworld.push_precollected(waternet)
@@ -143,26 +143,34 @@ class ApeEscapeWorld(World):
         if self.multiworld.gadget[self.player].value == 0x00:
             self.multiworld.push_precollected(club)
             self.multiworld.itempool += [radar, shooter, hoop, flyer, car, punch]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x01:
             self.multiworld.push_precollected(radar)
             self.multiworld.itempool += [club, shooter, hoop, flyer, car, punch]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x02:
             self.multiworld.push_precollected(shooter)
             self.multiworld.itempool += [club, radar, hoop, flyer, car, punch]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x03:
             self.multiworld.push_precollected(hoop)
             self.multiworld.itempool += [club, radar, shooter, flyer, car, punch]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x04:
             self.multiworld.push_precollected(flyer)
             self.multiworld.itempool += [club, radar, shooter, hoop, car, punch]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x05:
             self.multiworld.push_precollected(car)
             self.multiworld.itempool += [club, radar, shooter, hoop, flyer, punch]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x06:
             self.multiworld.push_precollected(punch)
             self.multiworld.itempool += [club, radar, shooter, hoop, flyer, car]
+            numberoflocations -= 6
         elif self.multiworld.gadget[self.player].value == 0x08:
             self.multiworld.itempool += [club, radar, shooter, hoop, flyer, car, punch]
+            numberoflocations -= 7
 
 
 
