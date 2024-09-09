@@ -765,11 +765,11 @@ def WSW_FourthRoom(state, world):
 
 
 def CC_5Monkeys(state, world):
-    return (HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world))
+    return HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world)
 
 
 def CC_WaterRoom(state, world):
-    return ((CanHitMultiple(state, world) and HasNet(state, world)) or (CanDive(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or (HasFlyer(state, world) or HasHoop(state, world)) or SuperFlyer(state, world))
+    return (CanHitMultiple(state, world) and HasNet(state, world)) or (CanDive(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or (HasFlyer(state, world) or HasHoop(state, world)) or SuperFlyer(state, world)
 
 
 def CC_ButtonRoom(state, world):
@@ -794,7 +794,7 @@ def SF_CarRoom(state, world):
 
 
 def SF_MechRoom(state, world):
-    return ((HasHoop(state, world) and HasFlyer(state, world)) or (HasClub(state, world) and (HasSling(state, world) or HasRC(state, world))) or HasPunch(state, world) or SuperFlyer(state, world))
+    return (HasHoop(state, world) and HasFlyer(state, world)) or (HasClub(state, world) and (HasSling(state, world) or HasRC(state, world))) or HasPunch(state, world) or SuperFlyer(state, world)
 
 
 def TVT_HitButton(state, world):
@@ -838,7 +838,7 @@ def MM_SpaceMonkeys(state, world):
 
 
 def MM_FinalBoss(state, world):
-    return ((MM_DoubleDoor(state, world) and HasSling(state, world) and HasFlyer(state, world)) or (MM_UFODoor(state, world) and SuperFlyer(state, world)))
+    return (MM_DoubleDoor(state, world) and HasSling(state, world) and HasFlyer(state, world)) or (MM_UFODoor(state, world) and SuperFlyer(state, world))
 
 
 def HasClub(state, world):
