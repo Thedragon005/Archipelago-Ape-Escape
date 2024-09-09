@@ -704,7 +704,7 @@ def NoRequirement():
 
 
 def CanHitOnce(state, world):
-    return (HasClub(state, world) or HasRadar(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasRC(state, world) or HasPunch(state, world))
+    return HasClub(state, world) or HasRadar(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasRC(state, world) or HasPunch(state, world)
 
 
 def CanHitMultiple(state, world):
@@ -772,11 +772,11 @@ def WSW_FourthRoom(state, world):
 
 
 def CC_5Monkeys(state, world):
-    return (HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world))
+    return HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world)
 
 
 def CC_WaterRoom(state, world):
-    return ((CanHitMultiple(state, world) and HasNet(state, world)) or (CanDive(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or HasFlyer(state, world) or HasHoop(state, world) or HasSling(state, world) or SuperFlyer(state, world))
+    return (CanHitMultiple(state, world) and HasNet(state, world)) or (CanDive(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or HasFlyer(state, world) or HasHoop(state, world) or HasSling(state, world) or SuperFlyer(state, world)
 
 
 def CC_ButtonRoom(state, world):
@@ -796,7 +796,7 @@ def CP_BackSewer(state, world):
 
 
 def SF_CarRoom(state, world):
-    return (HasSling(state, world) or (HasHoop(state, world) and HasFlyer(state, world)) or HasRC(state, world) or HasPunch(state, world))
+    return HasSling(state, world) or (HasHoop(state, world) and HasFlyer(state, world)) or HasRC(state, world) or HasPunch(state, world)
 
 
 def SF_MechRoom(state, world):
