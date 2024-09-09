@@ -580,7 +580,7 @@ class RAM:
             197: 0x0DFE48,
             198: 0x0DFE49
         },
-        82: {  #outside climb
+        82: {  # outside climb
             199: 0x0DFE60,
             200: 0x0DFE61
         },
@@ -706,12 +706,12 @@ class RAM:
         91: 0xdfcb0
     }
 
-    #A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
+    # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
-    #the gadgets on triangle, square, circle, X on successive bytes
-    #club = 0, net = 1, radar = 2, sling = 3, hoop = 4, punch = 5, flyer = 6, car = 7, empty = 255
+    # the gadgets on triangle, square, circle, X on successive bytes
+    # club = 0, net = 1, radar = 2, sling = 3, hoop = 4, punch = 5, flyer = 6, car = 7, empty = 255
     equippedGadgetsAddress = 0x0F51A8
-    #which gadget is currently selected for use
+    # which gadget is currently selected for use
     selectedGadgetAddress = 0x0EC2D2
 
     trainingRoomProgressAddress = 0x0DFDCC
