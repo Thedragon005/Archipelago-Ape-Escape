@@ -18,6 +18,7 @@ from .Options import ApeEscapeOptions
 class ApeEscapeWeb(WebWorld):
     theme = "dirt"
 
+    # Update this placeholder text to something more accurate
     setup = Tutorial(
         "Multiworld Setup Guide",
         "A guide to setting up Adventure for MultiWorld.",
