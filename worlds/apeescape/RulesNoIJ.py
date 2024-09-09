@@ -789,8 +789,7 @@ def CP_BackSewer(state, world):
 
 
 def SF_CarRoom(state, world):
-    return (HasHoop(state, world) and HasFlyer(state, world)) or HasRC(state, world) or HasPunch(
-        state, world)
+    return (HasHoop(state, world) and HasFlyer(state, world)) or HasRC(state, world) or HasPunch(state, world)
 
 
 def SF_MechRoom(state, world):
