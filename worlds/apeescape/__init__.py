@@ -223,7 +223,7 @@ class ApeEscapeWorld(World):
         data = {
             "slot_data": self.fill_slot_data(),
             "location_to_item": {self.location_name_to_id[i.name]: item_table[i.item.name] for i in
-                                 self.multiworld.get_filled_locations()},
+                                 self.multiworld.get_locations()},
             "data_package": {
                 "data": {
                     "games": {
