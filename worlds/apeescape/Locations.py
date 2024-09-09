@@ -1,5 +1,4 @@
 from BaseClasses import Location
-import typing
 
 from worlds.apeescape.Strings import AELocation
 
@@ -8,10 +7,6 @@ base_location_id = 128000000
 
 class ApeEscapeLocation(Location):
     game: str = "Ape Escape"
-
-    def __init__(self, player: int, name: str, address: typing.Optional[int], parent):
-        super().__init__(player, name, address, parent)
-        self.event = not address
 
 
 location_table = {

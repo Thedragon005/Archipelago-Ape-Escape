@@ -7,18 +7,8 @@ base_apeescape_item_id = 128000000
 
 
 class ApeEscapeItem(Item):
-    def __init__(self, name: str, classification: ItemClassification, code: Optional[int], player: int):
-        super().__init__(name, classification, code, player)
+    game: str = "Ape Escape"
 
-
-class ItemData:
-    def __init__(self, id: int, classification: ItemClassification):
-        self.classification = classification
-        self.id = None if id is None else id + base_apeescape_item_id
-        self.table_index = id
-
-
-nothing_item_id = base_apeescape_item_id
 
 # base IDs are the index in the static item data table, which is
 # not the same order as the items in RAM (but offset 0 is a 16-bit address of
@@ -40,7 +30,7 @@ item_table = {
     AEItem.Key.value: RAM.items["Key"],
     AEItem.Victory.value: RAM.items["Victory"],
 
-    #Junk
+    # Junk
     AEItem.Nothing.value: RAM.items["Nothing"],
     AEItem.Shirt.value: RAM.items["Shirt"],
     AEItem.Triangle.value: RAM.items["Triangle"],

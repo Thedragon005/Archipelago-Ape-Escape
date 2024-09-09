@@ -1,17 +1,17 @@
-from worlds.apeescape import location_table
-from worlds.generic.Rules import add_rule, set_rule, forbid_item
-from BaseClasses import LocationProgressType
-from .Regions import connect_regions
-from .Strings import AEItem, AEWorld, AERoom
-from .RulesGlitchless import Glitchless
-from .RulesNoIJ import NoIJ
-from .RulesIJ import IJ
+from typing import TYPE_CHECKING
+
+from .RulesGlitchless import set_glitchless_rules
+from .RulesNoIJ import set_noij_rules
+from .RulesIJ import set_ij_rules
+
+if TYPE_CHECKING:
+    from . import ApeEscapeWorld
 
 
-def set_rules(world, player: int):
-    if world.logic[player].value == 0x00:
-        Glitchless.set_rules(None, world, player, world.coin[player].value == 0x00)
-    elif world.logic[player].value == 0x01:
-        NoIJ.set_rules(None, world, player, world.coin[player].value == 0x00)
-    elif world.logic[player].value == 0x02:
-        IJ.set_rules(None, world, player, world.coin[player].value == 0x00)
+def set_rules(world: "ApeEscapeWorld"):
+    if world.options.logic == "glitchless":
+        set_glitchless_rules(world)
+    elif world.options.logic == "noij":
+        set_noij_rules(world)
+    elif world.options.logic == "ij":
+        set_ij_rules(world)

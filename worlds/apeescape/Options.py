@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from Options import Choice, Option, PerGameCommonOptions
-
-from typing import Dict
+from Options import Choice, PerGameCommonOptions
 
 
 class DebugOption(Choice):
@@ -102,7 +100,7 @@ class GadgetOption(Choice):
     default = option_club
 
 
-class  SuperFlyerOption(Choice):
+class SuperFlyerOption(Choice):
     """Choose if the Super Flyer trick should be put into logic
 
         true: super flyer is put into logic
@@ -115,7 +113,6 @@ class  SuperFlyerOption(Choice):
     option_true = 0x00
     option_false = 0x01
     default = option_false
-    
 
 
 @dataclass
