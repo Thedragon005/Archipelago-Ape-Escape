@@ -67,8 +67,8 @@ class CoinOption(Choice):
     """
 
     display_name = "Coin"
-    option_true = 0x00
-    option_false = 0x01
+    option_true = 0x01
+    option_false = 0x00
     default = option_false
 
 
@@ -110,8 +110,8 @@ class SuperFlyerOption(Choice):
         Default value: false
     """
     display_name = "SuperFlyer"
-    option_true = 0x00
-    option_false = 0x01
+    option_true = 0x01
+    option_false = 0x00
     default = option_false
 
 

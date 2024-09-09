@@ -58,6 +58,7 @@ class ApeEscapeWorld(World):
         self.logic: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.gadget: Optional[int] = 0
+        self.superflyer: Optional[int] = 0
 
     def generate_early(self) -> None:
         self.debug = self.options.debug.value
@@ -65,6 +66,7 @@ class ApeEscapeWorld(World):
         self.logic = self.options.logic.value
         self.coin = self.options.coin.value
         self.gadget = self.options.gadget.value
+        self.superflyer = self.options.superflyer.value
 
     def create_regions(self):
         create_regions(self)
@@ -120,9 +122,9 @@ class ApeEscapeWorld(World):
             numberoflocations -= 12
         # DEBUG
         elif self.options.debug == "key":
-            self.multiworld.push_precollected(club)
             itempool += [
                 self.create_item(AEItem.Club.value),
+                self.create_item(AEItem.Radar.value),
                 self.create_item(AEItem.Sling.value),
                 self.create_item(AEItem.Hoop.value),
                 self.create_item(AEItem.Flyer.value),
@@ -141,7 +143,7 @@ class ApeEscapeWorld(World):
             self.get_location(AELocation.Shay.value).place_locked_item(key4)
             self.get_location(AELocation.DrMonk.value).place_locked_item(key5)
             self.get_location(AELocation.Ahchoo.value).place_locked_item(key6)
-            numberoflocations -= 12
+            numberoflocations -= 13
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
@@ -215,25 +217,12 @@ class ApeEscapeWorld(World):
             "logic": self.options.logic.value,
             "coin": self.options.coin.value,
             "gadget": self.options.gadget.value,
+            "superflyer": self.options.superflyer.value,
         }
 
     def generate_output(self, output_directory: str):
-        if self.multiworld.players != 1:
-            return
         data = {
-            "slot_data": self.fill_slot_data(),
-            "location_to_item": {self.location_name_to_id[i.name]: item_table[i.item.name] for i in
-                                 self.multiworld.get_locations()},
-            "data_package": {
-                "data": {
-                    "games": {
-                        self.game: {
-                            "item_name_to_id": self.item_name_to_id,
-                            "location_name_to_id": self.location_name_to_id
-                        }
-                    }
-                }
-            }
+            "slot_data": self.fill_slot_data()
         }
         filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
         with open(os.path.join(output_directory, filename), 'w') as f:
