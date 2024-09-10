@@ -83,7 +83,7 @@ class ApeEscapeClient(BizHawkClient):
         if not self.game == "Ape Escape":
             return False
         ctx.game = self.game
-        ctx.items_handling = 0b011
+        ctx.items_handling = 0b111
         ctx.want_slot_data = True
         return True
 
