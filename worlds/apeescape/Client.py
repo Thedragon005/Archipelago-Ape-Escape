@@ -95,23 +95,8 @@ class ApeEscapeClient(BizHawkClient):
             return
         
         try:
-            # Initialize unlocked gadgets
-            if ctx.slot_data["gadget"] == GadgetOption.option_club:
-                gadgetStateFromServer = 3
-            elif ctx.slot_data["gadget"] == GadgetOption.option_radar:
-                gadgetStateFromServer = 6
-            elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
-                gadgetStateFromServer = 10
-            elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
-                gadgetStateFromServer = 18
-            elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
-                gadgetStateFromServer = 66
-            elif ctx.slot_data["gadget"] == GadgetOption.option_car:
-                gadgetStateFromServer = 130
-            elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
-                gadgetStateFromServer = 34
-            elif ctx.slot_data["gadget"] == GadgetOption.option_none:
-                gadgetStateFromServer = 2
+            # Pre-unlock net
+            gadgetStateFromServer = 2
             
             # Get items from server
             keyCountFromServer = 0
