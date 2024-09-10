@@ -290,13 +290,11 @@ class ApeEscapeClient(BizHawkClient):
 
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-            # Original function would give stun club at game start, even if it wasn't starting inventory.
-            #   (RAM.unlockedGadgetsAddress, (gadgets | gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, (gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, hundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-            # Special case to unequip club at game start. Only triggers if club is on triangle and not yet obtained.
+            # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net.
             if ((selectedGadget == 0) and (gadgetStateFromServer % 2 == 0)):
                 if ctx.slot_data["gadget"] == GadgetOption.option_radar:
                     writes += [(RAM.equippedGadgetsAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
