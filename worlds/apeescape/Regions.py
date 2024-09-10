@@ -898,9 +898,9 @@ def create_regions(world: "ApeEscapeWorld"):
         coin41 = Region(AERoom.Coin41.value, player, multiworld)
         coin41.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin41) for loc_name
                              in get_array([341])]
-        coin43 = Region(AERoom.Coin43.value, player, multiworld)
-        coin43.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin43) for loc_name
-                             in get_array([343])]
+        coin44 = Region(AERoom.Coin44.value, player, multiworld)
+        coin44.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin44) for loc_name
+                             in get_array([344])]
         coin45 = Region(AERoom.Coin45.value, player, multiworld)
         coin45.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin45) for loc_name
                              in get_array([345])]
@@ -925,9 +925,9 @@ def create_regions(world: "ApeEscapeWorld"):
         coin58 = Region(AERoom.Coin58.value, player, multiworld)
         coin58.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin58) for loc_name
                              in get_array([358])]
-        coin62 = Region(AERoom.Coin62.value, player, multiworld)
-        coin62.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin62) for loc_name
-                             in get_array([362])]
+        coin59 = Region(AERoom.Coin59.value, player, multiworld)
+        coin59.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin59) for loc_name
+                             in get_array([359])]
         coin64 = Region(AERoom.Coin64.value, player, multiworld)
         coin64.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin64) for loc_name
                              in get_array([364])]
@@ -966,8 +966,8 @@ def create_regions(world: "ApeEscapeWorld"):
                              in get_array([385])]
         regions += [coin1, coin2, coin3, coin6, coin7, coin8, coin9, coin11, coin12, coin13, coin14, coin17, coin19,
                     coin21, coin23, coin24, coin25, coin28, coin29, coin30, coin31, coin32, coin34, coin35, coin36,
-                    coin37, coin38, coin39, coin40, coin41, coin43, coin45, coin46, coin49, coin50, coin53, coin54,
-                    coin55, coin58, coin62, coin64, coin66, coin73, coin74, coin75, coin77, coin78, coin79, coin80,
+                    coin37, coin38, coin39, coin40, coin41, coin44, coin45, coin46, coin49, coin50, coin53, coin54,
+                    coin55, coin58, coin59, coin64, coin66, coin73, coin74, coin75, coin77, coin78, coin79, coin80,
                     coin82, coin84, coin85]
 
     multiworld.regions.extend(regions)

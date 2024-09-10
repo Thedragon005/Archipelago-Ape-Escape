@@ -12,6 +12,17 @@ AELocation.Puka.value L:OK G:0DF8C9 FIXED
 Sushi Temple:
 ==========================
 
+Also found a bug: the monkeys in Sushi Temple are currently mis-aligned
+the 3 monkeys in the well (Voti, Quel Tin, Phaldo)
+checked 3 from inside the temple (Long, Mayi, Owyang)
+
+AELocation.QuelTin.value: 111 L:OK G:0DF959 FIXED
+AELocation.Phaldo.value: 112 L:OK G:0DF95A FIXED
+AELocation.Voti.value: 113 L:OK G:0DF958 FIXED
+AELocation.Long.value: 108 L:OK G:0DF952 FIXED
+AELocation.Mayi.value: 109 L:OK G:0DF950 FIXED
+AELocation.Owyang.value: 110 L:OK G:0DF951 FIXED
+
 AELocation.Elly.value: 114, L:OK G:0DF953 FIXED
 AELocation.Chunky.value: 115,L:OK G:0DF954 FIXED
 
@@ -81,6 +92,8 @@ AELocation.BG.value: 204, L:0DFEA8 G:0DFAC8 FIXED
 COINS
 ==============
 -Fixed the bug that you would get Jake Races coins in Stadium Attack and Gladiator Attack for free if you died/exited level
+-Edited coin identification of "7-2 Wabi Sabi Wall Coin - Barrel Room" from Coin43 to Coin44, coins sends now
+-Edited coin identification of "8-2 Specters Factory - Lava Room" from Coin62 to Coin59, coins sends now
 ==============
 CORE
 ==============

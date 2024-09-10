@@ -611,7 +611,7 @@ def set_glitchless_rules(self):
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W7L2Gong.value, AERoom.Coin41.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W7L2Barrel.value, AERoom.Coin43.value,
+        connect_regions(self, AERoom.W7L2Barrel.value, AERoom.Coin44.value,
                         lambda state: HasFlyer(state, self))
 
         # 7-3
@@ -635,7 +635,7 @@ def set_glitchless_rules(self):
         # 8-2
         connect_regions(self, AERoom.W8L2RC.value, AERoom.Coin58.value,
                         lambda state: SF_CarRoom(state, self))
-        connect_regions(self, AERoom.W8L2Lava.value, AERoom.Coin62.value,
+        connect_regions(self, AERoom.W8L2Lava.value, AERoom.Coin59.value,
                         lambda state: SF_MechRoom(state, self))
 
         # 8-3

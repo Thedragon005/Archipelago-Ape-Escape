@@ -68,7 +68,6 @@ class ApeEscapeClient(BizHawkClient):
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
         ape_identifier_ram_address: int = 0xA37F0
-
         # BASCUS-94423SYS in ASCII = Ape Escape I think??
         bytes_expected: bytes = bytes.fromhex("4241534355532D3934343233535953")
         try:
@@ -176,7 +175,6 @@ class ApeEscapeClient(BizHawkClient):
             coinCount = int.from_bytes(reads[8], byteorder="little")
             equippedGadget = int.from_bytes(reads[9], byteorder="little")
             selectedGadget = int.from_bytes(reads[10], byteorder="little")
-
             # When starting client,prevents sending check once while not connected to AP
             if self.roomglobal == 0:
                 localcondition = False
