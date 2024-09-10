@@ -1,52 +1,47 @@
 # Regions are areas in your game that you travel to.
-from typing import Dict, Set, List
+from typing import Dict, List, TYPE_CHECKING
 
-from BaseClasses import Entrance, MultiWorld, Region
-from . import Locations
+from BaseClasses import Entrance, Region
+from . import locations
+from .events import create_all_events
+
+if TYPE_CHECKING:
+    from . import NoitaWorld
 
 
-def add_location(player: int, loc_name: str, id: int, region: Region) -> None:
-    location = Locations.NoitaLocation(player, loc_name, id, region)
-    region.locations.append(location)
-
-
-def add_locations(multiworld: MultiWorld, player: int, region: Region) -> None:
-    locations = Locations.location_region_mapping.get(region.name, {})
-    for location_name, location_data in locations.items():
+def create_locations(world: "NoitaWorld", region: Region) -> None:
+    locs = locations.location_region_mapping.get(region.name, {})
+    for location_name, location_data in locs.items():
         location_type = location_data.ltype
         flag = location_data.flag
 
-        opt_orbs = multiworld.orbs_as_checks[player].value
-        opt_bosses = multiworld.bosses_as_checks[player].value
-        opt_paths = multiworld.path_option[player].value
-        opt_num_chests = multiworld.hidden_chests[player].value
-        opt_num_pedestals = multiworld.pedestal_checks[player].value
+        is_orb_allowed = location_type == "Orb" and flag <= world.options.orbs_as_checks
+        is_boss_allowed = location_type == "Boss" and flag <= world.options.bosses_as_checks
+        amount = 0
+        if flag == locations.LocationFlag.none or is_orb_allowed or is_boss_allowed:
+            amount = 1
+        elif location_type == "Chest" and flag <= world.options.path_option:
+            amount = world.options.hidden_chests.value
+        elif location_type == "Pedestal" and flag <= world.options.path_option:
+            amount = world.options.pedestal_checks.value
 
-        is_orb_allowed = location_type == "orb" and flag <= opt_orbs
-        is_boss_allowed = location_type == "boss" and flag <= opt_bosses
-        if flag == Locations.LocationFlag.none or is_orb_allowed or is_boss_allowed:
-            add_location(player, location_name, location_data.id, region)
-        elif location_type == "chest" and flag <= opt_paths:
-            for i in range(opt_num_chests):
-                add_location(player, f"{location_name} {i+1}", location_data.id + i, region)
-        elif location_type == "pedestal" and flag <= opt_paths:
-            for i in range(opt_num_pedestals):
-                add_location(player, f"{location_name} {i+1}", location_data.id + i, region)
+        region.add_locations(locations.make_location_range(location_name, location_data.id, amount),
+                             locations.NoitaLocation)
 
 
 # Creates a new Region with the locations found in `location_region_mapping` and adds them to the world.
-def create_region(multiworld: MultiWorld, player: int, region_name: str) -> Region:
-    new_region = Region(region_name, player, multiworld)
-    add_locations(multiworld, player, new_region)
+def create_region(world: "NoitaWorld", region_name: str) -> Region:
+    new_region = Region(region_name, world.player, world.multiworld)
+    create_locations(world, new_region)
     return new_region
 
 
-def create_regions(multiworld: MultiWorld, player: int) -> Dict[str, Region]:
-    return {name: create_region(multiworld, player, name) for name in noita_regions}
+def create_regions(world: "NoitaWorld") -> Dict[str, Region]:
+    return {name: create_region(world, name) for name in noita_regions}
 
 
 # An "Entrance" is really just a connection between two regions
-def create_entrance(player: int, source: str, destination: str, regions: Dict[str, Region]):
+def create_entrance(player: int, source: str, destination: str, regions: Dict[str, Region]) -> Entrance:
     entrance = Entrance(player, f"From {source} To {destination}", regions[source])
     entrance.connect(regions[destination])
     return entrance
@@ -60,11 +55,12 @@ def create_connections(player: int, regions: Dict[str, Region]) -> None:
 
 
 # Creates all regions and connections. Called from NoitaWorld.
-def create_all_regions_and_connections(multiworld: MultiWorld, player: int) -> None:
-    created_regions = create_regions(multiworld, player)
-    create_connections(player, created_regions)
+def create_all_regions_and_connections(world: "NoitaWorld") -> None:
+    created_regions = create_regions(world)
+    create_connections(world.player, created_regions)
+    create_all_events(world, created_regions)
 
-    multiworld.regions += created_regions.values()
+    world.multiworld.regions += created_regions.values()
 
 
 # Oh, what a tangled web we weave
@@ -76,7 +72,7 @@ def create_all_regions_and_connections(multiworld: MultiWorld, player: int) -> N
 # - Snow Chasm is disconnected from the Snowy Wasteland
 # - Pyramid is connected to the Hiisi Base instead of the Desert due to similar difficulty
 # - Frozen Vault is connected to the Vault instead of the Snowy Wasteland due to similar difficulty
-# - Lake is connected to The Laboratory, since the boss is hard without specific set-ups (which means late game)
+# - Lake is connected to The Laboratory, since the bosses are hard without specific set-ups (which means late game)
 # - Snowy Depths connects to Lava Lake orb since you need digging for it, so fairly early is acceptable
 # - Ancient Laboratory is connected to the Coal Pits, so that Ylialkemisti isn't sphere 1
 noita_connections: Dict[str, List[str]] = {
@@ -103,7 +99,7 @@ noita_connections: Dict[str, List[str]] = {
 
     ###
     "Underground Jungle Holy Mountain": ["Underground Jungle"],
-    "Underground Jungle": ["Dragoncave", "Overgrown Cavern", "Vault Holy Mountain", "Lukki Lair", "Snow Chasm"],
+    "Underground Jungle": ["Dragoncave", "Overgrown Cavern", "Vault Holy Mountain", "Lukki Lair", "Snow Chasm", "West Meat Realm"],
 
     ###
     "Vault Holy Mountain": ["The Vault"],
@@ -113,11 +109,11 @@ noita_connections: Dict[str, List[str]] = {
     "Temple of the Art Holy Mountain": ["Temple of the Art"],
     "Temple of the Art": ["Laboratory Holy Mountain", "The Tower", "Wizards' Den"],
     "Wizards' Den": ["Powerplant"],
-    "Powerplant": ["Deep Underground"],
+    "Powerplant": ["Meat Realm"],
 
     ###
     "Laboratory Holy Mountain": ["The Laboratory"],
-    "The Laboratory": ["The Work", "Friend Cave", "The Work (Hell)", "Lake"],
+    "The Laboratory": ["The Work", "Friend Cave", "The Work (Hell)", "Lake", "The Sky"],
     ###
 }
 
