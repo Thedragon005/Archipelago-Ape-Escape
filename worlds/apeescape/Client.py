@@ -57,6 +57,7 @@ class ApeEscapeClient(BizHawkClient):
     boss3flag = 0
     boss4flag = 0
     currentCoinAddress = RAM.startingCoinAddress
+    resetClient = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -64,6 +65,9 @@ class ApeEscapeClient(BizHawkClient):
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
+
+    def initialize_client(self):
+        self.currentCoinAddress = RAM.startingCoinAddress
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -84,19 +88,27 @@ class ApeEscapeClient(BizHawkClient):
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
+
+        self.initialize_client()
+
         return True
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
-        if ctx.slot_data is None:
+        # Detects if the AP connection is made.
+        # If not,return immediately to not send anything while not connected
+        if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None:
+            self.initClient = False
             return
-        
+        # Detection for triggering "initialise_client()" when Disconnecting/Reconnecting to AP only once
+        if self.initClient == False:
+            self.initClient = True
+            self.initialize_client()
         try:
             # Pre-unlock net
             gadgetStateFromServer = 2
-            
             # Get items from server
             keyCountFromServer = 0
             for item in ctx.items_received:
