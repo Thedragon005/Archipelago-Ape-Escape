@@ -710,9 +710,12 @@ class RAM:
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
     # club = 0, net = 1, radar = 2, sling = 3, hoop = 4, punch = 5, flyer = 6, car = 7, empty = 255
-    equippedGadgetsAddress = 0x0F51A8
+    triangleGadgetAddress = 0x0F51A8
+    squareGadgetAddress = 0x0F51A9
+    circleGadgetAddress = 0x0F51AA
+    crossGadgetAddress = 0x0F51AB
     # which gadget is currently selected for use
-    selectedGadgetAddress = 0x0EC2D2
+    heldGadgetAddress = 0x0EC2D2
 
     trainingRoomProgressAddress = 0x0DFDCC
     currentRoomIdAddress = 0x0F4476

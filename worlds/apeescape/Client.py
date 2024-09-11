@@ -136,6 +136,8 @@ class ApeEscapeClient(BizHawkClient):
             # 5: Current New Coin State
             # 6: Current New Coin State Room
             # 7: Coin Count
+            # 8: Currently held gadget
+            # 9-12: Gadget equipped to each face button
 
             readTuples = [
                 (RAM.hundoApesAddress, 1, "MainRAM"),
@@ -147,8 +149,11 @@ class ApeEscapeClient(BizHawkClient):
                 (self.currentCoinAddress + 1, 1, "MainRAM"),
                 (self.currentCoinAddress, 1, "MainRAM"),
                 (RAM.totalCoinsAddress, 1, "MainRAM"),
-                (RAM.equippedGadgetsAddress, 1, "MainRAM"),
-                (RAM.selectedGadgetAddress, 1, "MainRAM")
+                (RAM.heldGadgetAddress, 1, "MainRAM"),
+                (RAM.triangleGadgetAddress, 1, "MainRAM"),
+                (RAM.squareGadgetAddress, 1, "MainRAM"),
+                (RAM.circleGadgetAddress, 1, "MainRAM"),
+                (RAM.crossGadgetAddress, 1, "MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -185,8 +190,12 @@ class ApeEscapeClient(BizHawkClient):
             currentCoinState = int.from_bytes(reads[6], byteorder="little")
             currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
             coinCount = int.from_bytes(reads[8], byteorder="little")
-            equippedGadget = int.from_bytes(reads[9], byteorder="little")
-            selectedGadget = int.from_bytes(reads[10], byteorder="little")
+            heldGadget = int.from_bytes(reads[9], byteorder="little")
+            triangleGadget = int.from_bytes(reads[10], byteorder="little")
+            squareGadget = int.from_bytes(reads[11], byteorder="little")
+            circleGadget = int.from_bytes(reads[12], byteorder="little")
+            crossGadget = int.from_bytes(reads[13], byteorder="little")
+
             # When starting client,prevents sending check once while not connected to AP
             if self.roomglobal == 0:
                 localcondition = False
@@ -305,28 +314,33 @@ class ApeEscapeClient(BizHawkClient):
             ]
 
             # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net.
-            if ((selectedGadget == 0) and (gadgetStateFromServer % 2 == 0)):
+            if ((heldGadget == 0) and (gadgetStateFromServer % 2 == 0)):
                 if ctx.slot_data["gadget"] == GadgetOption.option_radar:
-                    writes += [(RAM.equippedGadgetsAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
-                    writes += [(RAM.equippedGadgetsAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
-                    writes += [(RAM.equippedGadgetsAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
-                    writes += [(RAM.equippedGadgetsAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_car:
-                    writes += [(RAM.equippedGadgetsAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
-                    writes += [(RAM.equippedGadgetsAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_none:
-                    writes += [(RAM.equippedGadgetsAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.selectedGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+            
+            # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
+            if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
+                writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
             
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
