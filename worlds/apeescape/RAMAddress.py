@@ -729,6 +729,22 @@ class RAM:
     startingCoinAddress = 0x0DFB70
     totalCoinsAddress = 0x0F44BA
 
+    # Custom write/read addresses
+    tempLastReceivedArchipelagoID = 0x0DFBD8
+    lastReceivedArchipelagoID = 0x0E00E8
+    tempGadgetStateFromServer = 0x0DFBE0
+    gadgetStateFromServer = 0x0E00F0
+    keyCountFromServer = 0x0E00EE
+
+    currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
+
+    # Junk addresses
+    energyChipsAddress = 0x0F44B8
+    cookieAddress = 0x0EC2C8
+    livesAddress = 0x0F448C
+    flashAddress = 0x0F51C1
+    rocketAddress = 0x0F51C2
+
     levels = {
         "Fossil": 0x01,
         "Primordial": 0x02,

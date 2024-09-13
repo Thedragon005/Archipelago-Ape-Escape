@@ -1,16 +1,17 @@
-CHANGES SINCE ACTUAL VERSION:
-
-apworld:
+Version 0.20:
 
 ==========================
+MONKEYS
+==========================
+
+--------------------------
 Crabby Beach:
-==========================
-4-1 Crabby Beach Monkey 8 - Puka : Send only after reentering/exiting the room
+--------------------------
 AELocation.Puka.value L:OK G:0DF8C9 FIXED
 
-==========================
+--------------------------
 Sushi Temple:
-==========================
+--------------------------
 
 Also found a bug: the monkeys in Sushi Temple are currently mis-aligned
 the 3 monkeys in the well (Voti, Quel Tin, Phaldo)
@@ -26,16 +27,16 @@ AELocation.Owyang.value: 110 L:OK G:0DF951 FIXED
 AELocation.Elly.value: 114, L:OK G:0DF953 FIXED
 AELocation.Chunky.value: 115,L:OK G:0DF954 FIXED
 
-==========================
+--------------------------
 Wabi Sabi Wall:
-==========================
+--------------------------
 
 AELocation.Kong.value: 124 L:OK G:0x0DF980,FIXED
 AELocation.Phool.value: 125 : L:OK G:0x0DF981,FIXED
 
-==========================
-Crumbling Castle: (It's all CRUMBLING down at this point)
-==========================
+--------------------------
+Crumbling Castle:
+--------------------------
 AELocation.Wilhelm.value: 130 L:0DFE19 G:0DF991 FIXED
 AELocation.Emmanuel.value: 131 L:0DFE1A G:0DF992 FIXED
 AELocation.SirCutty.value: 132 L:0DFE1B G:0DF993 FIXED
@@ -44,27 +45,27 @@ AELocation.Deveneom.value: 135 G/L OK FIXED
 Deveneom have 2 addresses for 135,that maybe did an error that it did not send him
 (Fixed,it was the duplicate addresses)
 
-==========================
+--------------------------
 City Park:
-==========================
+--------------------------
 AELocation.Tino.value: 150, L:0DFE18 G:0DF9D0 FIXED
 AELocation.McManic.value: 152,L:0DFE1A G:0DF9D2 FIXED
 (Inverted between Tino and McManic)
 
 AELocation.Huener.value: 158, L:OK G:0DF9DD FIXED
 
-==========================
+--------------------------
 Specter's Factory:
-==========================
+--------------------------
 
 AELocation.VanillaS.value: 163, L:0DFE48 G:0DF9F8 FIXED
 AELocation.Shimbo.value: 165, L:0DFE4A G:0DF9FA FIXED
 AELocation.String.value: 167,L:0DFE79 G:0DFA09 FIXED
 AELocation.Khamo.value: 168, L:0DFE90 G:0DFA10 FIXED
 
-==========================
+--------------------------
 Monkey Madness
-==========================
+--------------------------
 
 Western Land
 AELocation.Nak.value: 186, L:OK G:0DFA88 FIXED
@@ -99,13 +100,19 @@ CORE
 ==============
 -Added In-Level + "Sub-Level" detection for MM:Park Entry,since each area is a "Level"(Local detection)
 -Corrected the "validate_rom" function to check if it is REALLY Ape Escape you're playing
+-Corrected the way items get sent by adding read/write RAM addresses to track gadget progress and last AP index received
+-The Client's loop now iterate only if the RAM address for "LastAPIndex" is lower than the item count
+-Fixed client trying to send item on following screens : Sony,Main Menu and Intro Cutscene.
 ==============
 OTHER
 ==============
 -Updated logic files with all known fixes
 -Implemented Super Flyer logic for no IJ/IJ logics
 -Currently disabled for no IJ / enabled for IJ pending option
-
+-Programmed Junk Items! They will even resend themselves when you reload a save/use a savestate.
+ Current junk : Shirt (Live), Cookie, Triangle, Big Triangle, Explosive Pellets, Guiding Pellets
+-Fixed a bug where coin state/item state would be off if Disconnecting/Reconnecting while client is still open
+-Since the rework of item sending, gadgetStateFromServer is saved in a nearby RAM address and included into the save file for easy access
 ==============
 STARTING GADGET OPTION
 ==============

@@ -98,32 +98,109 @@ class ApeEscapeClient(BizHawkClient):
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
-        # If not,return immediately to not send anything while not connected
-        if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None:
+        # If not,"return" immediately to not send anything while not connected
+        if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None or ctx.auth is None:
             self.initClient = False
             return
-        # Detection for triggering "initialise_client()" when Disconnecting/Reconnecting to AP only once
+        # Detection for triggering "initialise_client()" when Disconnecting/Reconnecting to AP (only once per connection)
         if self.initClient == False:
             self.initClient = True
             self.initialize_client()
         try:
-            # Pre-unlock net
-            gadgetStateFromServer = 2
-            # Get items from server
-            keyCountFromServer = 0
-            for item in ctx.items_received:
-                if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
-                    if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
-                        gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
-                elif item.item - self.offset == RAM.items["Key"]:
-                    keyCountFromServer = keyCountFromServer + 1
-                elif item.item - self.offset == RAM.items["Victory"]:
-                    await ctx.send_msgs([{
-                        "cmd": "StatusUpdate",
-                        "status": ClientStatus.CLIENT_GOAL
-                    }])
-                # elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["Rocket"]:
+            earlyReadTuples = [
+                (RAM.energyChipsAddress, 1, "MainRAM"),
+                (RAM.cookieAddress, 1, "MainRAM"),
+                (RAM.livesAddress, 1, "MainRAM"),
+                (RAM.flashAddress, 1, "MainRAM"),
+                (RAM.rocketAddress, 1, "MainRAM"),
+                (RAM.keyCountFromServer, 1, "MainRAM"),
+                (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
+                (RAM.gadgetStateFromServer, 2, "MainRAM"),
+                (RAM.gameStateAddress, 1, "MainRAM")
+            ]
+            itemsWrites = []
 
+            # All reads that are required BEFORE connecting/early
+            earlyReads = await bizhawk.read(ctx.bizhawk_ctx, earlyReadTuples)
+
+            energyChips = int.from_bytes(earlyReads[0], byteorder="little")
+            cookies = int.from_bytes(earlyReads[1], byteorder="little")
+            totalLives = int.from_bytes(earlyReads[2], byteorder="little")
+            flashAmmo = int.from_bytes(earlyReads[3], byteorder="little")
+            rocketAmmo = int.from_bytes(earlyReads[4], byteorder="little")
+            keyCountFromServer = int.from_bytes(earlyReads[5], byteorder="little")
+
+            recv_index = int.from_bytes(earlyReads[6], byteorder="little")
+            gadgetStateFromServer = int.from_bytes(earlyReads[7], byteorder="little")
+
+            gameState = int.from_bytes(earlyReads[8], byteorder="little")
+
+            # Set Initial received_ID when in first level ever OR in first hub ever
+            if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
+                recv_index = 0
+
+            # Set gadgetStateFromServer to default if you connect in first level/first time hub
+            if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
+                # Pre-unlock net,change this line to 0 when the net will be shuffled into the pool
+                gadgetStateFromServer = 2
+
+            if keyCountFromServer == 0xFF:
+                # Get items from server
+                keyCountFromServer = 0
+
+            START_recv_index = recv_index
+
+            #Prevent sending items when connecting early (Sony,Menu or Intro Cutscene)
+            boolIsFirstBoot = gameState == RAM.gameState["Sony"] or gameState == RAM.gameState["Menu"] or gameState == RAM.gameState["Cutscene2"]
+            if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
+                increment = 0
+                for item in ctx.items_received :
+                    #Increment to already received address first before sending
+                    if increment < START_recv_index:
+                        increment += 1
+                    else:
+                        recv_index += 1
+                        if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
+                            if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
+                                gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
+                        elif item.item - self.offset == RAM.items["Key"]:
+                            keyCountFromServer = keyCountFromServer + 1
+                        elif item.item - self.offset == RAM.items["Victory"]:
+                            await ctx.send_msgs([{
+                                "cmd": "StatusUpdate",
+                                "status": ClientStatus.CLIENT_GOAL
+                            }])
+                        elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["Rocket"]:
+                            if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"]:
+                                if (item.item - self.offset) == RAM.items["Triangle"]:
+                                    energyChips += 1
+                                elif (item.item - self.offset) == RAM.items["BigTriangle"]:
+                                    energyChips += 5
+                                #If total gets greater than 100,subtract 100 and give a life instead
+                                if energyChips >= 100:
+                                    energyChips = energyChips - 100
+                                    totalLives += 1
+                            elif (item.item - self.offset) == RAM.items["Cookie"]:
+                                if cookies < 5:
+                                    cookies += 1
+                            elif (item.item - self.offset) == RAM.items["Shirt"]:
+                                totalLives += 1
+                            elif (item.item - self.offset) == RAM.items["Flash"]:
+                                flashAmmo += 1
+                            elif (item.item - self.offset) == RAM.items["Rocket"]:
+                                rocketAmmo += 1
+
+                # Writes to memory if there is a new item,after the loop
+                itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
+                itemsWrites += [(RAM.energyChipsAddress, energyChips.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.cookieAddress, cookies.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.livesAddress, totalLives.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.flashAddress, flashAmmo.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.rocketAddress, rocketAmmo.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.keyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
             if keyCountFromServer > self.worldkeycount:
                 self.worldkeycount = keyCountFromServer
 
@@ -132,12 +209,13 @@ class ApeEscapeClient(BizHawkClient):
             # 1: Gadget unlocked states
             # 2: Current Room
             # 3: Current Game state
-            # 4: Current Level
-            # 5: Current New Coin State
-            # 6: Current New Coin State Room
-            # 7: Coin Count
-            # 8: Currently held gadget
-            # 9-12: Gadget equipped to each face button
+            # 4: Jake Races Victory state
+            # 5: Current Level
+            # 6: Current New Coin State
+            # 7: Current New Coin State Room
+            # 8: Coin Count
+            # 9: Currently held gadget
+            # 10-13: Gadget equipped to each face button
 
             readTuples = [
                 (RAM.hundoApesAddress, 1, "MainRAM"),
@@ -184,7 +262,7 @@ class ApeEscapeClient(BizHawkClient):
             hundoCount = int.from_bytes(reads[0], byteorder="little")
             gadgets = int.from_bytes(reads[1], byteorder="little")
             currentRoom = int.from_bytes(reads[2], byteorder="little")
-            gameState = int.from_bytes(reads[3], byteorder="little")
+            #gameState = int.from_bytes(reads[3], byteorder="little")
             jakeVictory = int.from_bytes(reads[4], byteorder="little")
             currentLevel = int.from_bytes(reads[5], byteorder="little")
             currentCoinState = int.from_bytes(reads[6], byteorder="little")
@@ -196,13 +274,10 @@ class ApeEscapeClient(BizHawkClient):
             circleGadget = int.from_bytes(reads[12], byteorder="little")
             crossGadget = int.from_bytes(reads[13], byteorder="little")
 
-            # When starting client,prevents sending check once while not connected to AP
-            if self.roomglobal == 0:
-                localcondition = False
-                localMMcondition = False
-            else:
-                localcondition = (currentLevel == self.levelglobal and currentRoom != self.roomglobal)
-                localMMcondition = (currentLevel != self.levelglobal and 0x18 <= currentLevel < 0x1D)
+            #Local update conditions
+            localcondition = (currentLevel == self.levelglobal and currentRoom != self.roomglobal)
+            localMMcondition = (currentLevel != self.levelglobal and 0x18 <= currentLevel < 0x1D)
+
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -309,7 +384,7 @@ class ApeEscapeClient(BizHawkClient):
 
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-                (RAM.unlockedGadgetsAddress, (gadgetStateFromServer).to_bytes(1, "little"), "MainRAM"),
+                (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, hundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
@@ -336,18 +411,19 @@ class ApeEscapeClient(BizHawkClient):
                 elif ctx.slot_data["gadget"] == GadgetOption.option_none:
                     writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
-            
+
             # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
             if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
                 writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-            
+
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
 
             writes += self.unlockLevels(monkeylevelcounts, gadgets)
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
+            await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
 
             self.levelglobal = currentLevel
             self.roomglobal = currentRoom
