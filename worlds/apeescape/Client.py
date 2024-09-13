@@ -129,10 +129,8 @@ class ApeEscapeClient(BizHawkClient):
             flashAmmo = int.from_bytes(earlyReads[3], byteorder="little")
             rocketAmmo = int.from_bytes(earlyReads[4], byteorder="little")
             keyCountFromServer = int.from_bytes(earlyReads[5], byteorder="little")
-
             recv_index = int.from_bytes(earlyReads[6], byteorder="little")
             gadgetStateFromServer = int.from_bytes(earlyReads[7], byteorder="little")
-
             gameState = int.from_bytes(earlyReads[8], byteorder="little")
 
             # Set Initial received_ID when in first level ever OR in first hub ever
@@ -164,7 +162,7 @@ class ApeEscapeClient(BizHawkClient):
                             if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
                                 gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
                         elif item.item - self.offset == RAM.items["Key"]:
-                            keyCountFromServer = keyCountFromServer + 1
+                            keyCountFromServer += + 1
                         elif item.item - self.offset == RAM.items["Victory"]:
                             await ctx.send_msgs([{
                                 "cmd": "StatusUpdate",
@@ -199,6 +197,7 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.flashAddress, flashAmmo.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.rocketAddress, rocketAmmo.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.keyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempKeyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
             if keyCountFromServer > self.worldkeycount:

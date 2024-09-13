@@ -732,9 +732,14 @@ class RAM:
     # Custom write/read addresses
     tempLastReceivedArchipelagoID = 0x0DFBD8
     lastReceivedArchipelagoID = 0x0E00E8
+
+    tempKeyCountFromServer = 0x0DFBDE
+    keyCountFromServer = 0x0E00EE
+
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
-    keyCountFromServer = 0x0E00EE
+
+
 
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
 
