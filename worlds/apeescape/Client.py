@@ -136,11 +136,10 @@ class ApeEscapeClient(BizHawkClient):
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
-
-            # Set gadgetStateFromServer to default if you connect in first level/first time hub
-            if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
-                # Pre-unlock net,change this line to 0 when the net will be shuffled into the pool
-                gadgetStateFromServer = 2
+                # Set gadgetStateFromServer to default if you connect in first level/first time hub
+                if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
+                    # Pre-unlock net,change this line to 0 when the net will be shuffled into the pool
+                    gadgetStateFromServer = 2
 
             if keyCountFromServer == 0xFF:
                 # Get items from server
@@ -279,8 +278,12 @@ class ApeEscapeClient(BizHawkClient):
             crossGadget = int.from_bytes(reads[13], byteorder="little")
 
             #Local update conditions
-            localcondition = (currentLevel == self.levelglobal and currentRoom != self.roomglobal)
-            localMMcondition = (currentLevel != self.levelglobal and 0x18 <= currentLevel < 0x1D)
+            if self.roomglobal == 0:
+                localcondition = False
+                localMMcondition = False
+            else:
+                localcondition = (currentLevel == self.levelglobal and currentRoom != self.roomglobal)
+                localMMcondition = (currentLevel != self.levelglobal and 0x18 <= currentLevel < 0x1D)
 
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
