@@ -148,12 +148,12 @@ class ApeEscapeClient(BizHawkClient):
 
             START_recv_index = recv_index
 
-            #Prevent sending items when connecting early (Sony,Menu or Intro Cutscene)
+            # Prevent sending items when connecting early (Sony,Menu or Intro Cutscene)
             boolIsFirstBoot = gameState == RAM.gameState["Sony"] or gameState == RAM.gameState["Menu"] or gameState == RAM.gameState["Cutscene2"]
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
                 increment = 0
                 for item in ctx.items_received :
-                    #Increment to already received address first before sending
+                    # Increment to already received address first before sending
                     if increment < START_recv_index:
                         increment += 1
                     else:
@@ -174,7 +174,7 @@ class ApeEscapeClient(BizHawkClient):
                                     energyChips += 1
                                 elif (item.item - self.offset) == RAM.items["BigTriangle"]:
                                     energyChips += 5
-                                #If total gets greater than 100,subtract 100 and give a life instead
+                                # If total gets greater than 100,subtract 100 and give a life instead
                                 if energyChips >= 100:
                                     energyChips = energyChips - 100
                                     totalLives += 1
@@ -200,8 +200,8 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempKeyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
-            if keyCountFromServer > self.worldkeycount:
-                self.worldkeycount = keyCountFromServer
+
+            self.worldkeycount = keyCountFromServer
 
             # Read Array
             # 0: Hundo monkey count, to write to required count
