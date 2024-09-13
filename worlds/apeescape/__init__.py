@@ -82,6 +82,13 @@ class ApeEscapeWorld(World):
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
 
+    def create_item_useful(self, name: str) -> ApeEscapeItem:
+        item_id = item_table[name]
+        classification = ItemClassification.useful
+
+        item = ApeEscapeItem(name, classification, item_id, self.player)
+        return item
+
     def create_item_filler(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
         classification = ItemClassification.filler
@@ -189,7 +196,7 @@ class ApeEscapeWorld(World):
 
         sixth = math.floor(numberoflocations/6)
 
-        itempool += [self.create_item_filler(AEItem.Shirt.value) for _ in range(0, sixth)]
+        itempool += [self.create_item_useful(AEItem.Shirt.value) for _ in range(0, sixth)]
         numberoflocations -= sixth
 
         itempool += [self.create_item_filler(AEItem.Triangle.value) for _ in range(0, sixth)]
@@ -201,13 +208,13 @@ class ApeEscapeWorld(World):
         itempool += [self.create_item_filler(AEItem.Cookie.value) for _ in range(0, sixth)]
         numberoflocations -= sixth
 
-        itempool += [self.create_item_filler(AEItem.Flash.value) for _ in range(0, sixth)]
+        itempool += [self.create_item_useful(AEItem.Flash.value) for _ in range(0, sixth)]
         numberoflocations -= sixth
 
-        itempool += [self.create_item_filler(AEItem.Rocket.value) for _ in range(0, sixth)]
+        itempool += [self.create_item_useful(AEItem.Rocket.value) for _ in range(0, sixth)]
         numberoflocations -= sixth
 
-        itempool += [self.create_item_filler(AEItem.Nothing.value) for _ in range(0, numberoflocations)]
+        itempool += [self.create_item_filler(AEItem.Triangle.value) for _ in range(0, numberoflocations)]
 
         self.multiworld.itempool += itempool
 
