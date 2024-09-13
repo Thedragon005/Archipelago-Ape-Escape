@@ -1,5 +1,4 @@
 from BaseClasses import Location
-import typing
 
 from worlds.apeescape.Strings import AELocation
 
@@ -8,10 +7,6 @@ base_location_id = 128000000
 
 class ApeEscapeLocation(Location):
     game: str = "Ape Escape"
-
-    def __init__(self, player: int, name: str, address: typing.Optional[int], parent):
-        super().__init__(player, name, address, parent)
-        self.event = not address
 
 
 location_table = {
@@ -280,7 +275,7 @@ location_table = {
     AELocation.Coin39.value: 339,
     AELocation.Coin40.value: 340,
     AELocation.Coin41.value: 341,
-    AELocation.Coin43.value: 343,
+    AELocation.Coin44.value: 344,
     AELocation.Coin45.value: 345,
     AELocation.Coin46.value: 346,
     AELocation.Coin49.value: 349,
@@ -289,7 +284,7 @@ location_table = {
     AELocation.Coin54.value: 354,
     AELocation.Coin55.value: 355,
     AELocation.Coin58.value: 358,
-    AELocation.Coin62.value: 362,
+    AELocation.Coin59.value: 359,
     AELocation.Coin64.value: 364,
     AELocation.Coin66.value: 366,
     AELocation.Coin73.value: 373,

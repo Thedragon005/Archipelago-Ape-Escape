@@ -57,7 +57,7 @@ class RAM:
         55: 0x0DF8C2,
         56: 0x0DF8C3,
         57: 0x0DF8C8,
-        60: 0x0DFDC9,
+        60: 0x0DF8C9,
         58: 0x0DF8CA,
         59: 0x0DF8CB,
         61: 0x0DF8D0,
@@ -107,14 +107,14 @@ class RAM:
         105: 0x0DF949,
         106: 0x0DF94A,
         107: 0x0DF94B,
-        109: 0x0DF958,
-        110: 0x0DF959,
-        108: 0x0DF95A,
-        114: 0x0DF95B,
-        115: 0x0DF95C,
-        113: 0x0DF950,
-        111: 0x0DF951,
-        112: 0x0DF952,
+        109: 0x0DF950,
+        110: 0x0DF951,
+        108: 0x0DF952,
+        114: 0x0DF953,
+        115: 0x0DF954,
+        113: 0x0DF958,
+        111: 0x0DF959,
+        112: 0x0DF95A,
         116: 0x0DF960,
         117: 0x0DF961,
         118: 0x0DF968,
@@ -123,17 +123,17 @@ class RAM:
         123: 0x0DF970,
         121: 0x0DF978,
         122: 0x0DF979,
-        124: 0x0DF97A,
-        125: 0x0DF97B,
+        124: 0x0DF980,
+        125: 0x0DF981,
         127: 0x0DF988,
         136: 0x0DF989,
         126: 0x0DF98A,
         128: 0x0DF98B,
         137: 0x0DF98C,
         129: 0x0DF990,
-        132: 0x0DF991,
-        130: 0x0DF992,
-        131: 0x0DF993,
+        132: 0x0DF993,
+        130: 0x0DF991,
+        131: 0x0DF992,
         133: 0x0DF998,
         134: 0x0DF999,
         135: 0x0DF99A,
@@ -149,25 +149,25 @@ class RAM:
         147: 0x0DF9C9,
         148: 0x0DF9CA,
         149: 0x0DF9CB,
-        152: 0x0DF9D0,
+        152: 0x0DF9D2,
         151: 0x0DF9D1,
-        150: 0x0DF9D2,
+        150: 0x0DF9D0,
         153: 0x0DF9D8,
         154: 0x0DF9D9,
         155: 0x0DF9DA,
         156: 0x0DF9DB,
         157: 0x0DF9DC,
-        158: 0x0DF9DE,
+        158: 0x0DF9DD,
         159: 0x0DF9E0,
         160: 0x0DF9E1,
         161: 0x0DF9E8,
         162: 0x0DF9F0,
-        168: 0x0DF9F8,
+        168: 0x0DFA10,
         164: 0x0DF9F9,
-        167: 0x0DF9FA,
+        167: 0x0DFA09,
         166: 0x0DFA08,
-        165: 0x0DFA09,
-        163: 0x0DFA10,
+        165: 0x0DF9FA,
+        163: 0x0DF9F8,
         169: 0x0DFA18,
         170: 0x0DFA20,
         171: 0x0DFA21,
@@ -185,25 +185,25 @@ class RAM:
         183: 0x0DFA80,
         184: 0x0DFA81,
         185: 0x0DFA82,
-        186: 0x0DFA90,
-        187: 0x0DFA91,
-        188: 0x0DFA92,
-        189: 0x0DFA93,
-        190: 0x0DFAA0,
-        192: 0x0DFAA8,
-        193: 0x0DFAA9,
-        194: 0x0DFAB0,
-        196: 0x0DFAB1,
-        195: 0x0DFAB2,
-        197: 0x0DFAB3,
-        201: 0x0DFAB8,
-        202: 0x0DFAB9,
-        203: 0x0DFAC0,
-        204: 0x0DFAC1,
-        198: 0x0DFAD0,
-        199: 0x0DFAD1,
-        200: 0x0DFAD2,
-        191: 0x0DFAD8
+        186: 0x0DFA88,
+        187: 0x0DFA89,
+        188: 0x0DFA8A,
+        189: 0x0DFA8B,
+        190: 0x0DFA90,
+        192: 0x0DFA99,
+        193: 0x0DFAA3,
+        194: 0x0DFAA1,
+        196: 0x0DFAA3,
+        195: 0x0DFAA2,
+        197: 0x0DFAA8,
+        201: 0x0DFAC0,
+        202: 0x0DFAC1,
+        203: 0x0DFAC2,
+        204: 0x0DFAC8,
+        198: 0x0DFAA9,
+        199: 0x0DFAB0,
+        200: 0x0DFAB1,
+        191: 0x0DFA98
     }
 
     monkeyListLocal = {
@@ -433,9 +433,9 @@ class RAM:
         },
         46: {  # castle main
             129: 0x0DFE18,
-            131: 0x0DFE1B,
-            130: 0x0DFE1A,
-            135: 0x0DFE19
+            131: 0x0DFE1A,
+            130: 0x0DFE19,
+            132: 0x0DFE1B
         },
         47: {  # flooded basement
             133: 0x0DFE30,
@@ -470,8 +470,8 @@ class RAM:
         },
         54: {  # sewers front
             151: 0x0DFE19,
-            152: 0x0DFE18,
-            150: 0x0DFE1A
+            152: 0x0DFE1A,
+            150: 0x0DFE18
         },
         55: {  # barrel room
             155: 0x0DFE32,
@@ -491,20 +491,20 @@ class RAM:
         58: {  # rc car room
             162: 0x0DFE30
         },
-        59: {  # lava room/mech room?
+        59: {  # lava room
+            163: 0x0DFE48,
             164: 0x0DFE49,
-            167: 0x0DFE4A,
-            168: 0x0DFE48
+            165: 0x0DFE4A
         },
         60: {
 
         },
-        61: {  # conveyor room?
-            165: 0x0DFE79,
-            166: 0x0DFE78
+        61: {  # conveyor room
+            166: 0x0DFE78,
+            167: 0x0DFE79
         },
-        62: {  # lava room?
-            163: 0x0DFE90
+        62: {  # mech room
+            168: 0x0DFE90
         },
         63: {  # 8-3
             169: 0x0DFE00
@@ -566,34 +566,34 @@ class RAM:
         78: {  # crater
             190: 0x0DFE00
         },
-        79: {  # outside castle/castle main?
-            192: 0x0DFE18,
-            193: 0x0DFE19
+        79: {  # outside castle
+            192: 0x0DFE19,
+            191: 0X0DFE18
         },
         80: {  # castle main
-            194: 0x0DFE30,
+            194: 0x0DFE31,
             195: 0x0DFE32,
-            196: 0x0DFE31,
-            197: 0x0DFE33
+            196: 0x0DFE33,
+            193: 0x0DFE30
         },
-        81: {  # monkey head?
-            201: 0x0DFE48,
-            202: 0x0DFE49
+        81: {  # inside climb
+            197: 0x0DFE48,
+            198: 0x0DFE49
         },
-        82: {  # monkey head/castle side entry?
-            203: 0x0DFE60,
-            204: 0x0DFE61
+        82: {  # outside climb
+            199: 0x0DFE60,
+            200: 0x0DFE61
         },
         83: {
 
         },
-        84: {  # climb inside
-            198: 0x0DFE90,
-            199: 0x0DFE91,
-            200: 0x0DFE92
+        84: {  # Monkey head
+            201: 0x0DFE90,
+            202: 0x0DFE91,
+            203: 0x0DFE92
         },
         85: {  # side entry
-            191: 0x0DFEA8
+            204: 0x0DFEA8
         },
         86: {
 
@@ -706,17 +706,44 @@ class RAM:
         91: 0xdfcb0
     }
 
+    # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
+    # the gadgets on triangle, square, circle, X on successive bytes
+    # club = 0, net = 1, radar = 2, sling = 3, hoop = 4, punch = 5, flyer = 6, car = 7, empty = 255
+    triangleGadgetAddress = 0x0F51A8
+    squareGadgetAddress = 0x0F51A9
+    circleGadgetAddress = 0x0F51AA
+    crossGadgetAddress = 0x0F51AB
+    # which gadget is currently selected for use
+    heldGadgetAddress = 0x0EC2D2
+
     trainingRoomProgressAddress = 0x0DFDCC
     currentRoomIdAddress = 0x0F4476
     currentLevelAddress = 0x0F4474
     gameStateAddress = 0x0F4470
+    jakeVictoryAddress = 0x0F447A
     unlockedLevelAddress = 0x0DFC70
     requiredApesAddress = 0x0F44D8
     hundoApesAddress = 0x0F44D6
     localApeStartAddress = 0x0DFE00
     startingCoinAddress = 0x0DFB70
     totalCoinsAddress = 0x0F44BA
+
+    # Custom write/read addresses
+    tempLastReceivedArchipelagoID = 0x0DFBD8
+    lastReceivedArchipelagoID = 0x0E00E8
+    tempGadgetStateFromServer = 0x0DFBE0
+    gadgetStateFromServer = 0x0E00F0
+    keyCountFromServer = 0x0E00EE
+
+    currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
+
+    # Junk addresses
+    energyChipsAddress = 0x0F44B8
+    cookieAddress = 0x0EC2C8
+    livesAddress = 0x0F448C
+    flashAddress = 0x0F51C1
+    rocketAddress = 0x0F51C2
 
     levels = {
         "Fossil": 0x01,
@@ -740,6 +767,11 @@ class RAM:
         "Factory": 0x15,
         "TV": 0x16,
         "Specter": 0x18,
+        "S_Jake": 0x19,
+        "S_Circus": 0x1A,
+        "S_Coaster": 0x1B,
+        "S_Western Land": 0x1C,
+        "S_Castle": 0x1D,
         "Peak": 0x1E,
         "Time": 0x1F,
         "Training": 0x20
