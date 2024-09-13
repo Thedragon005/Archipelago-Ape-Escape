@@ -176,19 +176,24 @@ class ApeEscapeClient(BizHawkClient):
                                     energyChips += 1
                                 elif (item.item - self.offset) == RAM.items["BigTriangle"]:
                                     energyChips += 5
-                                #If total gets greater than 100,subtract 100 and give a life instead
+                                # If total gets greater than 100, subtract 100 and give a life instead
                                 if energyChips >= 100:
                                     energyChips = energyChips - 100
-                                    totalLives += 1
+                                    # Don't give a life if it would exceed 99 lives
+                                    if totalLives < 100:
+                                        totalLives += 1
                             elif (item.item - self.offset) == RAM.items["Cookie"]:
                                 if cookies < 5:
                                     cookies += 1
                             elif (item.item - self.offset) == RAM.items["Shirt"]:
-                                totalLives += 1
+                                if totalLives < 100:
+                                    totalLives += 1
                             elif (item.item - self.offset) == RAM.items["Flash"]:
-                                flashAmmo += 1
+                                if flashAmmo < 9:
+                                    flashAmmo += 1
                             elif (item.item - self.offset) == RAM.items["Rocket"]:
-                                rocketAmmo += 1
+                                if rocketAmmo < 9:
+                                    rocketAmmo += 1
 
                 # Writes to memory if there is a new item,after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
@@ -580,6 +585,6 @@ class ApeEscapeClient(BizHawkClient):
             w83 = (RAM.levelAddresses[83], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24:
-            w83 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+            w91 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83, w91]
