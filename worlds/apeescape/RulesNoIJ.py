@@ -352,7 +352,7 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L3Bell.value, AERoom.W7L3Fej.value,
                     lambda state: CC_5Monkeys(state, self))
     connect_regions(self, AERoom.W7L3Bell.value, AERoom.W7L3Joey.value,
-                    lambda state: HasMobility(state, self))
+                    lambda state: CC_5Monkeys(state, self))
     connect_regions(self, AERoom.W7L3Bell.value, AERoom.W7L3Donqui.value, lambda state: NoRequirement())
 
     # 8-1
