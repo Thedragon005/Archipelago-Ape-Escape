@@ -3,6 +3,7 @@ import logging
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar
 
 from NetUtils import ClientStatus
+from worlds.stardew_valley.bundles.bundle import CurrencyBundleTemplate
 
 # TODO: REMOVE ASAP - Borrowed from MM2
 # This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
@@ -214,7 +215,7 @@ class ApeEscapeClient(BizHawkClient):
             # 3: Current Game state
             # 4: Jake Races Victory state
             # 5: Current Level
-            # 6: Current New Coin State
+            # 6: Previous Coin State Room
             # 7: Current New Coin State Room
             # 8: Coin Count
             # 9: Currently held gadget
@@ -227,7 +228,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.jakeVictoryAddress, 1, "MainRAM"),
                 (RAM.currentLevelAddress, 1, "MainRAM"),
-                (self.currentCoinAddress + 1, 1, "MainRAM"),
+                (self.currentCoinAddress -2, 1, "MainRAM"),
                 (self.currentCoinAddress, 1, "MainRAM"),
                 (RAM.totalCoinsAddress, 1, "MainRAM"),
                 (RAM.heldGadgetAddress, 1, "MainRAM"),
@@ -268,7 +269,7 @@ class ApeEscapeClient(BizHawkClient):
             #gameState = int.from_bytes(reads[3], byteorder="little")
             jakeVictory = int.from_bytes(reads[4], byteorder="little")
             currentLevel = int.from_bytes(reads[5], byteorder="little")
-            currentCoinState = int.from_bytes(reads[6], byteorder="little")
+            previousCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
             currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
             coinCount = int.from_bytes(reads[8], byteorder="little")
             heldGadget = int.from_bytes(reads[9], byteorder="little")
@@ -350,6 +351,11 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in [self.offset + 206])
                 }])
 
+
+            # If the previous address is also empty,readjust and go back until you have a value.
+            # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
+            if (previousCoinStateRoom == 0xFF or currentCoinStateRoom == 0x00) and (self.currentCoinAddress > RAM.startingCoinAddress):
+                self.currentCoinAddress -= 2
             # Check for new coins from current coin address
             if currentCoinStateRoom != 0xFF and currentCoinStateRoom != 0x00:
                 await ctx.send_msgs([{

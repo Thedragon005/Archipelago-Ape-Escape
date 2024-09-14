@@ -727,6 +727,7 @@ class RAM:
     hundoApesAddress = 0x0F44D6
     localApeStartAddress = 0x0DFE00
     startingCoinAddress = 0x0DFB70
+    endingCoinAddress = 0x0DFBD2 # Not used,could be used for a loop if current coin system is buggy
     totalCoinsAddress = 0x0F44BA
 
     # Custom write/read addresses
