@@ -3,7 +3,6 @@ import logging
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar
 
 from NetUtils import ClientStatus
-from worlds.stardew_valley.bundles.bundle import CurrencyBundleTemplate
 
 # TODO: REMOVE ASAP - Borrowed from MM2
 # This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
