@@ -103,6 +103,7 @@ CORE
 -Corrected the way items get sent by adding read/write RAM addresses to track gadget progress and last AP index received
 -The Client's loop now iterate only if the RAM address for "LastAPIndex" is lower than the item count
 -Fixed client trying to send item on following screens : Sony,Main Menu and Intro Cutscene.
+-Fixed coin detection break when loading a game/a savestate
 ==============
 OTHER
 ==============
