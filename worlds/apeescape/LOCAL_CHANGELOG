@@ -95,6 +95,7 @@ COINS
 -Fixed the bug that you would get Jake Races coins in Stadium Attack and Gladiator Attack for free if you died/exited level
 -Edited coin identification of "7-2 Wabi Sabi Wall Coin - Barrel Room" from Coin43 to Coin44, coins sends now
 -Edited coin identification of "8-2 Specters Factory - Lava Room" from Coin62 to Coin59, coins sends now
+-Fixed coin detection break when loading a game/a savestate
 ==============
 CORE
 ==============
@@ -102,8 +103,7 @@ CORE
 -Corrected the "validate_rom" function to check if it is REALLY Ape Escape you're playing
 -Corrected the way items get sent by adding read/write RAM addresses to track gadget progress and last AP index received
 -The Client's loop now iterate only if the RAM address for "LastAPIndex" is lower than the item count
--Fixed client trying to send item on following screens : Sony,Main Menu and Intro Cutscene.
--Fixed coin detection break when loading a game/a savestate
+-Fixed client trying to send items on following screens : Sony,Main Menu and Intro Cutscene.
 ==============
 OTHER
 ==============
