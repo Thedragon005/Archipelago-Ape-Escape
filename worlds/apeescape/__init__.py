@@ -25,7 +25,7 @@ class ApeEscapeWeb(WebWorld):
         "English",
         "setup_en.md",
         "setup/en",
-        ["CDRomatron"]
+        ["Thedragon005"]
     )
 
     tutorials = [setup]

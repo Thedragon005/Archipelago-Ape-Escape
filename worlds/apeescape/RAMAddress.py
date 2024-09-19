@@ -756,6 +756,10 @@ class RAM:
     flashAddress = 0x0F51C1
     rocketAddress = 0x0F51C2
 
+    # LevelSelection addresses (Number -1)
+    selectedWorld = 0x139BC4
+    selectedLevel = 0x139BCC
+
     levels = {
         "Fossil": 0x01,
         "Primordial": 0x02,

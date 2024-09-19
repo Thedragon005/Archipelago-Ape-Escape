@@ -454,10 +454,28 @@ class ApeEscapeClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
             pass
+    # PseudoCode:
+    # (Per key count)
+    # If last level state is different than 0
+    #   Put level state to "Locked"
+
+
 
     def unlockLevels(self, monkeylevelCounts, gadgets):
 
         key = self.worldkeycount
+
+        W1UnLock = key > 0
+        W2UnLock = key > 1
+        W3UnLock = key > 2
+        W4UnLock = key > 2
+        W5UnLock = key > 3
+        W6UnLock = key > 4
+        W7UnLock = key > 4
+        W8UnLock = key > 5
+        W9UnLock = key >= 6
+        print("World Unlocks: ")
+        print(" 1:" + str(W1UnLock) + " |2:" + str(W2UnLock) + " |3:" + str(W3UnLock) + " |4:" + str(W4UnLock) + " |5:" + str(W5UnLock) + " |6:" + str(W6UnLock) + " |7:" + str(W7UnLock) + " |8:" + str(W8UnLock) + " |9:" + str(W9UnLock))
 
         current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
         currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
@@ -541,7 +559,7 @@ class ApeEscapeClient(BizHawkClient):
         w82 = (RAM.levelAddresses[82], current, "MainRAM")
         w83 = (RAM.levelAddresses[83], currentLock, "MainRAM")
 
-        if key == 6:
+        if key >= 6:
             current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
         else:
             current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
@@ -554,7 +572,7 @@ class ApeEscapeClient(BizHawkClient):
         if int.from_bytes(monkeylevelCounts[1], byteorder="little") >= 6:
             w12 = (RAM.levelAddresses[12], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[2], byteorder="little") >= 7:
+        if int.from_bytes(monkeylevelCounts[2], byteorder="little") >= 7 and W1UnLock:
             w13 = (RAM.levelAddresses[13], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         if int.from_bytes(monkeylevelCounts[3], byteorder="little") >= 14:
@@ -563,7 +581,7 @@ class ApeEscapeClient(BizHawkClient):
         if int.from_bytes(monkeylevelCounts[4], byteorder="little") >= 13:
             w22 = (RAM.levelAddresses[22], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[5], byteorder="little") >= 8:
+        if int.from_bytes(monkeylevelCounts[5], byteorder="little") >= 8 and W2UnLock:
             w23 = (RAM.levelAddresses[23], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         if int.from_bytes(monkeylevelCounts[6], byteorder="little") >= 8:
@@ -572,7 +590,7 @@ class ApeEscapeClient(BizHawkClient):
         if int.from_bytes(monkeylevelCounts[7], byteorder="little") >= 8:
             w42 = (RAM.levelAddresses[42], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[8], byteorder="little") >= 11:
+        if int.from_bytes(monkeylevelCounts[8], byteorder="little") >= 11 and W4UnLock:
             w43 = (RAM.levelAddresses[43], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         if int.from_bytes(monkeylevelCounts[9], byteorder="little") >= 6:
@@ -581,7 +599,7 @@ class ApeEscapeClient(BizHawkClient):
         if int.from_bytes(monkeylevelCounts[10], byteorder="little") >= 9:
             w52 = (RAM.levelAddresses[52], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[11], byteorder="little") >= 9:
+        if int.from_bytes(monkeylevelCounts[11], byteorder="little") >= 9 and W5UnLock:
             w53 = (RAM.levelAddresses[53], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         if int.from_bytes(monkeylevelCounts[12], byteorder="little") >= 12:
@@ -590,7 +608,7 @@ class ApeEscapeClient(BizHawkClient):
         if int.from_bytes(monkeylevelCounts[13], byteorder="little") >= 10:
             w72 = (RAM.levelAddresses[72], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[14], byteorder="little") >= 20:
+        if int.from_bytes(monkeylevelCounts[14], byteorder="little") >= 20 and W7UnLock:
             w73 = (RAM.levelAddresses[73], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         if int.from_bytes(monkeylevelCounts[15], byteorder="little") >= 13:
@@ -599,10 +617,10 @@ class ApeEscapeClient(BizHawkClient):
         if int.from_bytes(monkeylevelCounts[16], byteorder="little") >= 10:
             w82 = (RAM.levelAddresses[82], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[17], byteorder="little") >= 12:
+        if int.from_bytes(monkeylevelCounts[17], byteorder="little") >= 12 and W8UnLock:
             w83 = (RAM.levelAddresses[83], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
-        if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24:
+        if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24 and W9UnLock:
             w91 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
 
         return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83, w91]
