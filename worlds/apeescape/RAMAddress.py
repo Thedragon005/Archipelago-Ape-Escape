@@ -617,7 +617,11 @@ class RAM:
         "BigTriangle": 0x212,
         "Cookie": 0x213,
         "Flash": 0x214,
-        "Rocket": 0x215
+        "Rocket": 0x215,
+        "BiggerTriangle": 0x216,
+        "FiveCookies": 0x217,
+        "ThreeFlash": 0x218,
+        "ThreeRocket": 0x219
     }
 
     caughtStatus = {
