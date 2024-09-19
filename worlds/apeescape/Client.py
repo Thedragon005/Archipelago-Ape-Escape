@@ -167,12 +167,14 @@ class ApeEscapeClient(BizHawkClient):
                                 "cmd": "StatusUpdate",
                                 "status": ClientStatus.CLIENT_GOAL
                             }])
-                        elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["Rocket"]:
-                            if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"]:
+                        elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["ThreeRocket"]:
+                            if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"] or (item.item - self.offset) == RAM.items["BiggerTriangle"]:
                                 if (item.item - self.offset) == RAM.items["Triangle"]:
                                     energyChips += 1
                                 elif (item.item - self.offset) == RAM.items["BigTriangle"]:
                                     energyChips += 5
+                                elif (item.item - self.offset) == RAM.items["BiggerTriangle"]:
+                                    energyChips += 25
                                 # If total gets greater than 100,subtract 100 and give a life instead
                                 if energyChips >= 100:
                                     energyChips = energyChips - 100
@@ -182,15 +184,26 @@ class ApeEscapeClient(BizHawkClient):
                             elif (item.item - self.offset) == RAM.items["Cookie"]:
                                 if cookies < 5:
                                     cookies += 1
+                            elif (item.item - self.offset) == RAM.items["FiveCookies"]:
+                                cookies = 5
                             elif (item.item - self.offset) == RAM.items["Shirt"]:
                                 if totalLives < 100:
                                     totalLives += 1
+                            # add special pellets, ensuring they don't go over the current cap
                             elif (item.item - self.offset) == RAM.items["Flash"]:
                                 if flashAmmo < 9:
                                     flashAmmo += 1
                             elif (item.item - self.offset) == RAM.items["Rocket"]:
                                 if rocketAmmo < 9:
                                     rocketAmmo += 1
+                            elif (item.item - self.offset) == RAM.items["ThreeFlash"]:
+                                flashAmmo += 3
+                                if flashAmmo > 9:
+                                    flashAmmo = 9
+                            elif (item.item - self.offset) == RAM.items["ThreeRocket"]:
+                                rocketAmmo += 3
+                                if rocketAmmo > 9:
+                                    rocketAmmo = 9
 
                 # Writes to memory if there is a new item,after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]

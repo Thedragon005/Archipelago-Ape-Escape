@@ -194,27 +194,38 @@ class ApeEscapeWorld(World):
         else:
             self.get_location(AELocation.Specter2.value).place_locked_item(victory)
 
-        sixth = math.floor(numberoflocations/6)
+        # This is where creating items for increasing special pellet maximums would go.
 
-        itempool += [self.create_item_useful(AEItem.Shirt.value) for _ in range(0, sixth)]
-        numberoflocations -= sixth
+        # Junk item fill: randomly pick items according to a set of weights.
+        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets, and Nothing, respectively.
+        weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 1]
+        for x in range(1, len(weights)):
+            weights[x] = weights[x] + weights[x - 1]
 
-        itempool += [self.create_item_filler(AEItem.Triangle.value) for _ in range(0, sixth)]
-        numberoflocations -= sixth
-
-        itempool += [self.create_item_filler(AEItem.BigTriangle.value) for _ in range(0, sixth)]
-        numberoflocations -= sixth
-
-        itempool += [self.create_item_filler(AEItem.Cookie.value) for _ in range(0, sixth)]
-        numberoflocations -= sixth
-
-        itempool += [self.create_item_useful(AEItem.Flash.value) for _ in range(0, sixth)]
-        numberoflocations -= sixth
-
-        itempool += [self.create_item_useful(AEItem.Rocket.value) for _ in range(0, sixth)]
-        numberoflocations -= sixth
-
-        itempool += [self.create_item_filler(AEItem.Triangle.value) for _ in range(0, numberoflocations)]
+        for _ in range(numberoflocations):
+            randomFiller = self.random.randint(1, weights[len(weights) - 1])
+            if 0 < randomFiller <= weights[0]:
+                itempool += [self.create_item_useful(AEItem.Shirt.value)]
+            elif weights[0] < randomFiller <= weights[1]:
+                itempool += [self.create_item_useful(AEItem.Cookie.value)]
+            elif weights[1] < randomFiller <= weights[2]:
+                itempool += [self.create_item_useful(AEItem.FiveCookies.value)]
+            elif weights[2] < randomFiller <= weights[3]:
+                itempool += [self.create_item_filler(AEItem.Triangle.value)]
+            elif weights[3] < randomFiller <= weights[4]:
+                itempool += [self.create_item_filler(AEItem.BigTriangle.value)]
+            elif weights[4] < randomFiller <= weights[5]:
+                itempool += [self.create_item_filler(AEItem.BiggerTriangle.value)]
+            elif weights[5] < randomFiller <= weights[6]:
+                itempool += [self.create_item_useful(AEItem.Flash.value)]
+            elif weights[6] < randomFiller <= weights[7]:
+                itempool += [self.create_item_useful(AEItem.ThreeFlash.value)]
+            elif weights[7] < randomFiller <= weights[8]:
+                itempool += [self.create_item_useful(AEItem.Rocket.value)]
+            elif weights[8] < randomFiller <= weights[9]:
+                itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
+            else:
+                itempool += [self.create_item_filler(AEItem.Nothing.value)]
 
         self.multiworld.itempool += itempool
 

@@ -35,9 +35,13 @@ item_table = {
     AEItem.Shirt.value: RAM.items["Shirt"],
     AEItem.Triangle.value: RAM.items["Triangle"],
     AEItem.BigTriangle.value: RAM.items["BigTriangle"],
+    AEItem.BiggerTriangle.value: RAM.items["BiggerTriangle"],
     AEItem.Cookie.value: RAM.items["Cookie"],
+    AEItem.FiveCookies.value: RAM.items["FiveCookies"],
     AEItem.Flash.value: RAM.items["Flash"],
+    AEItem.ThreeFlash.value: RAM.items["ThreeFlash"],
     AEItem.Rocket.value: RAM.items["Rocket"],
+    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"],
 }
 
 event_table = {
