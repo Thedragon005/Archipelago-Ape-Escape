@@ -34,6 +34,8 @@ Wabi Sabi Wall:
 AELocation.Kong.value: 124 L:OK G:0x0DF980,FIXED
 AELocation.Phool.value: 125 : L:OK G:0x0DF981,FIXED
 
+0.21 : Changed the room of local addresses to 44,so prior to this local update did not work.
+
 --------------------------
 Crumbling Castle:
 --------------------------
@@ -104,6 +106,7 @@ CORE
 -Corrected the way items get sent by adding read/write RAM addresses to track gadget progress and last AP index received
 -The Client's loop now iterate only if the RAM address for "LastAPIndex" is lower than the item count
 -Fixed client trying to send items on following screens : Sony,Main Menu and Intro Cutscene.
+-Monkeys now get sent instantly to AP on catch instead of when a room transition happens.
 ==============
 OTHER
 ==============
