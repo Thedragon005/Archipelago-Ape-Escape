@@ -234,6 +234,7 @@ location_table = {
     AELocation.Carlito.value: 203,
     AELocation.BG.value: 204,
     AELocation.Specter.value: 205,
+    # Peak Point Matrix
     AELocation.Specter2.value: 206,
 
     # Coins

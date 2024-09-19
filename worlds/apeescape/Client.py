@@ -277,14 +277,12 @@ class ApeEscapeClient(BizHawkClient):
             circleGadget = int.from_bytes(reads[12], byteorder="little")
             crossGadget = int.from_bytes(reads[13], byteorder="little")
 
-            #Local update conditions
+            # Local update conditions
+            # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
             if self.roomglobal == 0:
                 localcondition = False
-                localMMcondition = False
             else:
-                localcondition = (currentLevel == self.levelglobal and currentRoom != self.roomglobal)
-                localMMcondition = (currentLevel != self.levelglobal and 0x18 <= currentLevel < 0x1D)
-
+                 localcondition = (currentLevel == self.levelglobal)
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -300,7 +298,7 @@ class ApeEscapeClient(BizHawkClient):
                 monkeysToSend = set()
 
                 for i in range(len(globalMonkeys)):
-                    if int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
+                    if int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["PrevCaught"]:
                         monkeysToSend.add(keyList[i] + self.offset)
 
                 if monkeysToSend is not None:
@@ -312,10 +310,10 @@ class ApeEscapeClient(BizHawkClient):
             # elif changing room but still in level, use local list
             # if level stays the same, and room changes and in level
 
-            ##Monkey Madness first rooms are treated like sublevels in addition of rooms for some reason
-            ##If level is in the range of Park Square AND the state is "In-Level",it triggers a local update
-            ##(Between 0x18 and 0x1D)
-            elif gameState == RAM.gameState["InLevel"] and (localcondition or localMMcondition):
+            # Monkey Madness first rooms are treated like sublevels in addition of rooms for some reason
+            # If level is in the range of Park Square AND the state is "In-Level",it triggers a local update
+            # (Between 0x18 and 0x1D)
+            elif gameState == RAM.gameState["InLevel"] and (localcondition):
                 monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
