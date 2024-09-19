@@ -1,5 +1,5 @@
+from typing import Optional, Dict, Set
 from BaseClasses import Location
-
 from worlds.apeescape.Strings import AELocation
 
 base_location_id = 128000000
@@ -8,6 +8,7 @@ base_location_id = 128000000
 class ApeEscapeLocation(Location):
     game: str = "Ape Escape"
 
+GROUPED_LOCATIONS: Dict[str, Set[str]] = {}
 
 location_table = {
     # 1-1 Fossil Field
@@ -234,6 +235,7 @@ location_table = {
     AELocation.Carlito.value: 203,
     AELocation.BG.value: 204,
     AELocation.Specter.value: 205,
+    # 9-2 Peak Point Matrix
     AELocation.Specter2.value: 206,
 
     # Coins
@@ -299,3 +301,66 @@ location_table = {
     AELocation.Coin82.value: 382,
 
 }
+
+def createLocationGroups():
+    # Iterate through all locations
+    for x in range (0, len(location_table) - 1):
+        locname = list(location_table.keys())[x]
+        # Add to location group for each level
+        if "1-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Fossil Field", []).append(locname)
+        elif "1-2" in locname:
+            GROUPED_LOCATIONS.setdefault("Primordial Ooze", []).append(locname)
+        elif "1-3" in locname:
+            GROUPED_LOCATIONS.setdefault("Molten Lava", []).append(locname)
+        elif "2-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Thick Jungle", []).append(locname)
+        elif "2-2" in locname:
+            GROUPED_LOCATIONS.setdefault("Dark Ruins", []).append(locname)
+        elif "2-3" in locname:
+            GROUPED_LOCATIONS.setdefault("Cryptic Relics", []).append(locname)
+        elif "3-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Stadium Attack", []).append(locname)
+            GROUPED_LOCATIONS.setdefault("Races", []).append(locname)
+        elif "4-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Crabby Beach", []).append(locname)
+        elif "4-2" in locname:
+            GROUPED_LOCATIONS.setdefault("Coral Cave", []).append(locname)
+        elif "4-3" in locname:
+            GROUPED_LOCATIONS.setdefault("Dexters Island", []).append(locname)
+        elif "5-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Snowy Mammoth", []).append(locname)
+        elif "5-2" in locname:
+            GROUPED_LOCATIONS.setdefault("Frosty Retreat", []).append(locname)
+        elif "5-3" in locname:
+            GROUPED_LOCATIONS.setdefault("Hot Springs", []).append(locname)
+        elif "6-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Gladiator Attack", []).append(locname)
+            GROUPED_LOCATIONS.setdefault("Races", []).append(locname)
+        elif "7-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Sushi Temple", []).append(locname)
+        elif "7-2" in locname:
+            GROUPED_LOCATIONS.setdefault("Wabi Sabi Wall", []).append(locname)
+        elif "7-3" in locname:
+            GROUPED_LOCATIONS.setdefault("Crumbling Castle", []).append(locname)
+        elif "8-1" in locname:
+            GROUPED_LOCATIONS.setdefault("City Park", []).append(locname)
+        elif "8-2" in locname:
+            GROUPED_LOCATIONS.setdefault("Specters Factory", []).append(locname)
+        elif "8-3" in locname:
+            GROUPED_LOCATIONS.setdefault("TV Tower", []).append(locname)
+        # Special Case for Monkey Madness due to containing Monkey in the name - can't naively add all locations with Monkey to the Monkeys group
+        if "9-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Monkey Madness", []).append(locname)
+            if "Madness Monkey" in locname:
+                GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
+        elif "Monkey" in locname:
+            GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
+        
+        if "Coin" in locname:
+            GROUPED_LOCATIONS.setdefault("Specter Coins", []).append(locname)
+        
+        if "Specter" in locname or "Boss" in locname:
+            GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
+
+createLocationGroups()
