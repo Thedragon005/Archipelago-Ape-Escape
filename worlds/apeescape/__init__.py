@@ -210,9 +210,9 @@ class ApeEscapeWorld(World):
             if 0 < randomFiller <= weights[0]:
                 itempool += [self.create_item_useful(AEItem.Shirt.value)]
             elif weights[0] < randomFiller <= weights[1]:
-                itempool += [self.create_item_useful(AEItem.Cookie.value)]
+                itempool += [self.create_item_filler(AEItem.Cookie.value)]
             elif weights[1] < randomFiller <= weights[2]:
-                itempool += [self.create_item_useful(AEItem.FiveCookies.value)]
+                itempool += [self.create_item_filler(AEItem.FiveCookies.value)]
             elif weights[2] < randomFiller <= weights[3]:
                 itempool += [self.create_item_filler(AEItem.Triangle.value)]
             elif weights[3] < randomFiller <= weights[4]:
