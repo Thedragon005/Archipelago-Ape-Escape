@@ -295,7 +295,7 @@ class ApeEscapeClient(BizHawkClient):
             if self.roomglobal == 0:
                 localcondition = False
             else:
-                 localcondition = (currentLevel == self.levelglobal)
+                 localcondition = (currentLevel == self.levelglobal) and currentRoom != 87
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -322,10 +322,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # elif changing room but still in level, use local list
             # if level stays the same, and room changes and in level
-
-            # Monkey Madness first rooms are treated like sublevels in addition of rooms for some reason
-            # If level is in the range of Park Square AND the state is "In-Level",it triggers a local update
-            # (Between 0x18 and 0x1D)
+            # localcondition now exclude Peak Point Matrix since Victory is calculated elsewhere
             elif gameState == RAM.gameState["InLevel"] and (localcondition):
                 monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
                 key_list = list(monkeyaddrs.keys())
