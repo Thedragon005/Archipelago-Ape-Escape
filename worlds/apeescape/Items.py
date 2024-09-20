@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Set
 from BaseClasses import ItemClassification, Item
 from .Strings import AEItem
 from .RAMAddress import RAM
@@ -9,6 +9,7 @@ base_apeescape_item_id = 128000000
 class ApeEscapeItem(Item):
     game: str = "Ape Escape"
 
+GROUPED_ITEMS: Dict[str, Set[str]] = {}
 
 # base IDs are the index in the static item data table, which is
 # not the same order as the items in RAM (but offset 0 is a 16-bit address of
@@ -46,3 +47,16 @@ item_table = {
 
 event_table = {
 }
+
+def createItemGroups():
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Stun Club")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Time Net")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Monkey Radar")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Slingback Shooter")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Super Hoop")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Magic Punch")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Sky Flyer")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("R.C. Car")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Net")
+
+createItemGroups()

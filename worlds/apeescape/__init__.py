@@ -5,8 +5,8 @@ from typing import ClassVar, List, Optional
 
 from BaseClasses import ItemClassification, MultiWorld, Tutorial
 from worlds.AutoWorld import WebWorld, World
-from .Items import item_table, ApeEscapeItem
-from .Locations import location_table, base_location_id
+from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
+from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
 from .Regions import create_regions
 from .Rules import set_rules
 from .Client import ApeEscapeClient
@@ -16,16 +16,16 @@ from .Options import ApeEscapeOptions
 
 
 class ApeEscapeWeb(WebWorld):
-    theme = "dirt"
+    theme = "stone"
 
-    # Update this placeholder text to something more accurate
+    # Verify this placeholder text is accurate
     setup = Tutorial(
-        "Multiworld Setup Guide",
-        "A guide to setting up Adventure for MultiWorld.",
+        "Ape Escape Multiworld Setup Guide",
+        "A guide to setting up Ape Escape in Archipelago.",
         "English",
         "setup_en.md",
         "setup/en",
-        ["Thedragon005"]
+        ["CDRomatron, Thedragon005, IHNN"]
     )
 
     tutorials = [setup]
@@ -33,7 +33,7 @@ class ApeEscapeWeb(WebWorld):
 
 class ApeEscapeWorld(World):
     """
-    Funni monke game
+    Go ape and catch Specter!
     """
     game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
@@ -51,6 +51,9 @@ class ApeEscapeWorld(World):
 
     for key, value in location_name_to_id.items():
         location_name_to_id[key] = value + base_location_id
+
+    item_name_groups = GROUPED_ITEMS
+    location_name_groups = GROUPED_LOCATIONS
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
@@ -207,9 +210,9 @@ class ApeEscapeWorld(World):
             if 0 < randomFiller <= weights[0]:
                 itempool += [self.create_item_useful(AEItem.Shirt.value)]
             elif weights[0] < randomFiller <= weights[1]:
-                itempool += [self.create_item_useful(AEItem.Cookie.value)]
+                itempool += [self.create_item_filler(AEItem.Cookie.value)]
             elif weights[1] < randomFiller <= weights[2]:
-                itempool += [self.create_item_useful(AEItem.FiveCookies.value)]
+                itempool += [self.create_item_filler(AEItem.FiveCookies.value)]
             elif weights[2] < randomFiller <= weights[3]:
                 itempool += [self.create_item_filler(AEItem.Triangle.value)]
             elif weights[3] < randomFiller <= weights[4]:
