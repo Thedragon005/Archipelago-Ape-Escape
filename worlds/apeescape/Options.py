@@ -4,24 +4,6 @@ from dataclasses import dataclass
 from Options import Choice, PerGameCommonOptions
 
 
-class DebugOption(Choice):
-    """Choose current Debug Settings
-
-        Off: No debug settings
-        Early Items: Gadgets will be placed in first two levels
-        Early Keys: Keys will be placed in the first two levels
-
-        Supported values: off, item, key
-        Default value: off
-        """
-
-    display_name = "Debug Option"
-    option_off = 0x00
-    option_item = 0x01
-    option_key = 0x02
-    default = option_off
-
-
 class GoalOption(Choice):
     """Choose end goal
 
@@ -109,7 +91,22 @@ class SuperFlyerOption(Choice):
         Supported values: true, false
         Default value: false
     """
-    display_name = "SuperFlyer"
+    display_name = "Super Flyer"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
+
+
+class ShuffleNetOption(Choice):
+    """Choose if the Time Net should be shuffled. Not recommended for sync games.
+
+        true: Time Net is shuffled into the pool.
+        false: Time Net is not shuffled, and is given at game start.
+
+        Supported values: true, false
+        Default value: false
+    """
+    display_name = "Shuffle Net"
     option_true = 0x01
     option_false = 0x00
     default = option_false
@@ -117,9 +114,9 @@ class SuperFlyerOption(Choice):
 
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
-    debug: DebugOption
     goal: GoalOption
     logic: LogicOption
     coin: CoinOption
     gadget: GadgetOption
     superflyer: SuperFlyerOption
+    shufflenet: ShuffleNetOption

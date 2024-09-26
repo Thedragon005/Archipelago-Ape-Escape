@@ -27,7 +27,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
 from worlds.apeescape.RAMAddress import RAM
-from worlds.apeescape.Options import GadgetOption
+from worlds.apeescape.Options import GadgetOption, ShuffleNetOption
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -138,8 +138,7 @@ class ApeEscapeClient(BizHawkClient):
                 recv_index = 0
                 # Set gadgetStateFromServer to default if you connect in first level/first time hub
                 if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
-                    # Pre-unlock net,change this line to 0 when the net will be shuffled into the pool
-                    gadgetStateFromServer = 2
+                    gadgetStateFromServer = 0
 
             if keyCountFromServer == 0xFF:
                 # Get items from server
@@ -413,7 +412,11 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, hundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-            # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net.
+            # Unequip the Time Net if it was shuffled.
+            if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
+                writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+
+            # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net if it wasn't shuffled.
             if ((heldGadget == 0) and (gadgetStateFromServer % 2 == 0)):
                 if ctx.slot_data["gadget"] == GadgetOption.option_radar:
                     writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
@@ -435,7 +438,10 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 elif ctx.slot_data["gadget"] == GadgetOption.option_none:
                     writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+                    if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
+                        writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    elif ctx.slot_data["shufflenet"] == ShuffleNetOption.option_false:
+                        writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
             # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
             if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):

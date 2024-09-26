@@ -57,20 +57,20 @@ class ApeEscapeWorld(World):
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
-        self.debug: Optional[int] = 0
         self.goal: Optional[int] = 0
         self.logic: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
+        self.shufflenet: Optional[int] = 0
 
     def generate_early(self) -> None:
-        self.debug = self.options.debug.value
         self.goal = self.options.goal.value
         self.logic = self.options.logic.value
         self.coin = self.options.coin.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
+        self.shufflenet = self.options.shufflenet.value
 
     def create_regions(self):
         create_regions(self)
@@ -104,6 +104,7 @@ class ApeEscapeWorld(World):
         itempool: List[ApeEscapeItem] = []
 
         club = self.create_item(AEItem.Club.value)
+        net = self.create_item(AEItem.Net.value)
         radar = self.create_item(AEItem.Radar.value)
         shooter = self.create_item(AEItem.Sling.value)
         hoop = self.create_item(AEItem.Hoop.value)
@@ -113,48 +114,16 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
-        numberoflocations -= 1
 
         self.multiworld.push_precollected(waternet)
+        numberoflocations -= 1
 
-        if self.options.debug == "off":
-            itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
-            numberoflocations -= 6
-        # DEBUG
-        elif self.options.debug == "item":
-            self.multiworld.push_precollected(club)
-            self.get_location(AELocation.Noonan.value).place_locked_item(radar)
-            self.get_location(AELocation.Jorjy.value).place_locked_item(shooter)
-            self.get_location(AELocation.Nati.value).place_locked_item(hoop)
-            self.get_location(AELocation.Shay.value).place_locked_item(flyer)
-            self.get_location(AELocation.DrMonk.value).place_locked_item(car)
-            self.get_location(AELocation.Ahchoo.value).place_locked_item(punch)
-            itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
-            numberoflocations -= 12
-        # DEBUG
-        elif self.options.debug == "key":
-            itempool += [
-                self.create_item(AEItem.Club.value),
-                self.create_item(AEItem.Radar.value),
-                self.create_item(AEItem.Sling.value),
-                self.create_item(AEItem.Hoop.value),
-                self.create_item(AEItem.Flyer.value),
-                self.create_item(AEItem.Car.value),
-                self.create_item(AEItem.Punch.value),
-            ]
-            key1 = self.create_item("World Key")
-            key2 = self.create_item("World Key")
-            key3 = self.create_item("World Key")
-            key4 = self.create_item("World Key")
-            key5 = self.create_item("World Key")
-            key6 = self.create_item("World Key")
-            self.get_location(AELocation.Noonan.value).place_locked_item(key1)
-            self.get_location(AELocation.Jorjy.value).place_locked_item(key2)
-            self.get_location(AELocation.Nati.value).place_locked_item(key3)
-            self.get_location(AELocation.Shay.value).place_locked_item(key4)
-            self.get_location(AELocation.DrMonk.value).place_locked_item(key5)
-            self.get_location(AELocation.Ahchoo.value).place_locked_item(key6)
-            numberoflocations -= 13
+        itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+        numberoflocations -= 6
+
+        if self.options.shufflenet == "false":
+            self.multiworld.push_precollected(net)
+            numberoflocations -= 1
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
@@ -234,12 +203,12 @@ class ApeEscapeWorld(World):
 
     def fill_slot_data(self):
         return {
-            "debug": self.options.debug.value,
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
             "coin": self.options.coin.value,
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
+            "shufflenet": self.options.shufflenet.value,
         }
 
     def generate_output(self, output_directory: str):
