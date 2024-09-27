@@ -208,6 +208,8 @@ class AELocation(Enum):
     BG = "9-1 Monkey Madness Monkey 24 - BG"
     Specter = "9-1 Monkey Madness - Specter"
     Specter2 = "9-2 Peak Point Matrix - Specter"
+    Boss73 = "7-3 Crumbling Castle Boss"
+    Boss83 = "8-3 TV Tower Boss"
     Coin1 = "1-1 Fossil Field Coin - Main"
     Coin2 = "1-2 Primordial Ooze Coin - Main"
     Coin3 = "1-3 Molten Lava Coin - Entry"

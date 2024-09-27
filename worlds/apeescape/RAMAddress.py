@@ -208,325 +208,321 @@ class RAM:
 
     monkeyListLocal = {
         1: {  # 1-1
-            1: 0x0DFE00,
-            3: 0x0DFE02,
-            2: 0x0DFE01,
-            4: 0x0DFE03
+            1: 0x0E557A,
+            3: 0x0E5A1A,
+            2: 0x0E57CA,
+            4: 0x0E5C6A
         },
         2: {  # 1-2
-            5: 0x0DFE00,
-            6: 0x0DFE01,
-            7: 0x0DFE03,
-            10: 0x0DFE04,
-            9: 0x0DFE05,
-            8: 0x0DFE02
+            5: 0x0E557A,
+            6: 0x0E57CA,
+            7: 0x0E5C6A,
+            10: 0x0E5EBA,
+            9: 0x0E610A,
+            8: 0x0E5A1A
         },
         3: {  # 1-3
-            11: 0x0DFE00,
-            12: 0x0DFE01,
-            17: 0x0DFE03,
-            13: 0x0DFE02
+            11: 0x0E557A,
+            12: 0x0E57CA,
+            17: 0x0E5C6A,
+            13: 0x0E5A1A
         },
         4: {  # volcano
-            14: 0x0DFE19,
-            15: 0x0DFE18
+            14: 0x0E57CA,
+            15: 0x0E557A
         },
         5: {  # triceratops
-            16: 0x0DFE30
+            16: 0x0E557A
         },
         6: {  # 2-1
-            18: 0x0DFE00,
-            19: 0x0DFE01,
-            20: 0x0DFE02
+            18: 0x0E557A,
+            19: 0x0E57CA,
+            20: 0x0E5A1A
         },
         7: {  # mushroom area
-            29: 0x0DFE18,
-            30: 0x0DFE1A,
-            31: 0x0DFE19
+            29: 0x0E557A,
+            30: 0x0E5A1A,
+            31: 0x0E57CA
         },
         8: {  # fish room
-            23: 0x0DFE32,
-            21: 0x0DFE30,
-            22: 0x0DFE31
+            23: 0x0E5A1A,
+            21: 0x0E557A,
+            22: 0x0E57CA
         },
         9: {  # tent/vine room
-            24: 0x0DFE49,
-            25: 0x0DFE48,
-            26: 0x0DFE4A
+            24: 0x0E57CA,
+            25: 0x0E557A,
+            26: 0x0E5A1A
         },
         10: {  # boulder room
-            27: 0x0DFE61,
-            28: 0x0DFE60
+            27: 0x0E57CA,
+            28: 0x0E557A
         },
         11: {  # 2-2
-            32: 0x0DFE04,
-            33: 0x0DFE00,
-            34: 0x0DFE03,
-            37: 0x0DFE01,
-            42: 0x0DFE02
+            32: 0x0E5EBA,
+            33: 0x0E557A,
+            34: 0x0E5C6A,
+            37: 0x0E57CA,
+            42: 0x0E5A1A
         },
         12: {  # fan basement
-            35: 0x0DFE18,
-            36: 0x0DFE19
+            35: 0x0E557A,
+            36: 0x0E57CA
         },
         13: {  # obelisk inside
-            38: 0x0DFE32,
-            41: 0x0DFE30,
-            43: 0x0DFE31
+            38: 0x0E5A1A,
+            41: 0x0E557A,
+            43: 0x0E57CA
         },
         14: {  # water basement
-            39: 0x0DFE48,
-            40: 0x0DFE49,
-            44: 0x0DFE4A
+            39: 0x0E557A,
+            40: 0x0E57CA,
+            44: 0x0E5A1A
         },
         15: {  # 2-3
-            49: 0x0DFE01,
-            51: 0x0DFE00
+            49: 0x0E57CA,
+            51: 0x0E557A
         },
         16: {  # side room
-            45: 0x0DFE18
+            45: 0x0E557A
         },
         17: {  # main ruins
-            47: 0x0DFE30,
-            50: 0x0DFE32,
-            46: 0x0DFE31
+            47: 0x0E557A,
+            50: 0x0E5A1A,
+            46: 0x0E57CA
         },
         18: {  # pillar room
-            48: 0x0DFE48,
-            52: 0x0DFE49
+            48: 0x0E557A,
+            52: 0x0E57CA
         },
-        19: {  # 3-1?
+        19: {  # 3-1
 
         },
         20: {  # 4-1
-            53: 0x0DFE00,
-            54: 0x0DFE01,
-            55: 0x0DFE02,
-            56: 0x0DFE03
+            53: 0x0E557A,
+            54: 0x0E57CA,
+            55: 0x0E5A1A,
+            56: 0x0E5C6A
         },
         21: {  # second room
-            57: 0x0DFE18,
-            58: 0x0DFE1A,
-            59: 0x0DFE1B,
-            60: 0x0DFE19
+            57: 0x0E557A,
+            58: 0x0E5A1A,
+            59: 0x0E5C6A,
+            60: 0x0E57CA
         },
         22: {  # 4-2
-            61: 0x0DFE00,
-            62: 0x0DFE01,
-            63: 0x0DFE02,
-            64: 0x0DFE03
+            61: 0x0E557A,
+            62: 0x0E57CA,
+            63: 0x0E5A1A,
+            64: 0x0E5C6A
         },
         23: {  # second room
-            65: 0x0DFE18,
-            67: 0x0DFE19,
-            68: 0x0DFE1B,
-            66: 0x0DFE1A
+            65: 0x0E5A1A,
+            67: 0x0E57CA,
+            68: 0x0E5C6A,
+            66: 0x0E557A
         },
         24: {  # 4-3
-            69: 0x0DFE01,
-            70: 0x0DFE00
+            69: 0x0E57CA,
+            70: 0x0E557A
         },
         25: {  # stomach
-            71: 0x0DFE19,
-            77: 0x0DFE18,
-            78: 0x0DFE1A
+            71: 0x0E57CA,
+            77: 0x0E557A,
+            78: 0x0E5A1A
         },
         26: {  # gallery/boulder
-            72: 0x0DFE30,
-            73: 0x0DFE31,
-            74: 0x0DFE32,
-            75: 0x0DFE33,
-            76: 0x0DFE34
+            72: 0x0E557A,
+            73: 0x0E57CA,
+            74: 0x0E5A1A,
+            75: 0x0E5C6A,
+            76: 0x0E5EBA
         },
         27: {  # tentacle room
-            79: 0x0DFE48
+            79: 0x0E557A
         },
         28: {  # slide room
 
         },
         29: {  # 5-1
-            80: 0x0DFE00,
-            81: 0x0DFE01,
-            84: 0x0DFE02,
-            83: 0x0DFE04,
-            85: 0x0DFE05,
-            82: 0x0DFE03
+            80: 0x0E557A,
+            81: 0x0E57CA,
+            84: 0x0E5A1A,
+            83: 0x0E5C6A,
+            85: 0x0E610A,
+            82: 0x0E5EBA
         },
         30: {  # 5-2
-            86: 0x0DFE00,
-            87: 0x0DFE01
+            86: 0x0E557A,
+            87: 0x0E57CA
         },
         31: {  # water room
-            91: 0x0DFE18,
-            92: 0x0DFE1A,
-            93: 0x0DFE19,
-            94: 0x0DFE1B
+            91: 0x0E557A,
+            92: 0x0E5A1A,
+            93: 0x0E57CA,
+            94: 0x0E5C6A
         },
         32: {  # caverns
-            88: 0x0DFE30,
-            90: 0x0DFE32,
-            89: 0x0DFE31
+            88: 0x0E557A,
+            90: 0x0E5A1A,
+            89: 0x0E57CA
         },
         33: {  # 5-3
-            95: 0x0DFE00,
-            96: 0x0DFE01,
-            99: 0x0DFE02,
-            100: 0x0DFE03
+            95: 0x0E557A,
+            96: 0x0E57CA,
+            99: 0x0E5A1A,
+            100: 0x0E5C6A
         },
         34: {  # hot spring
-            101: 0x0DFE18,
-            102: 0x0DFE19,
-            103: 0x0DFE1A
+            101: 0x0E557A,
+            102: 0x0E57CA,
+            103: 0x0E5A1A
         },
         35: {  # polar bear cave
-            98: 0x0DFE31,
-            97: 0x0DFE30
+            98: 0x0E57CA,
+            97: 0x0E557A
         },
         36: {  # 6-1
 
         },
         37: {  # 7-1
-            104: 0x0DFE00,
-            105: 0x0DFE01,
-            106: 0x0DFE02,
-            107: 0x0DFE03
+            104: 0x0E557A,
+            105: 0x0E57CA,
+            106: 0x0E5A1A,
+            107: 0x0E5C6A
         },
         38: {  # temple
-            108: 0x0DFE1A,
-            110: 0x0DFE19,
-            109: 0x0DFE18,
-            114: 0x0DFE1B,
-            115: 0x0DFE1C
+            108: 0x0E5A1A,
+            110: 0x0E57CA,
+            109: 0x0E557A,
+            114: 0x0E5C6A,
+            115: 0x0E5EBA
         },
         39: {  # well
-            111: 0x0DFE31,
-            112: 0x0DFE32,
-            113: 0x0DFE30
+            111: 0x0E57CA,
+            112: 0x0E5A1A,
+            113: 0x0E557A
         },
         40: {  # 7-2
-            116: 0x0DFE00,
-            117: 0x0DFE01
+            116: 0x0E557A,
+            117: 0x0E57CA
         },
         41: {  # gong room
-            118: 0x0DFE18,
-            119: 0x0DFE19,
-            120: 0x0DFE1A
+            118: 0x0E557A,
+            119: 0x0E57CA,
+            120: 0x0E5A1A
         },
         42: {  # middle room
-            123: 0x0DFE30
+            123: 0x0E557A
         },
-        43: {  # obstacle course/barrel room
-            122: 0x0DFE49,
-            121: 0x0DFE48,
-            124: 0x0DFE60,
-            125: 0x0DFE61
+        43: {  # obstacle course
+            122: 0x0E57CA,
+            121: 0x0E557A,
         },
-        44: {
-
+        44: {  # barrel room
+            124: 0x0E557A,
+            125: 0x0E57CA
         },
         45: {  # 7-3
-            126: 0x0DFE02,
-            127: 0x0DFE00,
-            128: 0x0DFE03,
-            137: 0x0DFE04,
-            136: 0x0DFE01
+            126: 0x0E5A1A,
+            127: 0x0E557A,
+            128: 0x0E5C6A,
+            137: 0x0E5EBA,
+            136: 0x0E57CA
         },
         46: {  # castle main
-            129: 0x0DFE18,
-            131: 0x0DFE1A,
-            130: 0x0DFE19,
-            132: 0x0DFE1B
+            129: 0x0E557A,
+            131: 0x0E5A1A,
+            130: 0x0E57CA,
+            132: 0x0E5C6A
         },
         47: {  # flooded basement
-            133: 0x0DFE30,
-            134: 0x0DFE31,
-            135: 0x0DFE32
-        },
-        48: {
-
+            133: 0x0E557A,
+            134: 0x0E57CA,
+            135: 0x0E5A1A
         },
         49: {  # button room
-            139: 0x0DFE61,  #
-            138: 0x0DFE60  #
+            139: 0x0E57CA,
+            138: 0x0E557A
         },
         50: {  # elevator room
-            140: 0x0DFE78,  #
-            141: 0x0DFE79,  #
-            142: 0x0DFE7A  #
+            140: 0x0E557A,
+            141: 0x0E57CA,
+            142: 0x0E5A1A
         },
         51: {  # bell tower
-            145: 0x0DFE92,  #
-            144: 0x0DFE91,  #
-            143: 0x0DFE90  #
+            145: 0x0E5A1A,
+            144: 0x0E57CA,
+            143: 0x0E557A
         },
         52: {
 
         },
         53: {  # 8-1
-            146: 0x0DFE00,
-            149: 0x0DFE03,
-            147: 0x0DFE01,
-            148: 0x0DFE02
+            146: 0x0E557A,
+            149: 0x0E5C6A,
+            147: 0x0E57CA,
+            148: 0x0E5A1A
         },
         54: {  # sewers front
-            151: 0x0DFE19,
-            152: 0x0DFE1A,
-            150: 0x0DFE18
+            151: 0x0E57CA,
+            152: 0x0E5A1A,
+            150: 0x0E557A
         },
         55: {  # barrel room
-            155: 0x0DFE32,
-            153: 0x0DFE30,
-            156: 0x0DFE33,
-            157: 0x0DFE34,
-            154: 0x0DFE31,
-            158: 0x0DFE35
+            155: 0x0E5A1A,
+            153: 0x0E557A,
+            156: 0x0E5C6A,
+            157: 0x0E5EBA,
+            154: 0x0E57CA,
+            158: 0x0E610A
         },
         56: {  # 8-2
-            159: 0x0DFE00,
-            160: 0x0DFE01
+            159: 0x0E557A,
+            160: 0x0E57CA
         },
         57: {  # main factory
-            161: 0x0DFE18
+            161: 0x0E557A
         },
         58: {  # rc car room
-            162: 0x0DFE30
+            162: 0x0E557A
         },
         59: {  # lava room
-            163: 0x0DFE48,
-            164: 0x0DFE49,
-            165: 0x0DFE4A
+            163: 0x0E557A,
+            164: 0x0E57CA,
+            165: 0x0E5A1A
         },
         60: {
 
         },
         61: {  # conveyor room
-            166: 0x0DFE78,
-            167: 0x0DFE79
+            166: 0x0E557A,
+            167: 0x0E57CA
         },
         62: {  # mech room
-            168: 0x0DFE90
+            168: 0x0E557A
         },
         63: {  # 8-3
-            169: 0x0DFE00
+            169: 0x0E557A
         },
         64: {  # water basement
-            171: 0x0DFE19,
-            170: 0x0DFE18
+            171: 0x0E57CA,
+            170: 0x0E557A
         },
         65: {  # lobby
-            172: 0x0DFE30,
-            173: 0x0DFE31
+            172: 0x0E557A,
+            173: 0x0E57CA
         },
         66: {  # tank room
-            174: 0x0DFE48,
-            175: 0x0DFE49,
-            176: 0x0DFE4A
+            174: 0x0E557A,
+            175: 0x0E57CA,
+            176: 0x0E5A1A
         },
         67: {  # fan room
-            177: 0x0DFE60,
-            179: 0x0DFE62,
-            180: 0x0DFE63,
-            178: 0x0DFE61
+            177: 0x0E557A,
+            179: 0x0E5A1A,
+            180: 0x0E5C6A,
+            178: 0x0E57CA
         },
         68: {
 
@@ -534,14 +530,11 @@ class RAM:
         69: {  # MM Lobby
 
         },
-        70: {
-
-        },
         71: {
 
         },
         72: {  # coaster entry
-            181: 0x0DFE00
+            181: 0x0E557A
         },
         73: {  # coaster 1
 
@@ -550,52 +543,70 @@ class RAM:
 
         },
         75: {  # haunted house
-            182: 0x0DFE48
+            182: 0x0E557A
         },
         76: {  # coffin room
-            183: 0x0DFE60,
-            184: 0x0DFE61,
-            185: 0x0DFE62
+            183: 0x0E557A,
+            184: 0x0E57CA,
+            185: 0x0E5A1A
         },
         77: {  # western land
-            187: 0x0DFE01,
-            186: 0x0DFE00,
-            188: 0x0DFE02,
-            189: 0x0DFE03
+            187: 0x0E57CA,
+            186: 0x0E557A,
+            188: 0x0E5A1A,
+            189: 0x0E5C6A
         },
         78: {  # crater
-            190: 0x0DFE00
+            190: 0x0E557A
         },
         79: {  # outside castle
-            192: 0x0DFE19,
-            191: 0X0DFE18
+            192: 0x0E557A,
+            191: 0X0E57CA
         },
         80: {  # castle main
-            194: 0x0DFE31,
-            195: 0x0DFE32,
-            196: 0x0DFE33,
-            193: 0x0DFE30
+            194: 0x0E57CA,
+            195: 0x0E5A1A,
+            196: 0x0E5C6A,
+            193: 0x0E557A
         },
         81: {  # inside climb
-            197: 0x0DFE48,
-            198: 0x0DFE49
+            197: 0x0E557A,
+            198: 0x0E57CA
         },
         82: {  # outside climb
-            199: 0x0DFE60,
-            200: 0x0DFE61
-        },
-        83: {
-
+            199: 0x0E557A,
+            200: 0x0E57CA
         },
         84: {  # Monkey head
-            201: 0x0DFE90,
-            202: 0x0DFE91,
-            203: 0x0DFE92
+            201: 0x0E557A,
+            202: 0x0E57CA,
+            203: 0x0E5A1A
         },
         85: {  # side entry
-            204: 0x0DFEA8
+            204: 0x0E557A
+        }
+
+    }
+
+    bossListLocal = {
+        48: {  # CC boss room
+            500: 0x0E69E1
         },
-        86: {
+        68: {  # TVT boss room
+            501: 0x143E1F
+        },
+        70: {  # MM_Jake
+
+        },
+
+        #Victory conditions calculated separately,no values there
+        83: {  # Specter 1 Phase 1
+
+        },
+        86: {  # Specter 1 Phase 2
+
+        },
+        87: {  # Specter 2
 
         }
     }
@@ -625,9 +636,11 @@ class RAM:
     }
 
     caughtStatus = {
-        "Unloaded": 0x0,
-        "Uncaught": 0x4,
-        "Caught": 0x2
+        "Unloaded": 0x00,
+        "OutOfRender": 0x01,
+        "Uncaught": 0x04,
+        "Caught": 0x03,
+        "PrevCaught": 0x02
     }
 
     levelStatus = {
@@ -728,6 +741,7 @@ class RAM:
     jakeVictoryAddress = 0x0F447A
     unlockedLevelAddress = 0x0DFC70
     requiredApesAddress = 0x0F44D8
+    currentApesAddress = 0x0F44B6
     hundoApesAddress = 0x0F44D6
     localApeStartAddress = 0x0DFE00
     startingCoinAddress = 0x0DFB70
@@ -744,8 +758,6 @@ class RAM:
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
 
-
-
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
 
     # Junk addresses
@@ -754,6 +766,22 @@ class RAM:
     livesAddress = 0x0F448C
     flashAddress = 0x0F51C1
     rocketAddress = 0x0F51C2
+
+    # LevelSelection addresses (Number -1)
+    selectedWorldAddress = 0x139BC4
+    selectedLevelAddress = 0x139BCC
+
+    # 1 = "Net down"
+    # 8 = "Net down + can catch"
+    gadgetUseStateAddress = 0x0B20CC
+
+    # Specter bosses values
+    S1_P2_State = 0x144A04
+    S1_P2_Life = 0x144A06
+    S2_isCaptured = 0x142328
+    # S1_LArm_Life = 0x14474E
+    # S1_RArm_Life = 0x1446B6
+
 
     levels = {
         "Fossil": 0x01,

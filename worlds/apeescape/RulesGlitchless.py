@@ -331,6 +331,7 @@ def set_glitchless_rules(self):
     connect_regions(self, AERoom.W7L3Elevator.value, AERoom.W7L3Button.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Elevator.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Bell.value, lambda state: True)
+    connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value, lambda state: True)
 
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Robart.value, lambda state: NoRequirement())
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Igor.value, lambda state: NoRequirement())
@@ -435,6 +436,8 @@ def set_glitchless_rules(self):
     connect_regions(self, AERoom.W8L3Outside.value, AERoom.W8L3Lobby.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Lobby.value, AERoom.W8L3Tank.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Fan.value, lambda state: True)
+    connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Boss.value, lambda state: True)
+
 
     connect_regions(self, AERoom.W8L3Outside.value, AERoom.W8L3Fredo.value,
                     lambda state: HasPunch(state, self))
@@ -643,7 +646,6 @@ def set_glitchless_rules(self):
                         lambda state: HasFlyer(state, self))
         connect_regions(self, AERoom.W8L3Tank.value, AERoom.Coin66.value,
                         lambda state: TVT_TankRoom(state, self))
-
         # 9-1
         connect_regions(self, AERoom.W9L1Entry.value, AERoom.Coin73.value,
                         lambda state: NoRequirement())
