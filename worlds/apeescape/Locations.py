@@ -299,7 +299,9 @@ location_table = {
     AELocation.Coin85.value: 385,
     AELocation.Coin84.value: 384,
     AELocation.Coin82.value: 382,
-
+    # Bosses
+    AELocation.Boss73.value: 500,
+    AELocation.Boss83.value: 501,
 }
 
 def createLocationGroups():

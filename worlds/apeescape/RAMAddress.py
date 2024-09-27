@@ -441,9 +441,6 @@ class RAM:
             134: 0x0E57CA,
             135: 0x0E5A1A
         },
-        48: {
-
-        },
         49: {  # button room
             139: 0x0E57CA,
             138: 0x0E557A
@@ -533,9 +530,6 @@ class RAM:
         69: {  # MM Lobby
 
         },
-        70: {
-
-        },
         71: {
 
         },
@@ -583,9 +577,6 @@ class RAM:
             199: 0x0E557A,
             200: 0x0E57CA
         },
-        83: {
-
-        },
         84: {  # Monkey head
             201: 0x0E557A,
             202: 0x0E57CA,
@@ -593,8 +584,29 @@ class RAM:
         },
         85: {  # side entry
             204: 0x0E557A
+        }
+
+    }
+
+    bossListLocal = {
+        48: {  # CC boss room
+            500: 0x0E69E1
         },
-        86: {
+        68: {  # TVT boss room
+            501: 0x143E1F
+        },
+        70: {  # MM_Jake
+
+        },
+
+        #Victory conditions calculated separately,no values there
+        83: {  # Specter 1 Phase 1
+
+        },
+        86: {  # Specter 1 Phase 2
+
+        },
+        87: {  # Specter 2
 
         }
     }
@@ -729,6 +741,7 @@ class RAM:
     jakeVictoryAddress = 0x0F447A
     unlockedLevelAddress = 0x0DFC70
     requiredApesAddress = 0x0F44D8
+    currentApesAddress = 0x0F44B6
     hundoApesAddress = 0x0F44D6
     localApeStartAddress = 0x0DFE00
     startingCoinAddress = 0x0DFB70
@@ -745,8 +758,6 @@ class RAM:
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
 
-
-
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
 
     # Junk addresses
@@ -757,8 +768,20 @@ class RAM:
     rocketAddress = 0x0F51C2
 
     # LevelSelection addresses (Number -1)
-    selectedWorld = 0x139BC4
-    selectedLevel = 0x139BCC
+    selectedWorldAddress = 0x139BC4
+    selectedLevelAddress = 0x139BCC
+
+    # 1 = "Net down"
+    # 8 = "Net down + can catch"
+    gadgetUseStateAddress = 0x0B20CC
+
+    # Specter bosses values
+    S1_P2_State = 0x144A04
+    S1_P2_Life = 0x144A06
+    S2_isCaptured = 0x142328
+    # S1_LArm_Life = 0x14474E
+    # S1_RArm_Life = 0x1446B6
+
 
     levels = {
         "Fossil": 0x01,

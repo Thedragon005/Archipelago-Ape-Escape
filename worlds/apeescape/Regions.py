@@ -481,7 +481,8 @@ def create_regions(world: "ApeEscapeWorld"):
     l735 = Region(AERoom.W7L3Elevator.value, player, multiworld)
     l736 = Region(AERoom.W7L3Bell.value, player, multiworld)
     l737 = Region(AERoom.W7L3Boss.value, player, multiworld)
-
+    l737.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l737) for loc_name in
+                          get_array([500])]
     naners = Region(AERoom.W7L3Naners.value, player, multiworld)
     naners.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], naners) for loc_name in
                          get_array([126])]
@@ -634,6 +635,8 @@ def create_regions(world: "ApeEscapeWorld"):
     l834 = Region(AERoom.W8L3Tank.value, player, multiworld)
     l835 = Region(AERoom.W8L3Fan.value, player, multiworld)
     l836 = Region(AERoom.W8L3Boss.value, player, multiworld)
+    l836.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l836) for loc_name in
+                         get_array([501])]
 
     fredo = Region(AERoom.W8L3Fredo.value, player, multiworld)
     fredo.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], fredo) for loc_name in
@@ -671,7 +674,6 @@ def create_regions(world: "ApeEscapeWorld"):
     frostee = Region(AERoom.W8L3Frostee.value, player, multiworld)
     frostee.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], frostee) for loc_name in
                           get_array([180])]
-
     # 9-1
     l911 = Region(AERoom.W9L1Entry.value, player, multiworld)
     l912 = Region(AERoom.W9L1Haunted.value, player, multiworld)

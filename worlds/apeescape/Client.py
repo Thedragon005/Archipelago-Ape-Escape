@@ -56,6 +56,7 @@ class ApeEscapeClient(BizHawkClient):
     boss2flag = 0
     boss3flag = 0
     boss4flag = 0
+    preventKickOut = True
     currentCoinAddress = RAM.startingCoinAddress
     resetClient = False
 
@@ -68,6 +69,7 @@ class ApeEscapeClient(BizHawkClient):
 
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
+        self.preventKickOut = True
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -237,7 +239,6 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.hundoApesAddress, 1, "MainRAM"),
                 (RAM.unlockedGadgetsAddress, 1, "MainRAM"),
                 (RAM.currentRoomIdAddress, 1, "MainRAM"),
-                (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.jakeVictoryAddress, 1, "MainRAM"),
                 (RAM.currentLevelAddress, 1, "MainRAM"),
                 (self.currentCoinAddress -2, 1, "MainRAM"),
@@ -247,7 +248,13 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.triangleGadgetAddress, 1, "MainRAM"),
                 (RAM.squareGadgetAddress, 1, "MainRAM"),
                 (RAM.circleGadgetAddress, 1, "MainRAM"),
-                (RAM.crossGadgetAddress, 1, "MainRAM")
+                (RAM.crossGadgetAddress, 1, "MainRAM"),
+                (RAM.gadgetUseStateAddress, 1, "MainRAM"),
+                (RAM.requiredApesAddress, 1, "MainRAM"),
+                (RAM.currentApesAddress, 1, "MainRAM"),
+                (RAM.S1_P2_State, 1, "MainRAM"),
+                (RAM.S1_P2_Life, 1, "MainRAM"),
+                (RAM.S2_isCaptured, 1, "MainRAM"),
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -278,24 +285,32 @@ class ApeEscapeClient(BizHawkClient):
             hundoCount = int.from_bytes(reads[0], byteorder="little")
             gadgets = int.from_bytes(reads[1], byteorder="little")
             currentRoom = int.from_bytes(reads[2], byteorder="little")
-            #gameState = int.from_bytes(reads[3], byteorder="little")
-            jakeVictory = int.from_bytes(reads[4], byteorder="little")
-            currentLevel = int.from_bytes(reads[5], byteorder="little")
-            previousCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
-            currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
-            coinCount = int.from_bytes(reads[8], byteorder="little")
-            heldGadget = int.from_bytes(reads[9], byteorder="little")
-            triangleGadget = int.from_bytes(reads[10], byteorder="little")
-            squareGadget = int.from_bytes(reads[11], byteorder="little")
-            circleGadget = int.from_bytes(reads[12], byteorder="little")
-            crossGadget = int.from_bytes(reads[13], byteorder="little")
+            jakeVictory = int.from_bytes(reads[3], byteorder="little")
+            currentLevel = int.from_bytes(reads[4], byteorder="little")
+            previousCoinStateRoom = int.from_bytes(reads[5], byteorder="little")
+            currentCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
+            coinCount = int.from_bytes(reads[7], byteorder="little")
+            heldGadget = int.from_bytes(reads[8], byteorder="little")
+            triangleGadget = int.from_bytes(reads[9], byteorder="little")
+            squareGadget = int.from_bytes(reads[10], byteorder="little")
+            circleGadget = int.from_bytes(reads[11], byteorder="little")
+            crossGadget = int.from_bytes(reads[12], byteorder="little")
+            gadgetUseState = int.from_bytes(reads[13], byteorder="little")
+            requiredApes = int.from_bytes(reads[14], byteorder="little")
+            currentApes = int.from_bytes(reads[15], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[16], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[17], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[18], byteorder="little")
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
             if self.roomglobal == 0:
                 localcondition = False
             else:
-                 localcondition = (currentLevel == self.levelglobal) and currentRoom != 87
+                localcondition = (currentLevel == self.levelglobal)
+
+            # Stock BossRooms in a variable (For excluding these rooms in local monkeys sending)
+            bossRooms = RAM.bossListLocal.keys()
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -320,10 +335,9 @@ class ApeEscapeClient(BizHawkClient):
                         "locations": list(x for x in monkeysToSend)
                     }])
 
-            # elif changing room but still in level, use local list
-            # if level stays the same, and room changes and in level
-            # localcondition now exclude Peak Point Matrix since Victory is calculated elsewhere
-            elif gameState == RAM.gameState["InLevel"] and (localcondition):
+            # elif being in a level
+            # check if NOT in a boss room since there is no monkeys to send there
+            elif gameState == RAM.gameState["InLevel"] and (localcondition) and not(currentRoom in bossRooms):
                 monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
@@ -345,14 +359,41 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeys_to_send)
                     }])
+            # Check for level bosses
+            if gameState == RAM.gameState["InLevel"] and (localcondition) and (currentRoom in bossRooms):
+                bossaddrs = RAM.bossListLocal[self.roomglobal]
+                key_list = list(bossaddrs.keys())
+                val_list = list(bossaddrs.values())
+                addresses = []
+
+                for val in val_list:
+                    tuple1 = (val, 1, "MainRAM")
+                    addresses.append(tuple1)
+
+                bossesList = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+                bosses_to_send = set()
+
+                for i in range(len(bossesList)):
+                    if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
+                        bosses_to_send.add(key_list[i] + self.offset)
+
+                if bosses_to_send is not None:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": list(x for x in bosses_to_send)
+                    }])
+
+
             # Check for victory conditions
-            if RAM.gameState["Credits1"] == gameState:
+            specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
+            specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
+            if RAM.gameState["InLevel"] == gameState and specter1Condition:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [self.offset + 205])
                 }])
 
-            if RAM.gameState["Credits2"] == gameState:
+            if RAM.gameState["InLevel"] == gameState and specter2Condition:
                 await ctx.send_msgs([{
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [self.offset + 206])
@@ -433,14 +474,15 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
             # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
-            if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
+            if ((currentLevel == 0x0E) and (heldGadget == 6) and ((gadgetStateFromServer & 64 == 0))):
                 writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
 
-            writes += self.unlockLevels(monkeylevelcounts, gadgets)
+            level_info = [currentApes,requiredApes,currentLevel]
+            writes += self.unlockLevels(monkeylevelcounts, gadgets,gameState,gadgetUseState,level_info)
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -451,17 +493,14 @@ class ApeEscapeClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
             pass
-    # PseudoCode:
-    # (Per key count)
-    # If last level state is different than 0
-    #   Put level state to "Locked"
 
 
-
-    def unlockLevels(self, monkeylevelCounts, gadgets):
-
+    def unlockLevels(self, monkeylevelCounts, gadgets,gameState,gadgetUseState,level_info):
         key = self.worldkeycount
-
+        apes = ""
+        currentApes = level_info[0]
+        requiredApes = level_info[1]
+        currentLevel = level_info[2]
         W1UnLock = key > 0
         W2UnLock = key > 1
         W3UnLock = key > 2
@@ -471,9 +510,6 @@ class ApeEscapeClient(BizHawkClient):
         W7UnLock = key > 4
         W8UnLock = key > 5
         W9UnLock = key >= 6
-        print("World Unlocks: ")
-        print(" 1:" + str(W1UnLock) + " |2:" + str(W2UnLock) + " |3:" + str(W3UnLock) + " |4:" + str(W4UnLock) + " |5:" + str(W5UnLock) + " |6:" + str(W6UnLock) + " |7:" + str(W7UnLock) + " |8:" + str(W8UnLock) + " |9:" + str(W9UnLock))
-
         current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
         currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
         if key > 0:
@@ -512,13 +548,13 @@ class ApeEscapeClient(BizHawkClient):
         w41 = (RAM.levelAddresses[41], current, "MainRAM")
         w42 = (RAM.levelAddresses[42], current, "MainRAM")
         w43 = (RAM.levelAddresses[43], currentLock, "MainRAM")
-
         if key == 3:
             current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
             currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
         elif key > 3:
             current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
             currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
+
         else:
             current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
             currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
@@ -526,7 +562,23 @@ class ApeEscapeClient(BizHawkClient):
         w51 = (RAM.levelAddresses[51], current, "MainRAM")
         w52 = (RAM.levelAddresses[52], current, "MainRAM")
         w53 = (RAM.levelAddresses[53], currentLock, "MainRAM")
-
+        # If in Hot Springs,prevent kick-out
+        if gameState == RAM.gameState["InLevel"] and currentLevel == RAM.levels["Hot"]:
+            # If the Kick out prevention is up,detect the number of monkeys and add 1 to prevent kickout
+            if self.preventKickOut:
+                if gadgetUseState == 8:
+                    if currentApes == 9:
+                        apes = (RAM.requiredApesAddress, (0x0A).to_bytes(1, byteorder="little"), "MainRAM")
+                # After catching is over set the requiredApes back to normal amount and disable Kick out Prevention
+                else:
+                    if (currentApes == 9 and requiredApes == 9) or requiredApes == 10:
+                        apes = (RAM.requiredApesAddress, (0x09).to_bytes(1, byteorder="little"), "MainRAM")
+                        self.preventKickOut = False
+            elif self.preventKickOut == False and currentApes < 9:
+                self.preventKickOut = True
+        # Reset Kickout prevention if leaving level
+        elif gameState != RAM.gameState["InLevel"] and self.preventKickOut == False:
+            self.preventKickOut = True
         if key == 4:
             current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
             currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
@@ -619,5 +671,11 @@ class ApeEscapeClient(BizHawkClient):
 
         if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= 24 and W9UnLock:
             w91 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
+        # If there is a change in required monkeys count,include it in the writes
+        if apes != "":
+            return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83,
+                    w91,apes]
+        else:
+            return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83,
+                    w91]
 
-        return [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83, w91]
