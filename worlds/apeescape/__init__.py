@@ -1,9 +1,9 @@
 import math
 import os
 import json
-from typing import ClassVar, List, Optional
+from typing import ClassVar, Dict, List, Tuple, Optional
 
-from BaseClasses import ItemClassification, MultiWorld, Tutorial
+from BaseClasses import ItemClassification, MultiWorld, Tutorial, CollectionState
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
@@ -115,6 +115,7 @@ class ApeEscapeWorld(World):
 
         waternet = self.create_item(AEItem.WaterNet.value)
 
+        # TODO: make sure that this location removal on pushing a precollected item is actually correct
         self.multiworld.push_precollected(waternet)
         numberoflocations -= 1
 
@@ -124,14 +125,39 @@ class ApeEscapeWorld(World):
         if self.options.shufflenet == "false":
             self.multiworld.push_precollected(net)
             numberoflocations -= 1
-        # else:
+        elif self.options.shufflenet == "true":
             # Condition to check if this is a 1 world multiworld
-            # if it is and coins are NOT shuffled: throw a warning and just give the net anyway. Not supported due to too few locations.
-            # if it is and coins are shuffled, manually place the net in one of the possible locations for it. Weight these by how many world keys are required to reach them (7-X)? to not force super early world keys extremely often, but still have the net able to be out there. Maybe also disincentivize sphere 1.
-            # and run numberoflocations -= 1
-            # if it isn't (there are multiple worlds in the multiworld), somehow check to see if everyone is using net shuffle.
-            # if there's even one not net shuffle, do nothing
-            # if it is 100% net shuffle, do something TBD or just place the net somewhere local like in option 1.
+            if len(self.multworld.get_all_ids) == 1:
+                if self.options.coin == "false":
+                    # if it is and coins are NOT shuffled: Pick one of the following.
+                    # TODO: Throw a warning about incompatible options and just give the net anyway.
+                    # (or error out - since it's a single world game, not a big loss to re-generate even if the settings are fully random.)
+                    self.multiworld.push_precollected(net)
+                    numberoflocations -= 1
+                elif self.options.coin == "true":
+                    # If it is and coins are shuffled, manually place the net in one of the possible locations for it.
+                    # Create a new collection state to test with.
+                    netless_state: CollectionState(self.multiworld)
+                    # Add the world keys (via item pool) to the testing state.
+                    for item in self.itempool:
+                        self.multiworld.worlds[item.player].collect(netless_state, item)
+                    # Add the other gadgets to the testing state.
+                    for item in [waternet, club, radar, shooter, hoop, flyer, car, punch]:
+                        self.multiworld.worlds[item.player].collect(netless_state, item)
+                    # Determine what locations are reachable without the net.
+                    net_locations = self.multiworld.get_reachable_locations(netless_state)
+                    # Place the net in a random one of these locations. TODO: use forbid_item instead - iterating through all locations to see if they're in reachable, and forbidding the ones that aren't. This should work for testing, though.
+                    self.get_location(net_locations[self.random.randint(1, len(net_locations)) ]).place_locked_item(net)
+                    # TODO: Test the above algorithm.
+                    # Test code to force place the net in Gladiator Attack.
+                    # self.get_location(AELocation.Coin36D.value).place_locked_item(net)
+                    numberoflocations -= 1
+            else
+                 # TODO: Throw a warning about potentially incompatible options (if generation fails, make sure at least world has net shuffle turned off.)
+                 # if it isn't (there are multiple worlds in the multiworld), check if every game is Ape Escape. If they are, throw a warning about potentially incompatible options.
+                 # Alternative: somehow check to see if everyone is using net shuffle, and error out in that case.
+                 # if there's even one not net shuffle, do nothing, it should generate fine.
+                 # if it is 100% net shuffle, do something TBD or just place the net somewhere local like in option 1.
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
