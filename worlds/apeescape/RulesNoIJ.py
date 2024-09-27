@@ -316,7 +316,9 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L3Elevator.value, AERoom.W7L3Button.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Elevator.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Bell.value, lambda state: True)
-    connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value, lambda state: True)
+    connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value,
+                    lambda state: CanHitMultiple(state, self) and CC_ButtonRoom(state, self))
+
 
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Robart.value, lambda state: NoRequirement())
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Igor.value, lambda state: NoRequirement())
@@ -420,7 +422,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W8L3Outside.value, AERoom.W8L3Lobby.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Lobby.value, AERoom.W8L3Tank.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Fan.value, lambda state: True)
-    connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Boss.value, lambda state: True)
+    connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Boss.value,
+                    lambda state: TVT_TankRoom(state, self) and HasSling(state,self))
 
     connect_regions(self, AERoom.W8L3Outside.value, AERoom.W8L3Fredo.value,
                     lambda state: HasPunch(state, self))
@@ -739,7 +742,6 @@ def CC_WaterRoom(state, world):
 
 def CC_ButtonRoom(state, world):
     return CC_WaterRoom(state, world) and (CanSwim(state, world) or HasFlyer(state, world))
-
 
 def CP_FrontSewer(state, world):
     return HasRC(state, world)
