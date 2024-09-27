@@ -127,8 +127,10 @@ class ApeEscapeWorld(World):
         # else:
             # Condition to check if this is a 1 world multiworld
             # if it is, manually place the net in one of the possible locations for it.
-            # if it isn't, do nothing?
-            # numberoflocations -= 1
+            # and run numberoflocations -= 1
+            # if it isn't, somehow check to see if everyone is using net shuffle.
+            # if there's even one not net shuffle, do nothing
+            # if it is 100% net shuffle, DO SOMETHING TBD
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
