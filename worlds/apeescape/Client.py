@@ -412,9 +412,10 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, hundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-            # Unequip the Time Net if it was shuffled.
+            # Unequip the Time Net if it was shuffled. 
             if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
-                writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                if (crossGadget == 1) and (gadgetStateFromServer & 2 == 0):
+                    writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
             # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net if it wasn't shuffled.
             if ((heldGadget == 0) and (gadgetStateFromServer % 2 == 0)):

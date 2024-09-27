@@ -584,9 +584,9 @@ def create_regions(world: "ApeEscapeWorld"):
                l731, l732, l733, l734, l735, l736, l737,
                robart, igor, naners, neeners, charles, gustav, wilhelm, emmanuel, sircutty, calligan, castalist, deveneom, astur, kilserack, ringo, densil, figero, fej, joey, donqui,
                l811, l812, l813, kaine, jaxx, gehry, alcatraz, tino, qbee, mcmanic, dywan, ckhutch, winky, bluv, camper, huener,
-               l821, l822, l823, l824, l825, l826, 1827, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
+               l821, l822, l823, l824, l825, l826, l827, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
                l831, l832, l833, l834, l835, l836, fredo, charlee, mach3, tortuss, manic, ruptdis, eighty7, danio, roosta, tellis, whack, frostee,
-               l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114, l9115, 19116, 19117, 19118, 19119, 19120, 
+               l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114, l9115, l9116, l9117, l9118, l9119, l9120, 
                goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
 
     if options.goal == "second":

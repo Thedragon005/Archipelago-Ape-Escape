@@ -505,7 +505,7 @@ def set_ij_rules(self):
 
     # 9-1
     connect_regions(self, AEWorld.W9.value, AERoom.W9L1Hub.value, lambda state: True)
-    connect_regions(self, AEWorld.W9L1Hub.value, AERoom.W9L1Entry.value, lambda state: True)
+    connect_regions(self, AERoom.W9L1Hub.value, AERoom.W9L1Entry.value, lambda state: True)
     connect_regions(self, AERoom.W9L1Entry.value, AERoom.W9L1Coaster1.value, lambda state: True)
     connect_regions(self, AERoom.W9L1Coaster1.value, AERoom.W9L1Coaster2.value, lambda state: True)
     connect_regions(self, AERoom.W9L1Coaster2.value, AERoom.W9L1Haunted.value, lambda state: True)
