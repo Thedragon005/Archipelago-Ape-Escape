@@ -319,7 +319,6 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value,
                     lambda state: CanHitMultiple(state, self) and CC_ButtonRoom(state, self))
 
-
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Robart.value, lambda state: NoRequirement())
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Igor.value, lambda state: NoRequirement())
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Naners.value, lambda state: NoRequirement())
@@ -423,7 +422,7 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W8L3Lobby.value, AERoom.W8L3Tank.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Fan.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Boss.value,
-                    lambda state: TVT_TankRoom(state, self) and HasSling(state,self))
+                    lambda state: TVT_TankRoom(state, self) and (HasSling(state, self) or (HasFlyer(state, self) and HasRC(state, self))))
 
     connect_regions(self, AERoom.W8L3Outside.value, AERoom.W8L3Fredo.value,
                     lambda state: HasPunch(state, self))

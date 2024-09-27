@@ -424,7 +424,7 @@ def set_ij_rules(self):
     connect_regions(self, AERoom.W8L3Lobby.value, AERoom.W8L3Tank.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Fan.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Boss.value,
-                    lambda state: TVT_TankRoom(state, self) and HasSling(state,self))
+                    lambda state: TVT_TankRoom(state, self) and (HasSling(state, self) or (HasFlyer(state, self) and HasRC(state, self))))
 
     connect_regions(self, AERoom.W8L3Outside.value, AERoom.W8L3Fredo.value,
                     lambda state: HasPunch(state, self))
