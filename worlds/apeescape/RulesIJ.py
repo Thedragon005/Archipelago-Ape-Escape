@@ -79,7 +79,7 @@ def set_ij_rules(self):
     connect_regions(self, AERoom.W2L1Entry.value, AERoom.W2L1Boulder.value, lambda state: True)
 
     connect_regions(self, AERoom.W2L1Entry.value, AERoom.W2L1Marquez.value,
-                    lambda state: and HasNet(state, self))
+                    lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W2L1Entry.value, AERoom.W2L1Livinston.value,
                     lambda state: CanHitOnce(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Entry.value, AERoom.W2L1George.value,
@@ -114,7 +114,7 @@ def set_ij_rules(self):
     connect_regions(self, AERoom.W2L2Outside.value, AERoom.W2L2Water.value, lambda state: True)
 
     connect_regions(self, AERoom.W2L2Outside.value, AERoom.W2L2Kyle.value,
-                    lambda state: (CanHitOnce(state, self) and HasNet(state, self))
+                    lambda state: CanHitOnce(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L2Outside.value, AERoom.W2L2Stan.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W2L2Outside.value, AERoom.W2L2Kenny.value,
@@ -268,11 +268,11 @@ def set_ij_rules(self):
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W5L2Water.value, AERoom.W5L2Droog.value,
                     lambda state: (CanDive(state, self) or HasFlyer(state, self) or HasSling(state, self)) and HasNet(state, self))
-    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.W5L2Gash.value
+    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.W5L2Gash.value,
                     lambda state: HasNet(state, self) or CanWaterCatch(state, self))
-    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.W5L2Kundra.value
+    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.W5L2Kundra.value,
                     lambda state: HasNet(state, self))
-    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.W5L2Shadow.value
+    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.W5L2Shadow.value,
                     lambda state: HasNet(state, self))
 
     # 5-3
@@ -621,7 +621,7 @@ def set_ij_rules(self):
         connect_regions(self, AERoom.W4L3Stomach.value, AERoom.Coin25.value,
                         lambda state: CanDive(state, self) and CanHitOnce(state, self))
         connect_regions(self, AERoom.W4L3Slide.value, AERoom.Coin28.value,
-                        lambda state: ((CanHitOnce(state, self) and HasNet(state, self)) or HasPunch(state, self))
+                        lambda state: ((CanHitOnce(state, self) and HasNet(state, self)) or HasPunch(state, self)))
 
         # 5-1
         connect_regions(self, AERoom.W5L1Main.value, AERoom.Coin29.value,

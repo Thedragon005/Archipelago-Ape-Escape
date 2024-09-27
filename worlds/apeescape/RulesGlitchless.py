@@ -626,7 +626,7 @@ def set_glitchless_rules(self):
         connect_regions(self, AERoom.W4L3Stomach.value, AERoom.Coin25.value,
                         lambda state: CanDive(state, self) and CanHitOnce(state, self))
         connect_regions(self, AERoom.W4L3Slide.value, AERoom.Coin28.value,
-                        lambda state: (CanSwim(state, self) and ((CanHitOnce(state, self) and HasNet(state, self)) or HasPunch(state, self)))
+                        lambda state: (CanSwim(state, self) and ((CanHitOnce(state, self) and HasNet(state, self)) or HasPunch(state, self))))
 
         # 5-1
         connect_regions(self, AERoom.W5L1Main.value, AERoom.Coin29.value,
