@@ -126,11 +126,12 @@ class ApeEscapeWorld(World):
             numberoflocations -= 1
         # else:
             # Condition to check if this is a 1 world multiworld
-            # if it is, manually place the net in one of the possible locations for it.
+            # if it is and coins are NOT shuffled: throw a warning and just give the net anyway. Not supported due to too few locations.
+            # if it is and coins are shuffled, manually place the net in one of the possible locations for it. Weight these by how many world keys are required to reach them (7-X)? to not force super early world keys extremely often, but still have the net able to be out there. Maybe also disincentivize sphere 1.
             # and run numberoflocations -= 1
-            # if it isn't, somehow check to see if everyone is using net shuffle.
+            # if it isn't (there are multiple worlds in the multiworld), somehow check to see if everyone is using net shuffle.
             # if there's even one not net shuffle, do nothing
-            # if it is 100% net shuffle, DO SOMETHING TBD
+            # if it is 100% net shuffle, do something TBD or just place the net somewhere local like in option 1.
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
