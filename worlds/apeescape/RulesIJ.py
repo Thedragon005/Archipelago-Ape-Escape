@@ -317,7 +317,6 @@ def set_ij_rules(self):
     connect_regions(self, AERoom.W7L3Elevator.value, AERoom.W7L3Button.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Elevator.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Bell.value, lambda state: True)
-    connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value,
                     lambda state: CanHitMultiple(state, self) and CC_ButtonRoom(state, self))
 
