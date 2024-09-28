@@ -338,7 +338,7 @@ class ApeEscapeClient(BizHawkClient):
             # elif being in a level
             # check if NOT in a boss room since there is no monkeys to send there
             elif gameState == RAM.gameState["InLevel"] and (localcondition) and not(currentRoom in bossRooms):
-                monkeyaddrs = RAM.monkeyListLocal[self.roomglobal]
+                monkeyaddrs = RAM.monkeyListLocal[currentRoom]
                 key_list = list(monkeyaddrs.keys())
                 val_list = list(monkeyaddrs.values())
                 addresses = []
@@ -361,7 +361,7 @@ class ApeEscapeClient(BizHawkClient):
                     }])
             # Check for level bosses
             if gameState == RAM.gameState["InLevel"] and (localcondition) and (currentRoom in bossRooms):
-                bossaddrs = RAM.bossListLocal[self.roomglobal]
+                bossaddrs = RAM.bossListLocal[currentRoom]
                 key_list = list(bossaddrs.keys())
                 val_list = list(bossaddrs.values())
                 addresses = []
