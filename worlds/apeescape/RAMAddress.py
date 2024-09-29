@@ -723,6 +723,7 @@ class RAM:
         91: 0xdfcb0
     }
 
+
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
@@ -774,7 +775,7 @@ class RAM:
     # 1 = "Net down"
     # 8 = "Net down + can catch"
     gadgetUseStateAddress = 0x0B20CC
-
+    spikeStateAddress = 0x0EC250
     # Specter bosses values
     S1_P2_State = 0x144A04
     S1_P2_Life = 0x144A06
@@ -814,3 +815,4 @@ class RAM:
         "Time": 0x1F,
         "Training": 0x20
     }
+
