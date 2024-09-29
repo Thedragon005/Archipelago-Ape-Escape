@@ -501,7 +501,6 @@ class ApeEscapeClient(BizHawkClient):
     def unlockLevels(self, monkeylevelCounts, gadgets,gameState,gadgetUseState,level_info,hundoMonkeysCount,spikeState):
 
         key = self.worldkeycount
-        key = 4
         curApesWrite = ""
         reqApesWrite = ""
         hundoWrite = ""
