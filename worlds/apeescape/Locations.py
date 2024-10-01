@@ -304,6 +304,28 @@ location_table = {
     AELocation.Boss83.value: 501,
 }
 
+#Where RAM.levels[address] : Total monkeys count
+hundoMonkeysCount = {
+    0x01: 4, # Fossil
+    0x02: 6, # Primordial
+    0x03: 7, # Molten
+    0x04: 14, # Thick
+    0x05: 13, # Dark
+    0x06: 8, # Cryptic
+    0x08: 8, # Crabby
+    0x09: 8, # Coral
+    0x0A: 11, # Dexter
+    0x0B: 6, # Snowy
+    0x0C: 9, # Frosty
+    0x0D: 9, # Hot
+    0x0F: 12, # Sushi
+    0x10: 10, # Wabi
+    0x11: 20, # Crumbling
+    0x14: 13, # City
+    0x15: 10, # Factory
+    0x16: 12, # TV
+    0x18: 24 # Specter
+}
 def createLocationGroups():
     # Iterate through all locations
     for x in range (0, len(location_table) - 1):
