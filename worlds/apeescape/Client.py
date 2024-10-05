@@ -58,6 +58,7 @@ class ApeEscapeClient(BizHawkClient):
     boss3flag = 0
     boss4flag = 0
     preventKickOut = True
+    replacePunch = True
     currentCoinAddress = RAM.startingCoinAddress
     resetClient = False
 
@@ -71,6 +72,7 @@ class ApeEscapeClient(BizHawkClient):
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
         self.preventKickOut = True
+        self.replacePunch = True
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -91,6 +93,7 @@ class ApeEscapeClient(BizHawkClient):
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
+        ctx.watcher_timeout = 0.125
 
         self.initialize_client()
 
@@ -119,10 +122,11 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.keyCountFromServer, 1, "MainRAM"),
                 (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
                 (RAM.gadgetStateFromServer, 2, "MainRAM"),
-                (RAM.gameStateAddress, 1, "MainRAM")
+                (RAM.gameStateAddress, 1, "MainRAM"),
+                (RAM.menuStateAddress,1, "MainRAM"),
+                (RAM.menuState2Address, 1, "MainRAM")
             ]
             itemsWrites = []
-
             # All reads that are required BEFORE connecting/early
             earlyReads = await bizhawk.read(ctx.bizhawk_ctx, earlyReadTuples)
 
@@ -135,6 +139,8 @@ class ApeEscapeClient(BizHawkClient):
             recv_index = int.from_bytes(earlyReads[6], byteorder="little")
             gadgetStateFromServer = int.from_bytes(earlyReads[7], byteorder="little")
             gameState = int.from_bytes(earlyReads[8], byteorder="little")
+            menuState = int.from_bytes(earlyReads[9], byteorder="little")
+            menuState2 = int.from_bytes(earlyReads[10], byteorder="little")
 
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
@@ -403,10 +409,9 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in [self.offset + 206])
                 }])
 
-
-            # If the previous address is also empty,readjust and go back until you have a value.
+            # If the previous address is empty it means you are too far,go back once
             # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
-            if (previousCoinStateRoom == 0xFF or currentCoinStateRoom == 0x00) and (self.currentCoinAddress > RAM.startingCoinAddress):
+            if (previousCoinStateRoom == 0xFF or previousCoinStateRoom == 0x00) and (self.currentCoinAddress > RAM.startingCoinAddress):
                 self.currentCoinAddress -= 2
             # Check for new coins from current coin address
             if currentCoinStateRoom != 0xFF and currentCoinStateRoom != 0x00:
@@ -476,6 +481,17 @@ class ApeEscapeClient(BizHawkClient):
                 elif ctx.slot_data["gadget"] == GadgetOption.option_none:
                     writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+
+            # Punch Visual glitch in menu fix
+            if (menuState == 0) and (menuState2 == 1):
+                # Replace all values from 0x0E78C0 to 0x0E78DF to this:
+                # 0010000000000000E00B00000000000000100000000000000000000000000000
+                if ((gadgetStateFromServer & 32) == 32) and self.replacePunch == True:
+                    bytes_ToWrite: bytes = bytes.fromhex("0010000000000000E00B00000000000000100000000000000000000000000000")
+                    writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
+                    self.replacePunch = False
+            else:
+                self.replacePunch = True
 
             # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
             if ((currentLevel == 0x0E) and (heldGadget == 6) and ((gadgetStateFromServer & 64 == 0))):

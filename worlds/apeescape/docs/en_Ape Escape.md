@@ -12,7 +12,7 @@ config file.
 Spike!
 
 This is the professor, Specter is at it again! The monkeys stole everybody's items and went away through time!
-What's worse? Specter locked each era with a key and you need to find all of them to travel to the next era ! 
+What's worse? Specter locked each era with a key and you need to find them to travel to the next era ! 
 
 I'm counting on you, please help everyone get their items back!
 

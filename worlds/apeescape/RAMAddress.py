@@ -760,6 +760,9 @@ class RAM:
     gadgetStateFromServer = 0x0E00F0
 
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
+    menuStateAddress =0x0A9A1B
+    menuState2Address = 0x0A9A23
+    punchVisualAddress = 0x0E78C0
 
     # Junk addresses
     energyChipsAddress = 0x0F44B8
