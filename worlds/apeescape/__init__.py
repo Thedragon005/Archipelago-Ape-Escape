@@ -137,6 +137,8 @@ class ApeEscapeWorld(World):
         return item
 
     def create_items(self):
+        reservedlocations = 0
+
         club = self.create_item(AEItem.Club.value)
         net = self.create_item(AEItem.Net.value)
         radar = self.create_item(AEItem.Radar.value)
@@ -158,7 +160,9 @@ class ApeEscapeWorld(World):
         elif self.options.shufflenet == "true":
             # Condition to check if this is a 1 world multiworld
             if self.multiworld.players == 1:
-                if self.options.coin == "false":
+                if self.options.coin == "true":
+                    reservedlocations += 1
+                elif self.options.coin == "false":
                     # if it is and coins are NOT shuffled: Throw a warning about incompatible options and just give the net anyway.
                     # If instead we want to error out and prevent generation, uncomment this line:
                     # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
@@ -206,7 +210,7 @@ class ApeEscapeWorld(World):
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
 
-        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool)):
+        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
                 self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
