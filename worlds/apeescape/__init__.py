@@ -103,11 +103,8 @@ class ApeEscapeWorld(World):
                     netless_state.update_reachable_regions(self.player)
                     # Determine what locations are reachable without the net.
                     net_locations = self.multiworld.get_reachable_locations(netless_state, self.player)
-                    print(net_locations)
                     # Place the net in a random one of these locations. Could also use forbid_item instead - iterating through all locations to see if they're in reachable, and forbidding the ones that aren't. This should work for testing, though.
                     self.get_location(self.random.choice(net_locations).name).place_locked_item(net)
-                    # Test code to force place the net in Gladiator Attack.
-                    # self.get_location(AELocation.Coin36D.value).place_locked_item(net)
 
     def create_regions(self):
         create_regions(self)
