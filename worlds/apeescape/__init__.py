@@ -87,6 +87,7 @@ class ApeEscapeWorld(World):
         punch = self.create_item(AEItem.Punch.value)
         waternet = self.create_item(AEItem.WaterNet.value)
 
+        # None of this is necessary if necessary if we can just make mailboxes. Also, Archipelago fill is surprisingly bad at dealing with this exact situation, so we have to do it ourselves. Why.
         if self.options.shufflenet == "true":
             # Condition to check if this is a 1 world multiworld
             if self.multiworld.players == 1:
@@ -103,7 +104,7 @@ class ApeEscapeWorld(World):
                     netless_state.update_reachable_regions(self.player)
                     # Determine what locations are reachable without the net.
                     net_locations = self.multiworld.get_reachable_locations(netless_state, self.player)
-                    # Place the net in a random one of these locations. Could also use forbid_item instead - iterating through all locations to see if they're in reachable, and forbidding the ones that aren't. This should work for testing, though.
+                    # Place the net in a random one of these locations.
                     self.get_location(self.random.choice(net_locations).name).place_locked_item(net)
 
     def create_regions(self):
@@ -152,6 +153,7 @@ class ApeEscapeWorld(World):
 
         self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
 
+        # TODO in the future: add the Time Station mailboxes as checks if shuffle net is on. We probably don't need anything else beyond that, other than ensuring that mailboxes or coins are shuffled if net is also shuffled.
         if self.options.shufflenet == "false":
             self.multiworld.push_precollected(net)
         elif self.options.shufflenet == "true":
@@ -161,9 +163,8 @@ class ApeEscapeWorld(World):
                     reservedlocations += 1
                 elif self.options.coin == "false":
                     # if it is and coins are NOT shuffled: Throw a warning about incompatible options and just give the net anyway.
-                    # If instead we want to error out and prevent generation, uncomment this line:
+                    # if instead we want to error out and prevent generation, uncomment this line:
                     # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
-                    # TODO: error out or add mailboxes as locations in the future
                     warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
                     self.multiworld.push_precollected(net)
             else:
