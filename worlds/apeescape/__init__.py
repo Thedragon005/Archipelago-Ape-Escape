@@ -4,6 +4,8 @@ import json
 from typing import ClassVar, Dict, List, Tuple, Optional
 
 from BaseClasses import ItemClassification, MultiWorld, Tutorial, CollectionState
+from logging import warning
+from Options import OptionError
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
@@ -63,6 +65,7 @@ class ApeEscapeWorld(World):
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
+        self.itempool: List[ApeEscapeItem] = []
 
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
@@ -71,6 +74,40 @@ class ApeEscapeWorld(World):
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
+        self.itempool = []
+
+    def generate_basic(self) -> None:
+        club = self.create_item(AEItem.Club.value)
+        net = self.create_item(AEItem.Net.value)
+        radar = self.create_item(AEItem.Radar.value)
+        shooter = self.create_item(AEItem.Sling.value)
+        hoop = self.create_item(AEItem.Hoop.value)
+        flyer = self.create_item(AEItem.Flyer.value)
+        car = self.create_item(AEItem.Car.value)
+        punch = self.create_item(AEItem.Punch.value)
+        waternet = self.create_item(AEItem.WaterNet.value)
+
+        if self.options.shufflenet == "true":
+            # Condition to check if this is a 1 world multiworld
+            if self.multiworld.players == 1:
+                if self.options.coin == "true":
+                    # If the net and coins are shuffled, manually place the net in one of the possible locations for it.
+                    # Create a new collection state to test with.
+                    netless_state = CollectionState(self.multiworld)
+                    # Add the world keys (via item pool) to the testing state.
+                    for item in [self.create_item(AEItem.Key.value) for _ in range(0, 6)]:
+                        netless_state.collect(item)
+                    # Add the other gadgets to the testing state.
+                    for item in [waternet, club, radar, shooter, hoop, flyer, car, punch]:
+                        netless_state.collect(item)
+                    netless_state.update_reachable_regions(self.player)
+                    # Determine what locations are reachable without the net.
+                    net_locations = self.multiworld.get_reachable_locations(netless_state, self.player)
+                    print(net_locations)
+                    # Place the net in a random one of these locations. Could also use forbid_item instead - iterating through all locations to see if they're in reachable, and forbidding the ones that aren't. This should work for testing, though.
+                    self.get_location(self.random.choice(net_locations).name).place_locked_item(net)
+                    # Test code to force place the net in Gladiator Attack.
+                    # self.get_location(AELocation.Coin36D.value).place_locked_item(net)
 
     def create_regions(self):
         create_regions(self)
@@ -100,9 +137,6 @@ class ApeEscapeWorld(World):
         return item
 
     def create_items(self):
-        numberoflocations = len(location_table)
-        itempool: List[ApeEscapeItem] = []
-
         club = self.create_item(AEItem.Club.value)
         net = self.create_item(AEItem.Net.value)
         radar = self.create_item(AEItem.Radar.value)
@@ -115,88 +149,52 @@ class ApeEscapeWorld(World):
 
         waternet = self.create_item(AEItem.WaterNet.value)
 
-        # TODO: make sure that this location removal on pushing a precollected item is actually correct
         self.multiworld.push_precollected(waternet)
-        numberoflocations -= 1
 
-        itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
-        numberoflocations -= 6
+        self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
 
         if self.options.shufflenet == "false":
             self.multiworld.push_precollected(net)
-            numberoflocations -= 1
         elif self.options.shufflenet == "true":
             # Condition to check if this is a 1 world multiworld
-            if len(self.multworld.get_all_ids) == 1:
+            if self.multiworld.players == 1:
                 if self.options.coin == "false":
-                    # if it is and coins are NOT shuffled: Pick one of the following.
-                    # TODO: Throw a warning about incompatible options and just give the net anyway.
-                    # (or error out - since it's a single world game, not a big loss to re-generate even if the settings are fully random.)
+                    # if it is and coins are NOT shuffled: Throw a warning about incompatible options and just give the net anyway.
+                    # If instead we want to error out and prevent generation, uncomment this line:
+                    # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
+                    # TODO: error out or add mailboxes as locations in the future
+                    warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
                     self.multiworld.push_precollected(net)
-                    numberoflocations -= 1
-                elif self.options.coin == "true":
-                    # If it is and coins are shuffled, manually place the net in one of the possible locations for it.
-                    # Create a new collection state to test with.
-                    netless_state: CollectionState(self.multiworld)
-                    # Add the world keys (via item pool) to the testing state.
-                    for item in self.itempool:
-                        self.multiworld.worlds[item.player].collect(netless_state, item)
-                    # Add the other gadgets to the testing state.
-                    for item in [waternet, club, radar, shooter, hoop, flyer, car, punch]:
-                        self.multiworld.worlds[item.player].collect(netless_state, item)
-                    # Determine what locations are reachable without the net.
-                    net_locations = self.multiworld.get_reachable_locations(netless_state)
-                    # Place the net in a random one of these locations. TODO: use forbid_item instead - iterating through all locations to see if they're in reachable, and forbidding the ones that aren't. This should work for testing, though.
-                    self.get_location(net_locations[self.random.randint(1, len(net_locations)) ]).place_locked_item(net)
-                    # TODO: Test the above algorithm.
-                    # Test code to force place the net in Gladiator Attack.
-                    # self.get_location(AELocation.Coin36D.value).place_locked_item(net)
-                    numberoflocations -= 1
-            else
-                 # TODO: Throw a warning about potentially incompatible options (if generation fails, make sure at least world has net shuffle turned off.)
-                 # if it isn't (there are multiple worlds in the multiworld), check if every game is Ape Escape. If they are, throw a warning about potentially incompatible options.
-                 # Alternative: somehow check to see if everyone is using net shuffle, and error out in that case.
-                 # if there's even one not net shuffle, do nothing, it should generate fine.
-                 # if it is 100% net shuffle, do something TBD or just place the net somewhere local like in option 1.
+            else:
+                # Throw a warning about potentially incompatible options (if generation fails, make sure at least world has net shuffle turned off.)
+                warning(f"{self.player_name} has Net Shuffle on. If all players have Net Shuffle on, multiworlds will likely fail to generate.")
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
-            itempool += [radar, shooter, hoop, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [radar, shooter, hoop, flyer, car, punch]
         elif self.options.gadget == "radar":
             self.multiworld.push_precollected(radar)
-            itempool += [club, shooter, hoop, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, shooter, hoop, flyer, car, punch]
         elif self.options.gadget == "sling":
             self.multiworld.push_precollected(shooter)
-            itempool += [club, radar, hoop, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, hoop, flyer, car, punch]
         elif self.options.gadget == "hoop":
             self.multiworld.push_precollected(hoop)
-            itempool += [club, radar, shooter, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, flyer, car, punch]
         elif self.options.gadget == "flyer":
             self.multiworld.push_precollected(flyer)
-            itempool += [club, radar, shooter, hoop, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, hoop, car, punch]
         elif self.options.gadget == "car":
             self.multiworld.push_precollected(car)
-            itempool += [club, radar, shooter, hoop, flyer, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, hoop, flyer, punch]
         elif self.options.gadget == "punch":
             self.multiworld.push_precollected(punch)
-            itempool += [club, radar, shooter, hoop, flyer, car]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, hoop, flyer, car]
         elif self.options.gadget == "none":
-            itempool += [club, radar, shooter, hoop, flyer, car, punch]
-            numberoflocations -= 7
-
-        if self.options.coin == "false":
-            numberoflocations -= 60
+            self.itempool += [club, radar, shooter, hoop, flyer, car, punch]
 
         if self.options.goal == "first":
             self.get_location(AELocation.Specter.value).place_locked_item(victory)
-            numberoflocations -= 1
         else:
             self.get_location(AELocation.Specter2.value).place_locked_item(victory)
 
@@ -208,32 +206,32 @@ class ApeEscapeWorld(World):
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
 
-        for _ in range(numberoflocations):
+        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool)):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
-                itempool += [self.create_item_useful(AEItem.Shirt.value)]
+                self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
             elif weights[0] < randomFiller <= weights[1]:
-                itempool += [self.create_item_filler(AEItem.Cookie.value)]
+                self.itempool += [self.create_item_filler(AEItem.Cookie.value)]
             elif weights[1] < randomFiller <= weights[2]:
-                itempool += [self.create_item_filler(AEItem.FiveCookies.value)]
+                self.itempool += [self.create_item_filler(AEItem.FiveCookies.value)]
             elif weights[2] < randomFiller <= weights[3]:
-                itempool += [self.create_item_filler(AEItem.Triangle.value)]
+                self.itempool += [self.create_item_filler(AEItem.Triangle.value)]
             elif weights[3] < randomFiller <= weights[4]:
-                itempool += [self.create_item_filler(AEItem.BigTriangle.value)]
+                self.itempool += [self.create_item_filler(AEItem.BigTriangle.value)]
             elif weights[4] < randomFiller <= weights[5]:
-                itempool += [self.create_item_filler(AEItem.BiggerTriangle.value)]
+                self.itempool += [self.create_item_filler(AEItem.BiggerTriangle.value)]
             elif weights[5] < randomFiller <= weights[6]:
-                itempool += [self.create_item_useful(AEItem.Flash.value)]
+                self.itempool += [self.create_item_useful(AEItem.Flash.value)]
             elif weights[6] < randomFiller <= weights[7]:
-                itempool += [self.create_item_useful(AEItem.ThreeFlash.value)]
+                self.itempool += [self.create_item_useful(AEItem.ThreeFlash.value)]
             elif weights[7] < randomFiller <= weights[8]:
-                itempool += [self.create_item_useful(AEItem.Rocket.value)]
+                self.itempool += [self.create_item_useful(AEItem.Rocket.value)]
             elif weights[8] < randomFiller <= weights[9]:
-                itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
+                self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
             else:
-                itempool += [self.create_item_filler(AEItem.Nothing.value)]
+                self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
 
-        self.multiworld.itempool += itempool
+        self.multiworld.itempool += self.itempool
 
     def fill_slot_data(self):
         return {

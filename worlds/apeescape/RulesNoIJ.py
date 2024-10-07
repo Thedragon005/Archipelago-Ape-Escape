@@ -20,7 +20,7 @@ def set_noij_rules(self):
     # Make sure to update this condition properly when alternate Peak Point Matrix unlock conditions are added.
     if self.options.goal == "second":
         connect_regions(self, "Menu", AERoom.W9L2Boss.value,
-                        lambda state: Keys(state, self, 6) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self))
+                        lambda state: Keys(state, self, 6) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self))
 
     # 1-1
     connect_regions(self, AEWorld.W1.value, AERoom.W1L1Main.value, lambda state: True)
