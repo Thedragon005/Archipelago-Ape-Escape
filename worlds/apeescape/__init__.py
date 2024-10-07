@@ -21,7 +21,7 @@ class ApeEscapeWeb(WebWorld):
     theme = "stone"
 
     # Verify this placeholder text is accurate
-    setup = Tutorial(
+    setup_en = Tutorial(
         "Ape Escape Multiworld Setup Guide",
         "A guide to setting up Ape Escape in Archipelago.",
         "English",
@@ -29,13 +29,23 @@ class ApeEscapeWeb(WebWorld):
         "setup/en",
         ["CDRomatron, Thedragon005, IHNN"]
     )
+    setup_fr = Tutorial(
+        setup_en.tutorial_name,
+        setup_en.description,
+        "Français",
+        "setup_fr.md",
+        "setup/fr",
+        ["Thedragon005"]
+    )
 
-    tutorials = [setup]
+    tutorials = [setup_en,setup_fr]
 
 
 class ApeEscapeWorld(World):
     """
-    Go ape and catch Specter!
+    Ape Escape is a platform game published and developed by Sony for the PlayStation, released in 1999.
+    The story revolves around the main protagonist, Spike, who has to prevent history from being changed by an army of
+    Monkeys led by Specter, the main antagonist.
     """
     game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
