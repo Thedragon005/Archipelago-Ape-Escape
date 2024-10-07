@@ -1,9 +1,11 @@
 import math
 import os
 import json
-from typing import ClassVar, List, Optional
+from typing import ClassVar, Dict, List, Tuple, Optional
 
-from BaseClasses import ItemClassification, MultiWorld, Tutorial
+from BaseClasses import ItemClassification, MultiWorld, Tutorial, CollectionState
+from logging import warning
+from Options import OptionError
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
@@ -67,20 +69,53 @@ class ApeEscapeWorld(World):
 
     def __init__(self, multiworld: MultiWorld, player: int):
         super().__init__(multiworld, player)
-        self.debug: Optional[int] = 0
         self.goal: Optional[int] = 0
         self.logic: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
+        self.shufflenet: Optional[int] = 0
+        self.itempool: List[ApeEscapeItem] = []
 
     def generate_early(self) -> None:
-        self.debug = self.options.debug.value
         self.goal = self.options.goal.value
         self.logic = self.options.logic.value
         self.coin = self.options.coin.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
+        self.shufflenet = self.options.shufflenet.value
+        self.itempool = []
+
+    def generate_basic(self) -> None:
+        club = self.create_item(AEItem.Club.value)
+        net = self.create_item(AEItem.Net.value)
+        radar = self.create_item(AEItem.Radar.value)
+        shooter = self.create_item(AEItem.Sling.value)
+        hoop = self.create_item(AEItem.Hoop.value)
+        flyer = self.create_item(AEItem.Flyer.value)
+        car = self.create_item(AEItem.Car.value)
+        punch = self.create_item(AEItem.Punch.value)
+        waternet = self.create_item(AEItem.WaterNet.value)
+
+        # None of this is necessary if necessary if we can just make mailboxes. Also, Archipelago fill is surprisingly bad at dealing with this exact situation, so we have to do it ourselves. Why.
+        if self.options.shufflenet == "true":
+            # Condition to check if this is a 1 world multiworld
+            if self.multiworld.players == 1:
+                if self.options.coin == "true":
+                    # If the net and coins are shuffled, manually place the net in one of the possible locations for it.
+                    # Create a new collection state to test with.
+                    netless_state = CollectionState(self.multiworld)
+                    # Add the world keys (via item pool) to the testing state.
+                    for item in [self.create_item(AEItem.Key.value) for _ in range(0, 6)]:
+                        netless_state.collect(item)
+                    # Add the other gadgets to the testing state.
+                    for item in [waternet, club, radar, shooter, hoop, flyer, car, punch]:
+                        netless_state.collect(item)
+                    netless_state.update_reachable_regions(self.player)
+                    # Determine what locations are reachable without the net.
+                    net_locations = self.multiworld.get_reachable_locations(netless_state, self.player)
+                    # Place the net in a random one of these locations.
+                    self.get_location(self.random.choice(net_locations).name).place_locked_item(net)
 
     def create_regions(self):
         create_regions(self)
@@ -110,10 +145,10 @@ class ApeEscapeWorld(World):
         return item
 
     def create_items(self):
-        numberoflocations = len(location_table)
-        itempool: List[ApeEscapeItem] = []
+        reservedlocations = 0
 
         club = self.create_item(AEItem.Club.value)
+        net = self.create_item(AEItem.Net.value)
         radar = self.create_item(AEItem.Radar.value)
         shooter = self.create_item(AEItem.Sling.value)
         hoop = self.create_item(AEItem.Hoop.value)
@@ -123,87 +158,55 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
-        numberoflocations -= 1
 
         self.multiworld.push_precollected(waternet)
 
-        if self.options.debug == "off":
-            itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
-            numberoflocations -= 6
-        # DEBUG
-        elif self.options.debug == "item":
-            self.multiworld.push_precollected(club)
-            self.get_location(AELocation.Noonan.value).place_locked_item(radar)
-            self.get_location(AELocation.Jorjy.value).place_locked_item(shooter)
-            self.get_location(AELocation.Nati.value).place_locked_item(hoop)
-            self.get_location(AELocation.Shay.value).place_locked_item(flyer)
-            self.get_location(AELocation.DrMonk.value).place_locked_item(car)
-            self.get_location(AELocation.Ahchoo.value).place_locked_item(punch)
-            itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
-            numberoflocations -= 12
-        # DEBUG
-        elif self.options.debug == "key":
-            itempool += [
-                self.create_item(AEItem.Club.value),
-                self.create_item(AEItem.Radar.value),
-                self.create_item(AEItem.Sling.value),
-                self.create_item(AEItem.Hoop.value),
-                self.create_item(AEItem.Flyer.value),
-                self.create_item(AEItem.Car.value),
-                self.create_item(AEItem.Punch.value),
-            ]
-            key1 = self.create_item("World Key")
-            key2 = self.create_item("World Key")
-            key3 = self.create_item("World Key")
-            key4 = self.create_item("World Key")
-            key5 = self.create_item("World Key")
-            key6 = self.create_item("World Key")
-            self.get_location(AELocation.Noonan.value).place_locked_item(key1)
-            self.get_location(AELocation.Jorjy.value).place_locked_item(key2)
-            self.get_location(AELocation.Nati.value).place_locked_item(key3)
-            self.get_location(AELocation.Shay.value).place_locked_item(key4)
-            self.get_location(AELocation.DrMonk.value).place_locked_item(key5)
-            self.get_location(AELocation.Ahchoo.value).place_locked_item(key6)
-            numberoflocations -= 13
+        self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+
+        # TODO in the future: add the Time Station mailboxes as checks if shuffle net is on. We probably don't need anything else beyond that, other than ensuring that mailboxes or coins are shuffled if net is also shuffled.
+        if self.options.shufflenet == "false":
+            self.multiworld.push_precollected(net)
+        elif self.options.shufflenet == "true":
+            # Condition to check if this is a 1 world multiworld
+            if self.multiworld.players == 1:
+                if self.options.coin == "true":
+                    reservedlocations += 1
+                elif self.options.coin == "false":
+                    # if it is and coins are NOT shuffled: Throw a warning about incompatible options and just give the net anyway.
+                    # if instead we want to error out and prevent generation, uncomment this line:
+                    # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
+                    warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
+                    self.multiworld.push_precollected(net)
+            else:
+                # Throw a warning about potentially incompatible options (if generation fails, make sure at least world has net shuffle turned off.)
+                warning(f"{self.player_name} has Net Shuffle on. If all players have Net Shuffle on, multiworlds will likely fail to generate.")
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
-            itempool += [radar, shooter, hoop, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [radar, shooter, hoop, flyer, car, punch]
         elif self.options.gadget == "radar":
             self.multiworld.push_precollected(radar)
-            itempool += [club, shooter, hoop, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, shooter, hoop, flyer, car, punch]
         elif self.options.gadget == "sling":
             self.multiworld.push_precollected(shooter)
-            itempool += [club, radar, hoop, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, hoop, flyer, car, punch]
         elif self.options.gadget == "hoop":
             self.multiworld.push_precollected(hoop)
-            itempool += [club, radar, shooter, flyer, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, flyer, car, punch]
         elif self.options.gadget == "flyer":
             self.multiworld.push_precollected(flyer)
-            itempool += [club, radar, shooter, hoop, car, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, hoop, car, punch]
         elif self.options.gadget == "car":
             self.multiworld.push_precollected(car)
-            itempool += [club, radar, shooter, hoop, flyer, punch]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, hoop, flyer, punch]
         elif self.options.gadget == "punch":
             self.multiworld.push_precollected(punch)
-            itempool += [club, radar, shooter, hoop, flyer, car]
-            numberoflocations -= 6
+            self.itempool += [club, radar, shooter, hoop, flyer, car]
         elif self.options.gadget == "none":
-            itempool += [club, radar, shooter, hoop, flyer, car, punch]
-            numberoflocations -= 7
-
-        if self.options.coin == "false":
-            numberoflocations -= 60
+            self.itempool += [club, radar, shooter, hoop, flyer, car, punch]
 
         if self.options.goal == "first":
             self.get_location(AELocation.Specter.value).place_locked_item(victory)
-            numberoflocations -= 1
         else:
             self.get_location(AELocation.Specter2.value).place_locked_item(victory)
 
@@ -215,41 +218,41 @@ class ApeEscapeWorld(World):
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
 
-        for _ in range(numberoflocations):
+        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
-                itempool += [self.create_item_useful(AEItem.Shirt.value)]
+                self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
             elif weights[0] < randomFiller <= weights[1]:
-                itempool += [self.create_item_filler(AEItem.Cookie.value)]
+                self.itempool += [self.create_item_filler(AEItem.Cookie.value)]
             elif weights[1] < randomFiller <= weights[2]:
-                itempool += [self.create_item_filler(AEItem.FiveCookies.value)]
+                self.itempool += [self.create_item_filler(AEItem.FiveCookies.value)]
             elif weights[2] < randomFiller <= weights[3]:
-                itempool += [self.create_item_filler(AEItem.Triangle.value)]
+                self.itempool += [self.create_item_filler(AEItem.Triangle.value)]
             elif weights[3] < randomFiller <= weights[4]:
-                itempool += [self.create_item_filler(AEItem.BigTriangle.value)]
+                self.itempool += [self.create_item_filler(AEItem.BigTriangle.value)]
             elif weights[4] < randomFiller <= weights[5]:
-                itempool += [self.create_item_filler(AEItem.BiggerTriangle.value)]
+                self.itempool += [self.create_item_filler(AEItem.BiggerTriangle.value)]
             elif weights[5] < randomFiller <= weights[6]:
-                itempool += [self.create_item_useful(AEItem.Flash.value)]
+                self.itempool += [self.create_item_useful(AEItem.Flash.value)]
             elif weights[6] < randomFiller <= weights[7]:
-                itempool += [self.create_item_useful(AEItem.ThreeFlash.value)]
+                self.itempool += [self.create_item_useful(AEItem.ThreeFlash.value)]
             elif weights[7] < randomFiller <= weights[8]:
-                itempool += [self.create_item_useful(AEItem.Rocket.value)]
+                self.itempool += [self.create_item_useful(AEItem.Rocket.value)]
             elif weights[8] < randomFiller <= weights[9]:
-                itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
+                self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
             else:
-                itempool += [self.create_item_filler(AEItem.Nothing.value)]
+                self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
 
-        self.multiworld.itempool += itempool
+        self.multiworld.itempool += self.itempool
 
     def fill_slot_data(self):
         return {
-            "debug": self.options.debug.value,
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
             "coin": self.options.coin.value,
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
+            "shufflenet": self.options.shufflenet.value,
         }
 
     def generate_output(self, output_directory: str):
