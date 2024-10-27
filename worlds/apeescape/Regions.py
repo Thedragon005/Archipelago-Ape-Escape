@@ -16,6 +16,7 @@ def create_regions(world: "ApeEscapeWorld"):
     menu = Region("Menu", player, multiworld)
 
     # worlds
+    timehub = Region(AEWorld.Hub.value, player, multiworld)
     w1 = Region(AEWorld.W1.value, player, multiworld)
     w2 = Region(AEWorld.W2.value, player, multiworld)
     w3 = Region(AEWorld.W3.value, player, multiworld)
@@ -25,6 +26,23 @@ def create_regions(world: "ApeEscapeWorld"):
     w7 = Region(AEWorld.W7.value, player, multiworld)
     w8 = Region(AEWorld.W8.value, player, multiworld)
     w9 = Region(AEWorld.W9.value, player, multiworld)
+
+    # Time Hub
+    thmain = Region(AERoom.TimeHubMain.value, player, multiworld)
+    thminigame = Region(AERoom.TimeHubMinigame.value, player, multiworld)
+    thtraining = Region(AERoom.TimeHubTraining.value, player, multiworld)
+    mailbox59 = Region(AERoom.Mailbox59.value, player, multiworld)
+    mailbox59.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox59) for loc_name in
+                         get_array([459])]
+    mailbox60 = Region(AERoom.Mailbox60.value, player, multiworld)
+    mailbox60.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox60) for loc_name in
+                            get_array([460])]
+    mailbox61 = Region(AERoom.Mailbox61.value, player, multiworld)
+    mailbox61.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox61) for loc_name in
+                            get_array([461])]
+    mailbox62 = Region(AERoom.Mailbox62.value, player, multiworld)
+    mailbox62.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox62) for loc_name in
+                            get_array([462])]
 
     # 1-1
     l11 = Region(AERoom.W1L1Main.value, player, multiworld)
@@ -36,7 +54,15 @@ def create_regions(world: "ApeEscapeWorld"):
     nati.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], nati) for loc_name in get_array([3])]
     trayc = Region(AERoom.W1L1TrayC.value, player, multiworld)
     trayc.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], trayc) for loc_name in get_array([4])]
-
+    mailbox1 = Region(AERoom.Mailbox1.value, player, multiworld)
+    mailbox1.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox1) for loc_name in
+                            get_array([401])]
+    mailbox2 = Region(AERoom.Mailbox2.value, player, multiworld)
+    mailbox2.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox2) for loc_name in
+                           get_array([402])]
+    mailbox3 = Region(AERoom.Mailbox3.value, player, multiworld)
+    mailbox3.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox3) for loc_name in
+                           get_array([403])]
     # 1-2
     l12 = Region(AERoom.W1L2Main.value, player, multiworld)
     shay = Region(AERoom.W1L2Shay.value, player, multiworld)
@@ -51,7 +77,18 @@ def create_regions(world: "ApeEscapeWorld"):
     gornif.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], gornif) for loc_name in get_array([9])]
     tyrone = Region(AERoom.W1L2Tyrone.value, player, multiworld)
     tyrone.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], tyrone) for loc_name in get_array([10])]
-
+    mailbox4 = Region(AERoom.Mailbox4.value, player, multiworld)
+    mailbox4.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox4) for loc_name in
+                           get_array([404])]
+    mailbox5 = Region(AERoom.Mailbox5.value, player, multiworld)
+    mailbox5.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox5) for loc_name in
+                           get_array([405])]
+    mailbox6 = Region(AERoom.Mailbox6.value, player, multiworld)
+    mailbox6.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox6) for loc_name in
+                           get_array([406])]
+    mailbox7 = Region(AERoom.Mailbox7.value, player, multiworld)
+    mailbox7.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox7) for loc_name in
+                           get_array([407])]
     # 1-3
     l131 = Region(AERoom.W1L3Entry.value, player, multiworld)
     l132 = Region(AERoom.W1L3Volcano.value, player, multiworld)
@@ -70,7 +107,21 @@ def create_regions(world: "ApeEscapeWorld"):
     rocky.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], rocky) for loc_name in get_array([16])]
     moggan = Region(AERoom.W1L3Moggan.value, player, multiworld)
     moggan.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], moggan) for loc_name in get_array([17])]
-
+    mailbox8 = Region(AERoom.Mailbox8.value, player, multiworld)
+    mailbox8.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox8) for loc_name in
+                           get_array([408])]
+    mailbox9 = Region(AERoom.Mailbox9.value, player, multiworld)
+    mailbox9.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox9) for loc_name in
+                           get_array([409])]
+    mailbox10 = Region(AERoom.Mailbox10.value, player, multiworld)
+    mailbox10.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox10) for loc_name in
+                           get_array([410])]
+    mailbox11 = Region(AERoom.Mailbox11.value, player, multiworld)
+    mailbox11.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox11) for loc_name in
+                           get_array([411])]
+    mailbox12 = Region(AERoom.Mailbox12.value, player, multiworld)
+    mailbox12.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox12) for loc_name in
+                            get_array([412])]
     # 2-1
     l211 = Region(AERoom.W2L1Entry.value, player, multiworld)
     l212 = Region(AERoom.W2L1Mushroom.value, player, multiworld)
@@ -105,7 +156,33 @@ def create_regions(world: "ApeEscapeWorld"):
     elehcim.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], elehcim) for loc_name in get_array([28])]
     selur = Region(AERoom.W2L1Selur.value, player, multiworld)
     selur.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], selur) for loc_name in get_array([27])]
-
+    mailbox13 = Region(AERoom.Mailbox13.value, player, multiworld)
+    mailbox13.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox13) for loc_name in
+                            get_array([413])]
+    mailbox14 = Region(AERoom.Mailbox14.value, player, multiworld)
+    mailbox14.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox14) for loc_name in
+                            get_array([414])]
+    mailbox15 = Region(AERoom.Mailbox15.value, player, multiworld)
+    mailbox15.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox15) for loc_name in
+                            get_array([415])]
+    mailbox16 = Region(AERoom.Mailbox16.value, player, multiworld)
+    mailbox16.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox16) for loc_name in
+                            get_array([416])]
+    mailbox17 = Region(AERoom.Mailbox17.value, player, multiworld)
+    mailbox17.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox17) for loc_name in
+                            get_array([417])]
+    mailbox18 = Region(AERoom.Mailbox18.value, player, multiworld)
+    mailbox18.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox18) for loc_name in
+                            get_array([418])]
+    mailbox19 = Region(AERoom.Mailbox19.value, player, multiworld)
+    mailbox19.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox19) for loc_name in
+                            get_array([419])]
+    mailbox20 = Region(AERoom.Mailbox20.value, player, multiworld)
+    mailbox20.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox20) for loc_name in
+                            get_array([420])]
+    mailbox21 = Region(AERoom.Mailbox21.value, player, multiworld)
+    mailbox21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox21) for loc_name in
+                            get_array([421])]
     # 2-2
     l221 = Region(AERoom.W2L2Outside.value, player, multiworld)
     l222 = Region(AERoom.W2L2Fan.value, player, multiworld)
@@ -138,7 +215,27 @@ def create_regions(world: "ApeEscapeWorld"):
     trance.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], trance) for loc_name in get_array([43])]
     chino = Region(AERoom.W2L2Chino.value, player, multiworld)
     chino.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], chino) for loc_name in get_array([44])]
-
+    mailbox22 = Region(AERoom.Mailbox22.value, player, multiworld)
+    mailbox22.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox22) for loc_name in
+                            get_array([422])]
+    mailbox23 = Region(AERoom.Mailbox23.value, player, multiworld)
+    mailbox23.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox23) for loc_name in
+                            get_array([423])]
+    mailbox24 = Region(AERoom.Mailbox24.value, player, multiworld)
+    mailbox24.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox24) for loc_name in
+                            get_array([424])]
+    mailbox25 = Region(AERoom.Mailbox25.value, player, multiworld)
+    mailbox25.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox25) for loc_name in
+                            get_array([425])]
+    mailbox26 = Region(AERoom.Mailbox26.value, player, multiworld)
+    mailbox26.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox26) for loc_name in
+                            get_array([426])]
+    mailbox27 = Region(AERoom.Mailbox27.value, player, multiworld)
+    mailbox27.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox27) for loc_name in
+                            get_array([427])]
+    mailbox28 = Region(AERoom.Mailbox28.value, player, multiworld)
+    mailbox28.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox28) for loc_name in
+                            get_array([428])]
     # 2-3
     l231 = Region(AERoom.W2L3Outside.value, player, multiworld)
     l232 = Region(AERoom.W2L3Side.value, player, multiworld)
@@ -161,7 +258,21 @@ def create_regions(world: "ApeEscapeWorld"):
     bazzle.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bazzle) for loc_name in get_array([51])]
     crash = Region(AERoom.W2L3Crash.value, player, multiworld)
     crash.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], crash) for loc_name in get_array([52])]
-
+    mailbox29 = Region(AERoom.Mailbox29.value, player, multiworld)
+    mailbox29.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox29) for loc_name in
+                            get_array([429])]
+    mailbox30 = Region(AERoom.Mailbox30.value, player, multiworld)
+    mailbox30.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox30) for loc_name in
+                            get_array([430])]
+    mailbox31 = Region(AERoom.Mailbox31.value, player, multiworld)
+    mailbox31.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox31) for loc_name in
+                            get_array([431])]
+    mailbox32 = Region(AERoom.Mailbox32.value, player, multiworld)
+    mailbox32.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox32) for loc_name in
+                            get_array([432])]
+    mailbox33 = Region(AERoom.Mailbox33.value, player, multiworld)
+    mailbox33.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox33) for loc_name in
+                            get_array([433])]
     # 4-1
     l411 = Region(AERoom.W4L1FirstRoom.value, player, multiworld)
     l412 = Region(AERoom.W4L1SecondRoom.value, player, multiworld)
@@ -181,7 +292,15 @@ def create_regions(world: "ApeEscapeWorld"):
     moko.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], moko) for loc_name in get_array([59])]
     puka = Region(AERoom.W4L1Puka.value, player, multiworld)
     puka.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], puka) for loc_name in get_array([60])]
-
+    mailbox34 = Region(AERoom.Mailbox34.value, player, multiworld)
+    mailbox34.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox34) for loc_name in
+                            get_array([434])]
+    mailbox35 = Region(AERoom.Mailbox35.value, player, multiworld)
+    mailbox35.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox35) for loc_name in
+                            get_array([435])]
+    mailbox36 = Region(AERoom.Mailbox36.value, player, multiworld)
+    mailbox36.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox36) for loc_name in
+                            get_array([436])]
     # 4-2
     l421 = Region(AERoom.W4L2FirstRoom.value, player, multiworld)
     l422 = Region(AERoom.W4L2SecondRoom.value, player, multiworld)
@@ -201,7 +320,12 @@ def create_regions(world: "ApeEscapeWorld"):
     bongbong.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bongbong) for loc_name in get_array([67])]
     pickles = Region(AERoom.W4L2Pickles.value, player, multiworld)
     pickles.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], pickles) for loc_name in get_array([68])]
-
+    mailbox37 = Region(AERoom.Mailbox37.value, player, multiworld)
+    mailbox37.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox37) for loc_name in
+                            get_array([437])]
+    mailbox38 = Region(AERoom.Mailbox38.value, player, multiworld)
+    mailbox38.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox38) for loc_name in
+                            get_array([438])]
     # 4-3
     l431 = Region(AERoom.W4L3Outside.value, player, multiworld)
     l432 = Region(AERoom.W4L3Stomach.value, player, multiworld)
@@ -230,7 +354,18 @@ def create_regions(world: "ApeEscapeWorld"):
     horke.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], horke) for loc_name in get_array([78])]
     quirck = Region(AERoom.W4L3Quirck.value, player, multiworld)
     quirck.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], quirck) for loc_name in get_array([79])]
-
+    mailbox39 = Region(AERoom.Mailbox39.value, player, multiworld)
+    mailbox39.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox39) for loc_name in
+                            get_array([439])]
+    mailbox40 = Region(AERoom.Mailbox40.value, player, multiworld)
+    mailbox40.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox40) for loc_name in
+                            get_array([440])]
+    mailbox41 = Region(AERoom.Mailbox41.value, player, multiworld)
+    mailbox41.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox41) for loc_name in
+                            get_array([441])]
+    mailbox42 = Region(AERoom.Mailbox42.value, player, multiworld)
+    mailbox42.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox42) for loc_name in
+                            get_array([442])]
     # 5-1
     l51 = Region(AERoom.W5L1Main.value, player, multiworld)
     popcicle = Region(AERoom.W5L1Popcicle.value, player, multiworld)
@@ -245,7 +380,15 @@ def create_regions(world: "ApeEscapeWorld"):
     rickets.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], rickets) for loc_name in get_array([84])]
     chilly = Region(AERoom.W5L1Chilly.value, player, multiworld)
     chilly.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], chilly) for loc_name in get_array([85])]
-
+    mailbox43 = Region(AERoom.Mailbox43.value, player, multiworld)
+    mailbox43.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox43) for loc_name in
+                            get_array([443])]
+    mailbox44 = Region(AERoom.Mailbox44.value, player, multiworld)
+    mailbox44.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox44) for loc_name in
+                            get_array([444])]
+    mailbox45 = Region(AERoom.Mailbox45.value, player, multiworld)
+    mailbox45.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox45) for loc_name in
+                            get_array([445])]
     # 5-2
     l521 = Region(AERoom.W5L2Entry.value, player, multiworld)
     l522 = Region(AERoom.W5L2Water.value, player, multiworld)
@@ -268,7 +411,9 @@ def create_regions(world: "ApeEscapeWorld"):
     sharpe.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], sharpe) for loc_name in get_array([93])]
     droog = Region(AERoom.W5L2Droog.value, player, multiworld)
     droog.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], droog) for loc_name in get_array([94])]
-
+    mailbox46 = Region(AERoom.Mailbox46.value, player, multiworld)
+    mailbox46.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox46) for loc_name in
+                            get_array([446])]
     # 5-3
     l531 = Region(AERoom.W5L3Outside.value, player, multiworld)
     l532 = Region(AERoom.W5L3Spring.value, player, multiworld)
@@ -291,7 +436,15 @@ def create_regions(world: "ApeEscapeWorld"):
     claxter.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], claxter) for loc_name in get_array([102])]
     looza = Region(AERoom.W5L3Looza.value, player, multiworld)
     looza.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], looza) for loc_name in get_array([103])]
-
+    mailbox47 = Region(AERoom.Mailbox47.value, player, multiworld)
+    mailbox47.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox47) for loc_name in
+                            get_array([447])]
+    mailbox48 = Region(AERoom.Mailbox48.value, player, multiworld)
+    mailbox48.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox48) for loc_name in
+                            get_array([448])]
+    mailbox49 = Region(AERoom.Mailbox49.value, player, multiworld)
+    mailbox49.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox49) for loc_name in
+                            get_array([449])]
     # 7-1
     l711 = Region(AERoom.W7L1Outside.value, player, multiworld)
     l712 = Region(AERoom.W7L1Temple.value, player, multiworld)
@@ -320,7 +473,15 @@ def create_regions(world: "ApeEscapeWorld"):
     elly.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], elly) for loc_name in get_array([114])]
     chunky = Region(AERoom.W7L1Chunky.value, player, multiworld)
     chunky.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], chunky) for loc_name in get_array([115])]
-
+    mailbox50 = Region(AERoom.Mailbox50.value, player, multiworld)
+    mailbox50.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox50) for loc_name in
+                            get_array([450])]
+    mailbox51 = Region(AERoom.Mailbox51.value, player, multiworld)
+    mailbox51.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox51) for loc_name in
+                            get_array([451])]
+    mailbox52 = Region(AERoom.Mailbox52.value, player, multiworld)
+    mailbox52.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox52) for loc_name in
+                            get_array([452])]
     # 7-2
     l721 = Region(AERoom.W7L2First.value, player, multiworld)
     l722 = Region(AERoom.W7L2Gong.value, player, multiworld)
@@ -347,6 +508,15 @@ def create_regions(world: "ApeEscapeWorld"):
     kong.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], kong) for loc_name in get_array([124])]
     phool = Region(AERoom.W7L2Phool.value, player, multiworld)
     phool.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], phool) for loc_name in get_array([125])]
+    mailbox53 = Region(AERoom.Mailbox53.value, player, multiworld)
+    mailbox53.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox53) for loc_name in
+                            get_array([453])]
+    mailbox54 = Region(AERoom.Mailbox54.value, player, multiworld)
+    mailbox54.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox54) for loc_name in
+                            get_array([454])]
+    mailbox55 = Region(AERoom.Mailbox55.value, player, multiworld)
+    mailbox55.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox55) for loc_name in
+                            get_array([455])]
 
     # 7-3
     l731 = Region(AERoom.W7L3Outside.value, player, multiworld)
@@ -398,7 +568,9 @@ def create_regions(world: "ApeEscapeWorld"):
     joey.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], joey) for loc_name in get_array([144])]
     donqui = Region(AERoom.W7L3Donqui.value, player, multiworld)
     donqui.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], donqui) for loc_name in get_array([145])]
-
+    mailbox56 = Region(AERoom.Mailbox56.value, player, multiworld)
+    mailbox56.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox56) for loc_name in
+                            get_array([456])]
     # 8-1
     l811 = Region(AERoom.W8L1Outside.value, player, multiworld)
     l812 = Region(AERoom.W8L1Sewers.value, player, multiworld)
@@ -460,7 +632,9 @@ def create_regions(world: "ApeEscapeWorld"):
     strung.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], strung) for loc_name in get_array([167])]
     khamo = Region(AERoom.W8L2Khamo.value, player, multiworld)
     khamo.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], khamo) for loc_name in get_array([168])]
-
+    mailbox57 = Region(AERoom.Mailbox57.value, player, multiworld)
+    mailbox57.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox57) for loc_name in
+                            get_array([457])]
     # 8-3
     l831 = Region(AERoom.W8L3Outside.value, player, multiworld)
     l832 = Region(AERoom.W8L3Water.value, player, multiworld)
@@ -567,30 +741,33 @@ def create_regions(world: "ApeEscapeWorld"):
     carlito.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], carlito) for loc_name in get_array([203])]
     bg = Region(AERoom.W9L1BG.value, player, multiworld)
     bg.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bg) for loc_name in get_array([204])]
-
+    mailbox58 = Region(AERoom.Mailbox58.value, player, multiworld)
+    mailbox58.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox58) for loc_name in
+                            get_array([458])]
     regions = [menu,
+               timehub, thmain, thminigame, thtraining, mailbox59, mailbox60, mailbox61, mailbox62,
                w1, w2, w3, w4, w5, w6, w7, w8, w9,
-               l11, noonan, jorjy, nati, trayc,
-               l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
-               l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan,
-               l211, l212, l213, l214, l215, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar,
-               l221, l222, l223, l224, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt, runt, hoolah, chino,
-               l231, l232, l233, l234, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
-               l411, l412, coolblue, sandy, shelle, gidget, shaka, maxmahalo, moko, puka,
-               l421, l422, chip, oreo, puddles, kalama, iz, bongbong, jux, pickles,
-               l431, l432, l433, l434, l435, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee, frederic, baba, quirck,
-               l51, popcicle, iced, rickets, skeens, denggoy, chilly,
-               l521, l522, l523, storm, qube, ranix, sharpe, sticky, droog, gash, kundra, shadow,
-               l531, l532, l533, punky, ameego, yoky, jory, crank, claxter, looza, roti, dissa,
-               l711, l712, l713, taku, rocka, maralea, wog, mayi, owyang, long, elly, chunky, voti, queltin, phaldo,
-               l721, l722, l723, l724, l725, minky, zobbro, xeeto, moops, zanabi, doxs, buddah, fooey, kong, phool,
-               l731, l732, l733, l734, l735, l736, l737,
+               l11, noonan, jorjy, nati, trayc, mailbox1, mailbox2, mailbox3,
+               l12, shay, drmonk, grunt, ahchoo, gornif, tyrone, mailbox4, mailbox5, mailbox6, mailbox7,
+               l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan, mailbox8, mailbox9, mailbox10, mailbox11, mailbox12,
+               l211, l212, l213, l214, l215, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar, mailbox13, mailbox14, mailbox15, mailbox16, mailbox17, mailbox18, mailbox19, mailbox20, mailbox21,
+               l221, l222, l223, l224, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt, runt, hoolah, chino, mailbox22, mailbox23, mailbox24, mailbox25, mailbox26, mailbox27, mailbox28,
+               l231, l232, l233, l234, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash, mailbox29, mailbox30, mailbox31, mailbox32, mailbox33,
+               l411, l412, coolblue, sandy, shelle, gidget, shaka, maxmahalo, moko, puka, mailbox34, mailbox35, mailbox36,
+               l421, l422, chip, oreo, puddles, kalama, iz, bongbong, jux, pickles, mailbox37, mailbox38,
+               l431, l432, l433, l434, l435, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee, frederic, baba, quirck, mailbox39, mailbox40, mailbox41, mailbox42,
+               l51, popcicle, iced, rickets, skeens, denggoy, chilly, mailbox43, mailbox44, mailbox45,
+               l521, l522, l523, storm, qube, ranix, sharpe, sticky, droog, gash, kundra, shadow, mailbox46,
+               l531, l532, l533, punky, ameego, yoky, jory, crank, claxter, looza, roti, dissa, mailbox47, mailbox48, mailbox49,
+               l711, l712, l713, taku, rocka, maralea, wog, mayi, owyang, long, elly, chunky, voti, queltin, phaldo, mailbox50, mailbox51, mailbox52,
+               l721, l722, l723, l724, l725, minky, zobbro, xeeto, moops, zanabi, doxs, buddah, fooey, kong, phool, mailbox53, mailbox54, mailbox55,
+               l731, l732, l733, l734, l735, l736, l737, mailbox56,
                robart, igor, naners, neeners, charles, gustav, wilhelm, emmanuel, sircutty, calligan, castalist, deveneom, astur, kilserack, ringo, densil, figero, fej, joey, donqui,
                l811, l812, l813, kaine, jaxx, gehry, alcatraz, tino, qbee, mcmanic, dywan, ckhutch, winky, bluv, camper, huener,
-               l821, l822, l823, l824, l825, l826, l827, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
+               l821, l822, l823, l824, l825, l826, l827, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo, mailbox57,
                l831, l832, l833, l834, l835, l836, fredo, charlee, mach3, tortuss, manic, ruptdis, eighty7, danio, roosta, tellis, whack, frostee,
-               l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114, l9115, l9116, l9117, l9118, l9119, l9120, 
-               goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
+               l911, l912, l913, l914, l915, l916, l917, l918, l919, l9110, l9111, l9112, l9113, l9114, l9115, l9116, l9117, l9118, l9119, l9120,
+               goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg, mailbox58]
 
     if options.goal == "second":
         # 9-2

@@ -576,6 +576,141 @@ def set_ij_rules(self):
     connect_regions(self, AERoom.W9L1Side.value, AERoom.W9L1BG.value,
                     lambda state: MM_SHA(state, self) and (HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
 
+    # Mailboxes
+
+    # TimeHub
+    connect_regions(self, AERoom.TimeHubMain.value, AERoom.Mailbox59.value, lambda state: True)
+    connect_regions(self, AERoom.TimeHubMain.value, AERoom.Mailbox60.value, lambda state: True)
+    connect_regions(self, AERoom.TimeHubMinigame.value, AERoom.Mailbox61.value, lambda state: True)
+    connect_regions(self, AERoom.TimeHubTraining.value, AERoom.Mailbox62.value, lambda state: True)
+
+    # 1-1
+    connect_regions(self, AERoom.W1L1Main.value, AERoom.Mailbox1.value, lambda state: True)
+    connect_regions(self, AERoom.W1L1Main.value, AERoom.Mailbox2.value, lambda state: True)
+    connect_regions(self, AERoom.W1L1Main.value, AERoom.Mailbox3.value,
+                    lambda state: CanHitOnce(state, self))
+    # 1-2
+    connect_regions(self, AERoom.W1L2Main.value, AERoom.Mailbox4.value, lambda state: True)
+    connect_regions(self, AERoom.W1L2Main.value, AERoom.Mailbox5.value, lambda state: True)
+    connect_regions(self, AERoom.W1L2Main.value, AERoom.Mailbox6.value, lambda state: True)
+    connect_regions(self, AERoom.W1L2Main.value, AERoom.Mailbox7.value, lambda state: True)
+
+    # 1-3
+    connect_regions(self, AERoom.W1L3Entry.value, AERoom.Mailbox8.value, lambda state: True)
+    connect_regions(self, AERoom.W1L3Entry.value, AERoom.Mailbox9.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W1L3Volcano.value, AERoom.Mailbox10.value, lambda state: True)
+    connect_regions(self, AERoom.W1L3Triceratops.value, AERoom.Mailbox11.value, lambda state: True)
+    connect_regions(self, AERoom.W1L3Triceratops.value, AERoom.Mailbox12.value,
+                    lambda state: HasSling(state, self))
+
+    # 2-1
+    connect_regions(self, AERoom.W2L1Entry.value, AERoom.Mailbox13.value, lambda state: True)
+    connect_regions(self, AERoom.W2L1Entry.value, AERoom.Mailbox14.value, lambda state: True)
+    connect_regions(self, AERoom.W2L1Mushroom.value, AERoom.Mailbox15.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L1Mushroom.value, AERoom.Mailbox16.value,
+                    lambda state: HasMobility(state, self) and CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L1Fish.value, AERoom.Mailbox17.value,
+                    lambda state: TJ_FishEntry(state, self))
+    connect_regions(self, AERoom.W2L1Fish.value, AERoom.Mailbox18.value,
+                    lambda state: TJ_FishEntry(state, self) and CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L1Fish.value, AERoom.Mailbox19.value,
+                    lambda state: TJ_FishEntry(state, self))
+    connect_regions(self, AERoom.W2L1Tent.value, AERoom.Mailbox20.value,
+                    lambda state: (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self) and CanHitOnce(state,
+                                                                                                        self)) or (
+                                              TJ_FishEntry(state, self) and CanHitMultiple(state, self)))
+    connect_regions(self, AERoom.W2L1Boulder.value, AERoom.Mailbox21.value,
+                    lambda state: (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self) and CanHitOnce(state,
+                                                                                                        self)) or (
+                                              TJ_FishEntry(state, self) and CanHitMultiple(state, self)))
+    # 2-2
+    connect_regions(self, AERoom.W2L2Outside.value, AERoom.Mailbox22.value, lambda state: True)
+    connect_regions(self, AERoom.W2L2Outside.value, AERoom.Mailbox23.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L2Outside.value, AERoom.Mailbox24.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L2Outside.value, AERoom.Mailbox25.value, lambda state: True)
+    connect_regions(self, AERoom.W2L2Fan.value, AERoom.Mailbox26.value, lambda state: True)
+    connect_regions(self, AERoom.W2L2Fan.value, AERoom.Mailbox27.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L2Obelisk.value, AERoom.Mailbox28.value,
+                    lambda state: CanHitOnce(state, self))
+    # 2-3
+    connect_regions(self, AERoom.W2L3Outside.value, AERoom.Mailbox29.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L3Outside.value, AERoom.Mailbox30.value, lambda state: True)
+    connect_regions(self, AERoom.W2L3Main.value, AERoom.Mailbox31.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W2L3Main.value, AERoom.Mailbox32.value,
+                    lambda state: CR_Inside(state, self) and CanSwim(state, self) and (
+                                HasMobility(state, self) or CanHitMultiple(state, self)))
+    connect_regions(self, AERoom.W2L3Pillar.value, AERoom.Mailbox33.value,
+                    lambda state: CR_Inside(state, self))
+    # 4-1
+    connect_regions(self, AERoom.W4L1FirstRoom.value, AERoom.Mailbox34.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W4L1FirstRoom.value, AERoom.Mailbox35.value, lambda state: True)
+    connect_regions(self, AERoom.W4L1SecondRoom.value, AERoom.Mailbox36.value,
+                    lambda state: CanHitOnce(state, self) and HasNet(state, self))
+    # 4-2
+    connect_regions(self, AERoom.W4L2SecondRoom.value, AERoom.Mailbox37.value,
+                    lambda state: (CanSwim(state, self) and CanHitOnce(state, self)) or HasSling(state,self))
+    connect_regions(self, AERoom.W4L2SecondRoom.value, AERoom.Mailbox38.value,
+                    lambda state: (CanSwim(state, self) and CanHitOnce(state, self)) or HasSling(state,self))
+    # 4-3
+    connect_regions(self, AERoom.W4L3Outside.value, AERoom.Mailbox39.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W4L3Outside.value, AERoom.Mailbox40.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W4L3Slide.value, AERoom.Mailbox41.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W4L3Gallery.value, AERoom.Mailbox42.value,
+                    lambda state: CanHitOnce(state, self))
+    # 5-1
+    connect_regions(self, AERoom.W5L1Main.value, AERoom.Mailbox43.value, lambda state: True)
+    connect_regions(self, AERoom.W5L1Main.value, AERoom.Mailbox44.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W5L1Main.value, AERoom.Mailbox45.value, lambda state: True)
+
+
+    # 5-2
+    connect_regions(self, AERoom.W5L2Caverns.value, AERoom.Mailbox46.value,
+                    lambda state: CanHitOnce(state, self))
+    # 5-3
+    connect_regions(self, AERoom.W5L3Outside.value, AERoom.Mailbox47.value,
+                    lambda state: (HasSling(state, self) or HasFlyer(state, self)) and CanHitOnce(state, self))
+    connect_regions(self, AERoom.W5L3Spring.value, AERoom.Mailbox48.value,
+                    lambda state: (HasSling(state, self) or HasFlyer(state, self)) and CanHitOnce(state, self))
+    connect_regions(self, AERoom.W5L3Cave.value, AERoom.Mailbox49.value, lambda state: True)
+
+    # 7-1
+    connect_regions(self, AERoom.W7L1Temple.value, AERoom.Mailbox50.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W7L1Temple.value, AERoom.Mailbox51.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W7L1Well.value, AERoom.Mailbox52.value,
+                    lambda state: CanHitOnce(state, self))
+
+    # 7-2
+    connect_regions(self, AERoom.W7L2Gong.value, AERoom.Mailbox53.value,
+                    lambda state: CanHitOnce(state, self))
+    connect_regions(self, AERoom.W7L2Middle.value, AERoom.Mailbox54.value,
+                    lambda state: (HasNet(state, self) or HasSling(state,self) or HasFlyer(state, self)) and CanHitOnce(state, self))
+    connect_regions(self, AERoom.W7L2Course.value, AERoom.Mailbox55.value,
+                    lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self))
+    # 7-3
+    connect_regions(self, AERoom.W7L3Outside.value, AERoom.Mailbox56.value,
+                    lambda state: CanHitOnce(state, self))
+
+    # 8-2
+    connect_regions(self, AERoom.W8L2Outside.value, AERoom.Mailbox57.value, lambda state: True)
+
+    # 9-1
+    connect_regions(self, AERoom.W9L1Entry.value, AERoom.Mailbox58.value, lambda state: True)
+    self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
+
     self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
 
     if self.options.coin == "true":
