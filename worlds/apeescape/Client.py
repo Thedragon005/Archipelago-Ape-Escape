@@ -260,6 +260,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
                 (RAM.roomStatus, 1, "MainRAM"),
+                (RAM.gotMailAddress, 1, "MainRAM"),
+                (RAM.mailboxIDAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
@@ -402,7 +404,24 @@ class ApeEscapeClient(BizHawkClient):
                         "locations": list(x for x in bosses_to_send)
                     }])
 
+            # Check for Mailboxes
+            if (localcondition) and (currentRoom in mailboxesRooms):
+                mailboxesaddrs = RAM.bossListLocal[currentRoom]
+                boolGotMail = (gotMail == 0x02)
+                key_list = list(mailboxesaddrs.keys())
+                val_list = list(mailboxesaddrs.values())
 
+                mail_to_send = set()
+
+                for i in range(len(val_list)):
+                        if val_list[i] == mailboxID and boolGotMail:
+                            mail_to_send.add(key_list[i] + self.offset)
+
+                if mail_to_send is not None:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": list(x for x in mail_to_send)
+                    }])
             # Check for victory conditions
             specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
             specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
