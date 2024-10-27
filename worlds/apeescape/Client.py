@@ -259,6 +259,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, 1, "MainRAM"),
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
+                (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
@@ -307,9 +308,11 @@ class ApeEscapeClient(BizHawkClient):
             requiredApes = int.from_bytes(reads[14], byteorder="little")
             currentApes = int.from_bytes(reads[15], byteorder="little")
             spikeState = int.from_bytes(reads[16], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[17], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[18], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[19], byteorder="little")
+            roomStatus = int.from_bytes(reads[17], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[18], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[19], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[20], byteorder="little")
+
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -383,8 +386,14 @@ class ApeEscapeClient(BizHawkClient):
                 bosses_to_send = set()
 
                 for i in range(len(bossesList)):
-                    if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
-                        bosses_to_send.add(key_list[i] + self.offset)
+                    # For TVT boss,check roomStatus if it's 3 the fight is ongoing
+                    if (currentRoom == 68):
+                        print(roomStatus)
+                        if (roomStatus == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
+                            bosses_to_send.add(key_list[i] + self.offset)
+                    else:
+                        if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
+                            bosses_to_send.add(key_list[i] + self.offset)
 
                 if bosses_to_send is not None:
                     await ctx.send_msgs([{
@@ -551,7 +560,7 @@ class ApeEscapeClient(BizHawkClient):
                     print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
-                    # Does not need to know the rest of the levels,at least 1 in not completed
+                    # Does not need to know the rest of the levels,at least 1 is not completed
 
         PPMUnlock = key >= 6 and allCompleted
         # Tried my hand at blocking ALL kick-outs
