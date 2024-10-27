@@ -309,9 +309,11 @@ class ApeEscapeClient(BizHawkClient):
             currentApes = int.from_bytes(reads[15], byteorder="little")
             spikeState = int.from_bytes(reads[16], byteorder="little")
             roomStatus = int.from_bytes(reads[17], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[18], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[19], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[20], byteorder="little")
+            gotMail = int.from_bytes(reads[18], byteorder="little")
+            mailboxID = int.from_bytes(reads[19], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[20], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[21], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[22], byteorder="little")
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
