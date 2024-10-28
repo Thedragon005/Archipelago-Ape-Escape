@@ -16,7 +16,7 @@ def create_regions(world: "ApeEscapeWorld"):
     menu = Region("Menu", player, multiworld)
 
     # worlds
-    timehub = Region(AEWorld.Hub.value, player, multiworld)
+    timestation = Region(AEWorld.TS.value, player, multiworld)
     w1 = Region(AEWorld.W1.value, player, multiworld)
     w2 = Region(AEWorld.W2.value, player, multiworld)
     w3 = Region(AEWorld.W3.value, player, multiworld)
@@ -29,9 +29,9 @@ def create_regions(world: "ApeEscapeWorld"):
 
 
     # Time Station
-    thmain = Region(AERoom.TimeStationMain.value, player, multiworld)
-    thminigame = Region(AERoom.TimeStationMinigame.value, player, multiworld)
-    thtraining = Region(AERoom.TimeStationTraining.value, player, multiworld)
+    tsmain = Region(AERoom.TimeStationMain.value, player, multiworld)
+    tsminigame = Region(AERoom.TimeStationMinigame.value, player, multiworld)
+    tstraining = Region(AERoom.TimeStationTraining.value, player, multiworld)
     
     # 1-1
     l11 = Region(AERoom.W1L1Main.value, player, multiworld)
@@ -587,7 +587,7 @@ def create_regions(world: "ApeEscapeWorld"):
     bg.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bg) for loc_name in get_array([204])]
     
     regions = [menu,
-               timehub, thmain, thminigame, thtraining,
+               timestation, tsmain, tsminigame, tstraining,
                w1, w2, w3, w4, w5, w6, w7, w8, w9,
                l11, noonan, jorjy, nati, trayc,
                l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
