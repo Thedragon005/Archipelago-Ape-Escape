@@ -454,7 +454,7 @@ def createLocationGroups():
         if "Specter" in locname or "Boss" in locname:
             GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
 
-        if "Mail" in locname:
+        if "Mailbox" in locname:
                 GROUPED_LOCATIONS.setdefault("Mailboxes", []).append(locname)
 
 createLocationGroups()
