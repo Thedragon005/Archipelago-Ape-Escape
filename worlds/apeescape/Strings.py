@@ -737,13 +737,13 @@ class AERoom(Enum):
     Mailbox56 = "7-3 Crumbling Castle Mailbox - Think Clearly (Outside)"
     Mailbox57 = "8-2 Specters Factory Mailbox - Hop In The Tank (Outside)"
     Mailbox58 = "9-1 Monkey Madness Mailbox - The Terror Coaster (Coaster Entry)"
-    Mailbox59 = "Time Hub Mailbox - Welcome! (Main)"
-    Mailbox60 = "Time Hub Mailbox - Save Station (Main)"
-    Mailbox61 = "Time Hub Mailbox - Mini Game Corner (Mini Game Corner)"
-    Mailbox62 = "Time Hub Mailbox - Training Space (Gadget Training)"
+    Mailbox59 = "Time Station Mailbox - Welcome! (Main)"
+    Mailbox60 = "Time Station Mailbox - Save Station (Main)"
+    Mailbox61 = "Time Station Mailbox - Mini Game Corner (Mini Game Corner)"
+    Mailbox62 = "Time Station Mailbox - Training Space (Gadget Training)"
 
 class AEWorld(Enum):
-    Hub = "Time Hub"
+    TS = "Time Station"
     W1 = "World 1"
     W2 = "World 2"
     W3 = "World 3"
