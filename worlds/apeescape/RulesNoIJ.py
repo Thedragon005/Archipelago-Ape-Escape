@@ -4,7 +4,7 @@ from .Strings import AEItem, AEWorld, AERoom
 
 def set_noij_rules(self):
     # Worlds
-    connect_regions(self, "Menu", AEWorld.Hub.value, lambda state: NoRequirement())
+    connect_regions(self, "Menu", AEWorld.TS.value, lambda state: NoRequirement())
     connect_regions(self, "Menu", AEWorld.W1.value, lambda state: NoRequirement())
     connect_regions(self, "Menu", AEWorld.W2.value, lambda state: Keys(state, self, 1))
     connect_regions(self, "Menu", AEWorld.W3.value,
@@ -24,9 +24,9 @@ def set_noij_rules(self):
                         lambda state: Keys(state, self, 6) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self))
 
     #Time Station
-    connect_regions(self, AEWorld.Hub.value, AERoom.TimeStationMain.value, lambda state: True)
-    connect_regions(self, AEWorld.Hub.value, AERoom.TimeStationMinigame.value, lambda state: True)
-    connect_regions(self, AEWorld.Hub.value, AERoom.TimeStationTraining.value, lambda state: True)
+    connect_regions(self, AEWorld.TS.value, AERoom.TimeStationMain.value, lambda state: True)
+    connect_regions(self, AEWorld.TS.value, AERoom.TimeStationMinigame.value, lambda state: True)
+    connect_regions(self, AEWorld.TS.value, AERoom.TimeStationTraining.value, lambda state: True)
 
     # 1-1
     connect_regions(self, AEWorld.W1.value, AERoom.W1L1Main.value, lambda state: True)
