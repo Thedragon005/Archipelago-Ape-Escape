@@ -326,7 +326,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # Stock BossRooms in a variable (For excluding these rooms in local monkeys sending)
             bossRooms = RAM.bossListLocal.keys()
-            mailboxesRooms = RAM.bossListLocal.keys()
+            mailboxesRooms = RAM.mailboxListLocal.keys()
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -407,7 +407,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # Check for Mailboxes
             if (localcondition) and (currentRoom in mailboxesRooms):
-                mailboxesaddrs = RAM.bossListLocal[currentRoom]
+                mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
                 boolGotMail = (gotMail == 0x02)
                 key_list = list(mailboxesaddrs.keys())
                 val_list = list(mailboxesaddrs.values())
