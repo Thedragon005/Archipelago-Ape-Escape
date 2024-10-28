@@ -77,8 +77,10 @@ class ApeEscapeClient(BizHawkClient):
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
         ape_identifier_ram_address: int = 0xA37F0
+        ape_identifier_ram_address_PAL: int = 0xA37F0
         # BASCUS-94423SYS in ASCII = Ape Escape I think??
         bytes_expected: bytes = bytes.fromhex("4241534355532D3934343233535953")
+        bytes_expected_PAL:bytes = bytes.fromhex("4245534345532D3031353634535953")
         try:
             bytes_actual: bytes = (await bizhawk.read(ctx.bizhawk_ctx, [(
                 ape_identifier_ram_address, len(bytes_expected), "MainRAM"

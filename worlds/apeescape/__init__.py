@@ -226,15 +226,17 @@ class ApeEscapeWorld(World):
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
             "coin": self.options.coin.value,
+            "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
         }
 
-    def generate_output(self, output_directory: str):
-        data = {
-            "slot_data": self.fill_slot_data()
-        }
-        filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
-        with open(os.path.join(output_directory, filename), 'w') as f:
-            json.dump(data, f)
+    #def generate_output(self, output_directory: str):
+    #    data = {
+    #        "slot_data": self.fill_slot_data()
+    #    }
+        # Remove .apae for now since it is confusing new people
+    #    filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
+    #    with open(os.path.join(output_directory, filename), 'w') as f:
+    #        json.dump(data, f)

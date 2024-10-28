@@ -617,7 +617,7 @@ class RAM:
         7: {  # mushroom area
             415 : 38,
             416 : 24
-        }
+        },
         8: {  # fish room
             417 : 73,
             418 : 71,
@@ -1080,9 +1080,13 @@ class RAM:
     # S1_RArm_Life = 0x1446B6
 
     gotMailAddress = 0x0BBD99
+    gotMailAddress_PAL = 0x0BBE59
+    # DIFF = NTSC + C0
     # Seems to be shared with other variables,
     # Detect when readingMail = 1 or 2 then check what mailbox it is?
     mailboxIDAddress = 0x0A6CD2
+    mailboxIDAddress_PAL = 0x0A6DB2
+    #DIFF = NTSC + E0
     # Associate by room just to be sure,since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,
