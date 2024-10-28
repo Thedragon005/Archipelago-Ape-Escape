@@ -438,6 +438,8 @@ def createLocationGroups():
             GROUPED_LOCATIONS.setdefault("Specters Factory", []).append(locname)
         elif "8-3" in locname:
             GROUPED_LOCATIONS.setdefault("TV Tower", []).append(locname)
+        elif "Time Station" in locname:
+            GROUPED_LOCATIONS.setdefault("Time Station", []).append(locname)
         # Special Case for Monkey Madness due to containing Monkey in the name - can't naively add all locations with Monkey to the Monkeys group
         if "9-1" in locname:
             GROUPED_LOCATIONS.setdefault("Monkey Madness", []).append(locname)

@@ -97,26 +97,6 @@ class ApeEscapeWorld(World):
         punch = self.create_item(AEItem.Punch.value)
         waternet = self.create_item(AEItem.WaterNet.value)
 
-        # None of this is necessary if necessary if we can just make mailboxes. Also, Archipelago fill is surprisingly bad at dealing with this exact situation, so we have to do it ourselves. Why.
-        if self.options.shufflenet == "true":
-            # Condition to check if this is a 1 world multiworld
-            if self.multiworld.players == 1:
-                if self.options.coin == "true":
-                    # If the net and coins are shuffled, manually place the net in one of the possible locations for it.
-                    # Create a new collection state to test with.
-                    netless_state = CollectionState(self.multiworld)
-                    # Add the world keys (via item pool) to the testing state.
-                    for item in [self.create_item(AEItem.Key.value) for _ in range(0, 6)]:
-                        netless_state.collect(item)
-                    # Add the other gadgets to the testing state.
-                    for item in [waternet, club, radar, shooter, hoop, flyer, car, punch]:
-                        netless_state.collect(item)
-                    netless_state.update_reachable_regions(self.player)
-                    # Determine what locations are reachable without the net.
-                    net_locations = self.multiworld.get_reachable_locations(netless_state, self.player)
-                    # Place the net in a random one of these locations.
-                    self.get_location(self.random.choice(net_locations).name).place_locked_item(net)
-
     def create_regions(self):
         create_regions(self)
 
@@ -163,23 +143,19 @@ class ApeEscapeWorld(World):
 
         self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
 
-        # TODO in the future: add the Time Station mailboxes as checks if shuffle net is on. We probably don't need anything else beyond that, other than ensuring that mailboxes or coins are shuffled if net is also shuffled.
+        # Net shuffle handling.
         if self.options.shufflenet == "false":
             self.multiworld.push_precollected(net)
         elif self.options.shufflenet == "true":
-            # Condition to check if this is a 1 world multiworld
-            if self.multiworld.players == 1:
-                if self.options.coin == "true":
-                    reservedlocations += 1
-                elif self.options.coin == "false":
-                    # if it is and coins are NOT shuffled: Throw a warning about incompatible options and just give the net anyway.
-                    # if instead we want to error out and prevent generation, uncomment this line:
-                    # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
-                    warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
-                    self.multiworld.push_precollected(net)
+            # If net shuffle is on, make sure there are locations that don't require net.
+            if self.options.coin == "true" or self.options.mailbox == "true":
+                self.itempool += [net]
             else:
-                # Throw a warning about potentially incompatible options (if generation fails, make sure at least world has net shuffle turned off.)
-                warning(f"{self.player_name} has Net Shuffle on. If all players have Net Shuffle on, multiworlds will likely fail to generate.")
+                # All locations require net with these options, so throw a warning about incompatible options and just give the net anyway.
+                # if instead we want to error out and prevent generation, uncomment this line:
+                # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
+                warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
+                self.multiworld.push_precollected(net)
 
         if self.options.gadget == "club":
             self.multiworld.push_precollected(club)
