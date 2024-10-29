@@ -191,7 +191,7 @@ class RAM:
         189: 0x0DFA8B,
         190: 0x0DFA90,
         192: 0x0DFA99,
-        193: 0x0DFAA3,
+        193: 0x0DFAA0,
         194: 0x0DFAA1,
         196: 0x0DFAA3,
         195: 0x0DFAA2,
