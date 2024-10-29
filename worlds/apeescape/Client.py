@@ -490,6 +490,7 @@ class ApeEscapeClient(BizHawkClient):
             ]
 
             # Unequip the Time Net if it was shuffled. 
+            # TODO: Update this check to make sure the net was actually shuffled (check coins/mailboxes) 
             if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
                 if (crossGadget == 1) and (gadgetStateFromServer & 2 == 0):
                     writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]

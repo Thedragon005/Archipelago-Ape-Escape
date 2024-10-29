@@ -55,7 +55,8 @@ class CoinOption(Choice):
 
 
 class MailboxOption(Choice):
-    """Choose if mailboxes should act as Locations
+    """Choose if mailboxes should act as locations.
+        Mailboxes in training rooms will never be locations.
 
         true: mailboxes are added as locations
         false: mailboxes are not added as locations
@@ -114,9 +115,10 @@ class SuperFlyerOption(Choice):
 
 
 class ShuffleNetOption(Choice):
-    """Choose if the Time Net should be shuffled. Not recommended for sync games.
+    """Choose if the Time Net should be shuffled.
+        This option requires at least one of coins and mailboxes to be shuffled to be used - if all locations in this world require the net, the net will be given at game start.
 
-        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations.
+        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations if this happens.
         false: Time Net is not shuffled, and is given at game start.
 
         Supported values: true, false
