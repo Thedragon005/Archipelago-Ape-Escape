@@ -126,9 +126,11 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gadgetStateFromServer, 2, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.menuStateAddress,1, "MainRAM"),
-                (RAM.menuState2Address, 1, "MainRAM")
+                (RAM.menuState2Address, 1, "MainRAM"),
+                (RAM.newGameAddress, 1, "MainRAM")
             ]
             itemsWrites = []
+            Menuwrites = []
             # All reads that are required BEFORE connecting/early
             earlyReads = await bizhawk.read(ctx.bizhawk_ctx, earlyReadTuples)
 
@@ -143,7 +145,12 @@ class ApeEscapeClient(BizHawkClient):
             gameState = int.from_bytes(earlyReads[8], byteorder="little")
             menuState = int.from_bytes(earlyReads[9], byteorder="little")
             menuState2 = int.from_bytes(earlyReads[10], byteorder="little")
+            newGameAddress = int.from_bytes(earlyReads[11], byteorder="little")
 
+            #  When in Menu,change the behwvior of "Newgame" to warp you to time station instead
+            if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
+                Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
+                await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
@@ -410,7 +417,8 @@ class ApeEscapeClient(BizHawkClient):
             # Check for Mailboxes
             if (localcondition) and (currentRoom in mailboxesRooms):
                 mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
-                boolGotMail = (gotMail == 0x02)
+                # boolGotMail = (gotMail == 0x02)
+                boolGotMail = True
                 key_list = list(mailboxesaddrs.keys())
                 val_list = list(mailboxesaddrs.values())
 

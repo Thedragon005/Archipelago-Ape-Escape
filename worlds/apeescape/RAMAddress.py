@@ -1017,6 +1017,8 @@ class RAM:
     crossGadgetAddress = 0x0F51AB
     # which gadget is currently selected for use
     heldGadgetAddress = 0x0EC2D2
+    newGameAddress = 0x137734
+    loadGameAddress = 0x137734
 
     trainingRoomProgressAddress = 0x0DFDCC
     currentRoomIdAddress = 0x0F4476
