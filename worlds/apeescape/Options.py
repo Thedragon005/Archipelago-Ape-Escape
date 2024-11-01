@@ -65,8 +65,8 @@ class KeyOption(Choice):
         level: each World Key unlocks the next level. Races are unlocked with the level after them. Creates 16 World Keys.
         levelandraces: each World Key unlocks the next level. Races are counted as levels. Creates 18 World Keys.
 
-        Supported values: glitchless, noij, ij
-        Default value: glitchless
+        Supported values: world, worldandraces, level, levelandraces
+        Default value: world
     """
 
     display_name = "Unlocks per Key"
