@@ -694,7 +694,7 @@ class RAM:
         },
         29: {  # 5-1
             443 : 86,
-            444 : 16,
+            444 : 18,
             445 : 87
         },
         #30: {  # 5-2
@@ -1085,7 +1085,7 @@ class RAM:
     gotMailAddress_PAL = 0x0BBE59
     # DIFF = NTSC + C0
     # Seems to be shared with other variables,
-    # Detect when readingMail = 1 or 2 then check what mailbox it is?
+    # Detect when readingMail = 2 then check what mailbox it is
     mailboxIDAddress = 0x0A6CD2
     mailboxIDAddress_PAL = 0x0A6DB2
     #DIFF = NTSC + E0

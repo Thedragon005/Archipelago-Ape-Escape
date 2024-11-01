@@ -354,7 +354,7 @@ class ApeEscapeClient(BizHawkClient):
                     if int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["PrevCaught"]:
                         monkeysToSend.add(keyList[i] + self.offset)
 
-                if monkeysToSend is not None:
+                if monkeysToSend is not None and monkeysToSend != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeysToSend)
@@ -379,7 +379,7 @@ class ApeEscapeClient(BizHawkClient):
                     if int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
                         monkeys_to_send.add(key_list[i] + self.offset)
 
-                if monkeys_to_send is not None:
+                if monkeys_to_send is not None and monkeys_to_send != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeys_to_send)
@@ -408,7 +408,7 @@ class ApeEscapeClient(BizHawkClient):
                         if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
                             bosses_to_send.add(key_list[i] + self.offset)
 
-                if bosses_to_send is not None:
+                if bosses_to_send is not None and bosses_to_send != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in bosses_to_send)
@@ -417,8 +417,7 @@ class ApeEscapeClient(BizHawkClient):
             # Check for Mailboxes
             if (localcondition) and (currentRoom in mailboxesRooms):
                 mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
-                # boolGotMail = (gotMail == 0x02)
-                boolGotMail = True
+                boolGotMail = (gotMail == 0x02)
                 key_list = list(mailboxesaddrs.keys())
                 val_list = list(mailboxesaddrs.values())
 
@@ -427,8 +426,7 @@ class ApeEscapeClient(BizHawkClient):
                 for i in range(len(val_list)):
                         if val_list[i] == mailboxID and boolGotMail:
                             mail_to_send.add(key_list[i] + self.offset)
-
-                if mail_to_send is not None:
+                if mail_to_send is not None and mail_to_send != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in mail_to_send)
