@@ -1059,6 +1059,7 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
+    startOfLevelNames = 0x1399E8
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"

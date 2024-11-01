@@ -28,7 +28,7 @@ from worlds._bizhawk.client import BizHawkClient
 
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GadgetOption, ShuffleNetOption
+from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, EntranceOption, KeyOption
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -560,7 +560,7 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
-    def unlockLevels(self, monkeylevelCounts, gadgets,gameState,gadgetUseState,level_info,hundoMonkeysCount,spikeState):
+    def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState):
 
         key = self.worldkeycount
         curApesWrite = ""
@@ -590,20 +590,20 @@ class ApeEscapeClient(BizHawkClient):
                     print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
-                    # Does not need to know the rest of the levels,at least 1 in not completed
+                    # Does not need to know the rest of the levels, at least 1 in not completed
 
         PPMUnlock = key >= 6 and allCompleted
         # Tried my hand at blocking ALL kick-outs
         # Put the 100% monkeys count from each level into an array for easier access
 
-        # If in any level,prevent Kick-out
+        # If in any level, prevent Kick-out
         if gameState == RAM.gameState["InLevel"] and (currentLevel in levels_keys):
-            # I've been told a dupe glitch exist.
+            # I've been told a dupe glitch exists.
             # To keep it fair, reduce the number of current monkeys if it goes higher than max
             if currentApes > hundoMonkeysCount[currentLevel]:
                 curApesWrite = (RAM.currentApesAddress, hundoMonkeysCount[currentLevel].to_bytes(1, byteorder="little"), "MainRAM")
                 currentApes = hundoMonkeysCount[currentLevel]
-            # If the Kick out prevention is up,detect the number of monkeys and add 1 to prevent kickout
+            # If the Kick out prevention is up, detect the number of monkeys and add 1 to prevent kickout
             if self.preventKickOut:
                 if spikeState == 2 or spikeState == 132 or gadgetUseState == 8:
                     if currentApes == localhundoCount:

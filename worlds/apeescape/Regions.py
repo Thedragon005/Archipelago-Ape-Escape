@@ -2,10 +2,24 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Region, Entrance
 from .Locations import location_table, ApeEscapeLocation
-from .Strings import AEWorld, AERoom
+from .Strings import AERoom
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
+
+class ApeEscapeLevel:
+    # Example call: level = ApeEscapeLevel("Fossil Field", 0x01, 0)
+    def __init__(self, name, entrance, vanillapos):
+        self.name = name # Level Name (plaintext)
+        self.bytes = level_to_bytes(name) # Level name converted to List of bytes
+        # order 3 + entrance 0x01 = the third level is Fossil Field
+        self.entrance = entrance # The ID of the level being entered
+        self.keys = -1 # The number of required keys to enter this level
+        self.vanillapos = vanillapos # The order the levels normally appear
+        self.newpos = -1 # The order the levels will appear after shuffling
+
+    def __lt__(self, comp):
+        return self.vanillapos < comp.vanillapos
 
 
 def create_regions(world: "ApeEscapeWorld"):
@@ -14,19 +28,6 @@ def create_regions(world: "ApeEscapeWorld"):
     multiworld = world.multiworld
     # menu
     menu = Region("Menu", player, multiworld)
-
-    # worlds
-    timestation = Region(AEWorld.TS.value, player, multiworld)
-    w1 = Region(AEWorld.W1.value, player, multiworld)
-    w2 = Region(AEWorld.W2.value, player, multiworld)
-    w3 = Region(AEWorld.W3.value, player, multiworld)
-    w4 = Region(AEWorld.W4.value, player, multiworld)
-    w5 = Region(AEWorld.W5.value, player, multiworld)
-    w6 = Region(AEWorld.W6.value, player, multiworld)
-    w7 = Region(AEWorld.W7.value, player, multiworld)
-    w8 = Region(AEWorld.W8.value, player, multiworld)
-    w9 = Region(AEWorld.W9.value, player, multiworld)
-
 
     # Time Station
     tsmain = Region(AERoom.TimeStationMain.value, player, multiworld)
@@ -587,8 +588,7 @@ def create_regions(world: "ApeEscapeWorld"):
     bg.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bg) for loc_name in get_array([204])]
     
     regions = [menu,
-               timestation, tsmain, tsminigame, tstraining,
-               w1, w2, w3, w4, w5, w6, w7, w8, w9,
+               tsmain, tsminigame, tstraining,
                l11, noonan, jorjy, nati, trayc,
                l12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
                l131, l132, l133, scotty, coco, jthomas, mattie, barney, rocky, moggan,

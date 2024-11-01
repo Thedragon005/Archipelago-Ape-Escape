@@ -38,6 +38,45 @@ class LogicOption(Choice):
     default = option_glitchless
 
 
+class EntranceOption(Choice):
+    """Choose if level entrances should be randomized.
+
+        off: levels will be in the vanilla order
+        levels: the 19 main levels will be shuffled between each other
+        levelsraces: the 19 main levels and 2 Jake races will be shuffled
+
+        Supported values: off, levels, races
+        Default value: levels
+    """
+
+    display_name = "Entrance"
+    option_off = 0x00
+    option_levels = 0x01
+    option_levelsraces = 0x02
+    default = option_levels
+
+
+class KeyOption(Choice):
+    """Choose how many levels each World Key should unlock.
+        Peak Point Matrix will always require the same number of World Keys as the Monkey Madness entrance.
+
+        world: each World Key unlocks the 3 levels in a world. Races are unlocked with the world after them. Creates 6 World Keys.
+        worldandraces: each World Key unlocks the 3 levels in a world. Races are counted as worlds. Creates 8 World Keys.
+        level: each World Key unlocks the next level. Races are unlocked with the level after them. Creates 18 World Keys.
+        levelandraces: each World Key unlocks the next level. Races are counted as levels. Creates 20 World Keys.
+
+        Supported values: glitchless, noij, ij
+        Default value: glitchless
+    """
+
+    display_name = "Unlocks per Key"
+    option_world = 0x00
+    option_worldandraces = 0x01
+    option_level = 0x02
+    option_levelandraces = 0x03
+    default = option_world
+
+
 class CoinOption(Choice):
     """Choose if Specter Coins should act as Locations
 
@@ -134,6 +173,8 @@ class ShuffleNetOption(Choice):
 class ApeEscapeOptions(PerGameCommonOptions):
     goal: GoalOption
     logic: LogicOption
+    entrance: EntranceOption
+    unlocksperkey: KeyOption
     coin: CoinOption
     mailbox: MailboxOption
     gadget: GadgetOption

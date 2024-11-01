@@ -742,18 +742,6 @@ class AERoom(Enum):
     Mailbox61 = "Time Station Mailbox - Mini Game Corner (Mini Game Corner)"
     Mailbox62 = "Time Station Mailbox - Training Space (Gadget Training)"
 
-class AEWorld(Enum):
-    TS = "Time Station"
-    W1 = "World 1"
-    W2 = "World 2"
-    W3 = "World 3"
-    W4 = "World 4"
-    W5 = "World 5"
-    W6 = "World 6"
-    W7 = "World 7"
-    W8 = "World 8"
-    W9 = "World 9"
-
 
 class AEItem(Enum):
     Club = "Stun Club"

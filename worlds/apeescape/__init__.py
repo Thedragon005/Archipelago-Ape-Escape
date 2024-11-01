@@ -9,7 +9,7 @@ from Options import OptionError
 from worlds.AutoWorld import WebWorld, World
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
-from .Regions import create_regions
+from .Regions import create_regions, ApeEscapeLevel
 from .Rules import set_rules
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
@@ -71,31 +71,29 @@ class ApeEscapeWorld(World):
         super().__init__(multiworld, player)
         self.goal: Optional[int] = 0
         self.logic: Optional[int] = 0
+        self.entrance: Optional[int] = 0
+        self.unlocksperkey: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
+        self.levellist: List[ApeEscapeLevel] = []
 
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
         self.logic = self.options.logic.value
+        self.entrance: self.options.entrance.value
+        self.unlocksperkey: self.options.unlocksperkey.value
         self.coin = self.options.coin.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
         self.itempool = []
+        self.levellist = initialize_level_list(self.entrance, self.unlocksperkey)
 
-    def generate_basic(self) -> None:
-        club = self.create_item(AEItem.Club.value)
-        net = self.create_item(AEItem.Net.value)
-        radar = self.create_item(AEItem.Radar.value)
-        shooter = self.create_item(AEItem.Sling.value)
-        hoop = self.create_item(AEItem.Hoop.value)
-        flyer = self.create_item(AEItem.Flyer.value)
-        car = self.create_item(AEItem.Car.value)
-        punch = self.create_item(AEItem.Punch.value)
-        waternet = self.create_item(AEItem.WaterNet.value)
+    def generate_basic(self):
+        generate_basic(self)
 
     def create_regions(self):
         create_regions(self)
@@ -141,7 +139,15 @@ class ApeEscapeWorld(World):
 
         self.multiworld.push_precollected(waternet)
 
-        self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+        # Create enough keys to access every level, depending on the key option
+        if self.options.unlocksperkey == 0x00:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+        elif self.options.unlocksperkey == 0x01:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 8)]
+        elif self.options.unlocksperkey == 0x02:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
+        elif self.options.unlocksperkey == 0x03:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 20)]
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
@@ -240,3 +246,58 @@ class ApeEscapeWorld(World):
     #    filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
     #    with open(os.path.join(output_directory, filename), 'w') as f:
     #        json.dump(data, f)
+
+    def initialize_level_list(entoption, keyoption):
+        levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexters Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specters Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
+        levelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
+        levellist = []
+        for x in range (0, 22):
+            levellist.append(ApeEscapeLevel(levelnames[x], levelids[x], x))
+        self.random.shuffle(levellist)
+        levellist = fixed_levels(levellist, entoption)
+        levellist = set_keys_and_newpos(levellist, keyoption)
+        return levellist
+        
+    def level_to_bytes(name):
+        bytelist = []
+        for x in name:
+            bytelist.append(character_lookup(x))
+        return bytelist
+        
+    def character_lookup(byte):
+        if byte.isspace():
+            return 255
+        if byte.isalpha():
+            return ord(byte) - 49
+        if byte.isdecimal():
+            if int(byte) < 6:
+                return ord(byte) + 56
+            else:
+                return ord(byte) + 68
+
+    def fixed_levels(levellist, entoption):
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x1E:
+                levellist[x], levellist[21] = levellist[21], levellist[x]
+            if levellist[x].entrance == 0x07 and entoption == 0x01:
+                levellist[x], levellist[6] = levellist[6], levellist[x]
+            if levellist[x].entrance == 0x0E and entoption == 0x01:
+                levellist[x], levellist[13] = levellist[13], levellist[x]
+        return levellist
+            
+    def set_keys_and_newpos(levellist, keyoption):
+        reqkeys = get_required_keys(keyoption)
+        for x in range (0, 22):
+            levellist[x].keys = reqkeys[x]
+            levellist[x].newpos = x
+        return levellist
+
+    def get_required_keys(option):
+        if option == 0x00: # world
+            return [0,  0,  0,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,  6,  6]
+        if option == 0x01: # world and races
+            return [0,  0,  0,  1,  1,  1,  2,  3,  3,  3,  4,  4,  4,  5,  6,  6,  6,  7,  7,  7,  8,  8]
+        if option == 0x02: # level
+            return [0,  1,  2,  3,  4,  5,  6,  6,  7,  8,  9,  10, 11, 12, 12, 13, 14, 15, 16, 17, 18, 18]
+        if option == 0x03: # level and races
+            return [0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20]
