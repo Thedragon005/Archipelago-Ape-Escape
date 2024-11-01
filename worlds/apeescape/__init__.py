@@ -92,7 +92,12 @@ class ApeEscapeWorld(World):
         self.itempool = []
 
     def generate_basic(self):
-        self.levellist = initialize_level_list(self.entrance, self.unlocksperkey)
+        self.levellist = initialize_level_list()
+        if (self.options.entrance != 0x00):
+            self.random.shuffle(self.levellist)
+            self.levellist = fixed_levels(self.levellist, self.options.entrance)
+        self.levellist = set_calculated_level_data(self.levellist, self.options.unlocksperkey)
+        self.levellist.sort()
 
     def create_regions(self):
         create_regions(self)
@@ -247,15 +252,12 @@ class ApeEscapeWorld(World):
     #        json.dump(data, f)
 
 
-def initialize_level_list(entoption, keyoption):
+def initialize_level_list():
     levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexters Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specters Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
     levelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
     levellist = []
     for x in range (0, 22):
         levellist.append(ApeEscapeLevel(levelnames[x], levelids[x], x))
-    # self.random.shuffle(levellist)
-    levellist = fixed_levels(levellist, entoption)
-    levellist = set_calculated_level_data(levellist, keyoption)
     return levellist
 
 def level_to_bytes(name):
