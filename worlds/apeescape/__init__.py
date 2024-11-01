@@ -149,9 +149,9 @@ class ApeEscapeWorld(World):
         elif self.options.unlocksperkey == 0x01:
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 8)]
         elif self.options.unlocksperkey == 0x02:
-            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 16)]
         elif self.options.unlocksperkey == 0x03:
-            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 20)]
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
@@ -301,6 +301,6 @@ def get_required_keys(option):
     if option == 0x01: # world and races
         return [0,  0,  0,  1,  1,  1,  2,  3,  3,  3,  4,  4,  4,  5,  6,  6,  6,  7,  7,  7,  8,  8]
     if option == 0x02: # level
-        return [0,  1,  2,  3,  4,  5,  6,  6,  7,  8,  9,  10, 11, 12, 12, 13, 14, 15, 16, 17, 18, 18]
+        return [0,  0,  0,  1,  2,  3,  4,  4,  5,  6,  7,  8,  9,  10, 10, 11, 12, 13, 14, 15, 16, 16]
     if option == 0x03: # level and races
-        return [0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 20]
+        return [0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 18]

@@ -57,13 +57,13 @@ class EntranceOption(Choice):
 
 
 class KeyOption(Choice):
-    """Choose how many levels each World Key should unlock.
+    """Choose how many levels each World Key should unlock. The first three levels will always start unlocked.
         Peak Point Matrix will always require the same number of World Keys as the Monkey Madness entrance.
 
         world: each World Key unlocks the 3 levels in a world. Races are unlocked with the world after them. Creates 6 World Keys.
         worldandraces: each World Key unlocks the 3 levels in a world. Races are counted as worlds. Creates 8 World Keys.
-        level: each World Key unlocks the next level. Races are unlocked with the level after them. Creates 18 World Keys.
-        levelandraces: each World Key unlocks the next level. Races are counted as levels. Creates 20 World Keys.
+        level: each World Key unlocks the next level. Races are unlocked with the level after them. Creates 16 World Keys.
+        levelandraces: each World Key unlocks the next level. Races are counted as levels. Creates 18 World Keys.
 
         Supported values: glitchless, noij, ij
         Default value: glitchless
