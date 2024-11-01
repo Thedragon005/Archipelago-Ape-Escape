@@ -1,4 +1,4 @@
-from .Regions import connect_regions
+from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AERoom
 
 # TODO: Add the key locking logic on a level by level basis. Don't forget the other two Rules files!
@@ -10,7 +10,7 @@ def set_glitchless_rules(self):
     # Make sure to update this condition properly when alternate Peak Point Matrix unlock conditions are added.
     if self.options.goal == "second":
         connect_regions(self, "Menu", AERoom.W9L2Boss.value,
-                        lambda state: Keys(state, self, 6) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self))
+                        lambda state: Keys(state, self, self.levellist[21].keys) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self))
 
     #Time Station
     connect_regions(self, "Menu", AERoom.TimeStationMain.value, lambda state: True)
@@ -18,7 +18,7 @@ def set_glitchless_rules(self):
     connect_regions(self, "Menu", AERoom.TimeStationTraining.value, lambda state: True)
 
     # 1-1
-    connect_regions(self, "Menu", AERoom.W1L1Main.value, lambda state: True)
+    connect_regions(self, "Menu", AERoom.W1L1Main.value, lambda state: self.levellist[0].keys)
 
     connect_regions(self, AERoom.W1L1Main.value, AERoom.W1L1Noonan.value,
                     lambda state: HasNet(state, self))
@@ -608,7 +608,7 @@ def set_glitchless_rules(self):
                         lambda state: (CR_Inside(state, self)) and ((CanHitMultiple(state, self)) and (CanSwim(state, self))) or (HasMobility(state, self)))
         # 3-1
         connect_regions(self, "Menu", AERoom.Coin19.value,
-                        lambda state: CanSwim(state, self) and Keys(state, self, 2))
+                        lambda state: CanSwim(state, self) and Keys(state, self, self.levellist[6].keys))
         # 4-1
         connect_regions(self, AERoom.W4L1SecondRoom.value, AERoom.Coin21.value,
                         lambda state: HasNet(state, self))
@@ -639,7 +639,7 @@ def set_glitchless_rules(self):
                         lambda state: CanHitMultiple(state, self))
         # 6-1
         connect_regions(self, "Menu", AERoom.Coin36.value,
-                        lambda state: HasFlyer(state, self) and Keys(state, self, 4))
+                        lambda state: HasFlyer(state, self) and Keys(state, self, self.levellist[13].keys))
         # 7-1
         connect_regions(self, AERoom.W7L1Outside.value, AERoom.Coin37.value,
                         lambda state: NoRequirement())

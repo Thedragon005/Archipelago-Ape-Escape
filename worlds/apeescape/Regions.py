@@ -11,7 +11,7 @@ class ApeEscapeLevel:
     # Example call: level = ApeEscapeLevel("Fossil Field", 0x01, 0)
     def __init__(self, name, entrance, vanillapos):
         self.name = name # Level Name (plaintext)
-        self.bytes = level_to_bytes(name) # Level name converted to List of bytes
+        self.bytes = [] # Level name converted to List of bytes
         # order 3 + entrance 0x01 = the third level is Fossil Field
         self.entrance = entrance # The ID of the level being entered
         self.keys = -1 # The number of required keys to enter this level
