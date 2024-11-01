@@ -648,7 +648,7 @@ def set_ij_rules(self):
         connect_regions(self, AERoom.W7L2First.value, AERoom.Coin40.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W7L2Gong.value, AERoom.Coin41.value,
-                        lambda state: NoRequirement())
+                        lambda state: HasNet(state, self))
         connect_regions(self, AERoom.W7L2Barrel.value, AERoom.Coin44.value,
                         lambda state: HasSling(state, self) or HasFlyer(state, self))
         # 7-3
