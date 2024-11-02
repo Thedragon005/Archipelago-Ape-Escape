@@ -94,12 +94,17 @@ class ApeEscapeWorld(World):
 
     def generate_basic(self):
         self.levellist = initialize_level_list()
+        # If entrances aren't shuffled, then we don't need to shuffle the entrances.
         if (self.options.entrance != 0x00):
             self.random.shuffle(self.levellist)
+            # Some levels need to be kept at a specific entrance - put those back.
             self.levellist = fixed_levels(self.levellist, self.options.entrance)
         self.levellist = set_calculated_level_data(self.levellist, self.options.unlocksperkey)
+        # Make a copy of the list for passing to the client for entrance shuffle purposes. We know this list has the levels sorted in the order they'd be presented in-game (so whatever is at the Fossil Field entrance first, etc.)
         self.entranceorder = list(self.levellist)
-        self.levellist.sort()
+        # If entrances weren't shuffled, then this list is already sorted. We sort the list for ease of setting up access rules in the logic files.
+        if (self.options.entrance != 0x00):
+            self.levellist.sort()
 
     def create_regions(self):
         create_regions(self)
@@ -244,16 +249,18 @@ class ApeEscapeWorld(World):
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
+            "levellist": self.levellist,
+            "entranceorder": self.entranceorder,
         }
 
-    #def generate_output(self, output_directory: str):
-    #    data = {
-    #        "slot_data": self.fill_slot_data()
-    #    }
-        # Remove .apae for now since it is confusing new people
-    #    filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
-    #    with open(os.path.join(output_directory, filename), 'w') as f:
-    #        json.dump(data, f)
+    def generate_output(self, output_directory: str):
+        data = {
+            "slot_data": self.fill_slot_data()
+        }
+        # Remove .apae output because it does nothing, we do everything in RAM
+        # filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
+        # with open(os.path.join(output_directory, filename), 'w') as f:
+        #     json.dump(data, f)
 
 
 def initialize_level_list():

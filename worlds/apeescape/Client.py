@@ -543,17 +543,22 @@ class ApeEscapeClient(BizHawkClient):
                 # Write all the code here.
                 
                 # Update level names
-                # if (True): # TODO: Update this condition so it doesn't repeatedly re-write the same names
+                if (True): # TODO: Update this condition so it doesn't repeatedly re-write the same names
                     # TODO: Update Era names here too
-                    # TODO: Pass in entranceorder
-                    # bytestowrite = []
-                    # for x in range(0, 22):
-                    #     if x > 0:
-                    #         bytestowrite.append(0)
-                    #         bytestowrite += entranceorder[x].bytes
-                    #     else:
-                    #         bytestowrite = entranceorder[x].bytes
-                    # writes += [(RAM.startOfLevelNames, bytearray(bytestowrite), "MainRAM")]
+                    bytestowrite = []
+                    for x in range(0, 22):
+                        if x > 0:
+                            # If it's not the first level, we need to add a separator byte between names.
+                            bytestowrite.append(0)
+                            bytestowrite += ctx.slot_data["entrancerder"][x].bytes
+                        else:
+                            # If it's the first level, just start writing.
+                            bytestowrite = ctx.slot_data["entrancerder"][x].bytes
+                    # Making sure we don't write too much data here.
+                    if len(bytestowrite) <= 308:
+                        writes += [(RAM.startOfLevelNames, bytearray(bytestowrite), "MainRAM")]
+                    else:
+                        print("Tried to write too many bytes to level names - expected 305, got", len(bytestowrite))
 
             level_info = [currentApes, requiredApes, currentLevel, localhundoCount]
             writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState)
@@ -595,7 +600,7 @@ class ApeEscapeClient(BizHawkClient):
                     print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
-                    # Does not need to know the rest of the levels, at least 1 is not completed
+                    # Does not need to check the rest of the levels, at least 1 is not completed
 
         PPMUnlock = (key == reqkeys[21] and allCompleted)
 
