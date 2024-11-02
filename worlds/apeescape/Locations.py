@@ -377,12 +377,14 @@ hundoMonkeysCount = {
     0x04: 14, # Thick
     0x05: 13, # Dark
     0x06: 8, # Cryptic
+    0x07: 0, # Stadium
     0x08: 8, # Crabby
     0x09: 8, # Coral
     0x0A: 11, # Dexter
     0x0B: 6, # Snowy
     0x0C: 9, # Frosty
     0x0D: 9, # Hot
+    0x0E: 0, # Gladiator
     0x0F: 12, # Sushi
     0x10: 10, # Wabi
     0x11: 20, # Crumbling

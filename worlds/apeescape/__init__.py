@@ -79,6 +79,7 @@ class ApeEscapeWorld(World):
         self.shufflenet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
+        self.entranceorder: List[ApeEscapeLevel] = []
 
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
@@ -97,6 +98,7 @@ class ApeEscapeWorld(World):
             self.random.shuffle(self.levellist)
             self.levellist = fixed_levels(self.levellist, self.options.entrance)
         self.levellist = set_calculated_level_data(self.levellist, self.options.unlocksperkey)
+        self.entranceorder = list(self.levellist)
         self.levellist.sort()
 
     def create_regions(self):

@@ -991,12 +991,14 @@ class RAM:
         21: 0xdfc9c,
         22: 0xdfc9d,
         23: 0xdfc9e,
+        31: 0xdfc9f, # Statdium Attack - unused
         41: 0xdfca0,
         42: 0xdfca1,
         43: 0xdfca2,
         51: 0xdfca3,
         52: 0xdfca4,
         53: 0xdfca5,
+        61: 0xdfca6, # Gladiator Attack - unused
         71: 0xdfca7,
         72: 0xdfca8,
         73: 0xdfca9,
@@ -1060,6 +1062,7 @@ class RAM:
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
     startOfLevelNames = 0x1399E8
+    startOfEraNames = 0x139B20
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"

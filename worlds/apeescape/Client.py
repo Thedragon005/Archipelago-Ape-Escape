@@ -26,6 +26,7 @@ if "worlds._bizhawk" not in sys.modules:
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 
+
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
 from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, EntranceOption, KeyOption
@@ -36,7 +37,6 @@ else:
     BizHawkClientContext = object
 
 EXPECTED_ROM_NAME = "ape escape / AP 2"
-
 
 # These flags are communicated to the tracker as a bitfield using this order.
 # Modifying the order will cause undetectable autotracking issues.
@@ -147,7 +147,7 @@ class ApeEscapeClient(BizHawkClient):
             menuState2 = int.from_bytes(earlyReads[10], byteorder="little")
             newGameAddress = int.from_bytes(earlyReads[11], byteorder="little")
 
-            #  When in Menu,change the behwvior of "Newgame" to warp you to time station instead
+            #  When in Menu, change the behwvior of "Newgame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
                 await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
@@ -164,7 +164,7 @@ class ApeEscapeClient(BizHawkClient):
 
             START_recv_index = recv_index
 
-            # Prevent sending items when connecting early (Sony,Menu or Intro Cutscene)
+            # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
             boolIsFirstBoot = gameState == RAM.gameState["Sony"] or gameState == RAM.gameState["Menu"] or gameState == RAM.gameState["Cutscene2"]
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
                 increment = 0
@@ -238,33 +238,21 @@ class ApeEscapeClient(BizHawkClient):
             self.worldkeycount = keyCountFromServer
 
             # Read Array
-            # 0: Hundo monkey count, to write to required count
-            # 1: Gadget unlocked states
-            # 2: Current Room
-            # 3: Current Game state
-            # 4: Jake Races Victory state
-            # 5: Current Level
-            # 6: Previous Coin State Room
-            # 7: Current New Coin State Room
-            # 8: Coin Count
-            # 9: Currently held gadget
-            # 10-13: Gadget equipped to each face button
-
             readTuples = [
-                (RAM.hundoApesAddress, 1, "MainRAM"),
-                (RAM.unlockedGadgetsAddress, 1, "MainRAM"),
-                (RAM.currentRoomIdAddress, 1, "MainRAM"),
-                (RAM.jakeVictoryAddress, 1, "MainRAM"),
-                (RAM.currentLevelAddress, 1, "MainRAM"),
-                (self.currentCoinAddress -2, 1, "MainRAM"),
-                (self.currentCoinAddress, 1, "MainRAM"),
-                (RAM.totalCoinsAddress, 1, "MainRAM"),
-                (RAM.heldGadgetAddress, 1, "MainRAM"),
-                (RAM.triangleGadgetAddress, 1, "MainRAM"),
+                (RAM.hundoApesAddress, 1, "MainRAM"), # Hundo monkey count, to write to required count
+                (RAM.unlockedGadgetsAddress, 1, "MainRAM"), # Gadget unlocked states
+                (RAM.currentRoomIdAddress, 1, "MainRAM"), # Current Room
+                (RAM.jakeVictoryAddress, 1, "MainRAM"), # Jake Races Victory state
+                (RAM.currentLevelAddress, 1, "MainRAM"), # Current Level
+                (self.currentCoinAddress -2, 1, "MainRAM"), # Previous Coin State Room
+                (self.currentCoinAddress, 1, "MainRAM"), # Current New Coin State Room
+                (RAM.totalCoinsAddress, 1, "MainRAM"), # Coin Count
+                (RAM.heldGadgetAddress, 1, "MainRAM"), # Currently held gadget
+                (RAM.triangleGadgetAddress, 1, "MainRAM"), # Gadget equipped to each face button
                 (RAM.squareGadgetAddress, 1, "MainRAM"),
                 (RAM.circleGadgetAddress, 1, "MainRAM"),
                 (RAM.crossGadgetAddress, 1, "MainRAM"),
-                (RAM.gadgetUseStateAddress, 1, "MainRAM"),
+                (RAM.gadgetUseStateAddress, 1, "MainRAM"), # undocumented
                 (RAM.requiredApesAddress, 1, "MainRAM"),
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
@@ -274,33 +262,12 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
+                (RAM.selectedWorldAddress, 1, "MainRAM"), # In level select, the current world
+                (RAM.selectedLevelAddress, 1, "MainRAM"), # In level select, the current level
 
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
-
-            levelCountTuples = [
-                (RAM.levelMonkeyCount[11], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[12], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[13], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[21], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[22], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[23], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[41], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[42], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[43], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[51], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[52], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[53], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[71], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[72], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[73], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[81], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[82], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[83], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[91], 1, "MainRAM")
-            ]
-            monkeylevelcounts = await bizhawk.read(ctx.bizhawk_ctx, levelCountTuples)
 
             localhundoCount = int.from_bytes(reads[0], byteorder="little")
             gadgets = int.from_bytes(reads[1], byteorder="little")
@@ -325,6 +292,31 @@ class ApeEscapeClient(BizHawkClient):
             S1_P2_State = int.from_bytes(reads[20], byteorder="little")
             S1_P2_Life = int.from_bytes(reads[21], byteorder="little")
             S2_isCaptured = int.from_bytes(reads[22], byteorder="little")
+            LS_currentWorld = int.from_bytes(reads[23], byteorder="little")
+            LS_currentLevel = int.from_bytes(reads[24], byteorder="little")
+
+            levelCountTuples = [
+                (RAM.levelMonkeyCount[11], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[12], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[13], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[21], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[22], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[23], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[41], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[42], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[43], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[51], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[52], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[53], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[71], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[72], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[73], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[81], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[82], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[83], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[91], 1, "MainRAM")
+            ]
+            monkeylevelcounts = await bizhawk.read(ctx.bizhawk_ctx, levelCountTuples)
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -431,6 +423,7 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x for x in mail_to_send)
                     }])
+
             # Check for victory conditions
             specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
             specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
@@ -495,9 +488,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-            # Unequip the Time Net if it was shuffled. 
-            # TODO: Update this check to make sure the net was actually shuffled (check coins/mailboxes) 
-            if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
+            # Unequip the Time Net if it was shuffled. Note that just checking the Net option is not sufficient to known if the net was actually shuffled - we need to ensure there are locations in this world that don't require net to be sure.
+            if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true and (ctx.slot_data["coin"] == CoinOption.option_true or ctx.slot_data["mailbox"] == MailboxOption.option_true):
                 if (crossGadget == 1) and (gadgetStateFromServer & 2 == 0):
                     writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
@@ -546,9 +538,25 @@ class ApeEscapeClient(BizHawkClient):
 
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
+                
+                # TODO: Reroute the player to the correct level
+                # Write all the code here.
+                
+                # Update level names
+                # if (True): # TODO: Update this condition so it doesn't repeatedly re-write the same names
+                    # TODO: Update Era names here too
+                    # TODO: Pass in entranceorder
+                    # bytestowrite = []
+                    # for x in range(0, 22):
+                    #     if x > 0:
+                    #         bytestowrite.append(0)
+                    #         bytestowrite += entranceorder[x].bytes
+                    #     else:
+                    #         bytestowrite = entranceorder[x].bytes
+                    # writes += [(RAM.startOfLevelNames, bytearray(bytestowrite), "MainRAM")]
 
-            level_info = [currentApes,requiredApes,currentLevel,localhundoCount]
-            writes += self.unlockLevels(monkeylevelcounts, gadgets,gameState,gadgetUseState,level_info,hundoMonkeysCount,spikeState)
+            level_info = [currentApes, requiredApes, currentLevel, localhundoCount]
+            writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState)
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -570,15 +578,12 @@ class ApeEscapeClient(BizHawkClient):
         requiredApes = level_info[1]
         currentLevel = level_info[2]
         localhundoCount = level_info[3]
-        W2UnLock = key >= 1
-        W3UnLock = key >= 2
-        W4UnLock = key >= 3
-        W5UnLock = key >= 3
-        W6UnLock = key >= 4
-        W7UnLock = key >= 5
-        W8UnLock = key >= 5
-        W9UnLock = key >= 6
+        levellocked = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
+        levelopen = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+        levelhundo = RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little")
         allCompleted = True
+        # Rather than using this function, this could use the contents of entranceorder to determine keys. Probably shouldn't given how often this gets run though.
+        reqkeys = get_required_keys(ctx.slot_data["unlocksperkey"])
 
         debug = False
 
@@ -590,9 +595,10 @@ class ApeEscapeClient(BizHawkClient):
                     print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
-                    # Does not need to know the rest of the levels, at least 1 in not completed
+                    # Does not need to know the rest of the levels, at least 1 is not completed
 
-        PPMUnlock = key >= 6 and allCompleted
+        PPMUnlock = (key == reqkeys[21] and allCompleted)
+
         # Tried my hand at blocking ALL kick-outs
         # Put the 100% monkeys count from each level into an array for easier access
 
@@ -621,154 +627,31 @@ class ApeEscapeClient(BizHawkClient):
         elif gameState != RAM.gameState["InLevel"] and self.preventKickOut == False:
             self.preventKickOut = True
 
-        current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-        currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        if key > 0:
-            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
+        # Set unlocked/locked state of levels
+        levelstates = []
+        for index in (0, 21):
+            # Do we have enough keys for this level? If no, lock. If yes, continue.
+            if key >= reqkeys[index]:
+                # Do we have enough keys for the next level? If no, lock. If yes, continue.
+                if key >= reqkeys[index + 1]:
+                    # Is this level a race level? If no, continue. If yes, open.
+                    if index == 6 or index == 13:
+                        levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM")
+                    # Is every monkey in this level caught? If no, open. If yes, hundo.
+                    elif int.from_bytes(monkeylevelCounts[index], byteorder="little") >= hundoMonkeysCount[levels_list[index]]:
+                        levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelhundo, "MainRAM")
+                    else:
+                        levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM")
+                else:
+                    levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM")
+            else:
+                levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM")
+        # Monkey Madness must be set to locked if Peak Point Matrix should be locked
+        if PPMUnlock == False:
+            levelstates[20] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM")
 
-        w11 = (RAM.levelAddresses[11], current, "MainRAM")
-        w12 = (RAM.levelAddresses[12], current, "MainRAM")
-        w13 = (RAM.levelAddresses[13], currentLock, "MainRAM")
-
-        if key == 1:
-            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        elif key > 1:
-            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-        else:
-            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-
-        w21 = (RAM.levelAddresses[21], current, "MainRAM")
-        w22 = (RAM.levelAddresses[22], current, "MainRAM")
-        w23 = (RAM.levelAddresses[23], currentLock, "MainRAM")
-
-        if key == 2:
-            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        elif key > 2:
-            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-        else:
-            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-
-        w31 = (RAM.levelAddresses[31], current, "MainRAM")
-        w41 = (RAM.levelAddresses[41], current, "MainRAM")
-        w42 = (RAM.levelAddresses[42], current, "MainRAM")
-        w43 = (RAM.levelAddresses[43], currentLock, "MainRAM")
-        if key == 3:
-            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        elif key > 3:
-            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-
-        else:
-            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-
-        w51 = (RAM.levelAddresses[51], current, "MainRAM")
-        w52 = (RAM.levelAddresses[52], current, "MainRAM")
-        w53 = (RAM.levelAddresses[53], currentLock, "MainRAM")
-
-        if key == 4:
-            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        elif key > 4:
-            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-        else:
-            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-
-        w61 = (RAM.levelAddresses[61], current, "MainRAM")
-        w71 = (RAM.levelAddresses[71], current, "MainRAM")
-        w72 = (RAM.levelAddresses[72], current, "MainRAM")
-        w73 = (RAM.levelAddresses[73], currentLock, "MainRAM")
-
-        if key == 5:
-            current = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        elif key > 5:
-            current = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Complete"].to_bytes(1, byteorder="little")
-        else:
-            current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-            currentLock = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-
-        w81 = (RAM.levelAddresses[81], current, "MainRAM")
-        w82 = (RAM.levelAddresses[82], current, "MainRAM")
-        w83 = (RAM.levelAddresses[83], currentLock, "MainRAM")
-
-        # if key >= 6:
-        # Changed to make it locked by default,then it will change to 100% Completed if all monkeys caught and Keys >= 6
-        # It will also unlock with level 8-3 being Open or 100% Complete
-        current = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-
-        w91 = (RAM.levelAddresses[91], current, "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[0], byteorder="little") >= hundoMonkeysCount[levels_list[0]]:
-            w11 = (RAM.levelAddresses[11], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[1], byteorder="little") >= hundoMonkeysCount[levels_list[1]]:
-            w12 = (RAM.levelAddresses[12], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[2], byteorder="little") >= hundoMonkeysCount[levels_list[2]] and W2UnLock:
-            w13 = (RAM.levelAddresses[13], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[3], byteorder="little") >= hundoMonkeysCount[levels_list[3]]:
-            w21 = (RAM.levelAddresses[21], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[4], byteorder="little") >= hundoMonkeysCount[levels_list[4]]:
-            w22 = (RAM.levelAddresses[22], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[5], byteorder="little") >= hundoMonkeysCount[levels_list[5]] and W3UnLock:
-            w23 = (RAM.levelAddresses[23], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[6], byteorder="little") >= hundoMonkeysCount[levels_list[6]]:
-            w41 = (RAM.levelAddresses[41], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[7], byteorder="little") >= hundoMonkeysCount[levels_list[7]]:
-            w42 = (RAM.levelAddresses[42], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[8], byteorder="little") >= hundoMonkeysCount[levels_list[8]] and W5UnLock:
-            w43 = (RAM.levelAddresses[43], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[9], byteorder="little") >= hundoMonkeysCount[levels_list[9]]:
-            w51 = (RAM.levelAddresses[51], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[10], byteorder="little") >= hundoMonkeysCount[levels_list[10]]:
-            w52 = (RAM.levelAddresses[52], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[11], byteorder="little") >= hundoMonkeysCount[levels_list[11]] and W6UnLock:
-            w53 = (RAM.levelAddresses[53], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[12], byteorder="little") >= hundoMonkeysCount[levels_list[12]]:
-            w71 = (RAM.levelAddresses[71], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[13], byteorder="little") >= hundoMonkeysCount[levels_list[13]]:
-            w72 = (RAM.levelAddresses[72], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[14], byteorder="little") >= hundoMonkeysCount[levels_list[14]] and W8UnLock:
-            w73 = (RAM.levelAddresses[73], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[15], byteorder="little") >= hundoMonkeysCount[levels_list[15]]:
-            w81 = (RAM.levelAddresses[81], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[16], byteorder="little") >= hundoMonkeysCount[levels_list[16]]:
-            w82 = (RAM.levelAddresses[82], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[17], byteorder="little") >= hundoMonkeysCount[levels_list[17]] and W9UnLock:
-            w83 = (RAM.levelAddresses[83], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-
-        if int.from_bytes(monkeylevelCounts[18], byteorder="little") >= hundoMonkeysCount[levels_list[18]] and PPMUnlock:
-            w91 = (RAM.levelAddresses[91], RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little"), "MainRAM")
-        # If there is a change in required monkeys count,include it in the writes
-        returns = [w11, w12, w13, w21, w22, w23, w31, w41, w42, w43, w51, w52, w53, w61, w71, w72, w73, w81, w82, w83,
-                    w91]
+        # If there is a change in required monkeys count, include it in the writes
+        returns = list(levelstates)
         if curApesWrite != "":
             returns.append(curApesWrite)
         if reqApesWrite != "":
@@ -776,3 +659,14 @@ class ApeEscapeClient(BizHawkClient):
         if hundoWrite != "":
             returns.append(hundoWrite)
         return returns
+
+# TODO: import/read this from __init__ or somewhere else instead, it would be great to not have to duplicate this function in order to use it here.
+def get_required_keys(option):
+    if option == 0x00: # world
+        return [0,  0,  0,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,  6,  6]
+    if option == 0x01: # world and races
+        return [0,  0,  0,  1,  1,  1,  2,  3,  3,  3,  4,  4,  4,  5,  6,  6,  6,  7,  7,  7,  8,  8]
+    if option == 0x02: # level
+        return [0,  0,  0,  1,  2,  3,  4,  4,  5,  6,  7,  8,  9,  10, 10, 11, 12, 13, 14, 15, 16, 16]
+    if option == 0x03: # level and races
+        return [0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 18]
