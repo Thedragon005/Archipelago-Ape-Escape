@@ -237,6 +237,8 @@ class ApeEscapeWorld(World):
         return {
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
+            "entrance": self.options.entrance.value,
+            "unlocksperkey": self.options.unlocksperkey.value,
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
