@@ -239,6 +239,16 @@ class ApeEscapeWorld(World):
         self.multiworld.itempool += self.itempool
 
     def fill_slot_data(self):
+        bytestowrite = []
+        for x in range(0, 22):
+            if x > 0:
+                # If it's not the first level, we need to add a separator byte between names.
+                bytestowrite.append(0)
+                bytestowrite += self.entranceorder[x].bytes
+            else:
+                # If it's the first level, just start writing.
+                bytestowrite = self.entranceorder[x].bytes
+            
         return {
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
@@ -249,8 +259,9 @@ class ApeEscapeWorld(World):
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
-            "levellist": self.levellist,
-            "entranceorder": self.entranceorder,
+            "levelnames": bytestowrite,
+            # Does this work? Will test later.
+            # "entranceorder": [self.entranceorder.entrance for ApeEscapeLevel in self.entranceorder],
         }
 
     def generate_output(self, output_directory: str):

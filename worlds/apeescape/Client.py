@@ -29,7 +29,7 @@ from worlds._bizhawk.client import BizHawkClient
 
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, EntranceOption, KeyOption
+from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, CoinOption, MailboxOption, EntranceOption, KeyOption
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -546,14 +546,15 @@ class ApeEscapeClient(BizHawkClient):
                 if (True): # TODO: Update this condition so it doesn't repeatedly re-write the same names
                     # TODO: Update Era names here too
                     bytestowrite = []
-                    for x in range(0, 22):
-                        if x > 0:
-                            # If it's not the first level, we need to add a separator byte between names.
-                            bytestowrite.append(0)
-                            bytestowrite += ctx.slot_data["entrancerder"][x].bytes
-                        else:
-                            # If it's the first level, just start writing.
-                            bytestowrite = ctx.slot_data["entrancerder"][x].bytes
+                    # for x in range(0, 22):
+                    #     if x > 0:
+                    #         # If it's not the first level, we need to add a separator byte between names.
+                    #         bytestowrite.append(0)
+                    #         bytestowrite += ctx.slot_data["entranceorder"][x].bytes
+                    #     else:
+                    #         # If it's the first level, just start writing.
+                    #         bytestowrite = ctx.slot_data["entranceorder"][x].bytes
+                    bytestowrite = ctx.slot_data["levelnames"]
                     # Making sure we don't write too much data here.
                     if len(bytestowrite) <= 308:
                         writes += [(RAM.startOfLevelNames, bytearray(bytestowrite), "MainRAM")]
@@ -561,7 +562,7 @@ class ApeEscapeClient(BizHawkClient):
                         print("Tried to write too many bytes to level names - expected 305, got", len(bytestowrite))
 
             level_info = [currentApes, requiredApes, currentLevel, localhundoCount]
-            writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState)
+            writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, ctx.slot_data["unlocksperkey"])
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -573,7 +574,7 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
-    def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState):
+    def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, unlocksperkey):
 
         key = self.worldkeycount
         curApesWrite = ""
@@ -588,7 +589,7 @@ class ApeEscapeClient(BizHawkClient):
         levelhundo = RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little")
         allCompleted = True
         # Rather than using this function, this could use the contents of entranceorder to determine keys. Probably shouldn't given how often this gets run though.
-        reqkeys = get_required_keys(ctx.slot_data["unlocksperkey"])
+        reqkeys = get_required_keys(unlocksperkey)
 
         debug = False
 
@@ -641,19 +642,19 @@ class ApeEscapeClient(BizHawkClient):
                 if key >= reqkeys[index + 1]:
                     # Is this level a race level? If no, continue. If yes, open.
                     if index == 6 or index == 13:
-                        levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM")
+                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
                     # Is every monkey in this level caught? If no, open. If yes, hundo.
                     elif int.from_bytes(monkeylevelCounts[index], byteorder="little") >= hundoMonkeysCount[levels_list[index]]:
-                        levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelhundo, "MainRAM")
+                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelhundo, "MainRAM"))
                     else:
-                        levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM")
+                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
                 else:
-                    levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM")
+                    levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
             else:
-                levelstates.append(RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM")
+                levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
         # Monkey Madness must be set to locked if Peak Point Matrix should be locked
         if PPMUnlock == False:
-            levelstates[20] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM")
+            levelstates[20] = ((RAM.levelAddresses[list(RAM.levelAddresses.keys())[20]], levellocked, "MainRAM"))
 
         # If there is a change in required monkeys count, include it in the writes
         returns = list(levelstates)
