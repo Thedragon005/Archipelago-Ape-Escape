@@ -299,6 +299,71 @@ location_table = {
     AELocation.Coin85.value: 385,
     AELocation.Coin84.value: 384,
     AELocation.Coin82.value: 382,
+
+    # Mailboxes
+    AELocation.Mailbox1.value: 401,
+    AELocation.Mailbox2.value: 402,
+    AELocation.Mailbox3.value: 403,
+    AELocation.Mailbox4.value: 404,
+    AELocation.Mailbox5.value: 405,
+    AELocation.Mailbox6.value: 406,
+    AELocation.Mailbox7.value: 407,
+    AELocation.Mailbox8.value: 408,
+    AELocation.Mailbox9.value: 409,
+    AELocation.Mailbox10.value: 410,
+    AELocation.Mailbox11.value: 411,
+    AELocation.Mailbox12.value: 412,
+    AELocation.Mailbox13.value: 413,
+    AELocation.Mailbox14.value: 414,
+    AELocation.Mailbox15.value: 415,
+    AELocation.Mailbox16.value: 416,
+    AELocation.Mailbox17.value: 417,
+    AELocation.Mailbox18.value: 418,
+    AELocation.Mailbox19.value: 419,
+    AELocation.Mailbox20.value: 420,
+    AELocation.Mailbox21.value: 421,
+    AELocation.Mailbox22.value: 422,
+    AELocation.Mailbox23.value: 423,
+    AELocation.Mailbox24.value: 424,
+    AELocation.Mailbox25.value: 425,
+    AELocation.Mailbox26.value: 426,
+    AELocation.Mailbox27.value: 427,
+    AELocation.Mailbox28.value: 428,
+    AELocation.Mailbox29.value: 429,
+    AELocation.Mailbox30.value: 430,
+    AELocation.Mailbox31.value: 431,
+    AELocation.Mailbox32.value: 432,
+    AELocation.Mailbox33.value: 433,
+    AELocation.Mailbox34.value: 434,
+    AELocation.Mailbox35.value: 435,
+    AELocation.Mailbox36.value: 436,
+    AELocation.Mailbox37.value: 437,
+    AELocation.Mailbox38.value: 438,
+    AELocation.Mailbox39.value: 439,
+    AELocation.Mailbox40.value: 440,
+    AELocation.Mailbox41.value: 441,
+    AELocation.Mailbox42.value: 442,
+    AELocation.Mailbox43.value: 443,
+    AELocation.Mailbox44.value: 444,
+    AELocation.Mailbox45.value: 445,
+    AELocation.Mailbox46.value: 446,
+    AELocation.Mailbox47.value: 447,
+    AELocation.Mailbox48.value: 448,
+    AELocation.Mailbox49.value: 449,
+    AELocation.Mailbox50.value: 450,
+    AELocation.Mailbox51.value: 451,
+    AELocation.Mailbox52.value: 452,
+    AELocation.Mailbox53.value: 453,
+    AELocation.Mailbox54.value: 454,
+    AELocation.Mailbox55.value: 455,
+    AELocation.Mailbox56.value: 456,
+    AELocation.Mailbox57.value: 457,
+    AELocation.Mailbox58.value: 458,
+    AELocation.Mailbox59.value: 459,
+    AELocation.Mailbox60.value: 460,
+    AELocation.Mailbox61.value: 461,
+    AELocation.Mailbox62.value: 462,
+
     # Bosses
     AELocation.Boss73.value: 500,
     AELocation.Boss83.value: 501,
@@ -373,6 +438,8 @@ def createLocationGroups():
             GROUPED_LOCATIONS.setdefault("Specters Factory", []).append(locname)
         elif "8-3" in locname:
             GROUPED_LOCATIONS.setdefault("TV Tower", []).append(locname)
+        elif "Time Station" in locname:
+            GROUPED_LOCATIONS.setdefault("Time Station", []).append(locname)
         # Special Case for Monkey Madness due to containing Monkey in the name - can't naively add all locations with Monkey to the Monkeys group
         if "9-1" in locname:
             GROUPED_LOCATIONS.setdefault("Monkey Madness", []).append(locname)
@@ -386,5 +453,8 @@ def createLocationGroups():
 
         if "Specter" in locname or "Boss" in locname:
             GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
+
+        if "Mailbox" in locname:
+                GROUPED_LOCATIONS.setdefault("Mailboxes", []).append(locname)
 
 createLocationGroups()

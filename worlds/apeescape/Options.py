@@ -54,6 +54,23 @@ class CoinOption(Choice):
     default = option_false
 
 
+class MailboxOption(Choice):
+    """Choose if mailboxes should act as locations.
+        Mailboxes in training rooms will never be locations.
+
+        true: mailboxes are added as locations
+        false: mailboxes are not added as locations
+
+        Supported values: true, false
+        Default value: false
+    """
+
+    display_name = "Mailbox"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
+
+
 class GadgetOption(Choice):
     """Choose the starting gadget. The Time Net will always be a starting gadget.
     
@@ -98,9 +115,10 @@ class SuperFlyerOption(Choice):
 
 
 class ShuffleNetOption(Choice):
-    """Choose if the Time Net should be shuffled. Not recommended for sync games.
+    """Choose if the Time Net should be shuffled.
+        This option requires at least one of coins and mailboxes to be shuffled to be used - if all locations in this world require the net, the net will be given at game start.
 
-        true: Time Net is shuffled into the pool.
+        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations if this happens.
         false: Time Net is not shuffled, and is given at game start.
 
         Supported values: true, false
@@ -117,6 +135,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     goal: GoalOption
     logic: LogicOption
     coin: CoinOption
+    mailbox: MailboxOption
     gadget: GadgetOption
     superflyer: SuperFlyerOption
     shufflenet: ShuffleNetOption
