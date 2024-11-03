@@ -77,8 +77,10 @@ class ApeEscapeClient(BizHawkClient):
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
         ape_identifier_ram_address: int = 0xA37F0
+        ape_identifier_ram_address_PAL: int = 0xA37F0
         # BASCUS-94423SYS in ASCII = Ape Escape I think??
         bytes_expected: bytes = bytes.fromhex("4241534355532D3934343233535953")
+        bytes_expected_PAL:bytes = bytes.fromhex("4245534345532D3031353634535953")
         try:
             bytes_actual: bytes = (await bizhawk.read(ctx.bizhawk_ctx, [(
                 ape_identifier_ram_address, len(bytes_expected), "MainRAM"
@@ -124,9 +126,11 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gadgetStateFromServer, 2, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.menuStateAddress,1, "MainRAM"),
-                (RAM.menuState2Address, 1, "MainRAM")
+                (RAM.menuState2Address, 1, "MainRAM"),
+                (RAM.newGameAddress, 1, "MainRAM")
             ]
             itemsWrites = []
+            Menuwrites = []
             # All reads that are required BEFORE connecting/early
             earlyReads = await bizhawk.read(ctx.bizhawk_ctx, earlyReadTuples)
 
@@ -141,7 +145,12 @@ class ApeEscapeClient(BizHawkClient):
             gameState = int.from_bytes(earlyReads[8], byteorder="little")
             menuState = int.from_bytes(earlyReads[9], byteorder="little")
             menuState2 = int.from_bytes(earlyReads[10], byteorder="little")
+            newGameAddress = int.from_bytes(earlyReads[11], byteorder="little")
 
+            #  When in Menu,change the behwvior of "Newgame" to warp you to time station instead
+            if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
+                Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
+                await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
@@ -259,6 +268,9 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, 1, "MainRAM"),
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
+                (RAM.roomStatus, 1, "MainRAM"),
+                (RAM.gotMailAddress, 1, "MainRAM"),
+                (RAM.mailboxIDAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
@@ -307,9 +319,12 @@ class ApeEscapeClient(BizHawkClient):
             requiredApes = int.from_bytes(reads[14], byteorder="little")
             currentApes = int.from_bytes(reads[15], byteorder="little")
             spikeState = int.from_bytes(reads[16], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[17], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[18], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[19], byteorder="little")
+            roomStatus = int.from_bytes(reads[17], byteorder="little")
+            gotMail = int.from_bytes(reads[18], byteorder="little")
+            mailboxID = int.from_bytes(reads[19], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[20], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[21], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[22], byteorder="little")
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -320,6 +335,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # Stock BossRooms in a variable (For excluding these rooms in local monkeys sending)
             bossRooms = RAM.bossListLocal.keys()
+            mailboxesRooms = RAM.mailboxListLocal.keys()
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -338,7 +354,7 @@ class ApeEscapeClient(BizHawkClient):
                     if int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["PrevCaught"]:
                         monkeysToSend.add(keyList[i] + self.offset)
 
-                if monkeysToSend is not None:
+                if monkeysToSend is not None and monkeysToSend != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeysToSend)
@@ -363,7 +379,7 @@ class ApeEscapeClient(BizHawkClient):
                     if int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
                         monkeys_to_send.add(key_list[i] + self.offset)
 
-                if monkeys_to_send is not None:
+                if monkeys_to_send is not None and monkeys_to_send != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeys_to_send)
@@ -383,16 +399,38 @@ class ApeEscapeClient(BizHawkClient):
                 bosses_to_send = set()
 
                 for i in range(len(bossesList)):
-                    if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
-                        bosses_to_send.add(key_list[i] + self.offset)
+                    # For TVT boss,check roomStatus if it's 3 the fight is ongoing
+                    if (currentRoom == 68):
+                        print(roomStatus)
+                        if (roomStatus == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
+                            bosses_to_send.add(key_list[i] + self.offset)
+                    else:
+                        if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
+                            bosses_to_send.add(key_list[i] + self.offset)
 
-                if bosses_to_send is not None:
+                if bosses_to_send is not None and bosses_to_send != set():
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in bosses_to_send)
                     }])
 
+            # Check for Mailboxes
+            if (localcondition) and (currentRoom in mailboxesRooms):
+                mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
+                boolGotMail = (gotMail == 0x02)
+                key_list = list(mailboxesaddrs.keys())
+                val_list = list(mailboxesaddrs.values())
 
+                mail_to_send = set()
+
+                for i in range(len(val_list)):
+                        if val_list[i] == mailboxID and boolGotMail:
+                            mail_to_send.add(key_list[i] + self.offset)
+                if mail_to_send is not None and mail_to_send != set():
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": list(x for x in mail_to_send)
+                    }])
             # Check for victory conditions
             specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
             specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
@@ -458,6 +496,7 @@ class ApeEscapeClient(BizHawkClient):
             ]
 
             # Unequip the Time Net if it was shuffled. 
+            # TODO: Update this check to make sure the net was actually shuffled (check coins/mailboxes) 
             if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
                 if (crossGadget == 1) and (gadgetStateFromServer & 2 == 0):
                     writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]

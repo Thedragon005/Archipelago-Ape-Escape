@@ -191,7 +191,7 @@ class RAM:
         189: 0x0DFA8B,
         190: 0x0DFA90,
         192: 0x0DFA99,
-        193: 0x0DFAA3,
+        193: 0x0DFAA0,
         194: 0x0DFAA1,
         196: 0x0DFAA3,
         195: 0x0DFAA2,
@@ -587,7 +587,290 @@ class RAM:
         }
 
     }
+    mailboxListLocal = {
+        1: {  # 1-1
+            401 : 65,
+            402 : 66,
+            403 : 19
+        },
+        2: {  # 1-2
+            404 : 68,
+            405 : 69,
+            406 : 70,
+            407 : 67
+        },
+        3: {  # 1-3
+            408 : 103,
+            409 : 21
+        },
+        4: {  # volcano
+            410 : 100
+        },
+        5: {  # triceratops
+            411 : 116,
+            412 : 41
+        },
+        6: {  # 2-1
+            413 : 72,
+            414 : 71
+        },
+        7: {  # mushroom area
+            415 : 38,
+            416 : 24
+        },
+        8: {  # fish room
+            417 : 73,
+            418 : 71,
+            419 : 104
+        },
+        9: {  # tent/vine room
+            420 : 48
+        },
+        10: {  # boulder room
+            421 : 23
+        },
+        11: {  # 2-2
+            422 : 105,
+            423 : 103,
+            424 : 22,
+            425 : 81
+        },
+        12: {  # fan basement
+            426 : 80,
+            427 : 70
+        },
+        13: {  # obelisk inside
+            428 : 52
+        },
+        #14: {  # water basement
 
+        #},
+        15: {  # 2-3
+            429 : 50,
+            430 : 112
+        },
+        #16: {  # side room
+
+        #},
+        17: {  # main ruins
+            431 : 33,
+            432 : 37
+        },
+        18: {  # pillar room
+            433 : 67
+        },
+        #19: {  # 3-1
+
+        #},
+        20: {  # 4-1
+            434 : 25,
+            435 : 82
+        },
+        21: {  # second room
+            436 : 72
+        },
+        #22: {  # 4-2
+
+        #},
+        23: {  # second room
+            437 : 53,
+            438 : 54
+        },
+        24: {  # 4-3
+            439 : 39,
+            440 : 55
+        },
+        #25: {  # stomach
+
+        #},
+        26: {  # gallery/boulder
+            441 : 32
+        },
+        #27: {  # tentacle room
+
+        #},
+        28: {  # slide room
+            442 : 40
+        },
+        29: {  # 5-1
+            443 : 86,
+            444 : 18,
+            445 : 87
+        },
+        #30: {  # 5-2
+
+        #},
+        #31: {  # water room
+
+        #},
+        32: {  # caverns
+            446 : 35
+        },
+        33: {  # 5-3
+            447 : 20
+        },
+        34: {  # hot spring
+            448 : 51
+        },
+        35: {  # polar bear cave
+            449 : 85
+        },
+        #36: {  # 6-1
+
+        #},
+        #37: {  # 7-1
+
+        #},
+        38: {  # temple
+            450 : 57,
+            451 : 65
+        },
+        39: {  # well
+            452 : 68
+        },
+        #40: {  # 7-2
+
+        #},
+        41: {  # gong room
+            453 : 25
+        },
+        42: {  # middle room
+            454 : 34
+        },
+        43: {  # obstacle course
+            455 : 64
+        },
+        #44: {  # barrel room
+
+        #},
+        45: {  # 7-3
+            456 : 69
+        },
+        #46: {  # castle main
+
+        #},
+        #47: {  # flooded basement
+
+        #},
+        #49: {  # button room
+
+        #},
+        #50: {  # elevator room
+
+        #},
+        #51: {  # bell tower
+
+        #},
+        #52: {
+
+        #},
+        #53: {  # 8-1
+
+        #},
+        #54: {  # sewers front
+
+        #},
+        #55: {  # barrel room
+
+        #},
+        56: {  # 8-2
+            457 : 83
+        },
+        #57: {  # main factory
+
+        #},
+        #58: {  # rc car room
+
+        #},
+        #59: {  # lava room
+
+        #},
+        #60: {
+
+        #},
+        #61: {  # conveyor room
+
+        #},
+        #62: {  # mech room
+
+        #},
+        #63: {  # 8-3
+
+        #},
+        #64: {  # water basement
+
+        #},
+        #65: {  # lobby
+
+        #},
+        #66: {  # tank room
+
+        #},
+        #67: {  # fan room
+
+        #},
+        #68: {
+
+        #},
+        #69: {  # MM Lobby
+
+        #},
+        #71: {
+
+        #},
+        72: {  # coaster entry
+            458 : 84
+        },
+        #73: {  # coaster 1
+
+        #},
+        #74: {  # coaster 2
+
+        #},
+        #75: {  # haunted house
+
+        #},
+        #76: {  # coffin room
+
+        #},
+        #77: {  # western land
+
+        #},
+        #78: {  # crater
+
+        #},
+        #79: {  # outside castle
+
+        #},
+        #80: {  # castle main
+
+        #},
+        #81: {  # inside climb
+
+        #},
+        #82: {  # outside climb
+
+        #},
+        #84: {  # Monkey head
+
+        #},
+        #85: {  # side entry
+
+        #},
+        88: {  # Time station - Hub
+            459 : 113,
+            460 : 114
+        },
+        91: {  # Time station - Mini-game Corner
+            461: 116
+        },
+        90: {  # Time station - Training Space
+            462 : 115
+        }
+
+
+
+    }
     bossListLocal = {
         48: {  # CC boss room
             500: 0x0E69E1
@@ -734,6 +1017,8 @@ class RAM:
     crossGadgetAddress = 0x0F51AB
     # which gadget is currently selected for use
     heldGadgetAddress = 0x0EC2D2
+    newGameAddress = 0x137734
+    loadGameAddress = 0x137734
 
     trainingRoomProgressAddress = 0x0DFDCC
     currentRoomIdAddress = 0x0F4476
@@ -779,6 +1064,16 @@ class RAM:
     # 8 = "Net down + can catch"
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
+
+
+    # HUGE for ER since when transition it is 98 or 204 ?
+    # 1 In cinematic for boss
+    # 2 Boss in waiting
+    # 3 Boss in progress
+    roomStatus = 0x17C5A2
+    #Find better name please...
+
+
     # Specter bosses values
     S1_P2_State = 0x144A04
     S1_P2_Life = 0x144A06
@@ -786,7 +1081,15 @@ class RAM:
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
 
-
+    gotMailAddress = 0x0BBD99
+    gotMailAddress_PAL = 0x0BBE59
+    # DIFF = NTSC + C0
+    # Seems to be shared with other variables,
+    # Detect when readingMail = 2 then check what mailbox it is
+    mailboxIDAddress = 0x0A6CD2
+    mailboxIDAddress_PAL = 0x0A6DB2
+    #DIFF = NTSC + E0
+    # Associate by room just to be sure,since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,
         "Primordial": 0x02,
