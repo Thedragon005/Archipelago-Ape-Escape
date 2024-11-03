@@ -393,6 +393,7 @@ hundoMonkeysCount = {
     0x16: 12, # TV
     0x18: 24 # Specter
 }
+
 def createLocationGroups():
     # Iterate through all locations
     for x in range (0, len(location_table) - 1):

@@ -302,12 +302,14 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.levelMonkeyCount[21], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[22], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[23], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[31], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[41], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[42], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[43], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[51], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[52], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[53], 1, "MainRAM"),
+                (RAM.levelMonkeyCount[61], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[71], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[72], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[73], 1, "MainRAM"),
@@ -537,6 +539,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
             if gameState == RAM.gameState["LevelSelect"]:
+                print("In level select state.")
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 
                 # TODO: Reroute the player to the correct level
@@ -558,6 +561,7 @@ class ApeEscapeClient(BizHawkClient):
                     # Making sure we don't write too much data here.
                     if len(bytestowrite) <= 308:
                         writes += [(RAM.startOfLevelNames, bytearray(bytestowrite), "MainRAM")]
+                        print("Wrote", bytestowrite, "to level names.")
                     else:
                         print("Tried to write too many bytes to level names - expected 305, got", len(bytestowrite))
 
@@ -653,8 +657,9 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
         # Monkey Madness must be set to locked if Peak Point Matrix should be locked
-        if PPMUnlock == False:
-            levelstates[20] = ((RAM.levelAddresses[list(RAM.levelAddresses.keys())[20]], levellocked, "MainRAM"))
+        # TODO: figure out why this gives a list assignment out of bounds error and fix it
+#        if PPMUnlock == False:
+#            levelstates[20] = ((RAM.levelAddresses[list(RAM.levelAddresses.keys())[20]], levellocked, "MainRAM"))
 
         # If there is a change in required monkeys count, include it in the writes
         returns = list(levelstates)
