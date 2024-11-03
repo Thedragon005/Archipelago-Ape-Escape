@@ -639,7 +639,7 @@ class ApeEscapeClient(BizHawkClient):
 
         # Set unlocked/locked state of levels
         levelstates = []
-        for index in (0, 21):
+        for index in range(0, 21):
             # Do we have enough keys for this level? If no, lock. If yes, continue.
             if key >= reqkeys[index]:
                 # Do we have enough keys for the next level? If no, lock. If yes, continue.
@@ -657,9 +657,8 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
         # Monkey Madness must be set to locked if Peak Point Matrix should be locked
-        # TODO: figure out why this gives a list assignment out of bounds error and fix it
-#        if PPMUnlock == False:
-#            levelstates[20] = ((RAM.levelAddresses[list(RAM.levelAddresses.keys())[20]], levellocked, "MainRAM"))
+        if PPMUnlock == False:
+            levelstates[20] = ((RAM.levelAddresses[list(RAM.levelAddresses.keys())[20]], levellocked, "MainRAM"))
 
         # If there is a change in required monkeys count, include it in the writes
         returns = list(levelstates)
@@ -671,7 +670,8 @@ class ApeEscapeClient(BizHawkClient):
             returns.append(hundoWrite)
         return returns
 
-# TODO: import/read this from __init__ or somewhere else instead, it would be great to not have to duplicate this function in order to use it here.
+
+
 def get_required_keys(option):
     if option == 0x00: # world
         return [0,  0,  0,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,  6,  6]
