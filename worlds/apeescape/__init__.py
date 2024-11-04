@@ -142,7 +142,7 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
-        progwaternet = self.create_item(AEItem.ProgWaterNet.value)
+        #progwaternet = self.create_item(AEItem.ProgWaterNet.value)
         watercatch = self.create_item(AEItem.WaterCatch.value)
 
         #self.multiworld.push_precollected(waternet)
@@ -154,8 +154,8 @@ class ApeEscapeWorld(World):
             self.multiworld.push_precollected(waternet)
         else:
             self.itempool += [watercatch]
-            self.itempool += [self.create_item_useful(AEItem.ProgWaterNet.value)]
-            self.itempool += [self.create_item_useful(AEItem.ProgWaterNet.value)]
+            self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
+            self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
 
 
         # Net shuffle handling.

@@ -536,17 +536,21 @@ class ApeEscapeClient(BizHawkClient):
             # Swim will be detected separately
             killPlayer = False
 
-
+            jumping = [0x08,0x09,0x35,0x36]
+            swimming = [0x46,0x47]
             # Nothing
             if waternetState == 0x00:
                 writes += [(RAM.canDiveAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-
-                if spikeState2 == 0x46 or spikeState2 == 0x47:
+                #8-9 Jumping/falling,36-37 D-Jump => don't reset the counter
+                if spikeState2 in swimming:
                     self.inWater += 1
-                else:
+                    writes += [(RAM.oxygenLevelAddress, 0x64.to_bytes(2, "little"), "MainRAM")]
+                    print("inWater:" + str(self.inWater))
+                elif spikeState2 not in jumping:
+                    print("reset inWater to 0")
                     self.inWater = 0
                 # In Water
-                if self.inWater >= 32:
+                if self.inWater >= 12:
                     killPlayer = True
 
             # CanSwim

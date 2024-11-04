@@ -906,6 +906,8 @@ class RAM:
         "Key": 0x100,
         "Victory": 0x200,
         "WaterNet": 0x400,
+        "ProgWaterNet": 0x401,
+        "WaterCatch": 0x402,
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -1024,6 +1026,7 @@ class RAM:
 
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
+    oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
 
     newGameAddress = 0x137734
     loadGameAddress = 0x137734

@@ -24,9 +24,9 @@ item_table = {
     AEItem.Punch.value: RAM.items["Punch"],
     AEItem.Flyer.value: RAM.items["Flyer"],
     AEItem.Car.value: RAM.items["Car"],
-    AEItem.WaterNet.value: 0x400,
-    AEItem.ProgWaterNet.value: 0x401,
-    AEItem.WaterCatch.value: 0x402,
+    AEItem.WaterNet.value: RAM.items["WaterNet"],
+    AEItem.ProgWaterNet.value: RAM.items["ProgWaterNet"],
+    AEItem.WaterCatch.value: RAM.items["WaterCatch"],
 
     # Keys
     AEItem.Key.value: RAM.items["Key"],
