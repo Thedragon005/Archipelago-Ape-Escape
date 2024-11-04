@@ -241,8 +241,11 @@ class ApeEscapeWorld(World):
     def fill_slot_data(self):
         bytestowrite = []
         entranceids = []
+        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+        orderedfirstroomids = []
         for x in range(0, 22):
             entranceids.append(self.entranceorder[x].entrance)
+            orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
             if x > 0:
                 # If it's not the first level, we need to add a separator byte between names.
                 bytestowrite.append(0)
@@ -263,8 +266,7 @@ class ApeEscapeWorld(World):
             "shufflenet": self.options.shufflenet.value,
             "levelnames": bytestowrite,
             "entranceids": entranceids,
-            # Does this work? Will test later.
-            # "entranceorder": [self.entranceorder.entrance for ApeEscapeLevel in self.entranceorder],
+            "firstrooms": orderedfirstroomids,
         }
 
     def generate_output(self, output_directory: str):

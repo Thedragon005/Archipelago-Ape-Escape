@@ -534,29 +534,16 @@ class ApeEscapeClient(BizHawkClient):
                 self.replacePunch = True
 
             # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
-            if ((currentLevel == 0x0E) and (heldGadget == 6) and ((gadgetStateFromServer & 64 == 0))):
+            if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
                 writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
             if gameState == RAM.gameState["LevelSelect"]:
                 print("In level select state.")
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
-                
-                # TODO: Reroute the player to the correct level
-                # Write all the code here.
-                
-                # Update level names
+                # Update level (and potentially era) names. TODO: fix this, it's currently not working.
                 if (True): # TODO: Update this condition so it doesn't repeatedly re-write the same names
-                    # TODO: Update Era names here too
                     bytestowrite = []
-                    # for x in range(0, 22):
-                    #     if x > 0:
-                    #         # If it's not the first level, we need to add a separator byte between names.
-                    #         bytestowrite.append(0)
-                    #         bytestowrite += ctx.slot_data["entranceorder"][x].bytes
-                    #     else:
-                    #         # If it's the first level, just start writing.
-                    #         bytestowrite = ctx.slot_data["entranceorder"][x].bytes
                     bytestowrite = ctx.slot_data["levelnames"]
                     # Making sure we don't write too much data here.
                     if len(bytestowrite) <= 308:
@@ -564,6 +551,23 @@ class ApeEscapeClient(BizHawkClient):
                         print("Wrote", bytestowrite, "to level names.")
                     else:
                         print("Tried to write too many bytes to level names - expected 305, got", len(bytestowrite))
+
+            # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
+            if gameState == RAM.gameState["LevelIntro"]:
+                print("In level intro state.")
+                # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
+                firstroomids = ctx.slot_data["firstrooms"]
+                # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
+                levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), firstroomids))
+                # Use Selected World (0-9) and Selected Level (0-2) to determine the selected level.
+                chosenLevel = 10 * LS_currentWorld + LS_currentLevel + 11
+                # Peak Point Matrix doesn't follow the pattern, so manually override if it's that.
+                if chosenLevel > 100:
+                    chosenLevel = 92
+                targetRoom = levelidtofirstroom.get(chosenLevel)
+                # Actually send Spike to the desired level!
+                writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
+
 
             level_info = [currentApes, requiredApes, currentLevel, localhundoCount]
             writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, ctx.slot_data["unlocksperkey"])
