@@ -888,15 +888,15 @@ def RCMonkey(state, world):
 
 
 def CanSwim(state, world):
-    return HasWaterNet(state, world)
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 1))
 
 
 def CanDive(state, world):
-    return HasWaterNet(state, world)
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 2))
 
 
 def CanWaterCatch(state, world):
-    return HasWaterNet(state, world)
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.WaterCatch.value, world.player, 1))
 
 
 def SuperFlyer(state, world):

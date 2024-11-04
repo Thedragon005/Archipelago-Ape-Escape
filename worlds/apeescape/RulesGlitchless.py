@@ -897,6 +897,7 @@ def CanDive(state, world):
 def CanWaterCatch(state, world):
     return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.WaterCatch.value, world.player, 1))
 
+
 def SuperFlyer(state, world):
     return False
 
