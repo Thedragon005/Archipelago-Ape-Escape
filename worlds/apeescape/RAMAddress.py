@@ -1093,7 +1093,7 @@ class RAM:
     mailboxIDAddress = 0x0A6CD2
     mailboxIDAddress_PAL = 0x0A6DB2
     #DIFF = NTSC + E0
-    # Associate by room just to be sure,since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
+    # Associate by room just to be sure, since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,
         "Primordial": 0x02,

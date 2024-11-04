@@ -240,7 +240,9 @@ class ApeEscapeWorld(World):
 
     def fill_slot_data(self):
         bytestowrite = []
+        entranceids = []
         for x in range(0, 22):
+            entranceids.append(self.entranceorder[x].entrance)
             if x > 0:
                 # If it's not the first level, we need to add a separator byte between names.
                 bytestowrite.append(0)
@@ -260,6 +262,7 @@ class ApeEscapeWorld(World):
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "levelnames": bytestowrite,
+            "entranceids": entranceids,
             # Does this work? Will test later.
             # "entranceorder": [self.entranceorder.entrance for ApeEscapeLevel in self.entranceorder],
         }

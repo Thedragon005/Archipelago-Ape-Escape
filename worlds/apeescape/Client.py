@@ -125,7 +125,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
                 (RAM.gadgetStateFromServer, 2, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
-                (RAM.menuStateAddress,1, "MainRAM"),
+                (RAM.menuStateAddress, 1, "MainRAM"),
                 (RAM.menuState2Address, 1, "MainRAM"),
                 (RAM.newGameAddress, 1, "MainRAM")
             ]
@@ -192,7 +192,7 @@ class ApeEscapeClient(BizHawkClient):
                                     energyChips += 5
                                 elif (item.item - self.offset) == RAM.items["BiggerTriangle"]:
                                     energyChips += 25
-                                # If total gets greater than 100,subtract 100 and give a life instead
+                                # If total gets greater than 100, subtract 100 and give a life instead
                                 if energyChips >= 100:
                                     energyChips = energyChips - 100
                                     # Don't give a life if it would exceed 99 lives
