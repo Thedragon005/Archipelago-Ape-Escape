@@ -905,6 +905,7 @@ class RAM:
         "Car": 0x80,
         "Key": 0x100,
         "Victory": 0x200,
+        "WaterNet": 0x400,
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -1017,6 +1018,13 @@ class RAM:
     crossGadgetAddress = 0x0F51AB
     # which gadget is currently selected for use
     heldGadgetAddress = 0x0EC2D2
+
+    tempWaterNetAddress = 0x0DFBE2
+    tempWaterCatchAddress = 0x0DFBE3
+
+    canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
+    canWaterCatchAddress = 0x063C35 # 04 - default value
+
     newGameAddress = 0x137734
     loadGameAddress = 0x137734
 
@@ -1064,7 +1072,7 @@ class RAM:
     # 8 = "Net down + can catch"
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
-
+    spikeState2Address = 0x0EC23E
 
     # HUGE for ER since when transition it is 98 or 204 ?
     # 1 In cinematic for boss

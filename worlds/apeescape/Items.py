@@ -24,8 +24,9 @@ item_table = {
     AEItem.Punch.value: RAM.items["Punch"],
     AEItem.Flyer.value: RAM.items["Flyer"],
     AEItem.Car.value: RAM.items["Car"],
-
     AEItem.WaterNet.value: 0x400,
+    AEItem.ProgWaterNet.value: 0x401,
+    AEItem.WaterCatch.value: 0x402,
 
     # Keys
     AEItem.Key.value: RAM.items["Key"],
@@ -58,5 +59,7 @@ def createItemGroups():
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Sky Flyer")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("R.C. Car")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Net")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Progressive Water Net")
+    GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Catch")
 
 createItemGroups()

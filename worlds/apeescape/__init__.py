@@ -75,6 +75,7 @@ class ApeEscapeWorld(World):
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
+        self.shufflewaternet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
 
     def generate_early(self) -> None:
@@ -84,6 +85,7 @@ class ApeEscapeWorld(World):
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
+        self.shufflewaternet = self.options.shufflewaternet.value
         self.itempool = []
 
     def generate_basic(self) -> None:
@@ -96,6 +98,8 @@ class ApeEscapeWorld(World):
         car = self.create_item(AEItem.Car.value)
         punch = self.create_item(AEItem.Punch.value)
         waternet = self.create_item(AEItem.WaterNet.value)
+        progwaternet = self.create_item(AEItem.ProgWaterNet.value)
+        watercatch = self.create_item(AEItem.WaterCatch.value)
 
     def create_regions(self):
         create_regions(self)
@@ -138,10 +142,21 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
+        progwaternet = self.create_item(AEItem.ProgWaterNet.value)
+        watercatch = self.create_item(AEItem.WaterCatch.value)
 
-        self.multiworld.push_precollected(waternet)
+        #self.multiworld.push_precollected(waternet)
 
         self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+
+        # Water Net shuffle handling
+        if self.options.shufflewaternet == "false":
+            self.multiworld.push_precollected(waternet)
+        else:
+            self.itempool += [watercatch]
+            self.itempool += [self.create_item_useful(AEItem.ProgWaterNet.value)]
+            self.itempool += [self.create_item_useful(AEItem.ProgWaterNet.value)]
+
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
@@ -230,6 +245,7 @@ class ApeEscapeWorld(World):
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
+            "shufflewaternet": self.options.shufflenet.value,
         }
 
     #def generate_output(self, output_directory: str):
