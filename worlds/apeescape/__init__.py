@@ -245,7 +245,7 @@ class ApeEscapeWorld(World):
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
-            "shufflewaternet": self.options.shufflenet.value,
+            "shufflewaternet": self.options.shufflewaternet.value,
         }
 
     #def generate_output(self, output_directory: str):
