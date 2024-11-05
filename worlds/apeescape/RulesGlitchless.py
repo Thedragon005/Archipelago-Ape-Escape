@@ -903,7 +903,7 @@ def SuperFlyer(state, world):
 
 
 def TJ_UFOEntry(state, world):
-    return CanDive(state, world)
+    return CanSwim(state, world)
 
 
 def TJ_UFOCliff(state, world):
@@ -942,7 +942,7 @@ def CC_5Monkeys(state, world):
 
 
 def CC_WaterRoom(state, world):
-    return (HasNet(state, world) and CanHitMultiple(state, world)) or (CanDive(state, world) and HasPunch(state, world))
+    return (HasNet(state, world) and CanHitMultiple(state, world)) or (CanSwim(state, world) and HasPunch(state, world))
 
 
 def CC_ButtonRoom(state, world):
