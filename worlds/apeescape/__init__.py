@@ -246,13 +246,8 @@ class ApeEscapeWorld(World):
         for x in range(0, 22):
             entranceids.append(self.entranceorder[x].entrance)
             orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
-            if x > 0:
-                # If it's not the first level, we need to add a separator byte between names.
-                bytestowrite.append(0)
-                bytestowrite += self.entranceorder[x].bytes
-            else:
-                # If it's the first level, just start writing.
-                bytestowrite = self.entranceorder[x].bytes
+            bytestowrite += self.entranceorder[x].bytes
+            bytestowrite.append(0) # We need a separator byte after each level name.
             
         return {
             "goal": self.options.goal.value,
@@ -280,7 +275,7 @@ class ApeEscapeWorld(World):
 
 
 def initialize_level_list():
-    levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexters Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specters Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
+    levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
     levelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
     levellist = []
     for x in range (0, 22):
@@ -294,15 +289,17 @@ def level_to_bytes(name):
     return bytelist
     
 def character_lookup(byte):
-    if byte.isspace():
+    if byte.isspace(): # Space
         return 255
     if byte.isalpha():
-        return ord(byte) - 49
+        return ord(byte) - 49 # Both uppercase and lowercase letters
     if byte.isdecimal():
         if int(byte) < 6:
-            return ord(byte) + 56
+            return ord(byte) + 56 # 0-5
         else:
-            return ord(byte) + 68
+            return ord(byte) + 68 # 6-9
+    if ord(byte) == 39: # Single apostrophe
+        return 187
 
 def fixed_levels(levellist, entoption):
     for x in range (0, 22):

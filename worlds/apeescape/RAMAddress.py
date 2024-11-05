@@ -1047,7 +1047,7 @@ class RAM:
     gadgetStateFromServer = 0x0E00F0
 
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
-    menuStateAddress =0x0A9A1B
+    menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
     punchVisualAddress = 0x0E78C0
 
@@ -1061,6 +1061,8 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
+    tempselectedWorldAddress = 0x0F4484
+    tempselectedLevelAddress = 0x0F4486
     startOfLevelNames = 0x1399E8
     startOfEraNames = 0x139B20
 

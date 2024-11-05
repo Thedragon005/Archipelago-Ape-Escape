@@ -244,7 +244,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentRoomIdAddress, 1, "MainRAM"), # Current Room
                 (RAM.jakeVictoryAddress, 1, "MainRAM"), # Jake Races Victory state
                 (RAM.currentLevelAddress, 1, "MainRAM"), # Current Level
-                (self.currentCoinAddress -2, 1, "MainRAM"), # Previous Coin State Room
+                (self.currentCoinAddress - 2, 1, "MainRAM"), # Previous Coin State Room
                 (self.currentCoinAddress, 1, "MainRAM"), # Current New Coin State Room
                 (RAM.totalCoinsAddress, 1, "MainRAM"), # Coin Count
                 (RAM.heldGadgetAddress, 1, "MainRAM"), # Currently held gadget
@@ -264,6 +264,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S2_isCaptured, 1, "MainRAM"),
                 (RAM.selectedWorldAddress, 1, "MainRAM"), # In level select, the current world
                 (RAM.selectedLevelAddress, 1, "MainRAM"), # In level select, the current level
+                (RAM.tempselectedWorldAddress, 1, "MainRAM"), # Temporary storage for the above addresses
+                (RAM.tempselectedLevelAddress, 1, "MainRAM"), # because the game changes them during entry
 
             ]
 
@@ -294,6 +296,8 @@ class ApeEscapeClient(BizHawkClient):
             S2_isCaptured = int.from_bytes(reads[22], byteorder="little")
             LS_currentWorld = int.from_bytes(reads[23], byteorder="little")
             LS_currentLevel = int.from_bytes(reads[24], byteorder="little")
+            Temp_currentWorld = int.from_bytes(reads[25], byteorder="little")
+            Temp_currentLevel = int.from_bytes(reads[26], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -541,16 +545,17 @@ class ApeEscapeClient(BizHawkClient):
             if gameState == RAM.gameState["LevelSelect"]:
                 print("In level select state.")
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
-                # Update level (and potentially era) names. TODO: fix this, it's currently not working.
-                if (True): # TODO: Update this condition so it doesn't repeatedly re-write the same names
-                    bytestowrite = []
-                    bytestowrite = ctx.slot_data["levelnames"]
-                    # Making sure we don't write too much data here.
-                    if len(bytestowrite) <= 308:
-                        writes += [(RAM.startOfLevelNames, bytearray(bytestowrite), "MainRAM")]
-                        print("Wrote", bytestowrite, "to level names.")
-                    else:
-                        print("Tried to write too many bytes to level names - expected 305, got", len(bytestowrite))
+                
+                # Copy the values of Current Level and Current World to temporary addresses for later use
+                writes += [(RAM.tempselectedWorldAddress, LS_currentWorld.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.tempselectedLevelAddress, LS_currentLevel.to_bytes(1, "little"), "MainRAM")]
+                
+                # Update level (and potentially era) names.
+                bytestowrite = ctx.slot_data["levelnames"]
+                # This is a bit of a "magic number" right now. trying to get the length didn't work.
+                # Trying to write all the bytes at once also didn't work.
+                for x in range(0, 308):
+                    writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
 
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
             if gameState == RAM.gameState["LevelIntro"]:
@@ -560,7 +565,7 @@ class ApeEscapeClient(BizHawkClient):
                 # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
                 levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), firstroomids))
                 # Use Selected World (0-9) and Selected Level (0-2) to determine the selected level.
-                chosenLevel = 10 * LS_currentWorld + LS_currentLevel + 11
+                chosenLevel = 10 * Temp_currentWorld + Temp_currentLevel + 11
                 # Peak Point Matrix doesn't follow the pattern, so manually override if it's that.
                 if chosenLevel > 100:
                     chosenLevel = 92
