@@ -542,9 +542,15 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
+
             if gameState == RAM.gameState["LevelSelect"]:
                 print("In level select state.")
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
+                
+                # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
+                reqkeys = ctx.slot_data["reqkeys"]
+                if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
+                    writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
                 
                 # Copy the values of Current Level and Current World to temporary addresses for later use
                 writes += [(RAM.tempselectedWorldAddress, LS_currentWorld.to_bytes(1, "little"), "MainRAM")]
@@ -575,7 +581,7 @@ class ApeEscapeClient(BizHawkClient):
 
 
             level_info = [currentApes, requiredApes, currentLevel, localhundoCount]
-            writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, ctx.slot_data["unlocksperkey"])
+            writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, ctx.slot_data["reqkeys"])
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -587,7 +593,7 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
-    def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, unlocksperkey):
+    def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, reqkeys):
 
         key = self.worldkeycount
         curApesWrite = ""
@@ -601,8 +607,6 @@ class ApeEscapeClient(BizHawkClient):
         levelopen = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
         levelhundo = RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little")
         allCompleted = True
-        # Rather than using this function, this could use the contents of entranceorder to determine keys. Probably shouldn't given how often this gets run though.
-        reqkeys = get_required_keys(unlocksperkey)
 
         debug = False
 
@@ -678,15 +682,3 @@ class ApeEscapeClient(BizHawkClient):
         if hundoWrite != "":
             returns.append(hundoWrite)
         return returns
-
-
-
-def get_required_keys(option):
-    if option == 0x00: # world
-        return [0,  0,  0,  1,  1,  1,  2,  2,  2,  2,  3,  3,  3,  4,  4,  4,  4,  5,  5,  5,  6,  6]
-    if option == 0x01: # world and races
-        return [0,  0,  0,  1,  1,  1,  2,  3,  3,  3,  4,  4,  4,  5,  6,  6,  6,  7,  7,  7,  8,  8]
-    if option == 0x02: # level
-        return [0,  0,  0,  1,  2,  3,  4,  4,  5,  6,  7,  8,  9,  10, 10, 11, 12, 13, 14, 15, 16, 16]
-    if option == 0x03: # level and races
-        return [0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 18]

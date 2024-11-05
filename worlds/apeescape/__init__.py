@@ -262,6 +262,7 @@ class ApeEscapeWorld(World):
             "levelnames": bytestowrite,
             "entranceids": entranceids,
             "firstrooms": orderedfirstroomids,
+            "reqkeys": get_required_keys(self.options.unlocksperkey.value),
         }
 
     def generate_output(self, output_directory: str):
