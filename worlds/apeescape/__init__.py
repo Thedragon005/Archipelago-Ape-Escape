@@ -259,9 +259,9 @@ class ApeEscapeWorld(World):
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
-            "levelnames": bytestowrite,
-            "entranceids": entranceids,
-            "firstrooms": orderedfirstroomids,
+            "levelnames": bytestowrite, # List of level names in entrance order. FF leads to the first.
+            "entranceids": entranceids, # Not used by the client. List of level ids in entrance order.
+            "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value),
         }
 
