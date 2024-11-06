@@ -1027,6 +1027,7 @@ class RAM:
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
     oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
+    gameRunningAddress = 0x0B01C0
 
     newGameAddress = 0x137734
     loadGameAddress = 0x137734

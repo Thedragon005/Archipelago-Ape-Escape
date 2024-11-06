@@ -308,6 +308,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
+                (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
@@ -360,9 +361,10 @@ class ApeEscapeClient(BizHawkClient):
             roomStatus = int.from_bytes(reads[18], byteorder="little")
             gotMail = int.from_bytes(reads[19], byteorder="little")
             mailboxID = int.from_bytes(reads[20], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[21], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[22], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[23], byteorder="little")
+            gameRunning = int.from_bytes(reads[21], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[22], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[23], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[24], byteorder="little")
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -536,22 +538,30 @@ class ApeEscapeClient(BizHawkClient):
             # Swim will be detected separately
             killPlayer = False
 
-            jumping = [0x08,0x09,0x35,0x36]
+            inAir = [0x08,0x09,0x35,0x36,0x83,0x84]
             swimming = [0x46,0x47]
+            grounded = [0x00,0x01,0x02,0x03,0x05,0x07,0x80,0x81]
+
+            # TODO Check reseting water counter and transitions !
             # Nothing
             if waternetState == 0x00:
                 writes += [(RAM.canDiveAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                #8-9 Jumping/falling,36-37 D-Jump => don't reset the counter
-                if spikeState2 in swimming:
-                    self.inWater += 1
-                    writes += [(RAM.oxygenLevelAddress, 0x64.to_bytes(2, "little"), "MainRAM")]
-                    print("inWater:" + str(self.inWater))
-                elif spikeState2 not in jumping:
-                    print("reset inWater to 0")
-                    self.inWater = 0
-                # In Water
-                if self.inWater >= 12:
-                    killPlayer = True
+                #8-9 Jumping/falling,36-37 D-Jump,83-84 Flyer => don't reset the counter
+                if gameRunning == 0x01 and gameState == RAM.gameState["InLevel"]:
+                    if spikeState2 in swimming:
+                        self.inWater += 1
+                        writes += [(RAM.oxygenLevelAddress, 0x64.to_bytes(2, "little"), "MainRAM")]
+                        print("inWater:" + str(self.inWater))
+                    elif spikeState2 in grounded:
+                        print("Grounded,reset inWater to 0")
+                        self.inWater = 0
+                    # In Water
+                    if self.inWater >= 14:
+                        killPlayer = True
+                        self.inWater = 0
+                #Resetting the count
+                #elif gameRunning == 0x00:
+                    #self.inWater = 0
 
             # CanSwim
             elif waternetState == 0x01:
