@@ -684,13 +684,13 @@ class RAM:
 
         #},
         26: {  # gallery/boulder
-            441 : 32
+            442 : 72
         },
         #27: {  # tentacle room
 
         #},
         28: {  # slide room
-            442 : 40
+            441 : 40
         },
         29: {  # 5-1
             443 : 86,
