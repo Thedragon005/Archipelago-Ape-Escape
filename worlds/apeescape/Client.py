@@ -256,7 +256,7 @@ class ApeEscapeClient(BizHawkClient):
                                     rocketAmmo = 9
 
 
-                # Writes to memory if there is a new item,after the loop
+                # Writes to memory if there is a new item, after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.energyChipsAddress, energyChips.to_bytes(1, "little"), "MainRAM")]
@@ -302,8 +302,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S2_isCaptured, 1, "MainRAM"),
                 (RAM.selectedWorldAddress, 1, "MainRAM"), # In level select, the current world
                 (RAM.selectedLevelAddress, 1, "MainRAM"), # In level select, the current level
-                (RAM.tempselectedWorldAddress, 1, "MainRAM"), # Temporary storage for the above addresses
-                (RAM.tempselectedLevelAddress, 1, "MainRAM"), # because the game changes them during entry
+                (RAM.enteredWorldAddress, 1, "MainRAM"), # After selecting a level, the entered world
+                (RAM.enteredLevelAddress, 1, "MainRAM"), # After selecting a level, the entered level
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -335,8 +335,8 @@ class ApeEscapeClient(BizHawkClient):
             S2_isCaptured = int.from_bytes(reads[24], byteorder="little")
             LS_currentWorld = int.from_bytes(reads[25], byteorder="little")
             LS_currentLevel = int.from_bytes(reads[26], byteorder="little")
-            Temp_currentWorld = int.from_bytes(reads[27], byteorder="little")
-            Temp_currentLevel = int.from_bytes(reads[28], byteorder="little")
+            status_currentWorld = int.from_bytes(reads[27], byteorder="little")
+            status_currentLevel = int.from_bytes(reads[28], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -636,10 +636,6 @@ class ApeEscapeClient(BizHawkClient):
                 if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
                     writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
 
-                # Copy the values of Current Level and Current World to temporary addresses for later use
-                writes += [(RAM.tempselectedWorldAddress, LS_currentWorld.to_bytes(1, "little"), "MainRAM")]
-                writes += [(RAM.tempselectedLevelAddress, LS_currentLevel.to_bytes(1, "little"), "MainRAM")]
-
                 # Update level (and potentially era) names.
                 bytestowrite = ctx.slot_data["levelnames"]
                 # This is a bit of a "magic number" right now. trying to get the length didn't work.
@@ -655,7 +651,7 @@ class ApeEscapeClient(BizHawkClient):
                 # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
                 levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), firstroomids))
                 # Use Selected World (0-9) and Selected Level (0-2) to determine the selected level.
-                chosenLevel = 10 * Temp_currentWorld + Temp_currentLevel + 11
+                chosenLevel = 10 * status_currentWorld + status_currentLevel + 11
                 # Peak Point Matrix doesn't follow the pattern, so manually override if it's that.
                 if chosenLevel > 100:
                     chosenLevel = 92

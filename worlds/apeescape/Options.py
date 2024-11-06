@@ -5,10 +5,10 @@ from Options import Choice, PerGameCommonOptions
 
 
 class GoalOption(Choice):
-    """Choose end goal
+    """Choose the victory condition for this world.
 
-        first: First final boss at Monkey Madness
-        second: 100% boss at Peak Point Matrix
+        first: First Specter fight in Monkey Madness.
+        second: Second Specter fight in Peak Point Matrix.
 
         Supported values: first, second
         Default value: first
@@ -21,11 +21,11 @@ class GoalOption(Choice):
 
 
 class LogicOption(Choice):
-    """Choose expected trick knowledge
+    """Choose expected trick knowledge.
 
-        glitchless: no glitches required
-        noij: all glitches except infinite jump
-        ij: all glitches
+        glitchless: No glitches required.
+        noij: Almost all tricks and glitches can be required, except infinite jump.
+        ij: All tricks and glitches can be required.
 
         Supported values: glitchless, noij, ij
         Default value: glitchless
@@ -38,32 +38,51 @@ class LogicOption(Choice):
     default = option_glitchless
 
 
+class SuperFlyerOption(Choice):
+    """Choose if the Super Flyer trick should be put into logic.
+
+        true: Super Flyer is put into logic.
+        false: Super Flyer is not put into logic.
+
+        Supported values: true, false
+        Default value: false
+    """
+    display_name = "Super Flyer"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
+
+
 class EntranceOption(Choice):
-    """Choose if level entrances should be randomized.
+    """Choose which level entrances should be randomized. Peak Point Matrix will always be the last level.
 
-        off: levels will be in the vanilla order
-        levels: the 19 main levels will be shuffled between each other
-        levelsraces: the 19 main levels and 2 Jake races will be shuffled
+        none: Levels will be in the vanilla order.
+        eras: The 18 main levels (all except Monkey Madness) will be shuffled.
+        erasraces: The 18 main levels (all except Monkey Madness) and 2 Jake races will be shuffled.
+        levels: The 19 main levels will be shuffled.
+        levelsraces: The 19 main levels and 2 Jake races will be shuffled.
 
-        Supported values: off, levels, races
+        Supported values: none, eras, erasraces, levels, levelsraces
         Default value: levels
     """
 
     display_name = "Entrance"
-    option_off = 0x00
-    option_levels = 0x01
-    option_levelsraces = 0x02
-    default = option_levels
+    option_none = 0x00
+    option_eras = 0x01
+    option_erasraces = 0x02
+    option_levels = 0x03
+    option_levelsraces = 0x04
+    default = option_none
 
 
 class KeyOption(Choice):
     """Choose how many levels each World Key should unlock. The first three levels will always start unlocked.
         Peak Point Matrix will always require the same number of World Keys as the Monkey Madness entrance.
 
-        world: each World Key unlocks the 3 levels in a world. Races are unlocked with the world after them. Creates 6 World Keys.
-        worldandraces: each World Key unlocks the 3 levels in a world. Races are counted as worlds. Creates 8 World Keys.
-        level: each World Key unlocks the next level. Races are unlocked with the level after them. Creates 16 World Keys.
-        levelandraces: each World Key unlocks the next level. Races are counted as levels. Creates 18 World Keys.
+        world: Each World Key unlocks the 3 levels in a world. Races are unlocked with the world after them. Creates 6 World Keys.
+        worldandraces: Each World Key unlocks the 3 levels in a world. Races are counted as worlds. Creates 8 World Keys.
+        level: Each World Key unlocks the next level. Races are unlocked with the level after them. Creates 16 World Keys.
+        levelandraces: Each World Key unlocks the next level. Races are counted as levels. Creates 18 World Keys.
 
         Supported values: world, worldandraces, level, levelandraces
         Default value: world
@@ -78,10 +97,10 @@ class KeyOption(Choice):
 
 
 class CoinOption(Choice):
-    """Choose if Specter Coins should act as Locations
+    """Choose if Specter Coins should be added as locations.
 
-        true: coins are added as locations
-        false: coins are not added as locations
+        true: The 60 Specter Coins are added as locations.
+        false: Specter Coins are not locations.
 
         Supported values: true, false
         Default value: false
@@ -97,8 +116,8 @@ class MailboxOption(Choice):
     """Choose if mailboxes should act as locations.
         Mailboxes in training rooms will never be locations.
 
-        true: mailboxes are added as locations
-        false: mailboxes are not added as locations
+        true: The 62 available mailboxes are added as locations.
+        false: Mailboxes are not locations.
 
         Supported values: true, false
         Default value: false
@@ -111,16 +130,16 @@ class MailboxOption(Choice):
 
 
 class GadgetOption(Choice):
-    """Choose the starting gadget. The Time Net will always be a starting gadget.
+    """Choose the starting gadget from the non-net gadgets.
     
-        club: start with the Stun Club
-        radar: start with the Monkey Radar
-        sling: start with the Slingback Shooter
-        hoop: start with the Super Hoop
-        flyer: start with the Sky Flyer
-        car: start with the RC Car
-        punch: start with the Magic Punch
-        none: start with no additional gadgets
+        club: Start with the Stun Club.
+        radar: Start with the Monkey Radar.
+        sling: Start with the Slingback Shooter.
+        hoop: Start with the Super Hoop.
+        flyer: Start with the Sky Flyer.
+        car: Start with the RC Car.
+        punch: Start with the Magic Punch.
+        none: Start with no additional gadgets.
 
         Supported values: club, radar, sling, hoop, flyer, car, punch, none
         Default value: club
@@ -138,37 +157,6 @@ class GadgetOption(Choice):
     default = option_club
 
 
-class SuperFlyerOption(Choice):
-    """Choose if the Super Flyer trick should be put into logic
-
-        true: super flyer is put into logic
-        false: super flyer is not put into logic
-
-        Supported values: true, false
-        Default value: false
-    """
-    display_name = "Super Flyer"
-    option_true = 0x01
-    option_false = 0x00
-    default = option_false
-
-class ShuffleWaterNetOption(Choice):
-    """Choose if the Water Net should be shuffled.
-        This option splits the Water Net item to 2 distinct items:
-        Progressive Water Net: having 1 gives the ability to Swim, having 2 gives the ability to Dive
-        Water Catch: Can shoot your Net in water to catch the Monkeys
-
-        true: Water Net is shuffled, adding Progressive Water Net and Water Catch the the pool
-        false: Water Net is not shuffled, and is given at game start.
-
-        Supported values: true, false
-        Default value: false
-    """
-    display_name = "Shuffle Water Net"
-    option_true = 0x01
-    option_false = 0x00
-    default = option_false
-
 class ShuffleNetOption(Choice):
     """Choose if the Time Net should be shuffled.
         This option requires at least one of coins and mailboxes to be shuffled to be used - if all locations in this world require the net, the net will be given at game start.
@@ -185,15 +173,33 @@ class ShuffleNetOption(Choice):
     default = option_false
 
 
+class ShuffleWaterNetOption(Choice):
+    """Choose if the Water Net should be shuffled.
+        This option splits the Water Net item into 2 distinct items:
+        Progressive Water Net: The first allows Spike to swim on the surface and avoid drowning after a few seconds. The second allows Spike to dive underwater.
+        Water Catch: Allows shooting the Water Net.
+
+        true: Water Net is shuffled, adding Progressive Water Net and Water Catch to the pool.
+        false: Water Net is not shuffled, and is given at game start.
+
+        Supported values: true, false
+        Default value: false
+    """
+    display_name = "Shuffle Water Net"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
+
+
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
     goal: GoalOption
     logic: LogicOption
+    superflyer: SuperFlyerOption
     entrance: EntranceOption
     unlocksperkey: KeyOption
     coin: CoinOption
     mailbox: MailboxOption
     gadget: GadgetOption
-    superflyer: SuperFlyerOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption

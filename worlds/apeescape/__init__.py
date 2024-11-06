@@ -78,6 +78,7 @@ class ApeEscapeWorld(World):
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
+
         self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
@@ -318,14 +319,16 @@ def character_lookup(byte):
 
 def fixed_levels(levellist, entoption):
     for x in range (0, 22):
-        if levellist[x].entrance == 0x1E:
+        if levellist[x].entrance == 0x1E: # Always reset position of Peak Point Matrix
             levellist[x], levellist[21] = levellist[21], levellist[x]
-        if levellist[x].entrance == 0x07 and entoption == 0x01:
+        if levellist[x].entrance == 0x18 and (entoption == 0x01 or entoption == 0x02): # Monkey Madness
+            levellist[x], levellist[20] = levellist[20], levellist[x]
+        if levellist[x].entrance == 0x07 and (entoption == 0x01 or entoption == 0x03): # Stadium Attack
             levellist[x], levellist[6] = levellist[6], levellist[x]
-        if levellist[x].entrance == 0x0E and entoption == 0x01:
+        if levellist[x].entrance == 0x0E and (entoption == 0x01 or entoption == 0x03): # Gladiator Attack
             levellist[x], levellist[13] = levellist[13], levellist[x]
     return levellist
-        
+
 def set_calculated_level_data(levellist, keyoption):
     reqkeys = get_required_keys(keyoption)
     for x in range (0, 22):

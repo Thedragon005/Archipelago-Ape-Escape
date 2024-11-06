@@ -1073,8 +1073,8 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
-    tempselectedWorldAddress = 0x0F4484
-    tempselectedLevelAddress = 0x0F4486
+    enteredWorldAddress = 0x0F461C
+    enteredLevelAddress = 0x0F461D
     startOfLevelNames = 0x1399E8
     startOfEraNames = 0x139B20
 
