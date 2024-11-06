@@ -616,7 +616,7 @@ def set_glitchless_rules(self):
                         lambda state: (CanDive(state, self)) and ((CanHitOnce(state, self)) or (HasFlyer(state, self))))
         # 2-3
         connect_regions(self, AERoom.W2L3Main.value, AERoom.Coin17.value,
-                        lambda state: (CR_Inside(state, self)) and ((CanHitMultiple(state, self)) and (CanSwim(state, self))) or (HasMobility(state, self)))
+                        lambda state: (CR_Inside(state, self) and (CanHitMultiple(state, self) and CanSwim(state, self)) or (HasMobility(state, self))))
         # 3-1
         connect_regions(self, AEWorld.W3.value, AERoom.Coin19.value,
                         lambda state: CanSwim(state, self))
