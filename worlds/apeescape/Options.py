@@ -155,8 +155,8 @@ class SuperFlyerOption(Choice):
 class ShuffleWaterNetOption(Choice):
     """Choose if the Water Net should be shuffled.
         This option splits the Water Net item to 2 distinct items:
-        Progressive Water Net : having 1 gives the ability to Swim, having 2 gives the ability to Dive
-        Water Catch : Can shoot your Net in water to catch the Monkeys
+        Progressive Water Net: having 1 gives the ability to Swim, having 2 gives the ability to Dive
+        Water Catch: Can shoot your Net in water to catch the Monkeys
 
         true: Water Net is shuffled, adding Progressive Water Net and Water Catch the the pool
         false: Water Net is not shuffled, and is given at game start.
