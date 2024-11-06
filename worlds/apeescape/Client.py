@@ -484,7 +484,7 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in [self.offset + 206])
                 }])
 
-            # If the previous address is empty it means you are too far,go back once
+            # If the previous address is empty it means you are too far, go back once
             # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
             if (previousCoinStateRoom == 0xFF or previousCoinStateRoom == 0x00) and (self.currentCoinAddress > RAM.startingCoinAddress):
                 self.currentCoinAddress -= 2
@@ -520,38 +520,38 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in coins)
                 }])
 
+
             # Write Array
+
             # Training Room, set to 0xFF to mark as complete
             # Gadgets unlocked
             # Required apes (to match hundo)
-            # Local apes first room (optional: for if in hub)
-            # unlockLevels()
-
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
-            # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No dive (Swim only)
+
+            # Water Net client handling
+            # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No Dive (Swim only)
             # Swim will be detected separately
             killPlayer = False
+            inAir = [0x08, 0x09, 0x35, 0x36, 0x83, 0x84]
+            swimming = [0x46, 0x47]
+            grounded = [0x00, 0x01, 0x02, 0x03, 0x05, 0x07, 0x80, 0x81]
 
-            inAir = [0x08,0x09,0x35,0x36,0x83,0x84]
-            swimming = [0x46,0x47]
-            grounded = [0x00,0x01,0x02,0x03,0x05,0x07,0x80,0x81]
-
-            # TODO Check reseting water counter and transitions !
+            # TODO Check reseting water counter and transitions!
             # Nothing
             if waternetState == 0x00:
                 writes += [(RAM.canDiveAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                #8-9 Jumping/falling,36-37 D-Jump,83-84 Flyer => don't reset the counter
+                #8-9 Jumping/falling, 36-37 D-Jump, 83-84 Flyer => don't reset the counter
                 if gameRunning == 0x01 and gameState == RAM.gameState["InLevel"]:
                     if spikeState2 in swimming:
                         self.inWater += 1
                         writes += [(RAM.oxygenLevelAddress, 0x64.to_bytes(2, "little"), "MainRAM")]
                         print("inWater:" + str(self.inWater))
                     elif spikeState2 in grounded:
-                        print("Grounded,reset inWater to 0")
+                        print("Grounded, reset inWater to 0")
                         self.inWater = 0
                     # In Water
                     if self.inWater >= 14:
@@ -664,6 +664,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
 
+            # Unlock levels
             level_info = [currentApes, requiredApes, currentLevel, localhundoCount]
             writes += self.unlockLevels(monkeylevelcounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, ctx.slot_data["reqkeys"])
 
