@@ -152,6 +152,22 @@ class SuperFlyerOption(Choice):
     option_false = 0x00
     default = option_false
 
+class ShuffleWaterNetOption(Choice):
+    """Choose if the Water Net should be shuffled.
+        This option splits the Water Net item to 2 distinct items:
+        Progressive Water Net : having 1 gives the ability to Swim, having 2 gives the ability to Dive
+        Water Catch : Can shoot your Net in water to catch the Monkeys
+
+        true: Water Net is shuffled, adding Progressive Water Net and Water Catch the the pool
+        false: Water Net is not shuffled, and is given at game start.
+
+        Supported values: true, false
+        Default value: false
+    """
+    display_name = "Shuffle Water Net"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
 
 class ShuffleNetOption(Choice):
     """Choose if the Time Net should be shuffled.
@@ -180,3 +196,4 @@ class ApeEscapeOptions(PerGameCommonOptions):
     gadget: GadgetOption
     superflyer: SuperFlyerOption
     shufflenet: ShuffleNetOption
+    shufflewaternet: ShuffleWaterNetOption
