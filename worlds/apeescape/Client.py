@@ -333,13 +333,10 @@ class ApeEscapeClient(BizHawkClient):
             S1_P2_State = int.from_bytes(reads[22], byteorder="little")
             S1_P2_Life = int.from_bytes(reads[23], byteorder="little")
             S2_isCaptured = int.from_bytes(reads[24], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[25], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[26], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[27], byteorder="little")
-            LS_currentWorld = int.from_bytes(reads[28], byteorder="little")
-            LS_currentLevel = int.from_bytes(reads[29], byteorder="little")
-            Temp_currentWorld = int.from_bytes(reads[30], byteorder="little")
-            Temp_currentLevel = int.from_bytes(reads[31], byteorder="little")
+            LS_currentWorld = int.from_bytes(reads[25], byteorder="little")
+            LS_currentLevel = int.from_bytes(reads[26], byteorder="little")
+            Temp_currentWorld = int.from_bytes(reads[27], byteorder="little")
+            Temp_currentLevel = int.from_bytes(reads[28], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
