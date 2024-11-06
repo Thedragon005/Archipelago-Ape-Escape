@@ -543,8 +543,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
 
-            if gameState == RAM.gameState["LevelSelect"]:
-                print("In level select state.")
+            if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntroTT"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 
                 # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
