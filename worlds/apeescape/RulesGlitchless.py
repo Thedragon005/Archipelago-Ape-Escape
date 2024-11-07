@@ -7,7 +7,7 @@ def set_glitchless_rules(self):
     # Make sure to update this condition properly when alternate Peak Point Matrix unlock conditions are added.
     if self.options.goal == "second":
         connect_regions(self, "Menu", AERoom.W9L2Boss.value,
-                        lambda state: Keys(state, self, self.levellist[21].keys) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self))
+                        lambda state: Keys(state, self, self.levellist[21].keys) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self) and CanDive(state, self) and CanWaterCatch(state, self))
 
     #Time Station
     connect_regions(self, "Menu", AERoom.TimeStationMain.value, lambda state: True)
