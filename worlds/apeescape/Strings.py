@@ -768,6 +768,8 @@ class AEItem(Enum):
     Victory = "Victory"
     Nothing = "Banana Peel"
     WaterNet = "Water Net"
+    ProgWaterNet = "Progressive Water Net"
+    WaterCatch = "Water Catch"
     Shirt = "Jacket"
     Triangle = "Energy Chip"
     BigTriangle = "5 Energy Chips"

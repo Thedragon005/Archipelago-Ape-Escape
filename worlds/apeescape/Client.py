@@ -3,6 +3,7 @@ import logging
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar
 
 from NetUtils import ClientStatus
+from worlds.oot.Patches import get_override_table_bytes
 
 # TODO: REMOVE ASAP - Borrowed from MM2
 # This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
@@ -28,7 +29,7 @@ from worlds._bizhawk.client import BizHawkClient
 
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GadgetOption, ShuffleNetOption
+from worlds.apeescape.Options import GadgetOption, ShuffleNetOption,ShuffleWaterNetOption
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
@@ -61,6 +62,9 @@ class ApeEscapeClient(BizHawkClient):
     replacePunch = True
     currentCoinAddress = RAM.startingCoinAddress
     resetClient = False
+    inWater = 0
+    waternetState = 0
+    watercatchState = 0
 
     def __init__(self) -> None:
         super().__init__()
@@ -73,6 +77,10 @@ class ApeEscapeClient(BizHawkClient):
         self.currentCoinAddress = RAM.startingCoinAddress
         self.preventKickOut = True
         self.replacePunch = True
+        self.killPlayer = True
+        self.inWater = 0
+        self.waternetState = 0
+        self.watercatchState = 0
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -127,7 +135,11 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.menuStateAddress,1, "MainRAM"),
                 (RAM.menuState2Address, 1, "MainRAM"),
-                (RAM.newGameAddress, 1, "MainRAM")
+                (RAM.newGameAddress, 1, "MainRAM"),
+                (RAM.canDiveAddress, 4, "MainRAM"),
+                (RAM.canWaterCatchAddress, 1, "MainRAM"),
+                (RAM.tempWaterNetAddress, 1, "MainRAM"),
+                (RAM.tempWaterCatchAddress, 1, "MainRAM")
             ]
             itemsWrites = []
             Menuwrites = []
@@ -146,8 +158,12 @@ class ApeEscapeClient(BizHawkClient):
             menuState = int.from_bytes(earlyReads[9], byteorder="little")
             menuState2 = int.from_bytes(earlyReads[10], byteorder="little")
             newGameAddress = int.from_bytes(earlyReads[11], byteorder="little")
+            canDive = int.from_bytes(earlyReads[12], byteorder="little")
+            canWaterCatch = int.from_bytes(earlyReads[13], byteorder="little")
+            WaterNetStateFromServer = int.from_bytes(earlyReads[14], byteorder="little")
+            WaterCatchStateFromServer = int.from_bytes(earlyReads[15], byteorder="little")
 
-            #  When in Menu,change the behwvior of "Newgame" to warp you to time station instead
+            #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
                 await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
@@ -161,6 +177,16 @@ class ApeEscapeClient(BizHawkClient):
             if keyCountFromServer == 0xFF:
                 # Get items from server
                 keyCountFromServer = 0
+
+            # Get WaterNet state from memory
+            waternetState = 0
+            if WaterNetStateFromServer != 0xFF:
+                waternetState = WaterNetStateFromServer
+
+            # Get Dive state from memory
+            watercatchState = 0
+            if WaterCatchStateFromServer != 0x00:
+                watercatchState = WaterCatchStateFromServer
 
             START_recv_index = recv_index
 
@@ -184,6 +210,13 @@ class ApeEscapeClient(BizHawkClient):
                                 "cmd": "StatusUpdate",
                                 "status": ClientStatus.CLIENT_GOAL
                             }])
+                        elif (item.item - self.offset) == RAM.items["WaterNet"]:
+                            waternetState = 2
+                            watercatchState = 1
+                        elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
+                            waternetState += 1
+                        elif (item.item - self.offset) == RAM.items["WaterCatch"]:
+                            watercatchState  = 1
                         elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["ThreeRocket"]:
                             if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"] or (item.item - self.offset) == RAM.items["BiggerTriangle"]:
                                 if (item.item - self.offset) == RAM.items["Triangle"]:
@@ -222,6 +255,7 @@ class ApeEscapeClient(BizHawkClient):
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
 
+
                 # Writes to memory if there is a new item,after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
@@ -234,6 +268,8 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempKeyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempWaterNetAddress, waternetState.to_bytes(4, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempWaterCatchAddress, watercatchState.to_bytes(1, "little"), "MainRAM")]
 
             self.worldkeycount = keyCountFromServer
 
@@ -268,9 +304,11 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, 1, "MainRAM"),
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
+                (RAM.spikeState2Address, 1, "MainRAM"),
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
+                (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
@@ -319,12 +357,14 @@ class ApeEscapeClient(BizHawkClient):
             requiredApes = int.from_bytes(reads[14], byteorder="little")
             currentApes = int.from_bytes(reads[15], byteorder="little")
             spikeState = int.from_bytes(reads[16], byteorder="little")
-            roomStatus = int.from_bytes(reads[17], byteorder="little")
-            gotMail = int.from_bytes(reads[18], byteorder="little")
-            mailboxID = int.from_bytes(reads[19], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[20], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[21], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[22], byteorder="little")
+            spikeState2 = int.from_bytes(reads[17], byteorder="little")
+            roomStatus = int.from_bytes(reads[18], byteorder="little")
+            gotMail = int.from_bytes(reads[19], byteorder="little")
+            mailboxID = int.from_bytes(reads[20], byteorder="little")
+            gameRunning = int.from_bytes(reads[21], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[22], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[23], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[24], byteorder="little")
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -494,6 +534,52 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
+            # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No dive (Swim only)
+            # Swim will be detected separately
+            killPlayer = False
+
+            inAir = [0x08,0x09,0x35,0x36,0x83,0x84]
+            swimming = [0x46,0x47]
+            grounded = [0x00,0x01,0x02,0x03,0x05,0x07,0x80,0x81]
+
+            # TODO Check reseting water counter and transitions !
+            # Nothing
+            if waternetState == 0x00:
+                writes += [(RAM.canDiveAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                #8-9 Jumping/falling,36-37 D-Jump,83-84 Flyer => don't reset the counter
+                if gameRunning == 0x01 and gameState == RAM.gameState["InLevel"]:
+                    if spikeState2 in swimming:
+                        self.inWater += 1
+                        writes += [(RAM.oxygenLevelAddress, 0x64.to_bytes(2, "little"), "MainRAM")]
+                        print("inWater:" + str(self.inWater))
+                    elif spikeState2 in grounded:
+                        print("Grounded,reset inWater to 0")
+                        self.inWater = 0
+                    # In Water
+                    if self.inWater >= 14:
+                        killPlayer = True
+                        self.inWater = 0
+                #Resetting the count
+                #elif gameRunning == 0x00:
+                    #self.inWater = 0
+
+            # CanSwim
+            elif waternetState == 0x01:
+                writes += [(RAM.canDiveAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            # CanSwim and CanDive
+            else:
+                writes += [(RAM.canDiveAddress, 0x08018664.to_bytes(4, "little"), "MainRAM")]
+
+            # Waternet unlocking stuff bellow
+            if watercatchState == 0x00:
+                writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            else:
+                writes += [(RAM.canWaterCatchAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+
+            # If in water
+            if killPlayer:
+                writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
 
             # Unequip the Time Net if it was shuffled. 
             # TODO: Update this check to make sure the net was actually shuffled (check coins/mailboxes)

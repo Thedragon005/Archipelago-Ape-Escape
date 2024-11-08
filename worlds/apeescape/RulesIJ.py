@@ -887,15 +887,15 @@ def RCMonkey(state, world):
 
 
 def CanSwim(state, world):
-    return HasWaterNet(state, world)
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 1))
 
 
 def CanDive(state, world):
-    return HasWaterNet(state, world)
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 2))
 
 
 def CanWaterCatch(state, world):
-    return HasWaterNet(state, world)
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.WaterCatch.value, world.player, 1))
 
 
 def SuperFlyer(state, world):
@@ -903,7 +903,7 @@ def SuperFlyer(state, world):
 
 
 def TJ_UFOEntry(state, world):
-    return CanDive(state, world)
+    return CanSwim(state, world)
 
 
 def TJ_UFOCliff(state, world):
@@ -943,7 +943,7 @@ def CC_5Monkeys(state, world):
 
 
 def CC_WaterRoom(state, world):
-    return (CanHitMultiple(state, world) and HasNet(state, world)) or (CanDive(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or HasFlyer(state, world) or HasHoop(state, world) or HasSling(state, world) or SuperFlyer(state, world)
+    return (CanHitMultiple(state, world) and HasNet(state, world)) or (CanSwim(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or HasFlyer(state, world) or HasHoop(state, world) or HasSling(state, world) or SuperFlyer(state, world)
 
 
 def CC_ButtonRoom(state, world):
