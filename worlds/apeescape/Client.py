@@ -732,6 +732,10 @@ class ApeEscapeClient(BizHawkClient):
             self.preventKickOut = True
 
         # Set unlocked/locked state of levels
+        # This does not handle assignment of Specter Coin icons.
+        # TODO: Change the assignment of "Hundo" status to assign it to the ENTRANCE that's completed, not the LEVEL
+        # Most of this handling is about entrance order - the Hundo check would need to be pulled out of the big if chain because it's about level order right now.
+        # Make sure that Hundo doesn't get set on a level that needs to be Locked and that Open doesn't get set on a level that needs to be Hundo.
         levelstates = []
         for index in range(0, 21):
             # Do we have enough keys for this level? If no, lock. If yes, continue.
