@@ -113,6 +113,21 @@ class SuperFlyerOption(Choice):
     option_false = 0x00
     default = option_false
 
+class ShuffleNetOption(Choice):
+    """Choose if the Time Net should be shuffled.
+        This option requires at least one of coins and mailboxes to be shuffled to be used - if all locations in this world require the net, the net will be given at game start.
+
+        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations if this happens.
+        false: Time Net is not shuffled, and is given at game start.
+
+        Supported values: true, false
+        Default value: false
+    """
+    display_name = "Shuffle Net"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
+    
 class ShuffleWaterNetOption(Choice):
     """Choose if the Water Net should be shuffled.
         This option splits the Water Net item to 2 distinct items:
@@ -129,22 +144,6 @@ class ShuffleWaterNetOption(Choice):
     option_true = 0x01
     option_false = 0x00
     default = option_false
-
-class ShuffleNetOption(Choice):
-    """Choose if the Time Net should be shuffled.
-        This option requires at least one of coins and mailboxes to be shuffled to be used - if all locations in this world require the net, the net will be given at game start.
-
-        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations if this happens.
-        false: Time Net is not shuffled, and is given at game start.
-
-        Supported values: true, false
-        Default value: false
-    """
-    display_name = "Shuffle Net"
-    option_true = 0x01
-    option_false = 0x00
-    default = option_false
-
 
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
