@@ -86,8 +86,8 @@ class ApeEscapeWorld(World):
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
         self.logic = self.options.logic.value
-        self.entrance: self.options.entrance.value
-        self.unlocksperkey: self.options.unlocksperkey.value
+        self.entrance = self.options.entrance.value
+        self.unlocksperkey = self.options.unlocksperkey.value
         self.coin = self.options.coin.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value

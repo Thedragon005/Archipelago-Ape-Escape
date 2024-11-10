@@ -369,7 +369,7 @@ def set_glitchless_rules(self):
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Neeners.value,
                     lambda state: CC_5Monkeys(state, self))
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Charles.value,
-                    lambda state: HasPunch(state, self))
+                    lambda state: HasPunch(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Gustav.value,
                     lambda state: CC_5Monkeys(state, self))
     connect_regions(self, AERoom.W7L3Castle.value, AERoom.W7L3Wilhelm.value,
