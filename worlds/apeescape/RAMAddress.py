@@ -994,7 +994,7 @@ class RAM:
         21: 0xdfc9c,
         22: 0xdfc9d,
         23: 0xdfc9e,
-        31: 0xdfc9f, # Statdium Attack - unused
+        31: 0xdfc9f, # Stadium Attack - unused
         41: 0xdfca0,
         42: 0xdfca1,
         43: 0xdfca2,
@@ -1073,6 +1073,9 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
+    worldScrollToRightDPAD = 0x1381D4 # 2 bytes : Enabled = 0009, Disabled = 0000
+    worldScrollToRightR1 = 0x138270  # 2 bytes : Enabled = 0009, Disabled = 0000
+
     enteredWorldAddress = 0x0F461C
     enteredLevelAddress = 0x0F461D
     startOfLevelNames = 0x1399E8

@@ -549,9 +549,7 @@ class ApeEscapeClient(BizHawkClient):
                     if spikeState2 in swimming:
                         self.inWater += 1
                         writes += [(RAM.oxygenLevelAddress, 0x64.to_bytes(2, "little"), "MainRAM")]
-                        print("inWater:" + str(self.inWater))
                     elif spikeState2 in grounded:
-                        print("Grounded, reset inWater to 0")
                         self.inWater = 0
                     # In Water
                     if self.inWater >= 14:
@@ -628,13 +626,30 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
 
+
+
+            if gameState == RAM.gameState["LevelSelect"]:
+                reqkeys = ctx.slot_data["reqkeys"]
+
+                # Get all keys required for the next world,based on first level of ERAS
+                WorldUnlocks = [reqkeys[3], reqkeys[6], reqkeys[7], reqkeys[10], reqkeys[13], reqkeys[14], reqkeys[17],
+                                reqkeys[20],reqkeys[21]]
+
+                # Check if the selected world is the last (To stay within bound of the list)
+                if LS_currentWorld != 9:
+                    # If you have less World Keys that the required keys for the next ERA,disables R1,Right Stick and Right DPAD detection
+                    if self.worldkeycount < WorldUnlocks[LS_currentWorld]:
+                        writes += [(RAM.worldScrollToRightDPAD, 0x0000.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.worldScrollToRightR1, 0x0000.to_bytes(2, "little"), "MainRAM")]
+                    else:
+                        writes += [(RAM.worldScrollToRightDPAD, 0x0009.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.worldScrollToRightR1, 0x0009.to_bytes(2, "little"), "MainRAM")]
             if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntroTT"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
-
                 # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
-                reqkeys = ctx.slot_data["reqkeys"]
-                if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
-                    writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
+
+                #if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
+                    #writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
 
                 # Update level (and potentially era) names.
                 bytestowrite = ctx.slot_data["levelnames"]
