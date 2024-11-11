@@ -1,18 +1,17 @@
 import math
 import os
 import json
-from typing import ClassVar, Dict, List, Tuple, Optional
+from typing import ClassVar, Dict, List, Tuple, Optional, TextIO
 
 from BaseClasses import ItemClassification, MultiWorld, Tutorial, CollectionState
 from logging import warning
 from Options import OptionError
 from worlds.AutoWorld import WebWorld, World
 
-from .Entrances import get_required_keys, initialize_level_list
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
 from .Regions import create_regions, ApeEscapeLevel
-from .Rules import set_rules
+from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
@@ -46,8 +45,8 @@ class ApeEscapeWeb(WebWorld):
 class ApeEscapeWorld(World):
     """
     Ape Escape is a platform game published and developed by Sony for the PlayStation, released in 1999.
-    The story revolves around the main protagonist, Spike, who has to prevent history from being changed by an army of
-    Monkeys led by Specter, the main antagonist.
+    The story revolves around the main protagonist, Spike, who has to prevent history from being changed
+    by an army of monkeys led by Specter, the main antagonist.
     """
     game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
@@ -57,8 +56,6 @@ class ApeEscapeWorld(World):
     options: ApeEscapeOptions
 
     item_name_to_id = item_table
-
-    set_rules = set_rules
 
     for key, value in item_name_to_id.items():
         item_name_to_id[key] = value + base_location_id
@@ -72,7 +69,6 @@ class ApeEscapeWorld(World):
     location_name_groups = GROUPED_LOCATIONS
 
     def __init__(self, multiworld: MultiWorld, player: int):
-
         self.goal: Optional[int] = 0
         self.logic: Optional[int] = 0
         self.entrance: Optional[int] = 0
@@ -83,8 +79,10 @@ class ApeEscapeWorld(World):
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
+
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
+
         super(ApeEscapeWorld, self).__init__(multiworld, player)
 
     def generate_early(self) -> None:
@@ -101,6 +99,9 @@ class ApeEscapeWorld(World):
 
     def create_regions(self):
         create_regions(self)
+
+    def set_rules(self):
+        set_rules(self)
 
     def create_item(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
@@ -159,7 +160,6 @@ class ApeEscapeWorld(World):
             self.itempool += [watercatch]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
-
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
@@ -266,6 +266,13 @@ class ApeEscapeWorld(World):
             "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value),
         }
+
+    def write_spoiler(self, spoiler_handle: TextIO):
+        if self.options.entrance.value != 0x00:
+            spoiler_handle.write(f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
+            for x in range(0, 22):
+                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
+            spoiler_handle.write(f"\n")
 
     def generate_output(self, output_directory: str):
         data = {
