@@ -95,7 +95,10 @@ class ApeEscapeWorld(World):
         self.shufflewaternet = self.options.shufflewaternet.value
         self.itempool = []
 
-    def generate_basic(self):
+    def create_regions(self):
+        create_regions(self)
+
+    def set_rules(self):
         self.levellist = initialize_level_list()
         # If entrances aren't shuffled, then we don't need to shuffle the entrances.
         if (self.options.entrance != 0x00):
@@ -108,12 +111,10 @@ class ApeEscapeWorld(World):
         # If entrances weren't shuffled, then this list is already sorted. We sort the list for ease of setting up access rules in the logic files.
         if (self.options.entrance != 0x00):
             self.levellist.sort()
-
-    def create_regions(self):
-        create_regions(self)
-
-    def set_rules(self):
         set_rules(self)
+
+#    def generate_basic(self) -> None:
+#        generate_basic(self)
 
     def create_item(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
