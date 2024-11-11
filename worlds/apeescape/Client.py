@@ -636,7 +636,7 @@ class ApeEscapeClient(BizHawkClient):
                                 reqkeys[20],reqkeys[21]]
 
                 # Check if the selected world is the last (To stay within bound of the list)
-                if LS_currentWorld != 9:
+                if 0 <= LS_currentWorld < 9:
                     # If you have less World Keys that the required keys for the next ERA,disables R1,Right Stick and Right DPAD detection
                     if self.worldkeycount < WorldUnlocks[LS_currentWorld]:
                         writes += [(RAM.worldScrollToRightDPAD, 0x0000.to_bytes(2, "little"), "MainRAM")]
