@@ -567,7 +567,7 @@ class ApeEscapeClient(BizHawkClient):
             elif waternetState == 0x01:
                 writes += [(RAM.canDiveAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             # CanSwim and CanDive
-            elif waternetState == 0x01:
+            elif waternetState >= 0x02:
                 writes += [(RAM.canDiveAddress, 0x08018664.to_bytes(4, "little"), "MainRAM")]
 
             # Turn back the Oxygen Replenish addresses when you get any of the Progressive Water Net
