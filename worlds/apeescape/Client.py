@@ -294,6 +294,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
                 (RAM.spikeState2Address, 1, "MainRAM"),
+                (RAM.kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
@@ -328,18 +329,19 @@ class ApeEscapeClient(BizHawkClient):
             currentApes = int.from_bytes(reads[15], byteorder="little")
             spikeState = int.from_bytes(reads[16], byteorder="little")
             spikeState2 = int.from_bytes(reads[17], byteorder="little")
-            roomStatus = int.from_bytes(reads[18], byteorder="little")
-            gotMail = int.from_bytes(reads[19], byteorder="little")
-            mailboxID = int.from_bytes(reads[20], byteorder="little")
-            swim_oxygenLevel = int.from_bytes(reads[21], byteorder="little")
-            gameRunning = int.from_bytes(reads[22], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[23], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[24], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[25], byteorder="little")
-            LS_currentWorld = int.from_bytes(reads[26], byteorder="little")
-            LS_currentLevel = int.from_bytes(reads[27], byteorder="little")
-            status_currentWorld = int.from_bytes(reads[28], byteorder="little")
-            status_currentLevel = int.from_bytes(reads[29], byteorder="little")
+            kickoutofLevel = int.from_bytes(reads[18], byteorder="little")
+            roomStatus = int.from_bytes(reads[19], byteorder="little")
+            gotMail = int.from_bytes(reads[20], byteorder="little")
+            mailboxID = int.from_bytes(reads[21], byteorder="little")
+            swim_oxygenLevel = int.from_bytes(reads[22], byteorder="little")
+            gameRunning = int.from_bytes(reads[23], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[24], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[25], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[26], byteorder="little")
+            LS_currentWorld = int.from_bytes(reads[27], byteorder="little")
+            LS_currentLevel = int.from_bytes(reads[28], byteorder="little")
+            status_currentWorld = int.from_bytes(reads[29], byteorder="little")
+            status_currentLevel = int.from_bytes(reads[30], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -535,6 +537,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
+            if kickoutofLevel != 0:
+                writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             # Water Net client handling
             # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No Dive (Swim only)
 
@@ -722,34 +726,6 @@ class ApeEscapeClient(BizHawkClient):
                     # Does not need to check the rest of the levels, at least 1 is not completed
 
         PPMUnlock = (key == reqkeys[21] and allCompleted)
-
-        # Tried my hand at blocking ALL kick-outs
-        # Put the 100% monkeys count from each level into an array for easier access
-
-        # If in any level, prevent Kick-out
-        if gameState == RAM.gameState["InLevel"] and (currentLevel in levels_keys):
-            # I've been told a dupe glitch exists.
-            # To keep it fair, reduce the number of current monkeys if it goes higher than max
-            if currentApes > hundoMonkeysCount[currentLevel]:
-                curApesWrite = (RAM.currentApesAddress, hundoMonkeysCount[currentLevel].to_bytes(1, byteorder="little"), "MainRAM")
-                currentApes = hundoMonkeysCount[currentLevel]
-            # If the Kick out prevention is up, detect the number of monkeys and add 1 to prevent kickout
-            if self.preventKickOut:
-                if spikeState == 2 or spikeState == 132 or gadgetUseState == 8:
-                    if currentApes == localhundoCount:
-                        reqApesWrite = (RAM.requiredApesAddress, (hundoMonkeysCount[currentLevel] + 1).to_bytes(1, byteorder="little"), "MainRAM")
-                        hundoWrite = (RAM.hundoApesAddress, (hundoMonkeysCount[currentLevel] + 1).to_bytes(1, byteorder="little"), "MainRAM")
-                # After catching is over set the requiredApes back to normal amount and disable Kick out Prevention
-                else:
-                    if (currentApes >= requiredApes) or (requiredApes >= (hundoMonkeysCount[currentLevel] + 1)):
-                        reqApesWrite = (RAM.requiredApesAddress, hundoMonkeysCount[currentLevel].to_bytes(1, byteorder="little"), "MainRAM")
-                        hundoWrite = (RAM.hundoApesAddress, hundoMonkeysCount[currentLevel].to_bytes(1, byteorder="little"), "MainRAM")
-                        self.preventKickOut = False
-            elif self.preventKickOut == False and currentApes < hundoMonkeysCount[currentLevel]:
-                self.preventKickOut = True
-        # Reset Kickout prevention if leaving level
-        elif gameState != RAM.gameState["InLevel"] and self.preventKickOut == False:
-            self.preventKickOut = True
 
         # Set unlocked/locked state of levels
         # This does not handle assignment of Specter Coin icons.
