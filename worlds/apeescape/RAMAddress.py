@@ -735,16 +735,17 @@ class RAM:
             453 : 25
         },
         42: {  # middle room
-            454 : 34
+            454 : 34,
+            455 : 36
         },
         43: {  # obstacle course
-            455 : 64
+            456 : 64
         },
         #44: {  # barrel room
 
         #},
         45: {  # 7-3
-            456 : 69
+            457 : 69
         },
         #46: {  # castle main
 
@@ -774,7 +775,7 @@ class RAM:
 
         #},
         56: {  # 8-2
-            457 : 83
+            458 : 83
         },
         #57: {  # main factory
 
@@ -819,7 +820,7 @@ class RAM:
 
         #},
         72: {  # coaster entry
-            458 : 84
+            459 : 84
         },
         #73: {  # coaster 1
 
@@ -858,14 +859,14 @@ class RAM:
 
         #},
         88: {  # Time station - Hub
-            459 : 113,
-            460 : 114
+            460 : 113,
+            461 : 114
         },
         91: {  # Time station - Mini-game Corner
-            461: 116
+            462: 116
         },
         90: {  # Time station - Training Space
-            462 : 115
+            463 : 115
         }
 
 
@@ -882,7 +883,7 @@ class RAM:
 
         },
 
-        #Victory conditions calculated separately,no values there
+        #Victory conditions calculated separately, no values there
         83: {  # Specter 1 Phase 1
 
         },

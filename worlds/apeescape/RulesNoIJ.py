@@ -703,13 +703,13 @@ def set_noij_rules(self):
     # Mailboxes
     if self.options.mailbox == "true" or (self.options.shufflenet == "true" and self.options.coin == "true"):
         # Time Station
-        connect_regions(self, AERoom.TimeStationMain.value, AERoom.Mailbox59.value,
-                        lambda state: NoRequirement())
         connect_regions(self, AERoom.TimeStationMain.value, AERoom.Mailbox60.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.TimeStationMinigame.value, AERoom.Mailbox61.value, 
+        connect_regions(self, AERoom.TimeStationMain.value, AERoom.Mailbox61.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.TimeStationTraining.value, AERoom.Mailbox62.value, 
+        connect_regions(self, AERoom.TimeStationMinigame.value, AERoom.Mailbox62.value, 
+                        lambda state: NoRequirement())
+        connect_regions(self, AERoom.TimeStationTraining.value, AERoom.Mailbox63.value, 
                         lambda state: NoRequirement())
 
     if self.options.mailbox == "true":
@@ -835,16 +835,18 @@ def set_noij_rules(self):
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AERoom.W7L2Middle.value, AERoom.Mailbox54.value,
                         lambda state: (HasNet(state, self) or HasFlyer(state, self)) and CanHitOnce(state, self))
-        connect_regions(self, AERoom.W7L2Course.value, AERoom.Mailbox55.value,
+        connect_regions(self, AERoom.W7L2Middle.value, AERoom.Mailbox55.value,
+                        lambda state: WSW_ThirdRoom(state, self) and CanHitOnce(state, self))
+        connect_regions(self, AERoom.W7L2Course.value, AERoom.Mailbox56.value,
                         lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self))
         # 7-3
-        connect_regions(self, AERoom.W7L3Outside.value, AERoom.Mailbox56.value,
+        connect_regions(self, AERoom.W7L3Outside.value, AERoom.Mailbox57.value,
                         lambda state: CanHitOnce(state, self))
         # 8-2
-        connect_regions(self, AERoom.W8L2Outside.value, AERoom.Mailbox57.value, 
+        connect_regions(self, AERoom.W8L2Outside.value, AERoom.Mailbox58.value, 
                         lambda state: NoRequirement())
         # 9-1
-        connect_regions(self, AERoom.W9L1Entry.value, AERoom.Mailbox58.value, 
+        connect_regions(self, AERoom.W9L1Entry.value, AERoom.Mailbox59.value, 
                         lambda state: NoRequirement())
 
 

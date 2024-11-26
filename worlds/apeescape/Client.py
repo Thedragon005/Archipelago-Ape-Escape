@@ -439,7 +439,7 @@ class ApeEscapeClient(BizHawkClient):
                 bosses_to_send = set()
 
                 for i in range(len(bossesList)):
-                    # For TVT boss,check roomStatus if it's 3 the fight is ongoing
+                    # For TVT boss, check roomStatus if it's 3 the fight is ongoing
                     if (currentRoom == 68):
                         print(roomStatus)
                         if (roomStatus == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
@@ -560,7 +560,7 @@ class ApeEscapeClient(BizHawkClient):
                     else:
                     # Game Not running
                         if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
-                            # You died while swimming,reset Oxygen to "Limited" value prevent death loops
+                            # You died while swimming, reset Oxygen to "Limited" value prevent death loops
                             writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
 
             # CanSwim
@@ -632,24 +632,22 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
 
-
-
             if gameState == RAM.gameState["LevelSelect"]:
                 reqkeys = ctx.slot_data["reqkeys"]
 
-                # Get all keys required for the next world,based on first level of ERAS
-                WorldUnlocks = [reqkeys[3], reqkeys[6], reqkeys[7], reqkeys[10], reqkeys[13], reqkeys[14], reqkeys[17],
-                                reqkeys[20],reqkeys[21]]
+                # Get all keys required for the next world, based on first level of ERAS
+                WorldUnlocks = [reqkeys[3], reqkeys[6], reqkeys[7], reqkeys[10], reqkeys[13], reqkeys[14], reqkeys[17], reqkeys[20],reqkeys[21]]
 
                 # Check if the selected world is the last (To stay within bound of the list)
                 if 0 <= LS_currentWorld < 9:
-                    # If you have less World Keys that the required keys for the next ERA,disables R1,Right Stick and Right DPAD detection
+                    # If you have less World Keys that the required keys for the next ERA, disable R1, Right Stick and Right DPAD detection
                     if self.worldkeycount < WorldUnlocks[LS_currentWorld]:
                         writes += [(RAM.worldScrollToRightDPAD, 0x0000.to_bytes(2, "little"), "MainRAM")]
                         writes += [(RAM.worldScrollToRightR1, 0x0000.to_bytes(2, "little"), "MainRAM")]
                     else:
                         writes += [(RAM.worldScrollToRightDPAD, 0x0009.to_bytes(2, "little"), "MainRAM")]
                         writes += [(RAM.worldScrollToRightR1, 0x0009.to_bytes(2, "little"), "MainRAM")]
+
             if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntroTT"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
@@ -694,6 +692,7 @@ class ApeEscapeClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
             pass
+
 
     def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, reqkeys):
 

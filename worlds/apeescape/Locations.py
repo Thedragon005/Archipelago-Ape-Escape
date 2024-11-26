@@ -363,6 +363,7 @@ location_table = {
     AELocation.Mailbox60.value: 460,
     AELocation.Mailbox61.value: 461,
     AELocation.Mailbox62.value: 462,
+    AELocation.Mailbox63.value: 463,
 
     # Bosses
     AELocation.Boss73.value: 500,

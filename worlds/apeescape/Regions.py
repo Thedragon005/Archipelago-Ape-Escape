@@ -734,15 +734,15 @@ def create_regions(world: "ApeEscapeWorld"):
     # These locations need to be created both for mailbox shuffle and for net shuffle. In the case of net shuffle, since net shuffle requires non-monkey locations, we also check for coins being shuffled here.
     if options.mailbox == "true" or (options.shufflenet == "true" and options.coin == "true"):
         # Time Station
-        mailbox59 = Region(AERoom.Mailbox59.value, player, multiworld)
-        mailbox59.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox59) for loc_name in get_array([459])]
         mailbox60 = Region(AERoom.Mailbox60.value, player, multiworld)
         mailbox60.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox60) for loc_name in get_array([460])]
         mailbox61 = Region(AERoom.Mailbox61.value, player, multiworld)
         mailbox61.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox61) for loc_name in get_array([461])]
         mailbox62 = Region(AERoom.Mailbox62.value, player, multiworld)
         mailbox62.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox62) for loc_name in get_array([462])]
-        regions += [mailbox59, mailbox60, mailbox61, mailbox62]
+        mailbox63 = Region(AERoom.Mailbox63.value, player, multiworld)
+        mailbox63.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox63) for loc_name in get_array([463])]
+        regions += [mailbox60, mailbox61, mailbox62, mailbox63]
     # The rest are only needed for mailbox shuffle
     if options.mailbox == "true":
         # 1-1
@@ -869,24 +869,25 @@ def create_regions(world: "ApeEscapeWorld"):
         mailbox54.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox54) for loc_name in get_array([454])]
         mailbox55 = Region(AERoom.Mailbox55.value, player, multiworld)
         mailbox55.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox55) for loc_name in get_array([455])]
-        # 7-3
         mailbox56 = Region(AERoom.Mailbox56.value, player, multiworld)
         mailbox56.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox56) for loc_name in get_array([456])]
-        # 8-1
-        # 8-2
+        # 7-3
         mailbox57 = Region(AERoom.Mailbox57.value, player, multiworld)
         mailbox57.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox57) for loc_name in get_array([457])]
-        # 8-3
-        # 9-1
+        # 8-1
+        # 8-2
         mailbox58 = Region(AERoom.Mailbox58.value, player, multiworld)
         mailbox58.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox58) for loc_name in get_array([458])]
+        # 8-3
+        # 9-1
+        mailbox59 = Region(AERoom.Mailbox59.value, player, multiworld)
+        mailbox59.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox59) for loc_name in get_array([459])]
         regions += [mailbox1, mailbox2, mailbox3, mailbox4, mailbox5, mailbox6, mailbox7, mailbox8, mailbox9, mailbox10,
                     mailbox11, mailbox12, mailbox13, mailbox14, mailbox15, mailbox16, mailbox17, mailbox18, mailbox19, mailbox20,
                     mailbox21, mailbox22, mailbox23, mailbox24, mailbox25, mailbox26, mailbox27, mailbox28, mailbox29, mailbox30,
                     mailbox31, mailbox32, mailbox33, mailbox34, mailbox35, mailbox36, mailbox37, mailbox38, mailbox39, mailbox40,
                     mailbox41, mailbox42, mailbox43, mailbox44, mailbox45, mailbox46, mailbox47, mailbox48, mailbox49, mailbox50,
-                    mailbox51, mailbox52, mailbox53, mailbox54, mailbox55, mailbox56, mailbox57, mailbox58]
-
+                    mailbox51, mailbox52, mailbox53, mailbox54, mailbox55, mailbox56, mailbox57, mailbox58, mailbox59]
 
     multiworld.regions.extend(regions)
 
