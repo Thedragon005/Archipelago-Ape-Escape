@@ -487,12 +487,12 @@ doorTransitions = {
     AEDoor.CC_CASTLEMAIN_BELL.value: {46, 2},
     AEDoor.CC_CASTLEMAIN_ELEVATOR.value: {46, 1},
     AEDoor.CC_BASEMENT_ENTRY.value: {47, 0},
-    AEDoor.CC_BASEMENT_BUTTON_LEFT.value: {47, 2},
+    AEDoor.CC_BASEMENT_BUTTON_DOWN.value: {47, 2},
+    AEDoor.CC_BASEMENT_BUTTON_UP.value: {47, 3}, # IHNN note: I renamed these from left/right and didn't verify I matched them correctly.
     AEDoor.CC_BASEMENT_ELEVATOR.value: {47, 4},
-    AEDoor.CC_BASEMENT_BUTTON_RIGHT.value: {47, 3},
     AEDoor.CC_BOSS_ROOM.value: {48, 0},
-    AEDoor.CC_BUTTON_BASEMENT_LEFT.value: {49, 0},
-    AEDoor.CC_BUTTON_BASEMENT_RIGHT.value: {49, 2},
+    AEDoor.CC_BUTTON_BASEMENT_LEDGE.value: {49, 0}, # IHNN note: I renamed these from left/right and didn't verify I matched them correctly.
+    AEDoor.CC_BUTTON_BASEMENT_WATER.value: {49, 2},
     AEDoor.CC_ELEVATOR_CASTLEMAIN.value: {50, 0},
     AEDoor.CC_ELEVATOR_BASEMENT.value: {50, 2},
     AEDoor.CC_BELL_CASTLE.value: {51, 0},
