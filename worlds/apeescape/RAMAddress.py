@@ -1112,6 +1112,8 @@ class RAM:
     TargetRoomID8   = 0x154268
     TR8_DoorID      = 0x154264
 
+    kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000
+
     # 1 = "Net down"
     # 8 = "Net down + can catch"
     gadgetUseStateAddress = 0x0B20CC
