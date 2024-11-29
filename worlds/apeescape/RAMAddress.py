@@ -1035,7 +1035,7 @@ class RAM:
     swim_ReplenishOxygenUWAddress = 0x06141C # Default : A4500018, Disable : 00000000 4 bytes
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
-
+    print("----------------------------------------------------------------------")
 
     gameRunningAddress = 0x0B01C0
 
@@ -1090,33 +1090,35 @@ class RAM:
     startOfEraNames = 0x139B20
 
     # Rooms ER values here
-    Spike_X_Pos     = 0x0EC204
-    Spike_Y_Pos     = 0x0EC208
-    Spike_Z_Pos     = 0x0EC20C
-    Nearby_RoomID   = 0x0E38B4
-    Nearby_DoorID   = 0x0E38A4
+    Spike_X_PosAddress = 0x0EC204
+    Spike_Y_PosAddress = 0x0EC208
+    Spike_Z_PosAddress = 0x0EC20C
+    Nearby_RoomIDAddress = 0x0E38B4
+    Nearby_DoorIDAddress   = 0x0E38A4
 
-    TargetRoomID1   = 0x154380
-    TR1_DoorID      = 0x15437C
-    TargetRoomID2   = 0x154358
-    TR2_DoorID      = 0x154354
-    TargetRoomID3   = 0x154330
-    TR3_DoorID      = 0x15432C
-    TargetRoomID4   = 0x154308
-    TR4_DoorID      = 0x154304
-    TargetRoomID5   = 0x1542E0
-    TR5_DoorID      = 0x1542DC
-    TargetRoomID6   = 0x1542B8
-    TR6_DoorID      = 0x1542B4
-    TargetRoomID7   = 0x154290
-    TR7_DoorID      = 0x15428C
-    TargetRoomID8   = 0x154268
-    TR8_DoorID      = 0x154264
+    TargetRoomID1Address = 0x154380
+    TR1_DoorIDAddress = 0x15437C
+    TargetRoomID2Address = 0x154358
+    TR2_DoorIDAddress = 0x154354
+    TargetRoomID3Address = 0x154330
+    TR3_DoorIDAddress = 0x15432C
+    TargetRoomID4Address = 0x154308
+    TR4_DoorIDAddress = 0x154304
+    TargetRoomID5Address = 0x1542E0
+    TR5_DoorIDAddress = 0x1542DC
+    TargetRoomID6Address = 0x1542B8
+    TR6_DoorIDAddress = 0x1542B4
+    TargetRoomID7Address = 0x154290
+    TR7_DoorIDAddress = 0x15428C
+    TargetRoomID8Address = 0x154268
+    TR8_DoorIDAddress = 0x154264
 
     kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"
+    kickoutofLevelAddress = 0x097B98 # 4 bytes : Default 84830188, Disable kickout = 00000000
+
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
     spikeState2Address = 0x0EC23E
