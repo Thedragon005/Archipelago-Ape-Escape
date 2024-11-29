@@ -81,6 +81,7 @@ class ApeEscapeClient(BizHawkClient):
         self.inWater = 0
         self.waternetState = 0
         self.watercatchState = 0
+        self.waterHeight = 0
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -299,6 +300,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
                 (RAM.swim_oxygenLevelAddress,2,"MainRAM"),
+                (RAM.Spike_Y_Pos, 2, "MainRAM"),
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
@@ -334,14 +336,15 @@ class ApeEscapeClient(BizHawkClient):
             gotMail = int.from_bytes(reads[20], byteorder="little")
             mailboxID = int.from_bytes(reads[21], byteorder="little")
             swim_oxygenLevel = int.from_bytes(reads[22], byteorder="little")
-            gameRunning = int.from_bytes(reads[23], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[24], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[25], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[26], byteorder="little")
-            LS_currentWorld = int.from_bytes(reads[27], byteorder="little")
-            LS_currentLevel = int.from_bytes(reads[28], byteorder="little")
-            status_currentWorld = int.from_bytes(reads[29], byteorder="little")
-            status_currentLevel = int.from_bytes(reads[30], byteorder="little")
+            Spike_Y_Pos = int.from_bytes(reads[23], byteorder="little")
+            gameRunning = int.from_bytes(reads[24], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[25], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[26], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[27], byteorder="little")
+            LS_currentWorld = int.from_bytes(reads[28], byteorder="little")
+            LS_currentLevel = int.from_bytes(reads[29], byteorder="little")
+            status_currentWorld = int.from_bytes(reads[30], byteorder="little")
+            status_currentLevel = int.from_bytes(reads[31], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -539,10 +542,12 @@ class ApeEscapeClient(BizHawkClient):
 
             if kickoutofLevel != 0:
                 writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+
             # Water Net client handling
             # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No Dive (Swim only)
 
             # 8-9 Jumping/falling, 35-36 D-Jump, 83-84 Flyer => don't reset the counter
+
             inAir = [0x08, 0x09, 0x35, 0x36, 0x83, 0x84]
             swimming = [0x46, 0x47]
             grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x80, 0x81]
@@ -554,13 +559,28 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.swim_ReplenishOxygenUWAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_surfaceDetectionAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-
                 if gameState == RAM.gameState["InLevel"]:
                     if gameRunning == 0x01:
                         # Set the air to the "Limited" value if 2 conditions:
                         # Oxygen is higher that "Limited" value AND spike is Swimming or Grounded
-                        if (spikeState2 in swimming and swim_oxygenLevel > limited_OxygenLevel) or (spikeState2 in grounded):
-                            writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                        if spikeState2 in swimming:
+                            #WaterHeight limit made to account for spike floating a bit up and down
+                            # +Y = Down
+                            #if self.waterHeight == 0:
+                                #self.waterHeight = Spike_Y_Pos + 0x0001
+                                #print(Spike_Y_Pos)
+                                #writes += [(RAM.Spike_Y_Pos, self.waterHeight.to_bytes(2, "little"), "MainRAM")]
+                            #else:
+                                #if Spike_Y_Pos > self.waterHeight:
+                                    #writes += [(RAM.Spike_Y_Pos, self.waterHeight.to_bytes(2, "little"), "MainRAM")]
+                            if (swim_oxygenLevel > limited_OxygenLevel):
+                                writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                        else:
+                            #if self.waterHeight != 0:
+                                #self.waterHeight = 0
+                            if spikeState2 in grounded:
+                                writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+
                     else:
                     # Game Not running
                         if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
