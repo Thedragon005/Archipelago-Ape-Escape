@@ -116,7 +116,7 @@ class MailboxOption(Choice):
     """Choose if mailboxes should act as locations.
         Mailboxes in training rooms will never be locations.
 
-        true: The 62 available mailboxes are added as locations.
+        true: The 63 available mailboxes are added as locations.
         false: Mailboxes are not locations.
 
         Supported values: true, false
