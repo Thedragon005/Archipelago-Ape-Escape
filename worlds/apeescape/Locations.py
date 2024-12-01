@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Set
 from BaseClasses import Location
-from worlds.apeescape.Strings import AELocation
+from worlds.apeescape.Strings import AELocation, AEDoor
 
 base_location_id = 128000000
 
@@ -395,7 +395,6 @@ hundoMonkeysCount = {
     0x18: 24 # Specter
 }
 
-<<<<<<< Updated upstream
 doorTransitions = {
     AEDoor.FF_ENTRY.value: {1, 0},
     AEDoor.PO_ENTRY.value: {2, 0},
@@ -582,10 +581,6 @@ doorTransitions = {
     AEDoor.TIME_TRAINING_CAR.value: {90, 6},
     AEDoor.TIME_TRAINING_PUNCH.value: {90, 7},
 }
-=======
-
->>>>>>> Stashed changes
-
 
 def createLocationGroups():
     # Iterate through all locations

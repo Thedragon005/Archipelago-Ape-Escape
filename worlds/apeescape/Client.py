@@ -295,11 +295,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
                 (RAM.spikeState2Address, 1, "MainRAM"),
-<<<<<<< Updated upstream
                 (RAM.kickoutofLevelAddress, 4, "MainRAM"),
-=======
-                (RAM.kickoutofLevelAddress,4,"MainRAM"),
->>>>>>> Stashed changes
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
@@ -340,7 +336,6 @@ class ApeEscapeClient(BizHawkClient):
             gotMail = int.from_bytes(reads[20], byteorder="little")
             mailboxID = int.from_bytes(reads[21], byteorder="little")
             swim_oxygenLevel = int.from_bytes(reads[22], byteorder="little")
-<<<<<<< Updated upstream
             Spike_Y_Pos = int.from_bytes(reads[23], byteorder="little")
             gameRunning = int.from_bytes(reads[24], byteorder="little")
             S1_P2_State = int.from_bytes(reads[25], byteorder="little")
@@ -350,16 +345,6 @@ class ApeEscapeClient(BizHawkClient):
             LS_currentLevel = int.from_bytes(reads[29], byteorder="little")
             status_currentWorld = int.from_bytes(reads[30], byteorder="little")
             status_currentLevel = int.from_bytes(reads[31], byteorder="little")
-=======
-            gameRunning = int.from_bytes(reads[23], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[24], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[25], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[26], byteorder="little")
-            LS_currentWorld = int.from_bytes(reads[27], byteorder="little")
-            LS_currentLevel = int.from_bytes(reads[28], byteorder="little")
-            status_currentWorld = int.from_bytes(reads[29], byteorder="little")
-            status_currentLevel = int.from_bytes(reads[30], byteorder="little")
->>>>>>> Stashed changes
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -555,10 +540,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-<<<<<<< Updated upstream
-=======
             # Kickout Prevention
->>>>>>> Stashed changes
             if kickoutofLevel != 0:
                 writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
 

@@ -1035,7 +1035,6 @@ class RAM:
     swim_ReplenishOxygenUWAddress = 0x06141C # Default : A4500018, Disable : 00000000 4 bytes
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
-    print("----------------------------------------------------------------------")
 
     gameRunningAddress = 0x0B01C0
 
@@ -1117,8 +1116,6 @@ class RAM:
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"
-    kickoutofLevelAddress = 0x097B98 # 4 bytes : Default 84830188, Disable kickout = 00000000
-
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
     spikeState2Address = 0x0EC23E
