@@ -300,7 +300,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
                 (RAM.swim_oxygenLevelAddress,2,"MainRAM"),
-                (RAM.Spike_Y_Pos, 2, "MainRAM"),
+                (RAM.Spike_Y_PosAddress, 2, "MainRAM"),
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
