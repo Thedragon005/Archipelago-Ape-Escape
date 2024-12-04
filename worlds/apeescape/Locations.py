@@ -366,8 +366,8 @@ location_table = {
     AELocation.Mailbox63.value: 463,
 
     # Bosses
-    AELocation.Boss73.value: 500,
-    AELocation.Boss83.value: 501,
+    AELocation.W7L3Boss73.value: 500,
+    AELocation.W8L3Boss83.value: 501,
 }
 
 #Where RAM.levels[address] : Total monkeys count
