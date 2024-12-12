@@ -62,15 +62,20 @@ def character_lookup(byte):
 
 
 def fixed_levels(levellist, entoption):
-    for x in range (0, 22):
-        if levellist[x].entrance == 0x1E: # Always reset position of Peak Point Matrix
+    for x in range (0, 22): # Always reset position of Peak Point Matrix
+        if levellist[x].entrance == 0x1E:
             levellist[x], levellist[21] = levellist[21], levellist[x]
-        if levellist[x].entrance == 0x18 and (entoption == 0x01 or entoption == 0x02): # Monkey Madness
-            levellist[x], levellist[20] = levellist[20], levellist[x]
-        if levellist[x].entrance == 0x07 and (entoption == 0x01 or entoption == 0x03): # Stadium Attack
-            levellist[x], levellist[6] = levellist[6], levellist[x]
-        if levellist[x].entrance == 0x0E and (entoption == 0x01 or entoption == 0x03): # Gladiator Attack
-            levellist[x], levellist[13] = levellist[13], levellist[x]
+    if entoption == 0x01 or entoption == 0x02: # Monkey Madness, if it's not moved
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x18:
+                levellist[x], levellist[20] = levellist[20], levellist[x]
+    if entoption == 0x01 or entoption == 0x03: # Stadium Attack and Gladiator Attack, if races aren't moved
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x07:
+                levellist[x], levellist[6] = levellist[6], levellist[x]
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x0E:
+               levellist[x], levellist[13] = levellist[13], levellist[x]
     return levellist
 
 
