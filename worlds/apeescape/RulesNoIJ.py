@@ -185,7 +185,7 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W4L2FirstRoom.value, AELocation.W4L2Oreo.value,
                     lambda state: HasMobility(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W4L2FirstRoom.value, AELocation.W4L2Puddles.value,
-                    lambda state: (CanDive(state, self) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(state, self))
+                    lambda state: (CanDive(state, self) or (HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W4L2FirstRoom.value, AELocation.W4L2Kalama.value,
                     lambda state: HasMobility(state, self) and (HasNet(state, self) or CanWaterCatch(state, self)))
     connect_regions(self, AERoom.W4L2SecondRoom.value, AELocation.W4L2Iz.value,
