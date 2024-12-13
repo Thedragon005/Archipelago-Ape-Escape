@@ -640,7 +640,7 @@ class RAM:
             427 : 70
         },
         13: {  # obelisk inside
-            428 : 52
+            428 : 97
         },
         #14: {  # water basement
 
@@ -735,16 +735,17 @@ class RAM:
             453 : 25
         },
         42: {  # middle room
-            454 : 34
+            454 : 34,
+            455 : 36
         },
         43: {  # obstacle course
-            455 : 64
+            456 : 64
         },
         #44: {  # barrel room
 
         #},
         45: {  # 7-3
-            456 : 69
+            457 : 69
         },
         #46: {  # castle main
 
@@ -774,7 +775,7 @@ class RAM:
 
         #},
         56: {  # 8-2
-            457 : 83
+            458 : 83
         },
         #57: {  # main factory
 
@@ -819,7 +820,7 @@ class RAM:
 
         #},
         72: {  # coaster entry
-            458 : 84
+            459 : 84
         },
         #73: {  # coaster 1
 
@@ -858,14 +859,14 @@ class RAM:
 
         #},
         88: {  # Time station - Hub
-            459 : 113,
-            460 : 114
+            460 : 113,
+            461 : 114
         },
         91: {  # Time station - Mini-game Corner
-            461: 116
+            462: 116
         },
         90: {  # Time station - Training Space
-            462 : 115
+            463 : 115
         }
 
 
@@ -882,7 +883,7 @@ class RAM:
 
         },
 
-        #Victory conditions calculated separately,no values there
+        #Victory conditions calculated separately, no values there
         83: {  # Specter 1 Phase 1
 
         },
@@ -994,12 +995,14 @@ class RAM:
         21: 0xdfc9c,
         22: 0xdfc9d,
         23: 0xdfc9e,
+        31: 0xdfc9f, # Stadium Attack - unused
         41: 0xdfca0,
         42: 0xdfca1,
         43: 0xdfca2,
         51: 0xdfca3,
         52: 0xdfca4,
         53: 0xdfca5,
+        61: 0xdfca6, # Gladiator Attack - unused
         71: 0xdfca7,
         72: 0xdfca8,
         73: 0xdfca9,
@@ -1026,7 +1029,13 @@ class RAM:
 
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
-    oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
+    swim_oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
+    swim_oxygenReplenishSoundAddress = 0x06140C # Default : 0C021DFE, disable : 00000000 4 bytes
+    swim_ReplenishOxygenUWAddress = 0x06141C # Default : A4500018, Disable : 00000000 4 bytes
+    swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
+    swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
+
+
     gameRunningAddress = 0x0B01C0
 
     newGameAddress = 0x137734
@@ -1057,7 +1066,7 @@ class RAM:
     gadgetStateFromServer = 0x0E00F0
 
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
-    menuStateAddress =0x0A9A1B
+    menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
     punchVisualAddress = 0x0E78C0
 
@@ -1071,6 +1080,37 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
+    worldScrollToRightDPAD = 0x1381D4 # 2 bytes : Enabled = 0009, Disabled = 0000
+    worldScrollToRightR1 = 0x138270  # 2 bytes : Enabled = 0009, Disabled = 0000
+
+    enteredWorldAddress = 0x0F461C
+    enteredLevelAddress = 0x0F461D
+    startOfLevelNames = 0x1399E8
+    startOfEraNames = 0x139B20
+
+    # Rooms ER values here
+    Spike_X_Pos     = 0x0EC204
+    Spike_Y_Pos     = 0x0EC208
+    Spike_Z_Pos     = 0x0EC20C
+    Nearby_RoomID   = 0x0E38B4
+    Nearby_DoorID   = 0x0E38A4
+
+    TargetRoomID1   = 0x154380
+    TR1_DoorID      = 0x15437C
+    TargetRoomID2   = 0x154358
+    TR2_DoorID      = 0x154354
+    TargetRoomID3   = 0x154330
+    TR3_DoorID      = 0x15432C
+    TargetRoomID4   = 0x154308
+    TR4_DoorID      = 0x154304
+    TargetRoomID5   = 0x1542E0
+    TR5_DoorID      = 0x1542DC
+    TargetRoomID6   = 0x1542B8
+    TR6_DoorID      = 0x1542B4
+    TargetRoomID7   = 0x154290
+    TR7_DoorID      = 0x15428C
+    TargetRoomID8   = 0x154268
+    TR8_DoorID      = 0x154264
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"
@@ -1101,7 +1141,7 @@ class RAM:
     mailboxIDAddress = 0x0A6CD2
     mailboxIDAddress_PAL = 0x0A6DB2
     #DIFF = NTSC + E0
-    # Associate by room just to be sure,since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
+    # Associate by room just to be sure, since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,
         "Primordial": 0x02,

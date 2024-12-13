@@ -1,16 +1,17 @@
 import math
 import os
 import json
-from typing import ClassVar, Dict, List, Tuple, Optional
+from typing import ClassVar, Dict, List, Tuple, Optional, TextIO
 
 from BaseClasses import ItemClassification, MultiWorld, Tutorial, CollectionState
 from logging import warning
 from Options import OptionError
 from worlds.AutoWorld import WebWorld, World
+
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
-from .Regions import create_regions
-from .Rules import set_rules
+from .Regions import create_regions, ApeEscapeLevel
+from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
@@ -44,8 +45,8 @@ class ApeEscapeWeb(WebWorld):
 class ApeEscapeWorld(World):
     """
     Ape Escape is a platform game published and developed by Sony for the PlayStation, released in 1999.
-    The story revolves around the main protagonist, Spike, who has to prevent history from being changed by an army of
-    Monkeys led by Specter, the main antagonist.
+    The story revolves around the main protagonist, Spike, who has to prevent history from being changed
+    by an army of monkeys led by Specter, the main antagonist.
     """
     game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
@@ -68,9 +69,10 @@ class ApeEscapeWorld(World):
     location_name_groups = GROUPED_LOCATIONS
 
     def __init__(self, multiworld: MultiWorld, player: int):
-        super().__init__(multiworld, player)
         self.goal: Optional[int] = 0
         self.logic: Optional[int] = 0
+        self.entrance: Optional[int] = 0
+        self.unlocksperkey: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
@@ -78,28 +80,22 @@ class ApeEscapeWorld(World):
         self.shufflewaternet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
 
+        self.levellist: List[ApeEscapeLevel] = []
+        self.entranceorder: List[ApeEscapeLevel] = []
+
+        super(ApeEscapeWorld, self).__init__(multiworld, player)
+
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
         self.logic = self.options.logic.value
+        self.entrance = self.options.entrance.value
+        self.unlocksperkey = self.options.unlocksperkey.value
         self.coin = self.options.coin.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
         self.shufflewaternet = self.options.shufflewaternet.value
         self.itempool = []
-
-    def generate_basic(self) -> None:
-        club = self.create_item(AEItem.Club.value)
-        net = self.create_item(AEItem.Net.value)
-        radar = self.create_item(AEItem.Radar.value)
-        shooter = self.create_item(AEItem.Sling.value)
-        hoop = self.create_item(AEItem.Hoop.value)
-        flyer = self.create_item(AEItem.Flyer.value)
-        car = self.create_item(AEItem.Car.value)
-        punch = self.create_item(AEItem.Punch.value)
-        waternet = self.create_item(AEItem.WaterNet.value)
-        progwaternet = self.create_item(AEItem.ProgWaterNet.value)
-        watercatch = self.create_item(AEItem.WaterCatch.value)
 
     def create_regions(self):
         create_regions(self)
@@ -147,7 +143,15 @@ class ApeEscapeWorld(World):
 
         #self.multiworld.push_precollected(waternet)
 
-        self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+        # Create enough keys to access every level, depending on the key option
+        if self.options.unlocksperkey == 0x00:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
+        elif self.options.unlocksperkey == 0x01:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 8)]
+        elif self.options.unlocksperkey == 0x02:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 16)]
+        elif self.options.unlocksperkey == 0x03:
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
         # Water Net shuffle handling
         if self.options.shufflewaternet == "false":
@@ -156,7 +160,6 @@ class ApeEscapeWorld(World):
             self.itempool += [watercatch]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
-
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
@@ -237,22 +240,45 @@ class ApeEscapeWorld(World):
         self.multiworld.itempool += self.itempool
 
     def fill_slot_data(self):
+        bytestowrite = []
+        entranceids = []
+        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+        orderedfirstroomids = []
+        for x in range(0, 22):
+            entranceids.append(self.entranceorder[x].entrance)
+            orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
+            bytestowrite += self.entranceorder[x].bytes
+            bytestowrite.append(0) # We need a separator byte after each level name.
+            
         return {
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
+            "entrance": self.options.entrance.value,
+            "unlocksperkey": self.options.unlocksperkey.value,
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
+            "levelnames": bytestowrite, # List of level names in entrance order. FF leads to the first.
+            "entranceids": entranceids, # Not used by the client. List of level ids in entrance order.
+            "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.
+            "reqkeys": get_required_keys(self.options.unlocksperkey.value),
         }
 
-    #def generate_output(self, output_directory: str):
-    #    data = {
-    #        "slot_data": self.fill_slot_data()
-    #    }
-        # Remove .apae for now since it is confusing new people
-    #    filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
-    #    with open(os.path.join(output_directory, filename), 'w') as f:
-    #        json.dump(data, f)
+    def write_spoiler(self, spoiler_handle: TextIO):
+        if self.options.entrance.value != 0x00:
+            spoiler_handle.write(f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
+            for x in range(0, 22):
+                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
+            spoiler_handle.write(f"\n")
+
+    def generate_output(self, output_directory: str):
+        data = {
+            "slot_data": self.fill_slot_data()
+        }
+        # Remove .apae output because it does nothing, we do everything in RAM
+        # filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
+        # with open(os.path.join(output_directory, filename), 'w') as f:
+        #     json.dump(data, f)
