@@ -1011,8 +1011,21 @@ class RAM:
         83: 0xdfcae,
         91: 0xdfcb0
     }
-
-
+    localLamp_localUpdate = 0x097474 # Default : 9062007A. Set this to 0 to disable
+    globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
+    globalLamp_globalUpdate = 0x097568 # Default : 1444000F. Set this to 0 to disable
+    localLampsUpdate = {
+        20, # Crabby Beach
+        53, # City Park (Main)
+        66, # TV Tower (Tank Room)
+        79 # Monkey Madness Castle Outside
+    }
+    globalLampsUpdate = {
+        26, # Dexter's Island Global
+        73, # Crumbling Castle (Castle Main)
+        57, # Specter Factory
+        65, # TV Tower (Lobby)
+    }
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes

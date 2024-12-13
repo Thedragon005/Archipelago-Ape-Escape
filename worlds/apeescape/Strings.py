@@ -336,6 +336,7 @@ class AELocation(Enum):
     Mailbox62 = "Time Station Mailbox - Mini Game Corner (Mini Game Corner)"
     Mailbox63 = "Time Station Mailbox - Training Space (Gadget Training)"
 
+
 class AERoom(Enum):
     TimeStationMain = "Time Station Main"
     TimeStationMinigame = "Time Station Minigame Corner"
@@ -641,3 +642,11 @@ class AEItem(Enum):
     ThreeFlash = "3 Explosive Pellets"
     Rocket = "Guided Pellet"
     ThreeRocket = "3 Guided Pellets"
+    CB_Lamp = "Crabby Beach Monkey Lamp"
+    DI_Lamp = "Dexter's Island Monkey Lamp"
+    CCA_Lamp = "Crumbling Castle Monkey Lamp"
+    CP_Lamp = "City Park Monkey Lamp"
+    SF_Lamp = "Specter's Factory Monkey Lamp"
+    TVT_Lobby_Lamp = "TV Tower Lobby Monkey Lamp"
+    TVT_Tank_Lamp = "TV Tower Tank Room Monkey Lamp"
+    MM_Lamp = "Monkey Madness Monkey Lamp"
