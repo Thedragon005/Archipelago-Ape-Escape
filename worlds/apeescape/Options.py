@@ -129,9 +129,25 @@ class MailboxOption(Choice):
     default = option_false
 
 
+class LampOption(Choice):
+    """Choose if Monkey lamps should be locked and shuffled into the multiworld.
+
+        true: The 8 Monkey Lamps will unlock when catching enough monkeys AND having their corresponding item
+        false: Monkey Lamps are unlocked the vanilla way (By catching enough monkeys)
+
+        Supported values: true, false
+        Default value: false
+    """
+
+    display_name = "Monkey Lamps"
+    option_true = 0x01
+    option_false = 0x00
+    default = option_false
+
+
 class GadgetOption(Choice):
     """Choose the starting gadget from the non-net gadgets.
-    
+
         club: Start with the Stun Club.
         radar: Start with the Monkey Radar.
         sling: Start with the Slingback Shooter.
@@ -144,7 +160,7 @@ class GadgetOption(Choice):
         Supported values: club, radar, sling, hoop, flyer, car, punch, none
         Default value: club
     """
-    
+
     display_name = "Gadget"
     option_club = 0x00
     option_radar = 0x01
@@ -200,6 +216,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     unlocksperkey: KeyOption
     coin: CoinOption
     mailbox: MailboxOption
+    lamp: LampOption
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption

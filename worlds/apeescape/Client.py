@@ -140,7 +140,18 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.canDiveAddress, 4, "MainRAM"),
                 (RAM.canWaterCatchAddress, 1, "MainRAM"),
                 (RAM.tempWaterNetAddress, 1, "MainRAM"),
-                (RAM.tempWaterCatchAddress, 1, "MainRAM")
+                (RAM.tempWaterCatchAddress, 1, "MainRAM"),
+                (RAM.tempCB_LampAddress, 1, "MainRAM"),
+                (RAM.tempDI_LampAddress, 1, "MainRAM"),
+                (RAM.tempCrC_LampAddress, 1, "MainRAM"),
+                (RAM.tempCP_LampAddress, 1, "MainRAM"),
+                (RAM.tempSF_LampAddress, 1, "MainRAM"),
+                (RAM.tempTVT_Lobby_LampAddress, 1, "MainRAM"),
+                (RAM.tempTVT_Tank_LampAddress, 1, "MainRAM"),
+                (RAM.tempMM_LampAddress, 1, "MainRAM"),
+                (RAM.localLamp_localUpdate, 4, "MainRAM"),
+                (RAM.globalLamp_localUpdate, 4, "MainRAM"),
+                (RAM.globalLamp_globalUpdate, 4, "MainRAM")
             ]
             itemsWrites = []
             Menuwrites = []
@@ -163,7 +174,17 @@ class ApeEscapeClient(BizHawkClient):
             canWaterCatch = int.from_bytes(earlyReads[13], byteorder="little")
             WaterNetStateFromServer = int.from_bytes(earlyReads[14], byteorder="little")
             WaterCatchStateFromServer = int.from_bytes(earlyReads[15], byteorder="little")
-
+            CBLampStateFromServer = int.from_bytes(earlyReads[16], byteorder="little")
+            DILampStateFromServer = int.from_bytes(earlyReads[17], byteorder="little")
+            CrCLampStateFromServer = int.from_bytes(earlyReads[18], byteorder="little")
+            CPLampStateFromServer = int.from_bytes(earlyReads[19], byteorder="little")
+            SFLampStateFromServer = int.from_bytes(earlyReads[20], byteorder="little")
+            TVTLobbyLampStateFromServer = int.from_bytes(earlyReads[21], byteorder="little")
+            TVTTankLampStateFromServer = int.from_bytes(earlyReads[22], byteorder="little")
+            MMLampStateFromServer = int.from_bytes(earlyReads[23], byteorder="little")
+            LocalLamp_LocalUpdate = int.from_bytes(earlyReads[24], byteorder="little")
+            GlobalLamp_LocalUpdate = int.from_bytes(earlyReads[25], byteorder="little")
+            GlobalLamp_GlobalUpdate = int.from_bytes(earlyReads[26], byteorder="little")
             #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
@@ -188,6 +209,26 @@ class ApeEscapeClient(BizHawkClient):
             watercatchState = 0
             if WaterCatchStateFromServer != 0x00:
                 watercatchState = WaterCatchStateFromServer
+
+            # Get Lamp states
+            CBLampState = 0
+            DILampState = 0
+            CrCLampState = 0
+            CPLampState = 0
+            SFLampState = 0
+            TVTLobbyLampState = 0
+            TVTTankLampState = 0
+            MMLampState = 0
+
+            if CBLampStateFromServer != 0x00 and CBLampStateFromServer != 0xFF: CBLampState = CBLampStateFromServer
+            if DILampStateFromServer != 0x00 and DILampStateFromServer != 0xFF: DILampState = DILampStateFromServer
+            if CrCLampStateFromServer != 0x00 and CrCLampStateFromServer != 0xFF: CrCLampState = CrCLampStateFromServer
+            if CPLampStateFromServer != 0x00 and CPLampStateFromServer != 0xFF: CPLampState = CPLampStateFromServer
+            if SFLampStateFromServer != 0x00 and SFLampStateFromServer != 0xFF: SFLampState = SFLampStateFromServer
+            if TVTLobbyLampStateFromServer != 0x00 and TVTLobbyLampStateFromServer != 0xFF: TVTLobbyLampState = TVTLobbyLampStateFromServer
+            if TVTTankLampStateFromServer != 0x00 and TVTTankLampStateFromServer != 0xFF: TVTTankLampState = TVTTankLampStateFromServer
+            if MMLampStateFromServer != 0x00 and MMLampStateFromServer != 0xFF: MMLampState = MMLampStateFromServer
+
 
             START_recv_index = recv_index
 
@@ -218,7 +259,23 @@ class ApeEscapeClient(BizHawkClient):
                             if waternetState != 2:
                                 waternetState += 1
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
-                            watercatchState  = 1
+                            watercatchState = 1
+                        elif (item.item - self.offset) == RAM.items["CB_Lamp"]:
+                            CBLampState  = 1
+                        elif (item.item - self.offset) == RAM.items["DI_Lamp"]:
+                            DILampState  = 1
+                        elif (item.item - self.offset) == RAM.items["CrC_Lamp"]:
+                            CrCLampState = 1
+                        elif (item.item - self.offset) == RAM.items["CP_Lamp"]:
+                            CPLampState = 1
+                        elif (item.item - self.offset) == RAM.items["SF_Lamp"]:
+                            SFLampState = 1
+                        elif (item.item - self.offset) == RAM.items["TVT_Lobby_Lamp"]:
+                            TVTLobbyLampState = 1
+                        elif (item.item - self.offset) == RAM.items["TVT_Tank_Lamp"]:
+                            TVTTankLampState = 1
+                        elif (item.item - self.offset) == RAM.items["MM_Lamp"]:
+                            MMLampState = 1
                         elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["ThreeRocket"]:
                             if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"] or (item.item - self.offset) == RAM.items["BiggerTriangle"]:
                                 if (item.item - self.offset) == RAM.items["Triangle"]:
@@ -272,6 +329,14 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterNetAddress, waternetState.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterCatchAddress, watercatchState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempCB_LampAddress, CBLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempDI_LampAddress, DILampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempCrC_LampAddress, CrCLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempCP_LampAddress, CPLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempSF_LampAddress, SFLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempTVT_Lobby_LampAddress, TVTLobbyLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempTVT_Tank_LampAddress, TVTTankLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempMM_LampAddress, MMLampState.to_bytes(1, "little"), "MainRAM")]
 
             self.worldkeycount = keyCountFromServer
 
@@ -539,6 +604,33 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
+
+            localLampsUpdate = {
+                0x08: CBLampState,  # Crabby Beach
+                0x14: CPLampState,  # City Park (Main)
+                0x16: TVTTankLampState,  # TV Tower (Tank Room)
+                0x1D: MMLampState  # Monkey Madness Castle Outside
+            }
+            globalLampsUpdate = {
+                0x0A : DILampState,  # Dexter's Island Global
+                0x11 : CrCLampState,  # Crumbling Castle (Castle Main)
+                0x15 : SFLampState,  # Specter Factory
+                0x16 : TVTLobbyLampState  # TV Tower (Lobby)
+            }
+            # Trigger Monkey Lamps depending on Lamp states
+            if (currentLevel in globalLampsUpdate):
+                if globalLampsUpdate[currentLevel] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+                    writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif globalLampsUpdate[currentLevel] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                    writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+            if (currentLevel in localLampsUpdate):
+                if globalLampsUpdate[currentLevel] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+                    writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif globalLampsUpdate[currentLevel] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
+                    writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
 
             # Kickout Prevention
             if kickoutofLevel != 0:

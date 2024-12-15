@@ -7,9 +7,12 @@ def set_noij_rules(self):
     # Make sure to update this condition properly when alternate Peak Point Matrix unlock conditions are added.
     if self.options.goal == "second":
         connect_regions(self, "Menu", AERoom.W9L2Boss.value,
-                        lambda state: Keys(state, self, self.levellist[21].keys) and HasNet(state, self) and HasSling(state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state, self) and HasRC(state, self) and CanDive(state, self) and CanWaterCatch(state, self))
+                        lambda state: Keys(state, self, self.levellist[21].keys) and HasNet(state, self) and HasSling(
+                            state, self) and HasHoop(state, self) and HasFlyer(state, self) and CanHitMultiple(state,
+                                                                                                               self) and HasRC(
+                            state, self) and CanDive(state, self) and CanWaterCatch(state, self))
 
-    #Time Station
+    # Time Station
     connect_regions(self, "Menu", AERoom.TimeStationMain.value, lambda state: True)
     connect_regions(self, "Menu", AERoom.TimeStationMinigame.value, lambda state: True)
     connect_regions(self, "Menu", AERoom.TimeStationTraining.value, lambda state: True)
@@ -83,21 +86,33 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W2L1Mushroom.value, AELocation.W2L1Alphonse.value,
                     lambda state: TJ_Mushroom(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Fish.value, AELocation.W2L1Maki.value,
-                    lambda state: TJ_FishEntry(state, self) and (HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: TJ_FishEntry(state, self) and (
+                                HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Fish.value, AELocation.W2L1Herb.value,
                     lambda state: TJ_FishEntry(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Fish.value, AELocation.W2L1Dilweed.value,
-                    lambda state: ((TJ_FishEntry(state, self) and CanHitMultiple(state, self)) or (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and HasNet(state, self))
+                    lambda state: ((TJ_FishEntry(state, self) and CanHitMultiple(state, self)) or (
+                                TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Tent.value, AELocation.W2L1Stoddy.value,
-                    lambda state: ((TJ_FishEntry(state, self) and CanHitMultiple(state, self)) or (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and HasNet(state, self))
+                    lambda state: ((TJ_FishEntry(state, self) and CanHitMultiple(state, self)) or (
+                                TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Tent.value, AELocation.W2L1Mitong.value,
-                    lambda state: ((TJ_FishEntry(state, self) and CanHitMultiple(state, self)) or (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and HasNet(state, self))
+                    lambda state: ((TJ_FishEntry(state, self) and CanHitMultiple(state, self)) or (
+                                TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Tent.value, AELocation.W2L1Nasus.value,
-                    lambda state: (TJ_FishEntry(state, self) or (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and CanHitMultiple(state, self) and HasNet(state, self))
+                    lambda state: (TJ_FishEntry(state, self) or (
+                                TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self))) and CanHitMultiple(state,
+                                                                                                           self) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W2L1Boulder.value, AELocation.W2L1Elehcim.value,
-                    lambda state: (TJ_UFOEntry(state, self) or (TJ_FishEntry(state, self) and CanHitMultiple(state, self))) and HasNet(state, self))
+                    lambda state: (TJ_UFOEntry(state, self) or (
+                                TJ_FishEntry(state, self) and CanHitMultiple(state, self))) and HasNet(state, self))
     connect_regions(self, AERoom.W2L1Boulder.value, AELocation.W2L1Selur.value,
-                    lambda state: ((TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self)) or (TJ_FishEntry(state, self) and CanHitMultiple(state, self))) and (HasClub(state, self) or HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: ((TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self)) or (
+                                TJ_FishEntry(state, self) and CanHitMultiple(state, self))) and (
+                                              HasClub(state, self) or HasSling(state, self) or HasFlyer(state,
+                                                                                                        self)) and HasNet(
+                        state, self))
 
     # 2-2
     connect_regions(self, "Menu", AERoom.W2L2Outside.value, lambda state: Keys(state, self, self.levellist[4].keys))
@@ -126,11 +141,15 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W2L2Obelisk.value, AELocation.W2L2Bernt.value,
                     lambda state: (HasSling(state, self) or HasPunch(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W2L2Water.value, AELocation.W2L2Runt.value,
-                    lambda state: ((CanSwim(state, self) and CanHitOnce(state, self)) or HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
+                    lambda state: ((CanSwim(state, self) and CanHitOnce(state, self)) or HasSling(state,
+                                                                                                  self) or HasHoop(
+                        state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W2L2Water.value, AELocation.W2L2Hoolah.value,
                     lambda state: CanHitMultiple(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L2Water.value, AELocation.W2L2Chino.value,
-                    lambda state: ((CanSwim(state, self) and CanHitOnce(state, self)) or HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
+                    lambda state: ((CanSwim(state, self) and CanHitOnce(state, self)) or HasSling(state,
+                                                                                                  self) or HasHoop(
+                        state, self)) and HasNet(state, self))
 
     # 2-3
     connect_regions(self, "Menu", AERoom.W2L3Outside.value, lambda state: Keys(state, self, self.levellist[5].keys))
@@ -143,17 +162,23 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W2L3Outside.value, AELocation.W2L3Freeto.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W2L3Side.value, AELocation.W2L3Troopa.value,
-                    lambda state: (HasSling(state, self) or HasHoop(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: (HasSling(state, self) or HasHoop(state, self) or HasFlyer(state, self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W2L3Main.value, AELocation.W2L3Stymie.value,
                     lambda state: CR_Inside(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L3Main.value, AELocation.W2L3Spanky.value,
-                    lambda state: CR_Inside(state, self) and ((CanSwim(state, self) and (HasMobility(state, self) or CanHitMultiple(state, self))) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: CR_Inside(state, self) and ((CanSwim(state, self) and (
+                                HasMobility(state, self) or CanHitMultiple(state, self))) or HasFlyer(state,
+                                                                                                      self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W2L3Main.value, AELocation.W2L3Jesta.value,
-                    lambda state: CR_Inside(state, self) and (CanHitMultiple(state, self) or (CanSwim(state, self) and HasMobility(state, self))) and HasNet(state, self))
+                    lambda state: CR_Inside(state, self) and (CanHitMultiple(state, self) or (
+                                CanSwim(state, self) and HasMobility(state, self))) and HasNet(state, self))
     connect_regions(self, AERoom.W2L3Pillar.value, AELocation.W2L3Pally.value,
                     lambda state: CR_Inside(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W2L3Pillar.value, AELocation.W2L3Crash.value,
-                    lambda state: CR_Inside(state, self) and (RCMonkey(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
+                    lambda state: CR_Inside(state, self) and (
+                                RCMonkey(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
 
     # 4-1
     connect_regions(self, "Menu", AERoom.W4L1FirstRoom.value, lambda state: Keys(state, self, self.levellist[7].keys))
@@ -168,13 +193,16 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W4L1FirstRoom.value, AELocation.W4L1Gidget.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W4L1SecondRoom.value, AELocation.W4L1Shaka.value,
-                    lambda state: HasNet(state, self))
+                    lambda state: CB_Lamp(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W4L1SecondRoom.value, AELocation.W4L1Puka.value,
-                    lambda state: (CanHitMultiple(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: CB_Lamp(state, self) and (
+                                CanHitMultiple(state, self) or HasFlyer(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W4L1SecondRoom.value, AELocation.W4L1MaxMahalo.value,
-                    lambda state: (HasHoop(state, self) or (HasSling(state, self) and HasFlyer(state, self))) and HasNet(state, self))
+                    lambda state: CB_Lamp(state, self) and (
+                                HasHoop(state, self) or (HasSling(state, self) and HasFlyer(state, self))) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W4L1SecondRoom.value, AELocation.W4L1Moko.value,
-                    lambda state: HasFlyer(state, self) and HasNet(state, self))
+                    lambda state: CB_Lamp(state, self) and HasFlyer(state, self) and HasNet(state, self))
 
     # 4-2
     connect_regions(self, "Menu", AERoom.W4L2FirstRoom.value, lambda state: Keys(state, self, self.levellist[8].keys))
@@ -185,7 +213,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W4L2FirstRoom.value, AELocation.W4L2Oreo.value,
                     lambda state: HasMobility(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W4L2FirstRoom.value, AELocation.W4L2Puddles.value,
-                    lambda state: (CanDive(state, self) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(state, self))
+                    lambda state: (CanDive(state, self) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W4L2FirstRoom.value, AELocation.W4L2Kalama.value,
                     lambda state: HasMobility(state, self) and (HasNet(state, self) or CanWaterCatch(state, self)))
     connect_regions(self, AERoom.W4L2SecondRoom.value, AELocation.W4L2Iz.value,
@@ -213,7 +242,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W4L3Stomach.value, AELocation.W4L3Murky.value,
                     lambda state: CanHitOnce(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W4L3Stomach.value, AELocation.W4L3Horke.value,
-                    lambda state: (CanHitOnce(state, self) and (CanSwim(state, self) or HasFlyer(state, self))) and HasNet(state, self))
+                    lambda state: (CanHitOnce(state, self) and (
+                                CanSwim(state, self) or HasFlyer(state, self))) and HasNet(state, self))
     connect_regions(self, AERoom.W4L3Gallery.value, AELocation.W4L3Howeerd.value,
                     lambda state: DI_SecondHalf(state, self) and HasSling(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W4L3Gallery.value, AELocation.W4L3Robbin.value,
@@ -225,7 +255,9 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W4L3Gallery.value, AELocation.W4L3Baba.value,
                     lambda state: DI_SecondHalf(state, self) and DI_Boulders(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W4L3Tentacle.value, AELocation.W4L3Quirck.value,
-                    lambda state: DI_SecondHalf(state, self) and DI_Boulders(state, self) and HasNet(state, self))
+                    lambda state: DI_SecondHalf(state, self) and DI_Boulders(state, self) and DI_Lamp(state,
+                                                                                                      self) and HasNet(
+                        state, self))
 
     # 5-1
     connect_regions(self, "Menu", AERoom.W5L1Main.value, lambda state: Keys(state, self, self.levellist[10].keys))
@@ -253,7 +285,9 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W5L2Entry.value, AELocation.W5L2Qube.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W5L2Water.value, AELocation.W5L2Ranix.value,
-                    lambda state: (CanSwim(state, self) and HasNet(state, self)) or ((HasClub(state, self) or HasSling(state, self) or HasPunch(state, self)) and (HasNet(state, self) or (CanDive(state, self) and CanWaterCatch(state, self)))))
+                    lambda state: (CanSwim(state, self) and HasNet(state, self)) or (
+                                (HasClub(state, self) or HasSling(state, self) or HasPunch(state, self)) and (
+                                    HasNet(state, self) or (CanDive(state, self) and CanWaterCatch(state, self)))))
     connect_regions(self, AERoom.W5L2Water.value, AELocation.W5L2Sharpe.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W5L2Water.value, AELocation.W5L2Sticky.value,
@@ -303,7 +337,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L1Outside.value, AELocation.W7L1Maralea.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W7L1Outside.value, AELocation.W7L1Wog.value,
-                    lambda state: (HasClub(state, self) or HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: (HasClub(state, self) or HasSling(state, self) or HasFlyer(state, self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W7L1Temple.value, AELocation.W7L1Mayi.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W7L1Temple.value, AELocation.W7L1Owyang.value,
@@ -315,7 +350,9 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L1Temple.value, AELocation.W7L1Chunky.value,
                     lambda state: HasFlyer(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W7L1Well.value, AELocation.W7L1Voti.value,
-                    lambda state: (HasSling(state, self) or (HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self)) and HasNet(state, self))
+                    lambda state: (HasSling(state, self) or (
+                                HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W7L1Well.value, AELocation.W7L1QuelTin.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W7L1Well.value, AELocation.W7L1Phaldo.value,
@@ -345,9 +382,12 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L2Course.value, AELocation.W7L2Fooey.value,
                     lambda state: WSW_ThirdRoom(state, self) and RCMonkey(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W7L2Barrel.value, AELocation.W7L2Kong.value,
-                    lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self) and (HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
+                    lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self) and (
+                                HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W7L2Barrel.value, AELocation.W7L2Phool.value,
-                    lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self) and (HasSling(state, self) or HasHoop(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self) and (
+                                HasSling(state, self) or HasHoop(state, self) or HasFlyer(state, self)) and HasNet(
+                        state, self))
 
     # 7-3
     connect_regions(self, "Menu", AERoom.W7L3Outside.value, lambda state: Keys(state, self, self.levellist[16].keys))
@@ -358,7 +398,7 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L3Basement.value, AERoom.W7L3Button.value, lambda state: True)
     connect_regions(self, AERoom.W7L3Outside.value, AERoom.W7L3Boss.value,
                     lambda state: CanHitMultiple(state, self) and CC_ButtonRoom(state, self))
-    
+
     connect_regions(self, AERoom.W7L3Outside.value, AELocation.W7L3Robart.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W7L3Outside.value, AELocation.W7L3Igor.value,
@@ -379,7 +419,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L3Castle.value, AELocation.W7L3SirCutty.value,
                     lambda state: CC_5Monkeys(state, self))
     connect_regions(self, AERoom.W7L3Basement.value, AELocation.W7L3Calligan.value,
-                    lambda state: CC_WaterRoom(state, self) and (CanDive(state, self) or HasPunch(state, self)) and HasNet(state, self))
+                    lambda state: CC_WaterRoom(state, self) and (
+                                CanDive(state, self) or HasPunch(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W7L3Basement.value, AELocation.W7L3Castalist.value,
                     lambda state: CC_WaterRoom(state, self) and CanDive(state, self) and CanWaterCatch(state, self))
     connect_regions(self, AERoom.W7L3Basement.value, AELocation.W7L3Deveneom.value,
@@ -387,7 +428,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W7L3Button.value, AELocation.W7L3Astur.value,
                     lambda state: CC_ButtonRoom(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W7L3Button.value, AELocation.W7L3Kilserack.value,
-                    lambda state: CC_ButtonRoom(state, self) and (HasNet(state, self) or (CanDive(state, self) and CanWaterCatch(state, self))))
+                    lambda state: CC_ButtonRoom(state, self) and (
+                                HasNet(state, self) or (CanDive(state, self) and CanWaterCatch(state, self))))
     connect_regions(self, AERoom.W7L3Elevator.value, AELocation.W7L3Ringo.value,
                     lambda state: CC_5Monkeys(state, self))
     connect_regions(self, AERoom.W7L3Elevator.value, AELocation.W7L3Densil.value,
@@ -411,27 +453,47 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W8L1Outside.value, AELocation.W8L1Jaxx.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W8L1Outside.value, AELocation.W8L1Gehry.value,
-                    lambda state: ((CP_FrontBarrels(state, self) and CanDive(state, self)) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: ((CP_FrontBarrels(state, self) and CanDive(state, self)) or HasFlyer(state,
+                                                                                                       self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W8L1Outside.value, AELocation.W8L1Alcatraz.value,
                     lambda state: HasNet(state, self))
     connect_regions(self, AERoom.W8L1Sewers.value, AELocation.W8L1Tino.value,
-                    lambda state: ((CP_FrontSewer(state, self) or CP_BackSewer(state, self)) and HasRC(state, self)) and HasNet(state, self))
+                    lambda state: ((CP_FrontSewer(state, self) or CP_BackSewer(state, self)) and HasRC(state,
+                                                                                                       self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W8L1Sewers.value, AELocation.W8L1QBee.value,
-                    lambda state: ((CP_FrontSewer(state, self) and HasRC(state, self)) or CP_BackSewer(state, self)) and HasNet(state, self))
+                    lambda state: ((CP_FrontSewer(state, self) and HasRC(state, self)) or CP_BackSewer(state,
+                                                                                                       self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W8L1Sewers.value, AELocation.W8L1McManic.value,
-                    lambda state: (((CP_FrontSewer(state, self) or CP_BackSewer(state, self)) and HasRC(state, self)) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: (((CP_FrontSewer(state, self) or CP_BackSewer(state, self)) and HasRC(state,
+                                                                                                        self)) or HasFlyer(
+                        state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W8L1Barrel.value, AELocation.W8L1Dywan.value,
                     lambda state: (CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and HasNet(state, self))
     connect_regions(self, AERoom.W8L1Barrel.value, AELocation.W8L1CKHutch.value,
-                    lambda state: ((CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and CanDive(state, self)) and HasNet(state, self))
+                    lambda state: ((CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and CanDive(state,
+                                                                                                           self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W8L1Barrel.value, AELocation.W8L1Winky.value,
-                    lambda state: (CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and (HasNet(state, self) or (CanDive(state, self) and CanWaterCatch(state, self))))
+                    lambda state: (CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and (
+                                HasNet(state, self) or (CanDive(state, self) and CanWaterCatch(state, self))))
     connect_regions(self, AERoom.W8L1Barrel.value, AELocation.W8L1BLuv.value,
-                    lambda state: ((CP_FrontBarrels(state, self) and (CanSwim(state, self) or HasFlyer(state, self))) or CP_BackSewer(state, self)) and HasNet(state, self))
+                    lambda state: ((CP_FrontBarrels(state, self) and (
+                                CanSwim(state, self) or HasFlyer(state, self))) or CP_BackSewer(state,
+                                                                                                self)) and HasNet(state,
+                                                                                                                  self))
     connect_regions(self, AERoom.W8L1Barrel.value, AELocation.W8L1Camper.value,
-                    lambda state: ((CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and CanDive(state, self)) and (HasNet(state, self) or CanWaterCatch(state, self)))
+                    lambda state: ((CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and CanDive(state,
+                                                                                                           self)) and (
+                                              HasNet(state, self) or CanWaterCatch(state, self)))
     connect_regions(self, AERoom.W8L1Barrel.value, AELocation.W8L1Huener.value,
-                    lambda state: ((CP_FrontBarrels(state, self) and (HasHoop(state, self) or CanSwim(state, self)) and HasFlyer(state, self)) or CP_BackSewer(state, self)) and HasNet(state, self))
+                    lambda state: ((CP_FrontBarrels(state, self) and (
+                                HasHoop(state, self) or CanSwim(state, self)) and HasFlyer(state,
+                                                                                           self)) or CP_BackSewer(state,
+                                                                                                                  self)) and HasNet(
+                        state, self))
 
     # 8-2
     connect_regions(self, "Menu", AERoom.W8L2Outside.value, lambda state: Keys(state, self, self.levellist[18].keys))
@@ -449,7 +511,9 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W8L2Factory.value, AELocation.W8L2Reznor.value,
                     lambda state: SF_MechRoom(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W8L2RC.value, AELocation.W8L2Urkel.value,
-                    lambda state: (SF_CarRoom(state, self) or HasSling(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
+                    lambda state: (SF_CarRoom(state, self) or HasSling(state, self) or SuperFlyer(state,
+                                                                                                  self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W8L2Lava.value, AELocation.W8L2VanillaS.value,
                     lambda state: SF_MechRoom(state, self) and HasPunch(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W8L2Lava.value, AELocation.W8L2Radd.value,
@@ -470,7 +534,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W8L3Lobby.value, AERoom.W8L3Tank.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Fan.value, lambda state: True)
     connect_regions(self, AERoom.W8L3Tank.value, AERoom.W8L3Boss.value,
-                    lambda state: TVT_TankRoom(state, self) and (HasSling(state, self) or (HasFlyer(state, self) and HasRC(state, self))))
+                    lambda state: TVT_BossRoom(state, self) and (
+                                HasSling(state, self) or (HasFlyer(state, self) and HasRC(state, self))))
 
     connect_regions(self, AERoom.W8L3Outside.value, AELocation.W8L3Fredo.value,
                     lambda state: HasPunch(state, self) and HasNet(state, self))
@@ -546,7 +611,8 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Uribe.value,
                     lambda state: MM_UFODoor(state, self) and HasPunch(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Gordo.value,
-                    lambda state: MM_UFODoor(state, self) and (HasRC(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: MM_UFODoor(state, self) and (HasRC(state, self) or HasFlyer(state, self)) and HasNet(
+                        state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Raeski.value,
                     lambda state: MM_UFODoor(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Poopie.value,
@@ -566,10 +632,10 @@ def set_noij_rules(self):
     connect_regions(self, AERoom.W9L1Head.value, AELocation.W9L1Carlito.value,
                     lambda state: MM_DoubleDoor(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Side.value, AELocation.W9L1BG.value,
-                    lambda state: MM_SHA(state, self) and (HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                    lambda state: MM_SHA(state, self) and (HasSling(state, self) or HasFlyer(state, self)) and HasNet(
+                        state, self))
 
     self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
-
 
     if self.options.coin == "true":
         # Coins
@@ -590,25 +656,28 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W2L1Fish.value, AELocation.Coin8.value,
                         lambda state: (TJ_FishEntry(state, self)))
         connect_regions(self, AERoom.W2L1Tent.value, AELocation.Coin9.value,
-                        lambda state: (TJ_FishEntry(state, self) and (CanHitMultiple(state, self))) or ((TJ_UFOEntry(state, self)) and (TJ_UFOCliff(state, self))))
+                        lambda state: (TJ_FishEntry(state, self) and (CanHitMultiple(state, self))) or (
+                                    (TJ_UFOEntry(state, self)) and (TJ_UFOCliff(state, self))))
         # 2-2
-        connect_regions(self, AERoom.W2L2Outside.value, AELocation.Coin11.value, 
+        connect_regions(self, AERoom.W2L2Outside.value, AELocation.Coin11.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W2L2Fan.value, AELocation.Coin12.value, 
+        connect_regions(self, AERoom.W2L2Fan.value, AELocation.Coin12.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W2L2Obelisk.value, AELocation.Coin13.value,
-                        lambda state: (HasHoop(state, self) and HasFlyer(state, self)) or HasRC(state, self) or HasPunch(state, self))
+                        lambda state: (HasHoop(state, self) and HasFlyer(state, self)) or HasRC(state,
+                                                                                                self) or HasPunch(state,
+                                                                                                                  self))
         connect_regions(self, AERoom.W2L2Water.value, AELocation.Coin14.value,
                         lambda state: CanDive(state, self) and CanHitOnce(state, self))
         # 2-3
         connect_regions(self, AERoom.W2L3Main.value, AELocation.Coin17.value,
                         lambda state: CR_Inside(state, self) and (CanSwim(state, self) or HasMobility(state, self)))
         # 3-1
-        connect_regions(self, "Menu", AERoom.W3L1Coin19.value, 
+        connect_regions(self, "Menu", AERoom.W3L1Coin19.value,
                         lambda state: CanSwim(state, self) and Keys(state, self, self.levellist[6].keys))
         # 4-1
         connect_regions(self, AERoom.W4L1SecondRoom.value, AELocation.Coin21.value,
-                        lambda state: HasNet(state, self))
+                        lambda state: CB_Lamp(state, self))
         # 4-2
         connect_regions(self, AERoom.W4L2SecondRoom.value, AELocation.Coin23.value,
                         lambda state: CanDive(state, self) or (CanSwim(state, self) and HasRC(state, self)))
@@ -635,7 +704,7 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W5L3Cave.value, AELocation.Coin35.value,
                         lambda state: CanHitOnce(state, self))
         # 6-1
-        connect_regions(self, "Menu", AERoom.W6L1Coin36.value, 
+        connect_regions(self, "Menu", AERoom.W6L1Coin36.value,
                         lambda state: HasFlyer(state, self) and Keys(state, self, self.levellist[13].keys))
         # 7-1
         connect_regions(self, AERoom.W7L1Outside.value, AELocation.Coin37.value,
@@ -653,20 +722,25 @@ def set_noij_rules(self):
                         lambda state: HasFlyer(state, self))
         # 7-3
         connect_regions(self, AERoom.W7L3Outside.value, AELocation.Coin45.value,
-                        lambda state: HasClub(state, self) or HasSling(state, self) or HasHoop(state, self) or HasFlyer(state, self) or HasPunch(state, self))
+                        lambda state: HasClub(state, self) or HasSling(state, self) or HasHoop(state, self) or HasFlyer(
+                            state, self) or HasPunch(state, self))
         connect_regions(self, AERoom.W7L3Castle.value, AELocation.Coin46.value,
                         lambda state: CC_5Monkeys(state, self))
         connect_regions(self, AERoom.W7L3Button.value, AELocation.Coin49.value,
                         lambda state: CC_ButtonRoom(state, self))
         connect_regions(self, AERoom.W7L3Elevator.value, AELocation.Coin50.value,
-                        lambda state: CC_5Monkeys(state, self) or CC_WaterRoom(state, self) or (HasHoop(state, self) and HasFlyer(state, self)))
+                        lambda state: CC_5Monkeys(state, self) or CC_WaterRoom(state, self) or (
+                                    HasHoop(state, self) and HasFlyer(state, self)))
         # 8-1
         connect_regions(self, AERoom.W8L1Outside.value, AELocation.Coin53.value,
                         lambda state: (CP_FrontBarrels(state, self) and CanDive(state, self)) or HasFlyer(state, self))
         connect_regions(self, AERoom.W8L1Sewers.value, AELocation.Coin54.value,
-                        lambda state: (CP_FrontSewer(state, self) and (HasRC(state, self) or SuperFlyer(state, self))) or (CP_BackSewer(state, self) and HasRC(state, self)))
+                        lambda state: (CP_FrontSewer(state, self) and (
+                                    HasRC(state, self) or SuperFlyer(state, self))) or (
+                                                  CP_BackSewer(state, self) and HasRC(state, self)))
         connect_regions(self, AERoom.W8L1Barrel.value, AELocation.Coin55.value,
-                        lambda state: (CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and HasFlyer(state, self))
+                        lambda state: (CP_FrontBarrels(state, self) or CP_BackSewer(state, self)) and HasFlyer(state,
+                                                                                                               self))
         # 8-2
         connect_regions(self, AERoom.W8L2RC.value, AELocation.Coin58.value,
                         lambda state: SF_CarRoom(state, self) or SuperFlyer(state, self))
@@ -699,7 +773,6 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W9L1Climb2.value, AELocation.Coin82.value,
                         lambda state: MM_SpaceMonkeys(state, self))
 
-
     # Mailboxes
     if self.options.mailbox == "true" or (self.options.shufflenet == "true" and self.options.coin == "true"):
         # Time Station
@@ -707,43 +780,43 @@ def set_noij_rules(self):
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.TimeStationMain.value, AELocation.Mailbox61.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.TimeStationMinigame.value, AELocation.Mailbox62.value, 
+        connect_regions(self, AERoom.TimeStationMinigame.value, AELocation.Mailbox62.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.TimeStationTraining.value, AELocation.Mailbox63.value, 
+        connect_regions(self, AERoom.TimeStationTraining.value, AELocation.Mailbox63.value,
                         lambda state: NoRequirement())
 
     if self.options.mailbox == "true":
         # 1-1
-        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox1.value, 
+        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox1.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox2.value, 
+        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox2.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox3.value,
                         lambda state: CanHitOnce(state, self))
         # 1-2
-        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox4.value, 
+        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox4.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox5.value, 
+        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox5.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox6.value, 
+        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox6.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox7.value, 
+        connect_regions(self, AERoom.W1L2Main.value, AELocation.Mailbox7.value,
                         lambda state: NoRequirement())
         # 1-3
-        connect_regions(self, AERoom.W1L3Entry.value, AELocation.Mailbox8.value, 
+        connect_regions(self, AERoom.W1L3Entry.value, AELocation.Mailbox8.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W1L3Entry.value, AELocation.Mailbox9.value,
                         lambda state: CanHitOnce(state, self))
-        connect_regions(self, AERoom.W1L3Volcano.value, AELocation.Mailbox10.value, 
+        connect_regions(self, AERoom.W1L3Volcano.value, AELocation.Mailbox10.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W1L3Triceratops.value, AELocation.Mailbox11.value, 
+        connect_regions(self, AERoom.W1L3Triceratops.value, AELocation.Mailbox11.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W1L3Triceratops.value, AELocation.Mailbox12.value,
                         lambda state: HasSling(state, self))
         # 2-1
-        connect_regions(self, AERoom.W2L1Entry.value, AELocation.Mailbox13.value, 
+        connect_regions(self, AERoom.W2L1Entry.value, AELocation.Mailbox13.value,
                         lambda state: NoRequirement())
-        connect_regions(self, AERoom.W2L1Entry.value, AELocation.Mailbox14.value, 
+        connect_regions(self, AERoom.W2L1Entry.value, AELocation.Mailbox14.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W2L1Mushroom.value, AELocation.Mailbox15.value,
                         lambda state: CanHitOnce(state, self))
@@ -756,9 +829,13 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W2L1Fish.value, AELocation.Mailbox19.value,
                         lambda state: TJ_FishEntry(state, self))
         connect_regions(self, AERoom.W2L1Tent.value, AELocation.Mailbox20.value,
-                        lambda state: (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self) and CanHitOnce(state, self)) or (TJ_FishEntry(state, self) and CanHitMultiple(state, self)))
+                        lambda state: (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self) and CanHitOnce(state,
+                                                                                                            self)) or (
+                                                  TJ_FishEntry(state, self) and CanHitMultiple(state, self)))
         connect_regions(self, AERoom.W2L1Boulder.value, AELocation.Mailbox21.value,
-                        lambda state: (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self) and CanHitOnce(state, self)) or (TJ_FishEntry(state, self) and CanHitMultiple(state, self)))
+                        lambda state: (TJ_UFOEntry(state, self) and TJ_UFOCliff(state, self) and CanHitOnce(state,
+                                                                                                            self)) or (
+                                                  TJ_FishEntry(state, self) and CanHitMultiple(state, self)))
         # 2-2
         connect_regions(self, AERoom.W2L2Outside.value, AELocation.Mailbox22.value,
                         lambda state: NoRequirement())
@@ -782,16 +859,17 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W2L3Main.value, AELocation.Mailbox31.value,
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AERoom.W2L3Main.value, AELocation.Mailbox32.value,
-                        lambda state: CR_Inside(state, self) and CanSwim(state, self) and (HasMobility(state, self) or CanHitMultiple(state, self)))
+                        lambda state: CR_Inside(state, self) and CanSwim(state, self) and (
+                                    HasMobility(state, self) or CanHitMultiple(state, self)))
         connect_regions(self, AERoom.W2L3Pillar.value, AELocation.Mailbox33.value,
                         lambda state: CR_Inside(state, self))
         # 4-1
         connect_regions(self, AERoom.W4L1FirstRoom.value, AELocation.Mailbox34.value,
                         lambda state: CanHitOnce(state, self))
-        connect_regions(self, AERoom.W4L1FirstRoom.value, AELocation.Mailbox35.value, 
+        connect_regions(self, AERoom.W4L1FirstRoom.value, AELocation.Mailbox35.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W4L1SecondRoom.value, AELocation.Mailbox36.value,
-                        lambda state: CanHitOnce(state, self) and HasNet(state, self))
+                        lambda state: CanHitOnce(state, self) and CB_Lamp(state, self))
         # 4-2
         connect_regions(self, AERoom.W4L2SecondRoom.value, AELocation.Mailbox37.value,
                         lambda state: CanSwim(state, self) and CanHitOnce(state, self))
@@ -807,11 +885,11 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W4L3Gallery.value, AELocation.Mailbox42.value,
                         lambda state: CanHitOnce(state, self))
         # 5-1
-        connect_regions(self, AERoom.W5L1Main.value, AELocation.Mailbox43.value, 
+        connect_regions(self, AERoom.W5L1Main.value, AELocation.Mailbox43.value,
                         lambda state: NoRequirement())
         connect_regions(self, AERoom.W5L1Main.value, AELocation.Mailbox44.value,
                         lambda state: CanHitOnce(state, self))
-        connect_regions(self, AERoom.W5L1Main.value, AELocation.Mailbox45.value, 
+        connect_regions(self, AERoom.W5L1Main.value, AELocation.Mailbox45.value,
                         lambda state: NoRequirement())
         # 5-2
         connect_regions(self, AERoom.W5L2Caverns.value, AELocation.Mailbox46.value,
@@ -843,10 +921,10 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W7L3Outside.value, AELocation.Mailbox57.value,
                         lambda state: CanHitOnce(state, self))
         # 8-2
-        connect_regions(self, AERoom.W8L2Outside.value, AELocation.Mailbox58.value, 
+        connect_regions(self, AERoom.W8L2Outside.value, AELocation.Mailbox58.value,
                         lambda state: NoRequirement())
         # 9-1
-        connect_regions(self, AERoom.W9L1Entry.value, AELocation.Mailbox59.value, 
+        connect_regions(self, AERoom.W9L1Entry.value, AELocation.Mailbox59.value,
                         lambda state: NoRequirement())
 
 
@@ -859,7 +937,9 @@ def NoRequirement():
 
 
 def CanHitOnce(state, world):
-    return HasClub(state, world) or HasRadar(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasRC(state, world) or HasPunch(state, world)
+    return HasClub(state, world) or HasRadar(state, world) or HasSling(state, world) or HasHoop(state,
+                                                                                                world) or HasFlyer(
+        state, world) or HasRC(state, world) or HasPunch(state, world)
 
 
 def CanHitMultiple(state, world):
@@ -883,11 +963,15 @@ def CanDive(state, world):
 
 
 def CanWaterCatch(state, world):
-    return (state.has(AEItem.WaterNet.value, world.player, 1) or (state.has(AEItem.WaterCatch.value, world.player, 1) and state.has(AEItem.ProgWaterNet.value, world.player, 1)))
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or (
+                state.has(AEItem.WaterCatch.value, world.player, 1) and state.has(AEItem.ProgWaterNet.value,
+                                                                                  world.player, 1)))
 
 
 def SuperFlyer(state, world):
-    return HasFlyer(state, world) and (HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state, world)) and world.options.superflyer == "true"
+    return HasFlyer(state, world) and (
+                HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state,
+                                                                                                    world)) and world.options.superflyer == "true"
 
 
 def TJ_UFOEntry(state, world):
@@ -910,8 +994,16 @@ def CR_Inside(state, world):
     return HasSling(state, world) or HasPunch(state, world)
 
 
+def CB_Lamp(state, world):
+    return state.has(AEItem.CB_Lamp.value, world.player, 1) and HasNet(state, world)
+
+
 def DI_SecondHalf(state, world):
     return CanHitMultiple(state, world) and CanDive(state, world)
+
+
+def DI_Lamp(state, world):
+    return state.has(AEItem.DI_Lamp.value, world.player, 1) and HasNet(state, world)
 
 
 def DI_Boulders(state, world):
@@ -926,20 +1018,33 @@ def WSW_FourthRoom(state, world):
     return True
 
 
+def CrC_Lamp(state, world):
+    return state.has(AEItem.CrC_Lamp.value, world.player, 1) and HasNet(state, world)
+
+
 def CC_5Monkeys(state, world):
-    return HasNet(state, world) and (HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world))
+    return CrC_Lamp(state, world) and (
+                HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state,
+                                                                                                     world) or HasPunch(
+            state, world))
 
 
 def CC_WaterRoom(state, world):
-    return (CanHitMultiple(state, world) and HasNet(state, world)) or (CanSwim(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or (HasFlyer(state, world) or HasHoop(state, world)) or SuperFlyer(state, world)
+    return (CrC_Lamp(state, world) and CanHitMultiple(state, world)) or (
+                CanSwim(state, world) and (HasFlyer(state, world) or HasPunch(state, world))) or (
+                HasFlyer(state, world) or HasHoop(state, world)) or SuperFlyer(state, world)
 
 
 def CC_ButtonRoom(state, world):
     return CC_WaterRoom(state, world) and (CanSwim(state, world) or HasFlyer(state, world))
 
 
+def CP_Lamp(state, world):
+    return state.has(AEItem.CP_Lamp.value, world.player, 1) and HasNet(state, world)
+
+
 def CP_FrontSewer(state, world):
-    return HasNet(state, world) and HasRC(state, world)
+    return CP_Lamp(state, world) and HasRC(state, world)
 
 
 def CP_FrontBarrels(state, world):
@@ -950,12 +1055,27 @@ def CP_BackSewer(state, world):
     return HasFlyer(state, world) and CanDive(state, world)
 
 
+def SF_Lamp(state, world):
+    return state.has(AEItem.SF_Lamp.value, world.player, 1) and HasNet(state, world)
+
+
 def SF_CarRoom(state, world):
     return (HasHoop(state, world) and HasFlyer(state, world)) or HasRC(state, world) or HasPunch(state, world)
 
 
 def SF_MechRoom(state, world):
-    return (HasHoop(state, world) and HasFlyer(state, world)) or (HasNet(state, world) and ((HasClub(state, world) and (HasSling(state, world) or HasRC(state, world))) or HasPunch(state, world))) or SuperFlyer(state, world)
+    return (HasHoop(state, world) and HasFlyer(state, world)) or (SF_Lamp(state, world) and (
+                (HasClub(state, world) and (HasSling(state, world) or HasRC(state, world))) or HasPunch(state,
+                                                                                                        world))) or SuperFlyer(
+        state, world)
+
+
+def TVT_Lobby_Lamp(state, world):
+    return state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1) and HasNet(state, world)
+
+
+def TVT_Tank_Lamp(state, world):
+    return state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1) and HasNet(state, world)
 
 
 def TVT_HitButton(state, world):
@@ -963,11 +1083,15 @@ def TVT_HitButton(state, world):
 
 
 def TVT_TankRoom(state, world):
-    return TVT_HitButton(state, world) and HasNet(state, world)
+    return TVT_HitButton(state, world) and TVT_Lobby_Lamp(state, world)
 
 
 def TVT_BossRoom(state, world):
-    return TVT_TankRoom(state, world)
+    return TVT_TankRoom(state, world) and TVT_Tank_Lamp(state, world)
+
+
+def MM_Lamp(state, world):
+    return state.has(AEItem.MM_Lamp.value, world.player, 1) and HasNet(state, world)
 
 
 def MM_Natalie(state, world):
@@ -991,7 +1115,8 @@ def MM_SHA(state, world):
 
 
 def MM_UFODoor(state, world):
-    return MM_SHA(state, world) and HasNet(state, world) and (HasClub(state, world) or HasSling(state, world) or HasPunch(state, world))
+    return MM_SHA(state, world) and MM_Lamp(state, world) and (
+                HasClub(state, world) or HasSling(state, world) or HasPunch(state, world))
 
 
 def MM_DoubleDoor(state, world):
@@ -1003,7 +1128,8 @@ def MM_SpaceMonkeys(state, world):
 
 
 def MM_FinalBoss(state, world):
-    return (MM_DoubleDoor(state, world) and HasSling(state, world) and HasFlyer(state, world)) or (MM_UFODoor(state, world) and SuperFlyer(state, world))
+    return (MM_DoubleDoor(state, world) and HasSling(state, world) and HasFlyer(state, world)) or (
+                MM_UFODoor(state, world) and SuperFlyer(state, world))
 
 
 def HasClub(state, world):

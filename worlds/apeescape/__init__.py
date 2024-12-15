@@ -39,7 +39,7 @@ class ApeEscapeWeb(WebWorld):
         ["Thedragon005"]
     )
 
-    tutorials = [setup_en,setup_fr]
+    tutorials = [setup_en, setup_fr]
 
 
 class ApeEscapeWorld(World):
@@ -138,10 +138,19 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
-        #progwaternet = self.create_item(AEItem.ProgWaterNet.value)
+        # progwaternet = self.create_item(AEItem.ProgWaterNet.value)
         watercatch = self.create_item(AEItem.WaterCatch.value)
 
-        #self.multiworld.push_precollected(waternet)
+        CB_Lamp = self.create_item(AEItem.CB_Lamp.value)
+        DI_Lamp = self.create_item(AEItem.DI_Lamp.value)
+        CrC_Lamp = self.create_item(AEItem.CrC_Lamp.value)
+        CP_Lamp = self.create_item(AEItem.CP_Lamp.value)
+        SF_Lamp = self.create_item(AEItem.SF_Lamp.value)
+        TVT_Lobby_Lamp = self.create_item(AEItem.TVT_Lobby_Lamp.value)
+        TVT_Tank_Lamp = self.create_item(AEItem.TVT_Tank_Lamp.value)
+        MM_Lamp = self.create_item(AEItem.MM_Lamp.value)
+
+        # self.multiworld.push_precollected(waternet)
 
         # Create enough keys to access every level, depending on the key option
         if self.options.unlocksperkey == 0x00:
@@ -152,6 +161,26 @@ class ApeEscapeWorld(World):
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 16)]
         elif self.options.unlocksperkey == 0x03:
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
+
+        # Monkey Lamps shuffle
+        if self.options.lamp == "false":
+            self.multiworld.push_precollected(CB_Lamp)
+            self.multiworld.push_precollected(DI_Lamp)
+            self.multiworld.push_precollected(CrC_Lamp)
+            self.multiworld.push_precollected(CP_Lamp)
+            self.multiworld.push_precollected(SF_Lamp)
+            self.multiworld.push_precollected(TVT_Lobby_Lamp)
+            self.multiworld.push_precollected(TVT_Tank_Lamp)
+            self.multiworld.push_precollected(MM_Lamp)
+        else:
+            self.itempool += [CB_Lamp]
+            self.itempool += [DI_Lamp]
+            self.itempool += [CrC_Lamp]
+            self.itempool += [CP_Lamp]
+            self.itempool += [SF_Lamp]
+            self.itempool += [TVT_Lobby_Lamp]
+            self.itempool += [TVT_Tank_Lamp]
+            self.itempool += [MM_Lamp]
 
         # Water Net shuffle handling
         if self.options.shufflewaternet == "false":
@@ -172,7 +201,8 @@ class ApeEscapeWorld(World):
                 # All locations require net with these options, so throw a warning about incompatible options and just give the net anyway.
                 # if instead we want to error out and prevent generation, uncomment this line:
                 # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
-                warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
+                warning(
+                    f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
                 self.multiworld.push_precollected(net)
 
         if self.options.gadget == "club":
@@ -212,7 +242,8 @@ class ApeEscapeWorld(World):
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
 
-        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
+        for _ in range(
+                len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
                 self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
@@ -242,14 +273,15 @@ class ApeEscapeWorld(World):
     def fill_slot_data(self):
         bytestowrite = []
         entranceids = []
-        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
+                        0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
         orderedfirstroomids = []
         for x in range(0, 22):
             entranceids.append(self.entranceorder[x].entrance)
             orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
             bytestowrite += self.entranceorder[x].bytes
-            bytestowrite.append(0) # We need a separator byte after each level name.
-            
+            bytestowrite.append(0)  # We need a separator byte after each level name.
+
         return {
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
@@ -258,20 +290,22 @@ class ApeEscapeWorld(World):
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
+            "lamp": self.options.lamp.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
-            "levelnames": bytestowrite, # List of level names in entrance order. FF leads to the first.
-            "entranceids": entranceids, # Not used by the client. List of level ids in entrance order.
-            "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.
+            "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
+            "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
+            "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value),
         }
 
     def write_spoiler(self, spoiler_handle: TextIO):
         if self.options.entrance.value != 0x00:
-            spoiler_handle.write(f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
+            spoiler_handle.write(
+                f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
             for x in range(0, 22):
-                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
+                spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
             spoiler_handle.write(f"\n")
 
     def generate_output(self, output_directory: str):

@@ -909,6 +909,14 @@ class RAM:
         "WaterNet": 0x400,
         "ProgWaterNet": 0x401,
         "WaterCatch": 0x402,
+        "CB_Lamp": 0x150,
+        "DI_Lamp": 0x151,
+        "CrC_Lamp": 0x152,
+        "CP_Lamp": 0x153,
+        "SF_Lamp": 0x154,
+        "TVT_Lobby_Lamp": 0x155,
+        "TVT_Tank_Lamp": 0x156,
+        "MM_Lamp": 0x157,
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -920,6 +928,7 @@ class RAM:
         "FiveCookies": 0x217,
         "ThreeFlash": 0x218,
         "ThreeRocket": 0x219
+
     }
 
     caughtStatus = {
@@ -1014,18 +1023,7 @@ class RAM:
     localLamp_localUpdate = 0x097474 # Default : 9062007A. Set this to 0 to disable
     globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
     globalLamp_globalUpdate = 0x097568 # Default : 1444000F. Set this to 0 to disable
-    localLampsUpdate = {
-        20, # Crabby Beach
-        53, # City Park (Main)
-        66, # TV Tower (Tank Room)
-        79 # Monkey Madness Castle Outside
-    }
-    globalLampsUpdate = {
-        26, # Dexter's Island Global
-        73, # Crumbling Castle (Castle Main)
-        57, # Specter Factory
-        65, # TV Tower (Lobby)
-    }
+
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
@@ -1077,6 +1075,15 @@ class RAM:
 
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
+
+    tempCB_LampAddress = 0x0DFBE4
+    tempDI_LampAddress = 0x0DFBE5
+    tempCrC_LampAddress = 0x0DFBE6
+    tempCP_LampAddress = 0x0DFBE7
+    tempSF_LampAddress = 0x0DFBE8
+    tempTVT_Lobby_LampAddress = 0x0DFBE9
+    tempTVT_Tank_LampAddress = 0x0DFBEA
+    tempMM_LampAddress = 0x0DFBEB
 
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
     menuStateAddress = 0x0A9A1B

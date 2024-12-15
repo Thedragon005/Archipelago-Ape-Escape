@@ -32,6 +32,16 @@ item_table = {
     AEItem.Key.value: RAM.items["Key"],
     AEItem.Victory.value: RAM.items["Victory"],
 
+    # Monkey Lamps
+    AEItem.CB_Lamp.value: RAM.items["CB_Lamp"],
+    AEItem.DI_Lamp.value: RAM.items["DI_Lamp"],
+    AEItem.CrC_Lamp.value: RAM.items["CrC_Lamp"],
+    AEItem.CP_Lamp.value: RAM.items["CP_Lamp"],
+    AEItem.SF_Lamp.value: RAM.items["SF_Lamp"],
+    AEItem.TVT_Lobby_Lamp.value: RAM.items["TVT_Lobby_Lamp"],
+    AEItem.TVT_Tank_Lamp.value: RAM.items["TVT_Tank_Lamp"],
+    AEItem.MM_Lamp.value: RAM.items["MM_Lamp"],
+
     # Junk
     AEItem.Nothing.value: RAM.items["Nothing"],
     AEItem.Shirt.value: RAM.items["Shirt"],
@@ -45,6 +55,10 @@ item_table = {
     AEItem.Rocket.value: RAM.items["Rocket"],
     AEItem.ThreeRocket.value: RAM.items["ThreeRocket"],
 }
+
+# Tables to check which Item is needed for which level depending on Lamps
+
+
 
 event_table = {
 }
@@ -61,5 +75,13 @@ def createItemGroups():
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Progressive Water Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Catch")
+
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CB_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.DI_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CrC_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CP_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.TVT_Lobby_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.TVT_Tank_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.MM_Lamp.value)
 
 createItemGroups()
