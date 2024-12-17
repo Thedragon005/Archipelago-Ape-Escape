@@ -625,12 +625,17 @@ class ApeEscapeClient(BizHawkClient):
                 elif globalLampsUpdate[currentLevel] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
                     writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                     writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+            elif GlobalLamp_LocalUpdate != 0x9082007A:
+                    writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
 
             if (currentLevel in localLampsUpdate):
-                if globalLampsUpdate[currentLevel] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+                if localLampsUpdate[currentLevel] == 0 and LocalLamp_LocalUpdate != 0x00000000:
                     writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                elif globalLampsUpdate[currentLevel] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
+                elif localLampsUpdate[currentLevel] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
                     writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+            elif LocalLamp_LocalUpdate != 0x9062007A:
+                writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
 
             # Kickout Prevention
             if kickoutofLevel != 0:
@@ -643,7 +648,7 @@ class ApeEscapeClient(BizHawkClient):
 
             inAir = [0x08, 0x09, 0x35, 0x36, 0x83, 0x84]
             swimming = [0x46, 0x47]
-            grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x80, 0x81]
+            grounded = [0x00, 0x01, 0x02, 0x05, 0x07]#, 0x80, 0x81] Removed them since you can fling you net and give you extra air
             limited_OxygenLevel = 0x64
 
             if waternetState == 0x00:
