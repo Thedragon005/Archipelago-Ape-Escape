@@ -650,7 +650,7 @@ def set_noij_rules(self):
         connect_regions(self, AERoom.W7L2Gong.value, AELocation.Coin41.value,
                         lambda state: HasNet(state, self))
         connect_regions(self, AERoom.W7L2Barrel.value, AELocation.Coin44.value,
-                        lambda state: HasFlyer(state, self))
+                        lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self) and HasFlyer(state, self))
         # 7-3
         connect_regions(self, AERoom.W7L3Outside.value, AELocation.Coin45.value,
                         lambda state: HasClub(state, self) or HasSling(state, self) or HasHoop(state, self) or HasFlyer(state, self) or HasPunch(state, self))

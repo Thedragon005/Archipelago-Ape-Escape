@@ -650,7 +650,7 @@ def set_glitchless_rules(self):
         connect_regions(self, AERoom.W7L2Gong.value, AELocation.Coin41.value,
                         lambda state: HasNet(state, self))
         connect_regions(self, AERoom.W7L2Barrel.value, AELocation.Coin44.value,
-                        lambda state: HasFlyer(state, self))
+                        lambda state: WSW_ThirdRoom(state, self) and WSW_FourthRoom(state, self) and HasFlyer(state, self))
         # 7-3
         connect_regions(self, AERoom.W7L3Outside.value, AELocation.Coin45.value,
                         lambda state: HasClub(state, self) or HasFlyer(state, self) or HasPunch(state, self))
@@ -919,7 +919,7 @@ def DI_Boulders(state, world):
 
 
 def WSW_ThirdRoom(state, world):
-    return (HasSling(state, world) and HasNet(state, world)) or HasFlyer(state, world)
+    return HasNet(state, world) and (HasSling(state, world) or HasFlyer(state, world))
 
 
 def WSW_FourthRoom(state, world):
