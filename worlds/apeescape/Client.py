@@ -533,19 +533,15 @@ class ApeEscapeClient(BizHawkClient):
             # Gadgets unlocked
             # Required apes (to match hundo)
             writes = [
+                (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
+                (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-
-            # Training Room Correction (Prevent players from accessing Gadget Training
-            if currentRoom == 90:
-                writes += [(RAM.trainingRoomProgressAddress, 0x00.to_bytes(4, "little"), "MainRAM")]
-            else:
-                writes += [(RAM.trainingRoomProgressAddress, 0xFF.to_bytes(4, "little"), "MainRAM")]
-
             if kickoutofLevel != 0:
                 writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+
             # Water Net client handling
             # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No Dive (Swim only)
 
