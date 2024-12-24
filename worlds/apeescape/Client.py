@@ -5,7 +5,6 @@ import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
 from Options import Toggle
 from NetUtils import ClientStatus
-from worlds.apeescape.RulesGlitchless import MM_Lobby_DoubleDoor
 from worlds.oot.Patches import get_override_table_bytes
 
 # TODO: REMOVE ASAP - Borrowed from MM2
@@ -408,20 +407,20 @@ class ApeEscapeClient(BizHawkClient):
 
             # Read Array
             readTuples = [
-                (RAM.hundoApesAddress, 1, "MainRAM"),  # Hundo monkey count, to write to required count
-                (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
-                (RAM.currentRoomIdAddress, 1, "MainRAM"),  # Current Room
-                (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
-                (RAM.currentLevelAddress, 1, "MainRAM"),  # Current Level
-                (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
-                (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
-                (RAM.totalCoinsAddress, 1, "MainRAM"),  # Coin Count
-                (RAM.heldGadgetAddress, 1, "MainRAM"),  # Currently held gadget
-                (RAM.triangleGadgetAddress, 1, "MainRAM"),  # Gadget equipped to each face button
+                (RAM.hundoApesAddress, 1, "MainRAM"), # Hundo monkey count, to write to required count
+                (RAM.unlockedGadgetsAddress, 1, "MainRAM"), # Gadget unlocked states
+                (RAM.currentRoomIdAddress, 1, "MainRAM"), # Current Room
+                (RAM.jakeVictoryAddress, 1, "MainRAM"), # Jake Races Victory state
+                (RAM.currentLevelAddress, 1, "MainRAM"), # Current Level
+                (self.currentCoinAddress - 2, 1, "MainRAM"), # Previous Coin State Room
+                (self.currentCoinAddress, 1, "MainRAM"), # Current New Coin State Room
+                (RAM.totalCoinsAddress, 1, "MainRAM"), # Coin Count
+                (RAM.heldGadgetAddress, 1, "MainRAM"), # Currently held gadget
+                (RAM.triangleGadgetAddress, 1, "MainRAM"), # Gadget equipped to each face button
                 (RAM.squareGadgetAddress, 1, "MainRAM"),
                 (RAM.circleGadgetAddress, 1, "MainRAM"),
                 (RAM.crossGadgetAddress, 1, "MainRAM"),
-                (RAM.gadgetUseStateAddress, 1, "MainRAM"),  # undocumented
+                (RAM.gadgetUseStateAddress, 1, "MainRAM"), # undocumented
                 (RAM.requiredApesAddress, 1, "MainRAM"),
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
@@ -436,10 +435,10 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
-                (RAM.selectedWorldAddress, 1, "MainRAM"),  # In level select, the current world
-                (RAM.selectedLevelAddress, 1, "MainRAM"),  # In level select, the current level
-                (RAM.enteredWorldAddress, 1, "MainRAM"),  # After selecting a level, the entered world
-                (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
+                (RAM.selectedWorldAddress, 1, "MainRAM"), # In level select, the current world
+                (RAM.selectedLevelAddress, 1, "MainRAM"), # In level select, the current level
+                (RAM.enteredWorldAddress, 1, "MainRAM"), # After selecting a level, the entered world
+                (RAM.enteredLevelAddress, 1, "MainRAM"), # After selecting a level, the entered level
                 (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
                 (RAM.CrC_Button_Pressed, 1, "MainRAM"),
                 (RAM.CrC_Door_Visual,1,"MainRAM"),
@@ -671,14 +670,17 @@ class ApeEscapeClient(BizHawkClient):
 
             # Write Array
 
+
             # Training Room, set to 0xFF to mark as complete
             # Gadgets unlocked
             # Required apes (to match hundo)
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
+                (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
+
             if MM_Jake_Defeated > 0:
                 writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
@@ -795,7 +797,6 @@ class ApeEscapeClient(BizHawkClient):
                                 print("B-2")
                                 #writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
                                 #writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
-
                         if MM_Lobby_DoorDetection == 0x00000000:
                             if MM_Lobby_DoubleDoor_Open == 0x00:
                                 print("C-1")
