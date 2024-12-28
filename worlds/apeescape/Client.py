@@ -84,7 +84,7 @@ class ApeEscapeClient(BizHawkClient):
         self.waternetState = 0
         self.watercatchState = 0
         self.waterHeight = 0
-        self.CrCDoor = 0
+        self.CrCButton = 0
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -124,9 +124,9 @@ class ApeEscapeClient(BizHawkClient):
                 return
             keys = dict(args["keys"])
             print(keys)
-            self.CrCDoor = keys.get(str(ctx.auth) + "_CrcButton", None)
-            if self.CrCDoor:
-                print("received door data from server : " + str(self.CrCDoor))
+            self.CrCButton = keys.get(str(ctx.auth) + "_CrcButton", None)
+            if self.CrCButton:
+                print("received door data from server : " + str(self.CrCButton))
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
@@ -645,7 +645,7 @@ class ApeEscapeClient(BizHawkClient):
             if currentRoom == 49:
 
                 if CrC_ButtonPressed == 0x01:
-                    if self.CrCDoor != 1:
+                    if self.CrCButton != 1:
                         await ctx.send_msgs([{
                             "cmd": "Set",
                             "key": str(ctx.player_names[ctx.slot]) + "_CrcButton",
@@ -665,13 +665,13 @@ class ApeEscapeClient(BizHawkClient):
 
             # Crumbling Castle door unlock check
             if currentRoom == 45:
-                if self.CrCDoor != 1:
+                if self.CrCButton != 1:
                     await ctx.send_msgs([{
                         "cmd": "Get",
                         "keys": [str(ctx.player_names[ctx.slot]) + "_CrcButton"]
                     }])
-                    print("Got data of '" + str(ctx.player_names[ctx.slot]) + "_CrcButton' : " + str(self.CrCDoor))
-                if self.CrCDoor == 1:
+                    print("Got data of '" + str(ctx.player_names[ctx.slot]) + "_CrcButton' : " + str(self.CrCButton))
+                if self.CrCButton == 1:
                     writes += [(RAM.CrC_Door_Visual, 0x00.to_bytes(1, "little"), "MainRAM")]
                     writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
 
