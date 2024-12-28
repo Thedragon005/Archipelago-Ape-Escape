@@ -1,6 +1,8 @@
 import sys
 import logging
-from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar
+from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any
+from typing import Any, ClassVar, Coroutine, Dict, List, Optional, Protocol, Tuple, cast
+import Utils
 
 from NetUtils import ClientStatus
 from worlds.oot.Patches import get_override_table_bytes
@@ -82,6 +84,7 @@ class ApeEscapeClient(BizHawkClient):
         self.waternetState = 0
         self.watercatchState = 0
         self.waterHeight = 0
+        self.CrCDoor = 0
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -112,6 +115,18 @@ class ApeEscapeClient(BizHawkClient):
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
+
+    def on_package(self,ctx: BizHawkClientContext, cmd: str, args: dict):
+
+        if cmd == "Retrieved":
+            if "keys" not in args:
+                print(f"invalid Retrieved packet to ApeEscapeClient: {args}")
+                return
+            keys = dict(args["keys"])
+            print(keys)
+            self.CrCDoor = keys.get(str(ctx.auth) + "_CrcButton", None)
+            if self.CrCDoor:
+                print("received door data from server : " + str(self.CrCDoor))
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
@@ -342,20 +357,20 @@ class ApeEscapeClient(BizHawkClient):
 
             # Read Array
             readTuples = [
-                (RAM.hundoApesAddress, 1, "MainRAM"), # Hundo monkey count, to write to required count
-                (RAM.unlockedGadgetsAddress, 1, "MainRAM"), # Gadget unlocked states
-                (RAM.currentRoomIdAddress, 1, "MainRAM"), # Current Room
-                (RAM.jakeVictoryAddress, 1, "MainRAM"), # Jake Races Victory state
-                (RAM.currentLevelAddress, 1, "MainRAM"), # Current Level
-                (self.currentCoinAddress - 2, 1, "MainRAM"), # Previous Coin State Room
-                (self.currentCoinAddress, 1, "MainRAM"), # Current New Coin State Room
-                (RAM.totalCoinsAddress, 1, "MainRAM"), # Coin Count
-                (RAM.heldGadgetAddress, 1, "MainRAM"), # Currently held gadget
-                (RAM.triangleGadgetAddress, 1, "MainRAM"), # Gadget equipped to each face button
+                (RAM.hundoApesAddress, 1, "MainRAM"),  # Hundo monkey count, to write to required count
+                (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
+                (RAM.currentRoomIdAddress, 1, "MainRAM"),  # Current Room
+                (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
+                (RAM.currentLevelAddress, 1, "MainRAM"),  # Current Level
+                (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
+                (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
+                (RAM.totalCoinsAddress, 1, "MainRAM"),  # Coin Count
+                (RAM.heldGadgetAddress, 1, "MainRAM"),  # Currently held gadget
+                (RAM.triangleGadgetAddress, 1, "MainRAM"),  # Gadget equipped to each face button
                 (RAM.squareGadgetAddress, 1, "MainRAM"),
                 (RAM.circleGadgetAddress, 1, "MainRAM"),
                 (RAM.crossGadgetAddress, 1, "MainRAM"),
-                (RAM.gadgetUseStateAddress, 1, "MainRAM"), # undocumented
+                (RAM.gadgetUseStateAddress, 1, "MainRAM"),  # undocumented
                 (RAM.requiredApesAddress, 1, "MainRAM"),
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.spikeStateAddress, 1, "MainRAM"),
@@ -364,17 +379,19 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
-                (RAM.swim_oxygenLevelAddress,2,"MainRAM"),
+                (RAM.swim_oxygenLevelAddress, 2, "MainRAM"),
                 (RAM.Spike_Y_PosAddress, 2, "MainRAM"),
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
-                (RAM.selectedWorldAddress, 1, "MainRAM"), # In level select, the current world
-                (RAM.selectedLevelAddress, 1, "MainRAM"), # In level select, the current level
-                (RAM.enteredWorldAddress, 1, "MainRAM"), # After selecting a level, the entered world
-                (RAM.enteredLevelAddress, 1, "MainRAM"), # After selecting a level, the entered level
+                (RAM.selectedWorldAddress, 1, "MainRAM"),  # In level select, the current world
+                (RAM.selectedLevelAddress, 1, "MainRAM"),  # In level select, the current level
+                (RAM.enteredWorldAddress, 1, "MainRAM"),  # After selecting a level, the entered world
+                (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
                 (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
+                (RAM.CrC_Button_Pressed, 1, "MainRAM"),
+                (RAM.CrC_Door_Visual,1,"MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -412,6 +429,8 @@ class ApeEscapeClient(BizHawkClient):
             status_currentWorld = int.from_bytes(reads[30], byteorder="little")
             status_currentLevel = int.from_bytes(reads[31], byteorder="little")
             isUnderwater = int.from_bytes(reads[32], byteorder="little")
+            CrC_ButtonPressed = int.from_bytes(reads[33], byteorder="little")
+            CrC_Door_Visual = int.from_bytes(reads[34], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -619,6 +638,44 @@ class ApeEscapeClient(BizHawkClient):
                 0x15 : SFLampState,  # Specter Factory
                 0x16 : TVTLobbyLampState  # TV Tower (Lobby)
             }
+            # Datastorage related:
+
+            # If CrC_ButtonRoom button is pressed,send the value "{Player}_CrcButton" to the server's Datastorage
+            # This behavior unlocks the door permanently after you press the button once.
+            if currentRoom == 49:
+
+                if CrC_ButtonPressed == 0x01:
+                    if self.CrCDoor != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Set",
+                            "key": str(ctx.player_names[ctx.slot]) + "_CrcButton",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": 1}]
+
+                        }])
+
+                        await ctx.send_msgs([{
+                            "cmd": "Get",
+                            "keys": [str(ctx.player_names[ctx.slot]) + "_CrcButton"]
+                        }])
+                        print("Set data of '" + str(ctx.player_names[ctx.slot]) + "_CrcButton" + "' set to 1")
+                else:
+                    print("Waiting on button press")
+
+            # Crumbling Castle door unlock check
+            if currentRoom == 45:
+                if self.CrCDoor != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Get",
+                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrcButton"]
+                    }])
+                    print("Got data of '" + str(ctx.player_names[ctx.slot]) + "_CrcButton' : " + str(self.CrCDoor))
+                if self.CrCDoor == 1:
+                    writes += [(RAM.CrC_Door_Visual, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+
             # Trigger Monkey Lamps depending on Lamp states
             if (currentLevel in globalLampsUpdate):
                 if globalLampsUpdate[currentLevel] == 0 and GlobalLamp_LocalUpdate != 0x00000000:

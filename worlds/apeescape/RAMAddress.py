@@ -1076,6 +1076,12 @@ class RAM:
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
 
+
+    #CrC_Button_Visual = 0x0C0778 # 16 bytes : Activated = BCEA1680D4EA168000EC1680F8EA1680 , Disabled = 08E5168020E5168048E6168040E51680
+    CrC_Button_Pressed = 0x173242 # 1 byte : While in room 49 -> Pressed = 0x01, Unpressed = 0x00 -> Send event object
+    CrC_Door_Visual = 0x0C05AE  # 1 byte : Open = 0x00 , Closed = 0x16
+    #Set TR4_TransitionEnabled to 0x00 to permit access to the transition, 0x03 to deny transition
+
     tempCB_LampAddress = 0x0DFBE4
     tempDI_LampAddress = 0x0DFBE5
     tempCrC_LampAddress = 0x0DFBE6
@@ -1123,6 +1129,7 @@ class RAM:
     TR3_DoorIDAddress = 0x15432C
     TargetRoomID4Address = 0x154308
     TR4_DoorIDAddress = 0x154304
+    TR4_TransitionEnabled = 0x1542BC # For CrC_Boss_Door -> Blocked value : 0x03, Opened Value : 0x00
     TargetRoomID5Address = 0x1542E0
     TR5_DoorIDAddress = 0x1542DC
     TargetRoomID6Address = 0x1542B8
