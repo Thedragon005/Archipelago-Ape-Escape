@@ -85,6 +85,9 @@ class ApeEscapeClient(BizHawkClient):
         self.watercatchState = 0
         self.waterHeight = 0
         self.CrCButton = 0
+        self.MM_Painting_Button = 0
+        self.MM_MonkeyHead_Button = 0
+        self.TVT_Lobby_Button = 0
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -125,8 +128,9 @@ class ApeEscapeClient(BizHawkClient):
             keys = dict(args["keys"])
             print(keys)
             self.CrCButton = keys.get(str(ctx.auth) + "_CrcButton", None)
-            if self.CrCButton:
-                print("received door data from server : " + str(self.CrCButton))
+            self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
+            self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
+            self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
@@ -391,7 +395,13 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
                 (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
                 (RAM.CrC_Button_Pressed, 1, "MainRAM"),
-                (RAM.CrC_Door_Visual,1,"MainRAM")
+                (RAM.CrC_Door_Visual,1,"MainRAM"),
+                (RAM.TVT_Lobby_Button, 1, "MainRAM"),
+                (RAM.TVT_Lobby_Water_HitBox, 1, "MainRAM"),
+                (RAM.MM_MonkeyHead_Button, 1, "MainRAM"),
+                (RAM.MM_MonkeyHead_Door, 1, "MainRAM"),
+                (RAM.MM_Painting_Button, 1, "MainRAM"),
+                (RAM.MM_Painting_Visual, 1, "MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -431,6 +441,12 @@ class ApeEscapeClient(BizHawkClient):
             isUnderwater = int.from_bytes(reads[32], byteorder="little")
             CrC_ButtonPressed = int.from_bytes(reads[33], byteorder="little")
             CrC_Door_Visual = int.from_bytes(reads[34], byteorder="little")
+            TVT_Lobby_ButtonPressed = int.from_bytes(reads[35], byteorder="little")
+            TVT_Lobby_Water_Hitbox = int.from_bytes(reads[36], byteorder="little")
+            MM_MonkeyHead_ButtonPressed = int.from_bytes(reads[37], byteorder="little")
+            MM_MonkeyHead_Door = int.from_bytes(reads[38], byteorder="little")
+            MM_Painting_ButtonPressed = int.from_bytes(reads[39], byteorder="little")
+            MM_Painting_Visual = int.from_bytes(reads[40], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -643,7 +659,6 @@ class ApeEscapeClient(BizHawkClient):
             # If CrC_ButtonRoom button is pressed,send the value "{Player}_CrcButton" to the server's Datastorage
             # This behavior unlocks the door permanently after you press the button once.
             if currentRoom == 49:
-
                 if CrC_ButtonPressed == 0x01:
                     if self.CrCButton != 1:
                         await ctx.send_msgs([{
@@ -654,27 +669,113 @@ class ApeEscapeClient(BizHawkClient):
                             "operations": [{"operation": "replace", "value": 1}]
 
                         }])
+            if currentRoom == 65:
+                if TVT_Lobby_ButtonPressed == 0x01:
+                    if self.TVT_Lobby_Button != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Set",
+                            "key": str(ctx.player_names[ctx.slot]) + "_TVT_Lobby_Button",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": 1}]
 
+                        }])
+
+            # Detection of Interior Climb button press (Monkey Head Room)
+            if currentRoom == 84:
+                if MM_MonkeyHead_ButtonPressed == 0x01:
+                    if self.MM_MonkeyHead_Button != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Set",
+                            "key": str(ctx.player_names[ctx.slot]) + "_MM_MonkeyHead_Button",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": 1}]
+
+                        }])
+            # Detection of Painting button press (Outside Climb)
+            if currentRoom == 82:
+                if MM_Painting_ButtonPressed == 0x01:
+                    if self.MM_Painting_Button != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Set",
+                            "key": str(ctx.player_names[ctx.slot]) + "_MM_Painting_Button",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": 1}]
+
+                        }])
+
+            # Crumbling Castle door unlock check
+            if currentRoom == 45:
+                if CrC_Door_Visual != 0x00:
+                    if self.CrCButton != 1:
                         await ctx.send_msgs([{
                             "cmd": "Get",
                             "keys": [str(ctx.player_names[ctx.slot]) + "_CrcButton"]
                         }])
-                        print("Set data of '" + str(ctx.player_names[ctx.slot]) + "_CrcButton" + "' set to 1")
-                else:
-                    print("Waiting on button press")
+                    if self.CrCButton == 1:
+                        writes += [(RAM.CrC_Door_Visual, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
 
-            # Crumbling Castle door unlock check
-            if currentRoom == 45:
-                if self.CrCButton != 1:
-                    await ctx.send_msgs([{
-                        "cmd": "Get",
-                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrcButton"]
-                    }])
-                    print("Got data of '" + str(ctx.player_names[ctx.slot]) + "_CrcButton' : " + str(self.CrCButton))
-                if self.CrCButton == 1:
-                    writes += [(RAM.CrC_Door_Visual, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
+            # TV Tower water draining check
+            if currentRoom == 65:
+                if TVT_Lobby_Water_Hitbox != 0x00:
+                    if self.TVT_Lobby_Button != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Get",
+                            "keys": [str(ctx.player_names[ctx.slot]) + "_TVT_Lobby_Button"]
+                        }])
+                    if self.TVT_Lobby_Button == 1:
+                        writes += [(RAM.TVT_Lobby_Water_HitBox, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_DoorHitbox, 0x80.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_DoorVisualP1, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_DoorVisualP2, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_BackColor1, 0xAC78.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_BackColor2, 0xAC90.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_BackColor3, 0xAE14.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_BackColor4, 0xAC9C.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_BackColor5, 0xB1B8.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_ColorS1P1, 0xB1D0.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_ColorS1P2, 0xB2EC.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_TunnelColorS1P1, 0xB1E4.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_TunnelColorS1P2, 0xB9A0.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_TunnelColorS2P1, 0xB9B8.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_TunnelColorS2P2, 0xBB44.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_Water_TunnelColorS2P3, 0xB9C4.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_WaterVisual1, 0xF70C.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_WaterVisual2, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_WaterVisual3, 0xF70C.to_bytes(2, "little"), "MainRAM")]
+                        writes += [(RAM.TVT_Lobby_WaterVisual4, 0x00.to_bytes(1, "little"), "MainRAM")]
+            # Monkey Madness Monkey Head door unlock check
+            if currentRoom == 80:
+                if MM_MonkeyHead_Door != 0x01:
+                    if self.MM_MonkeyHead_Button != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Get",
+                            "keys": [str(ctx.player_names[ctx.slot]) + "_MM_MonkeyHead_Button"]
+                        }])
+                    if self.MM_MonkeyHead_Button == 1:
+                        writes += [(RAM.MM_MonkeyHead_Door, 0x01.to_bytes(1, "little"), "MainRAM")]
 
+                # Monkey Madness Painting door unlock check
+                if MM_Painting_Visual != 0x06:
+                    if self.MM_Painting_Button != 1:
+                        await ctx.send_msgs([{
+                            "cmd": "Get",
+                            "keys": [str(ctx.player_names[ctx.slot]) + "_MM_Painting_Button"]
+                        }])
+                    if self.MM_Painting_Button == 1:
+                        writes += [(RAM.MM_Painting_Visual, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_HitBox, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_VisualStair1, 0x03.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_VisualStair2, 0x03.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_VisualStair3, 0x03.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_HitBoxStair1, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_HitBoxStair2, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_HitBoxStair3, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_VisualFence, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Painting_HitBoxFence, 0x80.to_bytes(1, "little"), "MainRAM")]
 
             # Trigger Monkey Lamps depending on Lamp states
             if (currentLevel in globalLampsUpdate):

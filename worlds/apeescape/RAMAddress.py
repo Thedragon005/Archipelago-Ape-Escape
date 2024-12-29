@@ -1082,6 +1082,45 @@ class RAM:
     CrC_Door_Visual = 0x0C05AE  # 1 byte : Open = 0x00 , Closed = 0x16
     #Set TR4_TransitionEnabled to 0x00 to permit access to the transition, 0x03 to deny transition
 
+    MM_Painting_Button = 0x17EACE # Active 0x01 ROOM = 82
+    MM_Painting_Visual = 0x0C1569 # Active Value = 0x06
+    MM_Painting_HitBox = 0x18CF31  # Active Value = 0x06
+    MM_Painting_VisualStair1 = 0x0C0EAE # Active Value = 0x03
+    MM_Painting_VisualStair2 = 0x0C0ECE # Active Value = 0x03
+    MM_Painting_VisualStair3 = 0x0C0EEE # Active Value = 0x03
+    MM_Painting_HitBoxStair1 = 0x18CEA1 # Active Value = 0x00
+    MM_Painting_HitBoxStair2 = 0x18CED9 # Active Value = 0x00
+    MM_Painting_HitBoxStair3 = 0x18CF11 # Active Value = 0x00
+    MM_Painting_VisualFence = 0x0C0F4E # Active Value = 0x00
+    MM_Painting_HitBoxFence = 0x18CF81 # Active Value = 0x80
+
+    MM_MonkeyHead_Button = 0x174ECE # Active 0x01 ROOM = 84
+    MM_MonkeyHead_Door = 0x0AFA22 # Lasers = 0x00 NO LASERS = 0x01
+
+    TVT_Lobby_Button = 0x1710E6 # Active 0x01 ROOM = 65
+
+    TVT_Lobby_Water_HitBox = 0x170EFF # Active Value = 0
+    TVT_Lobby_Water_DoorHitbox = 0x170E5D # Active Value = 80
+    TVT_Lobby_Water_DoorVisualP1 = 0x0C04CF # Active Value = 0
+    TVT_Lobby_Water_DoorVisualP2 = 0x0C04EF # Active Value = 0
+    TVT_Lobby_Water_BackColor1 = 0x0C0698 # Active Value = AC78
+    TVT_Lobby_Water_BackColor2 = 0x0C069C # Active Value = AC90
+    TVT_Lobby_Water_BackColor3 = 0x0C06A0 # Active Value = AE14
+    TVT_Lobby_Water_BackColor4 = 0x0C06A4 # Active Value = AC9C
+    TVT_Lobby_Water_BackColor5 = 0x0C06B8 # Active Value = B1B8
+    TVT_Lobby_Water_ColorS1P1 = 0x0C06BC # Active Value = B1D0
+    TVT_Lobby_Water_ColorS1P2 = 0x0C06C0 # Active Value = B2EC
+    TVT_Lobby_Water_TunnelColorS1P1 = 0x0C06C4 # Active Value = B1E4
+    TVT_Lobby_Water_TunnelColorS1P2 = 0x0C07B8 # Active Value = B9A0
+    TVT_Lobby_Water_TunnelColorS2P1 = 0x0C07BC # Active Value = B9B8
+    TVT_Lobby_Water_TunnelColorS2P2 = 0x0C07C0 # Active Value = BB44
+    TVT_Lobby_Water_TunnelColorS2P3 = 0x0C07C4 # Active Value = B9C4
+    TVT_Lobby_WaterVisual1 = 0x0C07EA # Active Value = F70C
+    TVT_Lobby_WaterVisual2 = 0x0C07EF # Active Value = 0
+    TVT_Lobby_WaterVisual3 = 0x0C080A # Active Value = F70C
+    TVT_Lobby_WaterVisual4 = 0x0C080F # Active Value = 0
+
+
     tempCB_LampAddress = 0x0DFBE4
     tempDI_LampAddress = 0x0DFBE5
     tempCrC_LampAddress = 0x0DFBE6
