@@ -1055,7 +1055,17 @@ class RAM:
     localApeStartAddress = 0x0DFE00
     startingCoinAddress = 0x0DFB70
     endingCoinAddress = 0x0DFBD2 # Not used,could be used for a loop if current coin system is buggy
+    temp_startingCoinAddress = 0x0DFBF0 # Copy all 64 bytes of coin here while entering Level Select
+    blank_coinTable = 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
     totalCoinsAddress = 0x0F44BA
+
+    SA_CompletedAddress = 0x0DFDD0 # Completed = 0x19, not completed = 00
+    Temp_SA_CompletedAddress = 0x0DFC56
+    GA_CompletedAddress = 0x0DFDD1 # Completed = 0x19, not completed = 00
+    Temp_GA_CompletedAddress = 0x0DFC57
+
+    levelselectFonts = 0x139CF6 # 0x36 = Classic One  0x26 = Current One
+    time_attack_Times = 0x0DFD44
 
     # Custom write/read addresses
     tempLastReceivedArchipelagoID = 0x0DFBD8
