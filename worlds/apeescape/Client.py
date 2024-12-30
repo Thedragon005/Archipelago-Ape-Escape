@@ -401,7 +401,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.MM_MonkeyHead_Button, 1, "MainRAM"),
                 (RAM.MM_MonkeyHead_Door, 1, "MainRAM"),
                 (RAM.MM_Painting_Button, 1, "MainRAM"),
-                (RAM.MM_Painting_Visual, 1, "MainRAM")
+                (RAM.MM_Painting_Visual, 1, "MainRAM"),
+
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -447,6 +448,25 @@ class ApeEscapeClient(BizHawkClient):
             MM_MonkeyHead_Door = int.from_bytes(reads[38], byteorder="little")
             MM_Painting_ButtonPressed = int.from_bytes(reads[39], byteorder="little")
             MM_Painting_Visual = int.from_bytes(reads[40], byteorder="little")
+
+
+            CoinReadsTupples = [
+                (RAM.startingCoinAddress,100,"MainRAM"),
+                (RAM.temp_startingCoinAddress, 100, "MainRAM"),
+                (RAM.SA_CompletedAddress, 1, "MainRAM"),
+                (RAM.Temp_SA_CompletedAddress, 1, "MainRAM"),
+                (RAM.GA_CompletedAddress, 1, "MainRAM"),
+                (RAM.Temp_GA_CompletedAddress, 1, "MainRAM")
+            ]
+
+            CoinReads = await bizhawk.read(ctx.bizhawk_ctx, CoinReadsTupples)
+
+            CoinTable = int.from_bytes(CoinReads[0], byteorder="little")
+            TempCoinTable = int.from_bytes(CoinReads[1], byteorder="little")
+            SA_Completed = int.from_bytes(CoinReads[2], byteorder="little")
+            Temp_SA_Completed = int.from_bytes(CoinReads[3], byteorder="little")
+            GA_Completed = int.from_bytes(CoinReads[4], byteorder="little")
+            Temp_GA_Completed = int.from_bytes(CoinReads[5], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -594,18 +614,50 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in [self.offset + 206])
                 }])
 
-            # If the previous address is empty it means you are too far, go back once
-            # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
-            if (previousCoinStateRoom == 0xFF or previousCoinStateRoom == 0x00) and (self.currentCoinAddress > RAM.startingCoinAddress):
-                self.currentCoinAddress -= 2
-            # Check for new coins from current coin address
-            if currentCoinStateRoom != 0xFF and currentCoinStateRoom != 0x00:
-                await ctx.send_msgs([{
-                    "cmd": "LocationChecks",
-                    "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
-                }])
-                self.currentCoinAddress += 2
+            # Write Array
 
+            # Training Room, set to 0xFF to mark as complete
+            # Gadgets unlocked
+            # Required apes (to match hundo)
+            writes = [
+                (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
+                (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
+                (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
+            ]
+
+            # For coin tracking to be ignored while in Level Select
+
+            if RAM.gameState["LevelSelect"] == gameState:
+                if CoinTable != RAM.blank_coinTable and TempCoinTable == RAM.blank_coinTable:
+                    writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+                    writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
+                if SA_Completed != 0x00 and Temp_SA_Completed == 0xFF:
+                    writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.Temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.Temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
+
+            else:
+                if CoinTable == RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable:
+                    writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
+                    writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+
+                if SA_Completed == 0x00 and Temp_SA_Completed != 0xFF:
+                    writes += [(RAM.SA_CompletedAddress, Temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.GA_CompletedAddress, Temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.Temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.Temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                # If the previous address is empty it means you are too far, go back once
+                # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
+                if (previousCoinStateRoom == 0xFF or previousCoinStateRoom == 0x00) and (self.currentCoinAddress > RAM.startingCoinAddress):
+                    self.currentCoinAddress -= 2
+                # Check for new coins from current coin address
+                if currentCoinStateRoom != 0xFF and currentCoinStateRoom != 0x00:
+                    await ctx.send_msgs([{
+                        "cmd": "LocationChecks",
+                        "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
+                    }])
+                    self.currentCoinAddress += 2
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
@@ -631,29 +683,6 @@ class ApeEscapeClient(BizHawkClient):
                 }])
 
 
-            # Write Array
-
-            # Training Room, set to 0xFF to mark as complete
-            # Gadgets unlocked
-            # Required apes (to match hundo)
-            writes = [
-                (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-                (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
-                (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
-            ]
-
-            localLampsUpdate = {
-                0x08: CBLampState,  # Crabby Beach
-                0x14: CPLampState,  # City Park (Main)
-                0x16: TVTTankLampState,  # TV Tower (Tank Room)
-                0x1D: MMLampState  # Monkey Madness Castle Outside
-            }
-            globalLampsUpdate = {
-                0x0A : DILampState,  # Dexter's Island Global
-                0x11 : CrCLampState,  # Crumbling Castle (Castle Main)
-                0x15 : SFLampState,  # Specter Factory
-                0x16 : TVTLobbyLampState  # TV Tower (Lobby)
-            }
             # Datastorage related:
 
             # If CrC_ButtonRoom button is pressed,send the value "{Player}_CrcButton" to the server's Datastorage
@@ -776,6 +805,20 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.MM_Painting_HitBoxStair3, 0x06.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.MM_Painting_VisualFence, 0x00.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.MM_Painting_HitBoxFence, 0x80.to_bytes(1, "little"), "MainRAM")]
+
+            # Lamp states list
+            localLampsUpdate = {
+                0x08: CBLampState,  # Crabby Beach
+                0x14: CPLampState,  # City Park (Main)
+                0x16: TVTTankLampState,  # TV Tower (Tank Room)
+                0x1D: MMLampState  # Monkey Madness Castle Outside
+            }
+            globalLampsUpdate = {
+                0x0A : DILampState,  # Dexter's Island Global
+                0x11 : CrCLampState,  # Crumbling Castle (Castle Main)
+                0x15 : SFLampState,  # Specter Factory
+                0x16 : TVTLobbyLampState  # TV Tower (Lobby)
+            }
 
             # Trigger Monkey Lamps depending on Lamp states
             if (currentLevel in globalLampsUpdate):
