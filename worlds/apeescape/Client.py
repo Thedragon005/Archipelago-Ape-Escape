@@ -1,9 +1,9 @@
 import sys
 import logging
-from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any
-from typing import Any, ClassVar, Coroutine, Dict, List, Optional, Protocol, Tuple, cast
+import time
 import Utils
-
+from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
+from Options import Toggle
 from NetUtils import ClientStatus
 from worlds.oot.Patches import get_override_table_bytes
 
@@ -28,7 +28,6 @@ if "worlds._bizhawk" not in sys.modules:
 
 import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
-
 
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
@@ -83,6 +82,12 @@ class ApeEscapeClient(BizHawkClient):
         self.inWater = 0
         self.waternetState = 0
         self.watercatchState = 0
+        self.death_counter = None
+        self.previous_death_link = 0
+        self.pending_death_link: bool = False
+        # default to true, as we don't want to send a deathlink until playing
+        self.sending_death_link: bool = True
+        self.ignore_next_death_link = False
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -110,6 +115,14 @@ class ApeEscapeClient(BizHawkClient):
         self.initialize_client()
 
         return True
+
+    def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
+        if cmd == "Bounced":
+            if "tags" in args:
+                assert ctx.slot is not None
+                if "DeathLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
+                    self.on_deathlink(ctx)
+
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
@@ -347,6 +360,8 @@ class ApeEscapeClient(BizHawkClient):
             status_currentLevel = int.from_bytes(reads[30], byteorder="little")
             isUnderwater = int.from_bytes(reads[31], byteorder="little")
 
+            DL_Reads = [cookies,gameRunning,gameState]
+            await self.handle_death_link(ctx,DL_Reads)
 
             CoinReadsTupples = [
                 (RAM.startingCoinAddress,100,"MainRAM"),
@@ -764,6 +779,37 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
+    async def handle_death_link(self, ctx: "BizHawkClientContext",DL_Reads) -> None:
+        """
+        Checks whether the player has died while connected and sends a death link if so.
+        """
+        cookies = DL_Reads[0]
+        gameRunning = DL_Reads[1]
+        gamestate = DL_Reads[2]
+        if ctx.slot_data["death_link"] == Toggle.option_true:
+            if "DeathLink" not in ctx.tags:
+                await ctx.update_death_link(True)
+                self.previous_death_link = ctx.last_death_link
+            if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
+                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
+                    await self.send_deathlink(ctx)
+                elif cookies != 0x00:
+                    self.sending_death_link = False
+            if self.pending_death_link:
+                writesDL = []
+                writesDL += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                self.pending_death_link = False
+                self.sending_death_link = True
+                await bizhawk.write(ctx.bizhawk_ctx,writesDL)
+
+    async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
+        self.sending_death_link = True
+        ctx.last_death_link = time.time()
+        await ctx.send_death(ctx.player_names[ctx.slot] + " says: `Oooh noooo!`")
+
+    def on_deathlink(self, ctx: "BizHawkClientContext") -> None:
+        ctx.last_death_link = time.time()
+        self.pending_death_link = True
 
     def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, reqkeys):
 

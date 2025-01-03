@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions
+from Options import Choice, DeathLink, PerGameCommonOptions
 
 
 class GoalOption(Choice):
@@ -203,3 +203,4 @@ class ApeEscapeOptions(PerGameCommonOptions):
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
+    death_link: DeathLink
