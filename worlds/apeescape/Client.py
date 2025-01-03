@@ -595,18 +595,6 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in coins)
                 }])
 
-            # Write Array
-
-            # Training Room, set to 0xFF to mark as complete
-            # Gadgets unlocked
-            # Required apes (to match hundo)
-            writes = [
-                (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-                (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
-                (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
-                (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
-            ]
-
             if kickoutofLevel != 0:
                 writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
 
@@ -833,7 +821,7 @@ class ApeEscapeClient(BizHawkClient):
         if gameState == RAM.gameState["LevelSelect"] or debug:
             for x in range(len(levels_list)):
                 if int.from_bytes(monkeylevelCounts[x], byteorder="little") < hundoMonkeysCount[levels_list[x]]:
-                    print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
+                    #print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed
