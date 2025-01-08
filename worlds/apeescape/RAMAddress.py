@@ -911,7 +911,6 @@ class RAM:
         "WaterNet": 0x400,
         "ProgWaterNet": 0x401,
         "WaterCatch": 0x402,
-<<<<<<< Updated upstream
         "CB_Lamp": 0x150,
         "DI_Lamp": 0x151,
         "CrC_Lamp": 0x152,
@@ -920,9 +919,7 @@ class RAM:
         "TVT_Lobby_Lamp": 0x155,
         "TVT_Tank_Lamp": 0x156,
         "MM_Lamp": 0x157,
-=======
         "MMLobbyDoubleDoor": 0x403,
->>>>>>> Stashed changes
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -1056,8 +1053,6 @@ class RAM:
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
 
-<<<<<<< Updated upstream
-=======
     MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
     MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
     MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
@@ -1073,7 +1068,6 @@ class RAM:
     MM_Lobby_DoorDetection = 0x0963BC # 4b : Default to 2442FDD8.00000000 Prevent the door detection code from kicking in
 
 
->>>>>>> Stashed changes
     gameRunningAddress = 0x0B01C0
 
     newGameAddress = 0x137734

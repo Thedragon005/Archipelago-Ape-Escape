@@ -366,15 +366,10 @@ location_table = {
     AELocation.Mailbox63.value: 463,
 
     # Bosses
-<<<<<<< Updated upstream
-    AELocation.W7L3Boss73.value: 500,
-    AELocation.W8L3Boss83.value: 501,
-=======
     AELocation.Boss73.value: 500,
     AELocation.Boss83.value: 501,
     AELocation.W9L1Professor.value: 502,
     AELocation.W9L1Jake.value: 503,
->>>>>>> Stashed changes
 }
 
 #Where RAM.levels[address] : Total monkeys count

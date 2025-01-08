@@ -140,7 +140,6 @@ class ApeEscapeWorld(World):
         waternet = self.create_item(AEItem.WaterNet.value)
         # progwaternet = self.create_item(AEItem.ProgWaterNet.value)
         watercatch = self.create_item(AEItem.WaterCatch.value)
-<<<<<<< Updated upstream
 
         CB_Lamp = self.create_item(AEItem.CB_Lamp.value)
         DI_Lamp = self.create_item(AEItem.DI_Lamp.value)
@@ -150,14 +149,10 @@ class ApeEscapeWorld(World):
         TVT_Lobby_Lamp = self.create_item(AEItem.TVT_Lobby_Lamp.value)
         TVT_Tank_Lamp = self.create_item(AEItem.TVT_Tank_Lamp.value)
         MM_Lamp = self.create_item(AEItem.MM_Lamp.value)
-
-        # self.multiworld.push_precollected(waternet)
-
-=======
         MMLobbyDoubleDoor = self.create_item(AEItem.MMLobbyDoubleDoor.value)
-        #self.multiworld.push_precollected(waternet)
+
         self.itempool += [MMLobbyDoubleDoor]
->>>>>>> Stashed changes
+
         # Create enough keys to access every level, depending on the key option
         if self.options.unlocksperkey == 0x00:
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]

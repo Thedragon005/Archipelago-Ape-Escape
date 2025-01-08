@@ -161,7 +161,6 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.canWaterCatchAddress, 1, "MainRAM"),
                 (RAM.tempWaterNetAddress, 1, "MainRAM"),
                 (RAM.tempWaterCatchAddress, 1, "MainRAM"),
-<<<<<<< Updated upstream
                 (RAM.tempCB_LampAddress, 1, "MainRAM"),
                 (RAM.tempDI_LampAddress, 1, "MainRAM"),
                 (RAM.tempCrC_LampAddress, 1, "MainRAM"),
@@ -172,8 +171,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.tempMM_LampAddress, 1, "MainRAM"),
                 (RAM.localLamp_localUpdate, 4, "MainRAM"),
                 (RAM.globalLamp_localUpdate, 4, "MainRAM"),
-                (RAM.globalLamp_globalUpdate, 4, "MainRAM")
-=======
+                (RAM.globalLamp_globalUpdate, 4, "MainRAM"),
                 (RAM.temp_MMLobbyDoorAddress, 1, "MainRAM"),
                 (RAM.MM_Lobby_DoubleDoor_OpenAddress, 1, "MainRAM"),
 
@@ -186,7 +184,6 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.temp_MM_Nathalie_RescuedAddress, 1, "MainRAM"),
                 (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
 
->>>>>>> Stashed changes
             ]
             itemsWrites = []
             Menuwrites = []
@@ -209,7 +206,6 @@ class ApeEscapeClient(BizHawkClient):
             canWaterCatch = int.from_bytes(earlyReads[13], byteorder="little")
             WaterNetStateFromServer = int.from_bytes(earlyReads[14], byteorder="little")
             WaterCatchStateFromServer = int.from_bytes(earlyReads[15], byteorder="little")
-<<<<<<< Updated upstream
             CBLampStateFromServer = int.from_bytes(earlyReads[16], byteorder="little")
             DILampStateFromServer = int.from_bytes(earlyReads[17], byteorder="little")
             CrCLampStateFromServer = int.from_bytes(earlyReads[18], byteorder="little")
@@ -221,19 +217,17 @@ class ApeEscapeClient(BizHawkClient):
             LocalLamp_LocalUpdate = int.from_bytes(earlyReads[24], byteorder="little")
             GlobalLamp_LocalUpdate = int.from_bytes(earlyReads[25], byteorder="little")
             GlobalLamp_GlobalUpdate = int.from_bytes(earlyReads[26], byteorder="little")
-=======
-            MM_Lobby_DoubleDoor = int.from_bytes(earlyReads[16], byteorder="little")
-            MM_Lobby_DoubleDoor_Open = int.from_bytes(earlyReads[17], byteorder="little")
-            MM_Jake_DefeatedAddress = int.from_bytes(earlyReads[18], byteorder="little")
-            MM_Professor_RescuedAddress = int.from_bytes(earlyReads[19], byteorder="little")
-            MM_Nathalie_RescuedAddress = int.from_bytes(earlyReads[20], byteorder="little")
+            MM_Lobby_DoubleDoor = int.from_bytes(earlyReads[27], byteorder="little")
+            MM_Lobby_DoubleDoor_Open = int.from_bytes(earlyReads[28], byteorder="little")
+            MM_Jake_DefeatedAddress = int.from_bytes(earlyReads[29], byteorder="little")
+            MM_Professor_RescuedAddress = int.from_bytes(earlyReads[30], byteorder="little")
+            MM_Nathalie_RescuedAddress = int.from_bytes(earlyReads[31], byteorder="little")
 
-            MM_Jake_Defeated = int.from_bytes(earlyReads[21], byteorder="little")
-            MM_Professor_Rescued = int.from_bytes(earlyReads[22], byteorder="little")
-            MM_Nathalie_Rescued = int.from_bytes(earlyReads[23], byteorder="little")
-            MM_Lobby_DoorDetection = int.from_bytes(earlyReads[24], byteorder="little")
+            MM_Jake_Defeated = int.from_bytes(earlyReads[32], byteorder="little")
+            MM_Professor_Rescued = int.from_bytes(earlyReads[33], byteorder="little")
+            MM_Nathalie_Rescued = int.from_bytes(earlyReads[34], byteorder="little")
+            MM_Lobby_DoorDetection = int.from_bytes(earlyReads[35], byteorder="little")
 
->>>>>>> Stashed changes
             #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
@@ -391,7 +385,6 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterNetAddress, waternetState.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterCatchAddress, watercatchState.to_bytes(1, "little"), "MainRAM")]
-<<<<<<< Updated upstream
                 itemsWrites += [(RAM.tempCB_LampAddress, CBLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempDI_LampAddress, DILampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempCrC_LampAddress, CrCLampState.to_bytes(1, "little"), "MainRAM")]
@@ -400,9 +393,7 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempTVT_Lobby_LampAddress, TVTLobbyLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempTVT_Tank_LampAddress, TVTTankLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempMM_LampAddress, MMLampState.to_bytes(1, "little"), "MainRAM")]
-=======
                 itemsWrites += [(RAM.temp_MMLobbyDoorAddress, MM_Lobby_DoubleDoor.to_bytes(1, "little"), "MainRAM")]
->>>>>>> Stashed changes
 
             self.worldkeycount = keyCountFromServer
 
