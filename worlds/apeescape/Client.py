@@ -5,6 +5,7 @@ from typing import Any, ClassVar, Coroutine, Dict, List, Optional, Protocol, Tup
 import Utils
 
 from NetUtils import ClientStatus
+from worlds.apeescape.RulesGlitchless import MM_Lobby_DoubleDoor
 from worlds.oot.Patches import get_override_table_bytes
 
 # TODO: REMOVE ASAP - Borrowed from MM2
@@ -160,6 +161,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.canWaterCatchAddress, 1, "MainRAM"),
                 (RAM.tempWaterNetAddress, 1, "MainRAM"),
                 (RAM.tempWaterCatchAddress, 1, "MainRAM"),
+<<<<<<< Updated upstream
                 (RAM.tempCB_LampAddress, 1, "MainRAM"),
                 (RAM.tempDI_LampAddress, 1, "MainRAM"),
                 (RAM.tempCrC_LampAddress, 1, "MainRAM"),
@@ -171,6 +173,20 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.localLamp_localUpdate, 4, "MainRAM"),
                 (RAM.globalLamp_localUpdate, 4, "MainRAM"),
                 (RAM.globalLamp_globalUpdate, 4, "MainRAM")
+=======
+                (RAM.temp_MMLobbyDoorAddress, 1, "MainRAM"),
+                (RAM.MM_Lobby_DoubleDoor_OpenAddress, 1, "MainRAM"),
+
+                (RAM.MM_Jake_DefeatedAddress,1, "MainRAM"),
+                (RAM.MM_Professor_RescuedAddress, 1, "MainRAM"),
+                (RAM.MM_Nathalie_RescuedAddress, 1, "MainRAM"),
+
+                (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
+                (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
+                (RAM.temp_MM_Nathalie_RescuedAddress, 1, "MainRAM"),
+                (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
+
+>>>>>>> Stashed changes
             ]
             itemsWrites = []
             Menuwrites = []
@@ -193,6 +209,7 @@ class ApeEscapeClient(BizHawkClient):
             canWaterCatch = int.from_bytes(earlyReads[13], byteorder="little")
             WaterNetStateFromServer = int.from_bytes(earlyReads[14], byteorder="little")
             WaterCatchStateFromServer = int.from_bytes(earlyReads[15], byteorder="little")
+<<<<<<< Updated upstream
             CBLampStateFromServer = int.from_bytes(earlyReads[16], byteorder="little")
             DILampStateFromServer = int.from_bytes(earlyReads[17], byteorder="little")
             CrCLampStateFromServer = int.from_bytes(earlyReads[18], byteorder="little")
@@ -204,6 +221,19 @@ class ApeEscapeClient(BizHawkClient):
             LocalLamp_LocalUpdate = int.from_bytes(earlyReads[24], byteorder="little")
             GlobalLamp_LocalUpdate = int.from_bytes(earlyReads[25], byteorder="little")
             GlobalLamp_GlobalUpdate = int.from_bytes(earlyReads[26], byteorder="little")
+=======
+            MM_Lobby_DoubleDoor = int.from_bytes(earlyReads[16], byteorder="little")
+            MM_Lobby_DoubleDoor_Open = int.from_bytes(earlyReads[17], byteorder="little")
+            MM_Jake_DefeatedAddress = int.from_bytes(earlyReads[18], byteorder="little")
+            MM_Professor_RescuedAddress = int.from_bytes(earlyReads[19], byteorder="little")
+            MM_Nathalie_RescuedAddress = int.from_bytes(earlyReads[20], byteorder="little")
+
+            MM_Jake_Defeated = int.from_bytes(earlyReads[21], byteorder="little")
+            MM_Professor_Rescued = int.from_bytes(earlyReads[22], byteorder="little")
+            MM_Nathalie_Rescued = int.from_bytes(earlyReads[23], byteorder="little")
+            MM_Lobby_DoorDetection = int.from_bytes(earlyReads[24], byteorder="little")
+
+>>>>>>> Stashed changes
             #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
@@ -219,6 +249,17 @@ class ApeEscapeClient(BizHawkClient):
                 # Get items from server
                 keyCountFromServer = 0
 
+            if MM_Lobby_DoubleDoor == 0xFF:
+                MM_Lobby_DoubleDoor = 0
+
+            if MM_Jake_Defeated == 0xFF:
+                MM_Jake_Defeated = 0
+
+            if MM_Professor_Rescued == 0xFF:
+                MM_Professor_Rescued = 0
+
+            if MM_Nathalie_Rescued == 0xFF:
+                MM_Nathalie_Rescued = 0
             # Get WaterNet state from memory
             waternetState = 0
             if WaterNetStateFromServer != 0xFF:
@@ -277,6 +318,8 @@ class ApeEscapeClient(BizHawkClient):
                         elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
                             if waternetState != 2:
                                 waternetState += 1
+                        elif (item.item - self.offset) == RAM.items["MMLobbyDoubleDoor"]:
+                            MM_Lobby_DoubleDoor = 1
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
                             watercatchState = 1
                         elif (item.item - self.offset) == RAM.items["CB_Lamp"]:
@@ -348,6 +391,7 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterNetAddress, waternetState.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterCatchAddress, watercatchState.to_bytes(1, "little"), "MainRAM")]
+<<<<<<< Updated upstream
                 itemsWrites += [(RAM.tempCB_LampAddress, CBLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempDI_LampAddress, DILampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempCrC_LampAddress, CrCLampState.to_bytes(1, "little"), "MainRAM")]
@@ -356,6 +400,9 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempTVT_Lobby_LampAddress, TVTLobbyLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempTVT_Tank_LampAddress, TVTTankLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempMM_LampAddress, MMLampState.to_bytes(1, "little"), "MainRAM")]
+=======
+                itemsWrites += [(RAM.temp_MMLobbyDoorAddress, MM_Lobby_DoubleDoor.to_bytes(1, "little"), "MainRAM")]
+>>>>>>> Stashed changes
 
             self.worldkeycount = keyCountFromServer
 
@@ -566,11 +613,19 @@ class ApeEscapeClient(BizHawkClient):
                 bosses_to_send = set()
 
                 for i in range(len(bossesList)):
+
                     # For TVT boss, check roomStatus if it's 3 the fight is ongoing
                     if (currentRoom == 68):
-                        print(roomStatus)
                         if (roomStatus == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
                             bosses_to_send.add(key_list[i] + self.offset)
+                    elif (currentRoom == 70):
+                        if (gameRunning == 1 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
+                            bosses_to_send.add(key_list[i] + self.offset)
+                            MM_Jake_Defeated = 1
+                    elif (currentRoom == 71):
+                        if int.from_bytes(bossesList[i], byteorder='little') == 0x05:
+                            bosses_to_send.add(key_list[i] + self.offset)
+                            MM_Professor_Rescued = 1
                     else:
                         if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
                             bosses_to_send.add(key_list[i] + self.offset)
@@ -598,7 +653,6 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x for x in mail_to_send)
                     }])
-
             # Check for victory conditions
             specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
             specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
@@ -624,6 +678,14 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
+            if MM_Jake_Defeated > 0:
+                writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+
+            if MM_Professor_Rescued > 0:
+                writes += [(RAM.temp_MM_Professor_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+
+            if MM_Nathalie_Rescued > 0:
+                writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
             # For coin tracking to be ignored while in Level Select
 
@@ -658,6 +720,7 @@ class ApeEscapeClient(BizHawkClient):
                         "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
                     }])
                     self.currentCoinAddress += 2
+
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
@@ -681,6 +744,85 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
                 }])
+            # Rescued Nathalie in the room
+            if currentRoom == 76 and MM_Nathalie_RescuedAddress == 5:
+                MM_Nathalie_Rescued = 1
+
+            # Prevention state of MM Lobby for Double Door
+            if currentRoom in (70,71,72,77,78):
+                writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
+
+            # TODO Does not work, try to see why!
+            if currentRoom == 69:
+                # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
+                writes += [(RAM.MM_Lobby_JakeDoorFenceAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.MM_Lobby_JakeDoor_HitboxAddress, 0x80.to_bytes(1, "little"), "MainRAM")]
+                #if MM_Lobby_DoubleDoor_Open == 0x00:
+                    #writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+
+
+                if MM_Lobby_DoubleDoor == 0:
+                    # Prevent the door from opening no matter what,even if you defeated Jake
+                    #print(MM_Nathalie_Rescued)
+                    if MM_Nathalie_Rescued == 0x01:
+                        writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+                    if MM_Professor_Rescued == 0x01:
+                        writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        writes += [(RAM.MM_Professor_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+
+                    if MM_Jake_Defeated == 0x00:
+                        print("A")
+                        writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        #print(MM_Jake_DefeatedAddress)
+                        #print(MM_Jake_DefeatedAddress)
+
+                        if MM_Lobby_DoorDetection == 0x2442FDD8:
+                            if MM_Lobby_DoubleDoor_Open == 0x00:
+                                print("B-1")
+                                writes += [(RAM.MM_Lobby_DoorDetection, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                                writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                            elif MM_Lobby_DoubleDoor_Open == 0x05:
+                                print("B-2")
+                                #writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
+                                #writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+
+                        if MM_Lobby_DoorDetection == 0x00000000:
+                            if MM_Lobby_DoubleDoor_Open == 0x00:
+                                print("C-1")
+                                #writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
+                                writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+
+                            elif MM_Lobby_DoubleDoor_Open == 0x05:
+                                print("C-2")
+                                writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
+                                #writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+
+                        #writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                        #if MM_Lobby_DoubleDoor_Open == 0x02:
+
+
+
+                else:
+                    #writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
+                    # Triggers the door if you have the door item
+                    print("Open Sesame")
+                    if MM_Lobby_DoubleDoor_Open == 0x02 or MM_Lobby_DoubleDoor_Open == 0x03:
+                        writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                        print("Door == 2 or 3")
+                    # If the door is open and you don't have defeated Jake,put back the address to 0
+                    # It will not close the door but will make sure you can go defeat Jake if needed.
+                    if MM_Jake_Defeated == 0x00:
+                        writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
 
             # Datastorage related:

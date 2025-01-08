@@ -1002,15 +1002,19 @@ def MM_Professor(state, world):
 
 
 def Jake_Open(state, world):
-    return MM_Natalie(state, world) and MM_Professor(state, world)
+    return True #Jake is now always open
 
 
 def MM_Jake(state, world):
     return (HasClub(state, world) or HasPunch(state, world)) and Jake_Open(state, world)
 
 
+def MM_Lobby_DoubleDoor(state, world):
+    return state.has(AEItem.MMLobbyDoubleDoor.value, world.player, 1)
+
+
 def MM_SHA(state, world):
-    return MM_Natalie(state, world) and MM_Professor(state, world) and MM_Jake(state, world)
+    return MM_Lobby_DoubleDoor(state, world)
 
 
 def MM_UFODoor(state, world):

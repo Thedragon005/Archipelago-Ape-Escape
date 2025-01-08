@@ -366,8 +366,15 @@ location_table = {
     AELocation.Mailbox63.value: 463,
 
     # Bosses
+<<<<<<< Updated upstream
     AELocation.W7L3Boss73.value: 500,
     AELocation.W8L3Boss83.value: 501,
+=======
+    AELocation.Boss73.value: 500,
+    AELocation.Boss83.value: 501,
+    AELocation.W9L1Professor.value: 502,
+    AELocation.W9L1Jake.value: 503,
+>>>>>>> Stashed changes
 }
 
 #Where RAM.levels[address] : Total monkeys count
@@ -443,8 +450,8 @@ doorTransitions = {
     AEDoor.CCAVE_SECOND_ROOM_ENTRY.value: {23, 0},
     AEDoor.DI_ENTRY.value: {24, 0},
     AEDoor.DI_ENTRY_STOMACH.value: {24, 2},
-    AEDoor.DI_STOMACH_ENTRY.value: {24, 0},
-    AEDoor.DI_STOMACH_SLIDE_ROOM.value: {24, 2},
+    AEDoor.DI_STOMACH_ENTRY.value: {25, 0},
+    AEDoor.DI_STOMACH_SLIDE_ROOM.value: {25, 2},
     AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value: {26, 0},
     AEDoor.DI_GALLERY_TENTACLE.value: {26, 2},
     AEDoor.DI_GALLERY_SLIDE_ROOM_UP.value: {26, 3},
@@ -543,6 +550,7 @@ doorTransitions = {
     AEDoor.MM_SL_HUB_WESTERN.value: {69, 4},
     AEDoor.MM_SL_HUB_GO_KARZ.value: {69, 5},
     AEDoor.MM_SL_HUB_CRATER.value: {69, 6},
+    AEDoor.MM_GO_KARZ_SL_HUB.value: {70, 0},
     AEDoor.MM_CIRCUS_SL_HUB.value: {71, 0},
     AEDoor.MM_COASTER_ENTRY_SL_HUB.value: {72, 0},
     AEDoor.MM_COASTER_ENTRY_HAUNTED_HOUSE.value: {72, 2},

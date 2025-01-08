@@ -208,8 +208,15 @@ class AELocation(Enum):
     W9L1Carro = "9-1 Monkey Madness Monkey 22 - Carro"
     W9L1Carlito = "9-1 Monkey Madness Monkey 23 - Carlito"
     W9L1BG = "9-1 Monkey Madness Monkey 24 - BG"
+<<<<<<< Updated upstream
     Boss73 = "7-3 Boss"
     Boss83 = "8-3 Boss"
+=======
+    Boss73 = "7-3 Crumbling Castle - Boss"
+    Boss83 = "8-3 TV Tower - Boss"
+    W9L1Professor = "9-1 Monkey Madness - Rescue Professor"
+    W9L1Jake = "9-1 Monkey Madness - Defeat Jake"
+>>>>>>> Stashed changes
     Specter = "9-1 Monkey Madness - Specter"
     Specter2 = "9-2 Peak Point Matrix - Specter"
     Coin1 = "1-1 Fossil Field Coin - Main"
@@ -579,6 +586,7 @@ class AEDoor(Enum):
     MM_SL_HUB_WESTERN = "Monkey Madness: Specter Land Hub - Western Land"
     MM_SL_HUB_GO_KARZ = "Monkey Madness: Specter Land Hub - Go Karz"
     MM_SL_HUB_CRATER = "Monkey Madness: Specter Land Hub - Crater"
+    MM_GO_KARZ_SL_HUB = "Monkey Madness: Go Karz - Specter Land Hub"
     MM_CIRCUS_SL_HUB = "Monkey Madness: Circus - Specter Land Hub"
     MM_COASTER_ENTRY_SL_HUB = "Monkey Madness: Coaster Entry - Specter Land Hub"
     MM_COASTER_ENTRY_HAUNTED_HOUSE = "Monkey Madness: Coaster Entry - Haunted House"
@@ -631,6 +639,7 @@ class AEItem(Enum):
     WaterNet = "Water Net"
     ProgWaterNet = "Progressive Water Net"
     WaterCatch = "Water Catch"
+<<<<<<< Updated upstream
     CB_Lamp = "Crabby Beach Monkey Lamp"
     DI_Lamp = "Dexter's Island Monkey Lamp"
     CrC_Lamp = "Crumbling Castle Monkey Lamp"
@@ -640,6 +649,9 @@ class AEItem(Enum):
     TVT_Tank_Lamp = "TV Tower Monkey Lamp (Tank Room)"
     MM_Lamp = "Monkey Madness Monkey Lamp"
     Nothing = "Banana Peel"
+=======
+    MMLobbyDoubleDoor = "Monkey Madness Lobby Double Door"
+>>>>>>> Stashed changes
     Shirt = "Jacket"
     Triangle = "Energy Chip"
     BigTriangle = "5 Energy Chips"

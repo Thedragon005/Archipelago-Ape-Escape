@@ -880,9 +880,11 @@ class RAM:
             501: 0x143E1F
         },
         70: {  # MM_Jake
-
+            503: 0x1422E6
         },
-
+        71: {  # Circus (Professor)
+            502: 0x0DFDDC
+        },
         #Victory conditions calculated separately, no values there
         83: {  # Specter 1 Phase 1
 
@@ -909,6 +911,7 @@ class RAM:
         "WaterNet": 0x400,
         "ProgWaterNet": 0x401,
         "WaterCatch": 0x402,
+<<<<<<< Updated upstream
         "CB_Lamp": 0x150,
         "DI_Lamp": 0x151,
         "CrC_Lamp": 0x152,
@@ -917,6 +920,9 @@ class RAM:
         "TVT_Lobby_Lamp": 0x155,
         "TVT_Tank_Lamp": 0x156,
         "MM_Lamp": 0x157,
+=======
+        "MMLobbyDoubleDoor": 0x403,
+>>>>>>> Stashed changes
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -1038,6 +1044,9 @@ class RAM:
     tempWaterNetAddress = 0x0DFBE2
     tempWaterCatchAddress = 0x0DFBE3
 
+    temp_MMLobbyDoorAddress = 0x0DFC58
+
+
     isUnderwater = 0x0F4DCA
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
@@ -1047,6 +1056,24 @@ class RAM:
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
 
+<<<<<<< Updated upstream
+=======
+    MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
+    MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
+    MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
+
+
+    temp_MM_Professor_RescuedAddress = 0x0DFC5C
+    temp_MM_Nathalie_RescuedAddress = 0x0DFC5E
+    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
+
+    MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence.If JakeDefeated = 5 it will open the door
+    MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
+    MM_Lobby_JakeDoorFenceAddress = 0x174FA6 #Maybe not used
+    MM_Lobby_DoorDetection = 0x0963BC # 4b : Default to 2442FDD8.00000000 Prevent the door detection code from kicking in
+
+
+>>>>>>> Stashed changes
     gameRunningAddress = 0x0B01C0
 
     newGameAddress = 0x137734
@@ -1072,6 +1099,7 @@ class RAM:
     Temp_SA_CompletedAddress = 0x0DFC56
     GA_CompletedAddress = 0x0DFDD1 # Completed = 0x19, not completed = 00
     Temp_GA_CompletedAddress = 0x0DFC57
+
 
     levelselectFonts = 0x139CF6 # 0x36 = Classic One  0x26 = Current One
     time_attack_Times = 0x0DFD44
