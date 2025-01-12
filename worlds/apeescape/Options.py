@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from Options import Choice, PerGameCommonOptions
+from Options import Choice, DeathLink, PerGameCommonOptions
 
 
 class GoalOption(Choice):
@@ -116,7 +116,7 @@ class MailboxOption(Choice):
     """Choose if mailboxes should act as locations.
         Mailboxes in training rooms will never be locations.
 
-        true: The 62 available mailboxes are added as locations.
+        true: The 63 available mailboxes are added as locations.
         false: Mailboxes are not locations.
 
         Supported values: true, false
@@ -127,7 +127,6 @@ class MailboxOption(Choice):
     option_true = 0x01
     option_false = 0x00
     default = option_false
-
 
 class LampOption(Choice):
     """Choose if Monkey lamps should be locked and shuffled into the multiworld.
@@ -143,6 +142,7 @@ class LampOption(Choice):
     option_true = 0x01
     option_false = 0x00
     default = option_false
+
 
 
 class GadgetOption(Choice):
@@ -220,3 +220,4 @@ class ApeEscapeOptions(PerGameCommonOptions):
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
+    death_link: DeathLink
