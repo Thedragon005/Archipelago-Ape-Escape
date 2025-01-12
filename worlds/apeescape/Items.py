@@ -59,10 +59,6 @@ item_table = {
     AEItem.ThreeRocket.value: RAM.items["ThreeRocket"]
 }
 
-# Tables to check which Item is needed for which level depending on Lamps
-
-
-
 event_table = {
 }
 

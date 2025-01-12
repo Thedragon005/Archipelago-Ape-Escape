@@ -1,9 +1,9 @@
 import sys
 import logging
-from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any
-from typing import Any, ClassVar, Coroutine, Dict, List, Optional, Protocol, Tuple, cast
+import time
 import Utils
-
+from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
+from Options import Toggle
 from NetUtils import ClientStatus
 from worlds.apeescape.RulesGlitchless import MM_Lobby_DoubleDoor
 from worlds.oot.Patches import get_override_table_bytes
@@ -84,7 +84,12 @@ class ApeEscapeClient(BizHawkClient):
         self.inWater = 0
         self.waternetState = 0
         self.watercatchState = 0
-        self.waterHeight = 0
+        self.death_counter = None
+        self.previous_death_link = 0
+        self.pending_death_link: bool = False
+        # default to true, as we don't want to send a deathlink until playing
+        self.sending_death_link: bool = True
+        self.ignore_next_death_link = False
         self.CrCButton = 0
         self.MM_Painting_Button = 0
         self.MM_MonkeyHead_Button = 0
@@ -117,11 +122,12 @@ class ApeEscapeClient(BizHawkClient):
 
         return True
 
-    async def set_auth(self, ctx: BizHawkClientContext) -> None:
-        x = 3
-
-    def on_package(self,ctx: BizHawkClientContext, cmd: str, args: dict):
-
+    def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
+        if cmd == "Bounced":
+            if "tags" in args:
+                assert ctx.slot is not None
+                if "DeathLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
+                    self.on_deathlink(ctx)
         if cmd == "Retrieved":
             if "keys" not in args:
                 print(f"invalid Retrieved packet to ApeEscapeClient: {args}")
@@ -132,6 +138,9 @@ class ApeEscapeClient(BizHawkClient):
             self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
             self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
             self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
+
+    async def set_auth(self, ctx: BizHawkClientContext) -> None:
+        x = 3
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
@@ -421,7 +430,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
-                (RAM.swim_oxygenLevelAddress, 2, "MainRAM"),
+                (RAM.swim_oxygenLevelAddress,2,"MainRAM"),
                 (RAM.Spike_Y_PosAddress, 2, "MainRAM"),
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
@@ -487,6 +496,8 @@ class ApeEscapeClient(BizHawkClient):
             MM_Painting_ButtonPressed = int.from_bytes(reads[39], byteorder="little")
             MM_Painting_Visual = int.from_bytes(reads[40], byteorder="little")
 
+            DL_Reads = [cookies,gameRunning,gameState]
+            await self.handle_death_link(ctx,DL_Reads)
 
             CoinReadsTupples = [
                 (RAM.startingCoinAddress,100,"MainRAM"),
@@ -604,7 +615,6 @@ class ApeEscapeClient(BizHawkClient):
                 bosses_to_send = set()
 
                 for i in range(len(bossesList)):
-
                     # For TVT boss, check roomStatus if it's 3 the fight is ongoing
                     if (currentRoom == 68):
                         if (roomStatus == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
@@ -994,6 +1004,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.swim_ReplenishOxygenUWAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_surfaceDetectionAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+
                 if gameState == RAM.gameState["InLevel"]:
                     if gameRunning == 0x01:
                         # Set the air to the "Limited" value if 2 conditions:
@@ -1146,6 +1157,37 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
+    async def handle_death_link(self, ctx: "BizHawkClientContext",DL_Reads) -> None:
+        """
+        Checks whether the player has died while connected and sends a death link if so.
+        """
+        cookies = DL_Reads[0]
+        gameRunning = DL_Reads[1]
+        gamestate = DL_Reads[2]
+        if ctx.slot_data["death_link"] == Toggle.option_true:
+            if "DeathLink" not in ctx.tags:
+                await ctx.update_death_link(True)
+                self.previous_death_link = ctx.last_death_link
+            if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
+                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
+                    await self.send_deathlink(ctx)
+                elif cookies != 0x00:
+                    self.sending_death_link = False
+            if self.pending_death_link:
+                writesDL = []
+                writesDL += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                self.pending_death_link = False
+                self.sending_death_link = True
+                await bizhawk.write(ctx.bizhawk_ctx,writesDL)
+
+    async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
+        self.sending_death_link = True
+        ctx.last_death_link = time.time()
+        await ctx.send_death(ctx.player_names[ctx.slot] + " says: `Oooh noooo!`")
+
+    def on_deathlink(self, ctx: "BizHawkClientContext") -> None:
+        ctx.last_death_link = time.time()
+        self.pending_death_link = True
 
     def unlockLevels(self, monkeylevelCounts, gadgets, gameState, gadgetUseState, level_info, hundoMonkeysCount, spikeState, reqkeys):
 
@@ -1169,7 +1211,7 @@ class ApeEscapeClient(BizHawkClient):
         if gameState == RAM.gameState["LevelSelect"] or debug:
             for x in range(len(levels_list)):
                 if int.from_bytes(monkeylevelCounts[x], byteorder="little") < hundoMonkeysCount[levels_list[x]]:
-                    print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
+                    #print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed

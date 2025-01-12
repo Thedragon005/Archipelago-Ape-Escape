@@ -299,6 +299,8 @@ class ApeEscapeWorld(World):
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value),
+            "death_link": self.options.death_link.value,
+
         }
 
     def write_spoiler(self, spoiler_handle: TextIO):

@@ -1074,6 +1074,7 @@ class RAM:
     loadGameAddress = 0x137734
 
     trainingRoomProgressAddress = 0x0DFDCC
+    GadgetTrainingsUnlockAddress = 0x0978E8 # 4 Bytes -> Prevent the checkup for activating Training Rooms Gadget Trainings (Default: 8C63FDCC, Disable : 0x00000000)
     currentRoomIdAddress = 0x0F4476
     currentLevelAddress = 0x0F4474
     gameStateAddress = 0x0F4470

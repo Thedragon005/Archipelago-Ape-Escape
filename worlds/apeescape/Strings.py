@@ -283,8 +283,8 @@ class AELocation(Enum):
     Mailbox7 = "1-2 Primordial Ooze Mailbox - Crawl Tutorial (Main)"
     Mailbox8 = "1-3 Molten Lava Mailbox - Surrounded by a Cliff (Entry)"
     Mailbox9 = "1-3 Molten Lava Mailbox - Energy Chips (Entry)"
-    Mailbox10 = "1-3 Molten Lava Mailbox - The T-Rex is Aggressive (T-Rex)"
-    Mailbox11 = "1-3 Molten Lava Mailbox - Did I Give You That Yet? (Entry)"
+    Mailbox10 = "1-3 Molten Lava Mailbox - The T-Rex is Aggressive (Volcano)"
+    Mailbox11 = "1-3 Molten Lava Mailbox - Did I Give You That Yet? (Triceratops)"
     Mailbox12 = "1-3 Molten Lava Mailbox - Hit the Bombs! (Triceratops)"
     Mailbox13 = "2-1 Thick Jungle Mailbox - Monkeys are Hiding (Entry)"
     Mailbox14 = "2-1 Thick Jungle Mailbox - Monkey Camera Tutorial (Entry)"
@@ -654,4 +654,3 @@ class AEItem(Enum):
     ThreeFlash = "3 Explosive Pellets"
     Rocket = "Guided Pellet"
     ThreeRocket = "3 Guided Pellets"
-
