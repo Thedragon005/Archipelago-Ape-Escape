@@ -188,39 +188,39 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S2_isCaptured, 1, "MainRAM"),
             ]
 
-            readTuples = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
+            reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
 
             # GameStates
-            recv_index = int.from_bytes(readTuples[6], byteorder="little")
-            gameState = int.from_bytes(readTuples[8], byteorder="little")
-            currentRoom = int.from_bytes(readTuples[11], byteorder="little")
-            currentLevel = int.from_bytes(readTuples[12], byteorder="little")
-            gameRunning = int.from_bytes(readTuples[31], byteorder="little")
-            jakeVictory = int.from_bytes(readTuples[13], byteorder="little")
+            recv_index = int.from_bytes(reads[0], byteorder="little")
+            gameState = int.from_bytes(reads[1], byteorder="little")
+            currentRoom = int.from_bytes(reads[2], byteorder="little")
+            currentLevel = int.from_bytes(reads[3], byteorder="little")
+            gameRunning = int.from_bytes(reads[4], byteorder="little")
+            jakeVictory = int.from_bytes(reads[5], byteorder="little")
             # Locations
-            previousCoinStateRoom = int.from_bytes(readTuples[14], byteorder="little")
-            currentCoinStateRoom = int.from_bytes(readTuples[15], byteorder="little")
-            coinCount = int.from_bytes(readTuples[16], byteorder="little")
-            localhundoCount = int.from_bytes(readTuples[9], byteorder="little")
-            requiredApes = int.from_bytes(readTuples[23], byteorder="little")
-            currentApes = int.from_bytes(readTuples[24], byteorder="little")
-            gotMail = int.from_bytes(readTuples[29], byteorder="little")
-            mailboxID = int.from_bytes(readTuples[30], byteorder="little")
+            previousCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
+            currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
+            coinCount = int.from_bytes(reads[8], byteorder="little")
+            localhundoCount = int.from_bytes(reads[9], byteorder="little")
+            requiredApes = int.from_bytes(reads[10], byteorder="little")
+            currentApes = int.from_bytes(reads[11], byteorder="little")
+            gotMail = int.from_bytes(reads[12], byteorder="little")
+            mailboxID = int.from_bytes(reads[13], byteorder="little")
             # Items
-            energyChips = int.from_bytes(readTuples[0], byteorder="little")
-            cookies = int.from_bytes(readTuples[1], byteorder="little")
-            totalLives = int.from_bytes(readTuples[2], byteorder="little")
-            flashAmmo = int.from_bytes(readTuples[3], byteorder="little")
-            rocketAmmo = int.from_bytes(readTuples[4], byteorder="little")
-            keyCountFromServer = int.from_bytes(readTuples[5], byteorder="little")
+            energyChips = int.from_bytes(reads[14], byteorder="little")
+            cookies = int.from_bytes(reads[15], byteorder="little")
+            totalLives = int.from_bytes(reads[16], byteorder="little")
+            flashAmmo = int.from_bytes(reads[17], byteorder="little")
+            rocketAmmo = int.from_bytes(reads[18], byteorder="little")
+            keyCountFromServer = int.from_bytes(reads[19], byteorder="little")
             # Misc
-            spikeState = int.from_bytes(readTuples[25], byteorder="little")
-            spikeState2 = int.from_bytes(readTuples[26], byteorder="little")
-            kickoutofLevel = int.from_bytes(readTuples[27], byteorder="little")
-            roomStatus = int.from_bytes(readTuples[28], byteorder="little")
-            S1_P2_State = int.from_bytes(readTuples[32], byteorder="little")
-            S1_P2_Life = int.from_bytes(readTuples[33], byteorder="little")
-            S2_isCaptured = int.from_bytes(readTuples[34], byteorder="little")
+            spikeState = int.from_bytes(reads[20], byteorder="little")
+            spikeState2 = int.from_bytes(reads[21], byteorder="little")
+            kickoutofLevel = int.from_bytes(reads[22], byteorder="little")
+            roomStatus = int.from_bytes(reads[23], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[24], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[25], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[26], byteorder="little")
 
             #Related to Gadgets
             gadgetTuples = [
@@ -236,14 +236,14 @@ class ApeEscapeClient(BizHawkClient):
 
             gadgetReads = await bizhawk.read(ctx.bizhawk_ctx, gadgetTuples)
 
-            gadgets = int.from_bytes(readTuples[10], byteorder="little")
-            gadgetStateFromServer = int.from_bytes(readTuples[7], byteorder="little")
-            heldGadget = int.from_bytes(readTuples[17], byteorder="little")
-            triangleGadget = int.from_bytes(readTuples[18], byteorder="little")
-            squareGadget = int.from_bytes(readTuples[19], byteorder="little")
-            circleGadget = int.from_bytes(readTuples[20], byteorder="little")
-            crossGadget = int.from_bytes(readTuples[21], byteorder="little")
-            gadgetUseState = int.from_bytes(readTuples[22], byteorder="little")
+            gadgets = int.from_bytes(gadgetReads[0], byteorder="little")
+            gadgetStateFromServer = int.from_bytes(gadgetReads[1], byteorder="little")
+            heldGadget = int.from_bytes(gadgetReads[2], byteorder="little")
+            triangleGadget = int.from_bytes(gadgetReads[3], byteorder="little")
+            squareGadget = int.from_bytes(gadgetReads[4], byteorder="little")
+            circleGadget = int.from_bytes(gadgetReads[5], byteorder="little")
+            crossGadget = int.from_bytes(gadgetReads[6], byteorder="little")
+            gadgetUseState = int.from_bytes(gadgetReads[7], byteorder="little")
 
             # Menu and level select reads
             menuTuples = [
@@ -768,7 +768,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ===== Permanent Buttons =======
             # Execute the Buttons handling code segment
-            Button_Reads = [gameState,waternetState,gameRunning,spikeState2,swim_oxygenLevel,cookies,isUnderwater,watercatchState]
+            Button_Reads = [currentRoom,CrC_ButtonPressed,TVT_Lobby_ButtonPressed,MM_MonkeyHead_ButtonPressed,MM_Painting_ButtonPressed,CrC_Door_Visual,TVT_Lobby_Water_Hitbox,MM_MonkeyHead_Door,MM_Painting_Visual]
             await self.permanent_buttons_handling(ctx,Button_Reads)
             # =======================
 
