@@ -93,6 +93,7 @@ class ApeEscapeClient(BizHawkClient):
         self.MM_Painting_Button = 0
         self.MM_MonkeyHead_Button = 0
         self.TVT_Lobby_Button = 0
+        self.bool_MMDoubleDoor = False
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -762,7 +763,7 @@ class ApeEscapeClient(BizHawkClient):
                 }])
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [MM_Jake_Defeated,MM_Professor_Rescued,MM_Nathalie_Rescued,currentRoom,MM_Nathalie_RescuedAddress,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open]
+            MM_Reads = [MM_Jake_Defeated,MM_Professor_Rescued,MM_Nathalie_Rescued,currentRoom,MM_Nathalie_RescuedAddress,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -904,106 +905,114 @@ class ApeEscapeClient(BizHawkClient):
                     self.replacePunch = False
             else:
                 self.replacePunch = True
-            await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
+        await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
     async def MM_Optimizations(self, ctx: "BizHawkClientContext", MM_Reads) -> None:
 
-            MM_Jake_Defeated = MM_Reads[0]
-            MM_Professor_Rescued = MM_Reads[1]
-            MM_Nathalie_Rescued = MM_Reads[2]
-            currentRoom = MM_Reads[3]
-            MM_Nathalie_RescuedAddress = MM_Reads[4]
-            MM_Lobby_DoubleDoor = MM_Reads[5]
-            MM_Lobby_DoorDetection = MM_Reads[6]
-            MM_Lobby_DoubleDoor_Open = MM_Reads[7]
+        MM_Jake_Defeated = MM_Reads[0]
+        MM_Professor_Rescued = MM_Reads[1]
+        MM_Nathalie_Rescued = MM_Reads[2]
+        currentRoom = MM_Reads[3]
+        MM_Nathalie_RescuedAddress = MM_Reads[4]
+        MM_Lobby_DoubleDoor = MM_Reads[5]
+        MM_Lobby_DoorDetection = MM_Reads[6]
+        MM_Lobby_DoubleDoor_Open = MM_Reads[7]
+        MM_Jake_DefeatedAddress = MM_Reads[8]
 
-            MM_Writes = []
+        MM_Writes = []
 
-            if MM_Jake_Defeated > 0:
-                MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+        if MM_Jake_Defeated > 0:
+            MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-            if MM_Professor_Rescued > 0:
-                MM_Writes += [(RAM.temp_MM_Professor_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+        if MM_Professor_Rescued > 0:
+            MM_Writes += [(RAM.temp_MM_Professor_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-            if MM_Nathalie_Rescued > 0:
-                MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+        if MM_Nathalie_Rescued > 0:
+            MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-            # Rescued Nathalie in the room
-            if currentRoom == 76 and MM_Nathalie_RescuedAddress == 5:
-                MM_Nathalie_Rescued = 1
+        # Rescued Nathalie in the room
+        if currentRoom == 76 and MM_Nathalie_RescuedAddress == 5:
+            MM_Nathalie_Rescued = 1
 
-            # Prevention state of MM Lobby for Double Door
-            if currentRoom in (70, 71, 72, 77, 78):
-                MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
+        # Prevention state of MM Lobby for Double Door
+        if currentRoom in (70, 71, 72, 77, 78):
+            MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+            #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            #MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
 
-            # TODO Does not work, try to see why!
-            if currentRoom == 69:
-                # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
-                MM_Writes += [(RAM.MM_Lobby_JakeDoorFenceAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
-                MM_Writes += [(RAM.MM_Lobby_JakeDoor_HitboxAddress, 0x80.to_bytes(1, "little"), "MainRAM")]
-                # if MM_Lobby_DoubleDoor_Open == 0x00:
-                # writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+        # TODO Does not work, try to see why!
+        if currentRoom == 69:
+            # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
+            MM_Writes += [(RAM.MM_Lobby_JakeDoorFenceAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.MM_Lobby_JakeDoor_HitboxAddress, 0x80.to_bytes(1, "little"), "MainRAM")]
+            #MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+            #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
 
-                if MM_Lobby_DoubleDoor == 0:
-                    # Prevent the door from opening no matter what,even if you defeated Jake
-                    # print(MM_Nathalie_Rescued)
-                    if MM_Nathalie_Rescued == 0x01:
-                        MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                    else:
-                        MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-
-                    if MM_Professor_Rescued == 0x01:
-                        MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                    else:
-                        MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-
-                    if MM_Jake_Defeated == 0x00:
-                        print("A")
-                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    else:
-                        # print(MM_Jake_DefeatedAddress)
-                        # print(MM_Jake_DefeatedAddress)
-
-                        if MM_Lobby_DoorDetection == 0x2442FDD8:
-                            if MM_Lobby_DoubleDoor_Open == 0x00:
-                                print("B-1")
-                                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                                MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                            elif MM_Lobby_DoubleDoor_Open == 0x05:
-                                print("B-2")
-                                # writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
-                                # writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
-                        if MM_Lobby_DoorDetection == 0x00000000:
-                            if MM_Lobby_DoubleDoor_Open == 0x00:
-                                print("C-1")
-                                # writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
-                                MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-
-                            elif MM_Lobby_DoubleDoor_Open == 0x05:
-                                print("C-2")
-                                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
-                                # writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-
-                        # writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                        # if MM_Lobby_DoubleDoor_Open == 0x02:
-
-
-
+            if MM_Lobby_DoubleDoor == 0:
+                # Prevent the door from opening no matter what,even if you defeated Jake
+                # print(MM_Nathalie_Rescued)
+                if MM_Nathalie_Rescued == 0x01:
+                    MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 else:
-                    # writes += [(RAM.MM_Lobby_DoorDetection, 0x2442FDD8.to_bytes(4, "little"), "MainRAM")]
-                    # Triggers the door if you have the door item
-                    print("Open Sesame")
-                    if MM_Lobby_DoubleDoor_Open == 0x02 or MM_Lobby_DoubleDoor_Open == 0x03:
+                    MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+                if MM_Professor_Rescued == 0x01:
+                    MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+                if MM_Jake_Defeated == 0x00:
+                    print("Jake NOT Defeated")
+                    #Should not impact if it's not yet defeated since new detection address
+                    MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    #Jake is defeated by the player
+                    print("Jake Defeated")
+                    if self.bool_MMDoubleDoor == True:
+                        # self.bool_MMDoubleDoor = False
+                        # Don't "Close" door if the door is not open yet
+                        if MM_Jake_DefeatedAddress == 0x06:
+                            print("[MM_Door]Close door")
+                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                            MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        self.bool_MMDoubleDoor = True
+                        if MM_Lobby_DoubleDoor_Open == 0x05:
+                            print("[MM_Door]Next pass will Close the door")
+                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+            else:
+                # You have the Item,set the door to 4 + Jake defeated to 5,
+                # then make Jake_defeated = 0 if not defeated
+                if self.bool_MMDoubleDoor == True:
+                    # self.bool_MMDoubleDoor = False
+                    if MM_Jake_DefeatedAddress == 0x06:
+                        print("[MM_Door]Opened")
                         MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                         MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                        print("Door == 2 or 3")
-                    # If the door is open, and you don't have defeated Jake,put back the address to 0
-                    # It will not close the door but will make sure you can go defeat Jake if needed.
+                    #else the door is already open
                     if MM_Jake_Defeated == 0x00:
-                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-            await bizhawk.write(ctx.bizhawk_ctx,MM_Writes)
+                        if MM_Jake_DefeatedAddress != 0x00 and MM_Lobby_DoubleDoor_Open == 0x05:
+                            print("[MM_Door]Put back Jake_DefeatedAddress")
+                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+
+                else:
+                    self.bool_MMDoubleDoor = True
+
+                    if MM_Lobby_DoubleDoor_Open != 0x05: # Door already opened if == 5
+                        print("[MM_Door]Next pass will Open the door")
+                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                #print("Door not equal to 5")
+                # If the door is open, and you don't have defeated Jake,put back the address to 0
+                # It will not close the door but will make sure you can go defeat Jake if needed.
+        else:
+            self.bool_MMDoubleDoor = False
+        await bizhawk.write(ctx.bizhawk_ctx,MM_Writes)
+
     async def permanent_buttons_handling(self, ctx: "BizHawkClientContext", Button_Reads) -> None:
 
         currentRoom = Button_Reads[0]

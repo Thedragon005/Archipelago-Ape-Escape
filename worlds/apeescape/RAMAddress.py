@@ -1065,7 +1065,7 @@ class RAM:
     MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence.If JakeDefeated = 5 it will open the door
     MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
     MM_Lobby_JakeDoorFenceAddress = 0x174FA6 #Maybe not used
-    MM_Lobby_DoorDetection = 0x0963BC # 4b : Default to 2442FDD8.00000000 Prevent the door detection code from kicking in
+    MM_Lobby_DoorDetection = 0x0963C8 # 4b : Default to 8C820000.8C800000 Prevent the door detection code from kicking in
 
 
     gameRunningAddress = 0x0B01C0
