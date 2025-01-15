@@ -416,6 +416,7 @@ class ApeEscapeClient(BizHawkClient):
             #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
+                Menuwrites += [(RAM.cookieAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
@@ -1321,7 +1322,7 @@ class ApeEscapeClient(BizHawkClient):
                 await ctx.update_death_link(True)
                 self.previous_death_link = ctx.last_death_link
             if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
-                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"],RAM.gameState["Menu"]):
+                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
                     await self.send_deathlink(ctx)
                 elif cookies != 0x00:
                     self.sending_death_link = False
@@ -1334,7 +1335,8 @@ class ApeEscapeClient(BizHawkClient):
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
         ctx.last_death_link = time.time()
-        await ctx.send_death(ctx.player_names[ctx.slot] + " says: `Oooh noooo!`(Died)")
+        DeathText = ctx.player_names[ctx.slot] + " says: `Oooh noooo!`(Died)"
+        await ctx.send_death(DeathText)
 
     def on_deathlink(self, ctx: "BizHawkClientContext") -> None:
         ctx.last_death_link = time.time()
