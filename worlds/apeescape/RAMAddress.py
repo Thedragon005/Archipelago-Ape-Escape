@@ -883,7 +883,7 @@ class RAM:
             503: 0x1422E6
         },
         71: {  # Circus (Professor)
-            502: 0x0DFDDC
+            502: 0x0E6BA9
         },
         #Victory conditions calculated separately, no values there
         83: {  # Specter 1 Phase 1
@@ -1054,6 +1054,7 @@ class RAM:
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
 
     MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
+    MM_Clown_State = 0x174072
     MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
     MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
 

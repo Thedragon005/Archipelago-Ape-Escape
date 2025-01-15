@@ -160,6 +160,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.currentRoomIdAddress, 1, "MainRAM"),  # Current Room
+                (RAM.Nearby_RoomIDAddress, 1, "MainRAM"),  # Nearby Room
                 (RAM.currentLevelAddress, 1, "MainRAM"),  # Current Level
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
@@ -195,33 +196,34 @@ class ApeEscapeClient(BizHawkClient):
             recv_index = int.from_bytes(reads[0], byteorder="little")
             gameState = int.from_bytes(reads[1], byteorder="little")
             currentRoom = int.from_bytes(reads[2], byteorder="little")
-            currentLevel = int.from_bytes(reads[3], byteorder="little")
-            gameRunning = int.from_bytes(reads[4], byteorder="little")
-            jakeVictory = int.from_bytes(reads[5], byteorder="little")
+            NearbyRoom = int.from_bytes(reads[3], byteorder="little")
+            currentLevel = int.from_bytes(reads[4], byteorder="little")
+            gameRunning = int.from_bytes(reads[5], byteorder="little")
+            jakeVictory = int.from_bytes(reads[6], byteorder="little")
             # Locations
-            previousCoinStateRoom = int.from_bytes(reads[6], byteorder="little")
-            currentCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
-            coinCount = int.from_bytes(reads[8], byteorder="little")
-            localhundoCount = int.from_bytes(reads[9], byteorder="little")
-            requiredApes = int.from_bytes(reads[10], byteorder="little")
-            currentApes = int.from_bytes(reads[11], byteorder="little")
-            gotMail = int.from_bytes(reads[12], byteorder="little")
-            mailboxID = int.from_bytes(reads[13], byteorder="little")
+            previousCoinStateRoom = int.from_bytes(reads[7], byteorder="little")
+            currentCoinStateRoom = int.from_bytes(reads[8], byteorder="little")
+            coinCount = int.from_bytes(reads[9], byteorder="little")
+            localhundoCount = int.from_bytes(reads[10], byteorder="little")
+            requiredApes = int.from_bytes(reads[11], byteorder="little")
+            currentApes = int.from_bytes(reads[12], byteorder="little")
+            gotMail = int.from_bytes(reads[13], byteorder="little")
+            mailboxID = int.from_bytes(reads[14], byteorder="little")
             # Items
-            energyChips = int.from_bytes(reads[14], byteorder="little")
-            cookies = int.from_bytes(reads[15], byteorder="little")
-            totalLives = int.from_bytes(reads[16], byteorder="little")
-            flashAmmo = int.from_bytes(reads[17], byteorder="little")
-            rocketAmmo = int.from_bytes(reads[18], byteorder="little")
-            keyCountFromServer = int.from_bytes(reads[19], byteorder="little")
+            energyChips = int.from_bytes(reads[15], byteorder="little")
+            cookies = int.from_bytes(reads[16], byteorder="little")
+            totalLives = int.from_bytes(reads[17], byteorder="little")
+            flashAmmo = int.from_bytes(reads[18], byteorder="little")
+            rocketAmmo = int.from_bytes(reads[19], byteorder="little")
+            keyCountFromServer = int.from_bytes(reads[20], byteorder="little")
             # Misc
-            spikeState = int.from_bytes(reads[20], byteorder="little")
-            spikeState2 = int.from_bytes(reads[21], byteorder="little")
-            kickoutofLevel = int.from_bytes(reads[22], byteorder="little")
-            roomStatus = int.from_bytes(reads[23], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[24], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[25], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[26], byteorder="little")
+            spikeState = int.from_bytes(reads[21], byteorder="little")
+            spikeState2 = int.from_bytes(reads[22], byteorder="little")
+            kickoutofLevel = int.from_bytes(reads[23], byteorder="little")
+            roomStatus = int.from_bytes(reads[24], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[25], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[26], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[27], byteorder="little")
 
             #Related to Gadgets
             gadgetTuples = [
@@ -334,6 +336,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.MM_Lobby_DoubleDoor_OpenAddress, 1, "MainRAM"),
                 (RAM.MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.MM_Professor_RescuedAddress, 1, "MainRAM"),
+                (RAM.MM_Clown_State, 1, "MainRAM"),
                 (RAM.MM_Nathalie_RescuedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
@@ -358,21 +361,22 @@ class ApeEscapeClient(BizHawkClient):
             MM_Lobby_DoubleDoor_Open = int.from_bytes(locksReads[1], byteorder="little")
             MM_Jake_DefeatedAddress = int.from_bytes(locksReads[2], byteorder="little")
             MM_Professor_RescuedAddress = int.from_bytes(locksReads[3], byteorder="little")
-            MM_Nathalie_RescuedAddress = int.from_bytes(locksReads[4], byteorder="little")
-            MM_Jake_Defeated = int.from_bytes(locksReads[5], byteorder="little")
-            MM_Professor_Rescued = int.from_bytes(locksReads[6], byteorder="little")
-            MM_Nathalie_Rescued = int.from_bytes(locksReads[7], byteorder="little")
-            MM_Lobby_DoorDetection = int.from_bytes(locksReads[8], byteorder="little")
+            MM_Clown_State = int.from_bytes(locksReads[4], byteorder="little")
+            MM_Nathalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder="little")
+            MM_Jake_Defeated = int.from_bytes(locksReads[6], byteorder="little")
+            MM_Professor_Rescued = int.from_bytes(locksReads[7], byteorder="little")
+            MM_Nathalie_Rescued = int.from_bytes(locksReads[8], byteorder="little")
+            MM_Lobby_DoorDetection = int.from_bytes(locksReads[9], byteorder="little")
 
             # Buttons
-            CrC_ButtonPressed = int.from_bytes(locksReads[9], byteorder="little")
-            CrC_Door_Visual = int.from_bytes(locksReads[10], byteorder="little")
-            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[11], byteorder="little")
-            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[12], byteorder="little")
-            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[13], byteorder="little")
-            MM_MonkeyHead_Door = int.from_bytes(locksReads[14], byteorder="little")
-            MM_Painting_ButtonPressed = int.from_bytes(locksReads[15], byteorder="little")
-            MM_Painting_Visual = int.from_bytes(locksReads[16], byteorder="little")
+            CrC_ButtonPressed = int.from_bytes(locksReads[10], byteorder="little")
+            CrC_Door_Visual = int.from_bytes(locksReads[11], byteorder="little")
+            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[12], byteorder="little")
+            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[13], byteorder="little")
+            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[14], byteorder="little")
+            MM_MonkeyHead_Door = int.from_bytes(locksReads[15], byteorder="little")
+            MM_Painting_ButtonPressed = int.from_bytes(locksReads[16], byteorder="little")
+            MM_Painting_Visual = int.from_bytes(locksReads[17], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -763,7 +767,7 @@ class ApeEscapeClient(BizHawkClient):
                 }])
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [MM_Jake_Defeated,MM_Professor_Rescued,MM_Nathalie_Rescued,currentRoom,MM_Nathalie_RescuedAddress,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress]
+            MM_Reads = [currentRoom,NearbyRoom,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -906,60 +910,34 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 self.replacePunch = True
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
+
     async def MM_Optimizations(self, ctx: "BizHawkClientContext", MM_Reads) -> None:
 
-        MM_Jake_Defeated = MM_Reads[0]
-        MM_Professor_Rescued = MM_Reads[1]
-        MM_Nathalie_Rescued = MM_Reads[2]
-        currentRoom = MM_Reads[3]
-        MM_Nathalie_RescuedAddress = MM_Reads[4]
-        MM_Lobby_DoubleDoor = MM_Reads[5]
-        MM_Lobby_DoorDetection = MM_Reads[6]
-        MM_Lobby_DoubleDoor_Open = MM_Reads[7]
-        MM_Jake_DefeatedAddress = MM_Reads[8]
+        currentRoom = MM_Reads[0]
+        NearbyRoom = MM_Reads[1]
+        MM_Jake_Defeated = MM_Reads[2]
+        MM_Lobby_DoubleDoor = MM_Reads[3]
+        MM_Lobby_DoorDetection = MM_Reads[4]
+        MM_Lobby_DoubleDoor_Open = MM_Reads[5]
+        MM_Jake_DefeatedAddress = MM_Reads[6]
+
 
         MM_Writes = []
 
         if MM_Jake_Defeated > 0:
             MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-        if MM_Professor_Rescued > 0:
-            MM_Writes += [(RAM.temp_MM_Professor_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
-
-        if MM_Nathalie_Rescued > 0:
-            MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
-
-        # Rescued Nathalie in the room
-        if currentRoom == 76 and MM_Nathalie_RescuedAddress == 5:
-            MM_Nathalie_Rescued = 1
-
-        # Prevention state of MM Lobby for Double Door
-        if currentRoom in (70, 71, 72, 77, 78):
-            MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-            MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-            #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-            #MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-
-        # TODO Does not work, try to see why!
+        if NearbyRoom == 69 and currentRoom != 69:
+            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+            print("Next room is Lobby")
         if currentRoom == 69:
             # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
+
             MM_Writes += [(RAM.MM_Lobby_JakeDoorFenceAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.MM_Lobby_JakeDoor_HitboxAddress, 0x80.to_bytes(1, "little"), "MainRAM")]
-            #MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
-            #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
 
             if MM_Lobby_DoubleDoor == 0:
                 # Prevent the door from opening no matter what,even if you defeated Jake
-                # print(MM_Nathalie_Rescued)
-                if MM_Nathalie_Rescued == 0x01:
-                    MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                else:
-                    MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-
-                if MM_Professor_Rescued == 0x01:
-                    MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                else:
-                    MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
                 if MM_Jake_Defeated == 0x00:
                     print("Jake NOT Defeated")
@@ -967,22 +945,32 @@ class ApeEscapeClient(BizHawkClient):
                     MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                     MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
                 else:
-                    #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
                     #Jake is defeated by the player
                     print("Jake Defeated")
+
                     if self.bool_MMDoubleDoor == True:
                         # self.bool_MMDoubleDoor = False
                         # Don't "Close" door if the door is not open yet
-                        if MM_Jake_DefeatedAddress == 0x06:
+                        #if MM_Jake_DefeatedAddress == 0x00:
+                        if MM_Lobby_DoorDetection != 0x8C820000:
                             print("[MM_Door]Close door")
-                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                            MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
+                            #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                            #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
                     else:
+                        # If Jake is defeated and you ENTER the lobby,door will already be to 5,close it again
                         self.bool_MMDoubleDoor = True
-                        if MM_Lobby_DoubleDoor_Open == 0x05:
-                            print("[MM_Door]Next pass will Close the door")
-                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                        MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                        #if MM_Lobby_DoubleDoor_Open == 0x05:
+                            #print("[MM_Door]Next pass will Close the door")
+
+
+                            #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+
             else:
+                # TODO Now the code for without the Item works flawlesly
+                # TODO Fix the code WITH the Item
                 # You have the Item,set the door to 4 + Jake defeated to 5,
                 # then make Jake_defeated = 0 if not defeated
                 if self.bool_MMDoubleDoor == True:
@@ -1005,12 +993,9 @@ class ApeEscapeClient(BizHawkClient):
                     if MM_Lobby_DoubleDoor_Open != 0x05: # Door already opened if == 5
                         print("[MM_Door]Next pass will Open the door")
                         MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
-                    #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                #print("Door not equal to 5")
-                # If the door is open, and you don't have defeated Jake,put back the address to 0
-                # It will not close the door but will make sure you can go defeat Jake if needed.
         else:
             self.bool_MMDoubleDoor = False
+
         await bizhawk.write(ctx.bizhawk_ctx,MM_Writes)
 
     async def permanent_buttons_handling(self, ctx: "BizHawkClientContext", Button_Reads) -> None:
@@ -1323,7 +1308,7 @@ class ApeEscapeClient(BizHawkClient):
             if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
                 if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
                     await self.send_deathlink(ctx)
-                elif cookies != 0x00:
+                elif cookies != 0x00 or gamestate == RAM.gameState["Menu"]:
                     self.sending_death_link = False
             if self.pending_death_link:
                 DL_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
@@ -1334,7 +1319,7 @@ class ApeEscapeClient(BizHawkClient):
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
         ctx.last_death_link = time.time()
-        await ctx.send_death(ctx.player_names[ctx.slot] + " says: `Oooh noooo!`")
+        await ctx.send_death(ctx.player_names[ctx.slot] + " says: `Oooh noooo!`(Died)")
 
     def on_deathlink(self, ctx: "BizHawkClientContext") -> None:
         ctx.last_death_link = time.time()
