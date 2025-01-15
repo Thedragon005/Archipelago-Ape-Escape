@@ -235,6 +235,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.circleGadgetAddress, 1, "MainRAM"),
                 (RAM.crossGadgetAddress, 1, "MainRAM"),
                 (RAM.gadgetUseStateAddress, 1, "MainRAM"),  # Which gadget is used in what way. **Not used at the moment
+                (RAM.punchVisualAddress, 32, "MainRAM"),  # Which gadget is used in what way. **Not used at the moment
             ]
 
             gadgetReads = await bizhawk.read(ctx.bizhawk_ctx, gadgetTuples)
@@ -247,6 +248,7 @@ class ApeEscapeClient(BizHawkClient):
             circleGadget = int.from_bytes(gadgetReads[5], byteorder="little")
             crossGadget = int.from_bytes(gadgetReads[6], byteorder="little")
             gadgetUseState = int.from_bytes(gadgetReads[7], byteorder="little")
+            punchVisualAddress = int.from_bytes(gadgetReads[8], byteorder="little")
 
             # Menu and level select reads
             menuTuples = [
@@ -795,7 +797,7 @@ class ApeEscapeClient(BizHawkClient):
             # ===== Gadgets handling =======
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
-            Gadgets_Reads = [currentLevel,heldGadget,gadgetStateFromServer,crossGadget,menuState,menuState2]
+            Gadgets_Reads = [currentLevel,heldGadget,gadgetStateFromServer,crossGadget,menuState,menuState2,punchVisualAddress]
             await self.gadgets_handler(ctx,Gadgets_Reads)
             # ======================================
 
@@ -856,6 +858,7 @@ class ApeEscapeClient(BizHawkClient):
         crossGadget = Gadgets_Reads[3]
         menuState = Gadgets_Reads[4]
         menuState2 = Gadgets_Reads[5]
+        punchVisualAddress = Gadgets_Reads[6]
 
         gadgets_Writes = []
 
@@ -898,17 +901,29 @@ class ApeEscapeClient(BizHawkClient):
                 elif ctx.slot_data["shufflenet"] == ShuffleNetOption.option_false:
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-            # Punch Visual glitch in menu fix
-            if (menuState == 0) and (menuState2 == 1):
-                # Replace all values from 0x0E78C0 to 0x0E78DF to this:
-                # 0010000000000000E00B00000000000000100000000000000000000000000000
-                if ((gadgetStateFromServer & 32) == 32) and self.replacePunch == True:
-                    bytes_ToWrite: bytes = bytes.fromhex(
-                        "0010000000000000E00B00000000000000100000000000000000000000000000")
-                    gadgets_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
-                    self.replacePunch = False
-            else:
-                self.replacePunch = True
+        # Punch Visual glitch in menu fix
+        if (menuState == 0) and (menuState2 == 1):
+
+            # Replace all values from 0x0E78C0 to 0x0E78DF to this:
+            # 0010000000000000E00B00000000000000100000000000000000000000000000
+            bytes_ToWrite: bytes = bytes.fromhex(
+                "0010000000000000E00B00000000000000100000000000000000000000000000")
+            ToWrite = 0x0010000000000000E00B00000000000000100000000000000000000000000000
+            #print(punchVisualAddress.to_bytes(32,"little"))
+            #print(bytes_ToWrite)
+            if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite: #and self.replacePunch == True:
+                #print(punchVisualAddress)
+                #print(int.from_bytes(bytes_ToWrite))
+                gadgets_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
+                print("Replaced Punch visuals")
+                self.replacePunch = False
+                #print("Fix Punch")
+                #gadgets_Writes += [(RAM.unlockedGadgetsAddress, 0x24.to_bytes(1, "little"), "MainRAM")]
+        else:
+            self.replacePunch = True
+            # Set gadget state to "Punch" only,will get replaced automatically by the writes on next client's pass
+            # Should fix the bug?
+
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
 
     async def MM_Optimizations(self, ctx: "BizHawkClientContext", MM_Reads) -> None:
