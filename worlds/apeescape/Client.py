@@ -323,6 +323,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.enteredWorldAddress, 1, "MainRAM"),  # After selecting a level, the entered world
                 (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
                 (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
+                (RAM.punchVisualAddress, 32, "MainRAM"),
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -359,6 +360,7 @@ class ApeEscapeClient(BizHawkClient):
             status_currentWorld = int.from_bytes(reads[29], byteorder="little")
             status_currentLevel = int.from_bytes(reads[30], byteorder="little")
             isUnderwater = int.from_bytes(reads[31], byteorder="little")
+            punchVisualAddress = int.from_bytes(reads[32], byteorder="little")
 
             DL_Reads = [cookies,gameRunning,gameState]
             await self.handle_death_link(ctx,DL_Reads)
@@ -534,6 +536,7 @@ class ApeEscapeClient(BizHawkClient):
             # Required apes (to match hundo)
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
+                (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
@@ -689,13 +692,19 @@ class ApeEscapeClient(BizHawkClient):
                     elif ctx.slot_data["shufflenet"] == ShuffleNetOption.option_false:
                         writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-            # Punch Visual glitch in menu fix
+                    # Punch Visual glitch in menu fix
             if (menuState == 0) and (menuState2 == 1):
+
                 # Replace all values from 0x0E78C0 to 0x0E78DF to this:
                 # 0010000000000000E00B00000000000000100000000000000000000000000000
-                if ((gadgetStateFromServer & 32) == 32) and self.replacePunch == True:
-                    bytes_ToWrite: bytes = bytes.fromhex("0010000000000000E00B00000000000000100000000000000000000000000000")
+                bytes_ToWrite: bytes = bytes.fromhex(
+                    "0010000000000000E00B00000000000000100000000000000000000000000000")
+                ToWrite = 0x0010000000000000E00B00000000000000100000000000000000000000000000
+                # print(punchVisualAddress.to_bytes(32,"little"))
+                # print(bytes_ToWrite)
+                if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite:  # and self.replacePunch == True:
                     writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
+                    print("Replaced Punch visuals")
                     self.replacePunch = False
             else:
                 self.replacePunch = True
