@@ -1306,9 +1306,9 @@ class ApeEscapeClient(BizHawkClient):
                 await ctx.update_death_link(True)
                 self.previous_death_link = ctx.last_death_link
             if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
-                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
+                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"],RAM.gameState["Menu"]):
                     await self.send_deathlink(ctx)
-                elif cookies != 0x00 or gamestate == RAM.gameState["Menu"]:
+                elif cookies != 0x00:
                     self.sending_death_link = False
             if self.pending_death_link:
                 DL_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
