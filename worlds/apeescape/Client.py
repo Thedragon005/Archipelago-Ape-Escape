@@ -776,34 +776,37 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
-    async def handle_death_link(self, ctx: "BizHawkClientContext",DL_Reads) -> None:
+    async def handle_death_link(self, ctx: "BizHawkClientContext", DL_Reads) -> None:
         """
         Checks whether the player has died while connected and sends a death link if so.
         """
         cookies = DL_Reads[0]
         gameRunning = DL_Reads[1]
         gamestate = DL_Reads[2]
+
+        DL_writes = []
+
         if ctx.slot_data["death_link"] == Toggle.option_true:
             if "DeathLink" not in ctx.tags:
                 await ctx.update_death_link(True)
                 self.previous_death_link = ctx.last_death_link
             if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
-                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
+                if cookies == 0x00 and not self.sending_death_link and gamestate in (
+                RAM.gameState["InLevel"], RAM.gameState["TimeStation"]):
                     await self.send_deathlink(ctx)
                 elif cookies != 0x00:
                     self.sending_death_link = False
             if self.pending_death_link:
-                writesDL = []
-                writesDL += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                DL_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 self.pending_death_link = False
                 self.sending_death_link = True
-                await bizhawk.write(ctx.bizhawk_ctx,writesDL)
+                await bizhawk.write(ctx.bizhawk_ctx, DL_writes)
 
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
         ctx.last_death_link = time.time()
-        await ctx.send_death(ctx.player_names[ctx.slot] + " says: `Oooh noooo!`")
-
+        DeathText = ctx.player_names[ctx.slot] + " says: `Oooh noooo!`(Died)"
+        await ctx.send_death(DeathText)
     def on_deathlink(self, ctx: "BizHawkClientContext") -> None:
         ctx.last_death_link = time.time()
         self.pending_death_link = True
