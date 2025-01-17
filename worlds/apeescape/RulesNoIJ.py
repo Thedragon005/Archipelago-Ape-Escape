@@ -1111,7 +1111,7 @@ def MM_Jake(state, world):
 
 
 def MM_Lobby_DoubleDoor(state, world):
-    return state.has(AEItem.MMLobbyDoubleDoor.value, world.player, 1)
+    return state.has(AEItem.MMLobbyDoubleDoorKey.value, world.player, 1)
 
 
 def MM_SHA(state, world):

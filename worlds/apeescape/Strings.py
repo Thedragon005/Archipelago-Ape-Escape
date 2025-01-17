@@ -643,7 +643,7 @@ class AEItem(Enum):
     TVT_Tank_Lamp = "TV Tower Monkey Lamp (Tank Room)"
     MM_Lamp = "Monkey Madness Monkey Lamp"
     Nothing = "Banana Peel"
-    MMLobbyDoubleDoor = "Monkey Madness Lobby Double Door"
+    MMLobbyDoubleDoorKey = "Monkey Madness Lobby Double Door Key"
     Shirt = "Jacket"
     Triangle = "Energy Chip"
     BigTriangle = "5 Energy Chips"

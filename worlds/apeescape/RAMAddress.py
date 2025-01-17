@@ -919,7 +919,7 @@ class RAM:
         "TVT_Lobby_Lamp": 0x155,
         "TVT_Tank_Lamp": 0x156,
         "MM_Lamp": 0x157,
-        "MMLobbyDoubleDoor": 0x403,
+        "MMLobbyDoubleDoorKey": 0x403,
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -1134,7 +1134,8 @@ class RAM:
     TVT_Lobby_Button = 0x1710E6 # Active 0x01 ROOM = 65
 
     TVT_Lobby_Water_HitBox = 0x170EFF # Active Value = 0
-    TVT_Lobby_Water_DoorHitbox = 0x170E5D # Active Value = 80
+    TVT_Lobby_Water_DoorHitbox1 = 0x170E5D # Active Value = 80
+    TVT_Lobby_Water_DoorHitbox2 = 0x170E25 # Active Value = 80
     TVT_Lobby_Water_DoorVisualP1 = 0x0C04CF # Active Value = 0
     TVT_Lobby_Water_DoorVisualP2 = 0x0C04EF # Active Value = 0
     TVT_Lobby_Water_BackColor1 = 0x0C0698 # Active Value = AC78

@@ -43,7 +43,7 @@ item_table = {
     AEItem.MM_Lamp.value: RAM.items["MM_Lamp"],
 
     #Locks
-    AEItem.MMLobbyDoubleDoor.value: RAM.items["MMLobbyDoubleDoor"],
+    AEItem.MMLobbyDoubleDoorKey.value: RAM.items["MMLobbyDoubleDoorKey"],
 
     # Junk
     AEItem.Nothing.value: RAM.items["Nothing"],

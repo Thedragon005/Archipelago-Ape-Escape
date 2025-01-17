@@ -498,7 +498,7 @@ class ApeEscapeClient(BizHawkClient):
                         elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
                             if waternetState != 2:
                                 waternetState += 1
-                        elif (item.item - self.offset) == RAM.items["MMLobbyDoubleDoor"]:
+                        elif (item.item - self.offset) == RAM.items["MMLobbyDoubleDoorKey"]:
                             MM_Lobby_DoubleDoor = 1
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
                             watercatchState = 1
@@ -737,7 +737,7 @@ class ApeEscapeClient(BizHawkClient):
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
                 (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
-                (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
+                (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
@@ -944,8 +944,11 @@ class ApeEscapeClient(BizHawkClient):
             MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
         if NearbyRoom == 69 and currentRoom != 69:
-            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
-            print("Next room is Lobby")
+            print("Next room == Lobby")
+            if MM_Lobby_DoubleDoor == 0x00:
+                if MM_Lobby_DoorDetection != 0x8C800000:
+                    MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+                    print("Double Door Item not acquired,disable door detection")
         if currentRoom == 69:
             # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
 
@@ -964,52 +967,42 @@ class ApeEscapeClient(BizHawkClient):
                     #Jake is defeated by the player
                     print("Jake Defeated")
 
-                    if self.bool_MMDoubleDoor == True:
-                        # self.bool_MMDoubleDoor = False
-                        # Don't "Close" door if the door is not open yet
-                        #if MM_Jake_DefeatedAddress == 0x00:
-                        if MM_Lobby_DoorDetection != 0x8C820000:
-                            print("[MM_Door]Close door")
-                            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-                            #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                            #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                    else:
+                    if self.bool_MMDoubleDoor == False:
                         # If Jake is defeated and you ENTER the lobby,door will already be to 5,close it again
                         self.bool_MMDoubleDoor = True
                         MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                         MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                        #if MM_Lobby_DoubleDoor_Open == 0x05:
-                            #print("[MM_Door]Next pass will Close the door")
-
-
-                            #MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-
+                    else:
+                        # self.bool_MMDoubleDoor = False
+                        # Activate the door detection code
+                        if MM_Lobby_DoorDetection != 0x8C820000:
+                            print("[MM_Door]Close door")
+                            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
             else:
                 # TODO Now the code for without the Item works flawlesly
                 # TODO Fix the code WITH the Item
                 # You have the Item,set the door to 4 + Jake defeated to 5,
                 # then make Jake_defeated = 0 if not defeated
-                if self.bool_MMDoubleDoor == True:
-                    # self.bool_MMDoubleDoor = False
-                    if MM_Jake_DefeatedAddress == 0x06:
-                        print("[MM_Door]Opened")
-                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                        MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                    #else the door is already open
-                    if MM_Jake_Defeated == 0x00:
-                        if MM_Jake_DefeatedAddress != 0x00 and MM_Lobby_DoubleDoor_Open == 0x05:
+
+                if MM_Jake_Defeated == 0x00:
+                    if self.bool_MMDoubleDoor == False:
+                        self.bool_MMDoubleDoor = True
+                        # Door already opened if == 5
+                        if MM_Lobby_DoorDetection != 0x8C820000:
+                            print("[MM_Door]Door Detection")
+                            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
+                        if MM_Lobby_DoubleDoor_Open != 0x05:
+                            print("[MM_Door]Open the Door")
+                            # Set the door to 4 if it is not 5, to open it back
+                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                            MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        # self.bool_MMDoubleDoor = False
+                        if MM_Jake_DefeatedAddress != 0x00:
                             print("[MM_Door]Put back Jake_DefeatedAddress")
                             MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    else:
-                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-
-                else:
-                    self.bool_MMDoubleDoor = True
-
-                    if MM_Lobby_DoubleDoor_Open != 0x05: # Door already opened if == 5
-                        print("[MM_Door]Next pass will Open the door")
-                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
         else:
+            # Room not MM_Lobby, reset the variable
             self.bool_MMDoubleDoor = False
 
         await bizhawk.write(ctx.bizhawk_ctx,MM_Writes)
@@ -1100,7 +1093,8 @@ class ApeEscapeClient(BizHawkClient):
                     }])
                 if self.TVT_Lobby_Button == 1:
                     Button_Writes += [(RAM.TVT_Lobby_Water_HitBox, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.TVT_Lobby_Water_DoorHitbox, 0x80.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.TVT_Lobby_Water_DoorHitbox1, 0x80.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.TVT_Lobby_Water_DoorHitbox2, 0x80.to_bytes(1, "little"), "MainRAM")]
                     Button_Writes += [(RAM.TVT_Lobby_Water_DoorVisualP1, 0x00.to_bytes(1, "little"), "MainRAM")]
                     Button_Writes += [(RAM.TVT_Lobby_Water_DoorVisualP2, 0x00.to_bytes(1, "little"), "MainRAM")]
                     Button_Writes += [(RAM.TVT_Lobby_Water_BackColor1, 0xAC78.to_bytes(2, "little"), "MainRAM")]
