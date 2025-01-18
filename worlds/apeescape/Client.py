@@ -77,7 +77,7 @@ class ApeEscapeClient(BizHawkClient):
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
         self.preventKickOut = True
-        self.replacePunch = True
+        #self.replacePunch = True
         self.killPlayer = True
         self.inWater = 0
         self.waternetState = 0
@@ -610,49 +610,57 @@ class ApeEscapeClient(BizHawkClient):
             grounded = [0x00, 0x01, 0x02, 0x05, 0x07]#, 0x80, 0x81] Removed them since you can fling you net and give you extra air
             limited_OxygenLevel = 0x64
 
-            # Water Net Handling
-            if waternetState == 0x00:
+            # Base variables
+            if waternetState <= 0x01:
                 writes += [(RAM.canDiveAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_ReplenishOxygenUWAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.swim_surfaceDetectionAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            else:
+                # (waternetstate > 0x01)
+                writes += [(RAM.canDiveAddress, 0x08018664.to_bytes(4, "little"), "MainRAM")]
+                writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x0C021DFE.to_bytes(4, "little"), "MainRAM")]
+                writes += [(RAM.swim_ReplenishOxygenUWAddress, 0xA4500018.to_bytes(4, "little"), "MainRAM")]
+                writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0xA4434DC8.to_bytes(4, "little"), "MainRAM")]
 
+            # Oxygen Handling
+            if waternetState == 0x00:
                 if gameState == RAM.gameState["InLevel"]:
                     if gameRunning == 0x01:
                         # Set the air to the "Limited" value if 2 conditions:
                         # Oxygen is higher that "Limited" value AND spike is Swimming or Grounded
                         if spikeState2 in swimming:
                             if (swim_oxygenLevel > limited_OxygenLevel):
-                                writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                                writes += [
+                                    (RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                         else:
-                            #if self.waterHeight != 0:
-                                #self.waterHeight = 0
+                            # if self.waterHeight != 0:
+                            # self.waterHeight = 0
                             if spikeState2 in grounded:
-                                writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                                writes += [
+                                    (RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
 
                     else:
-                    # Game Not running
+                        # Game Not running
                         if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
                             # You died while swimming, reset Oxygen to "Limited" value prevent death loops
-                            writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                            writes += [
+                                (RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                             writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
             if waternetState == 0x01:
-                #writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0xA4434DC8.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
-                if (isUnderwater == 0x00 and swim_oxygenLevel != limited_OxygenLevel):
+
+                if isUnderwater == 0x00 and swim_oxygenLevel != limited_OxygenLevel:
                     writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                 if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
                     # You died while swimming, reset Oxygen to "Limited" value prevent death loops
                     writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                     writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
-            if waternetState >= 0x02:
-                writes += [(RAM.canDiveAddress, 0x08018664.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x0C021DFE.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.swim_ReplenishOxygenUWAddress, 0xA4500018.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0xA4434DC8.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
 
+            # WaterCatch unlocking stuff bellow
+            if watercatchState == 0x00:
+                writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            else:
+                writes += [(RAM.canWaterCatchAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
 
             # WaterCatch unlocking stuff bellow
             if watercatchState == 0x00:
@@ -692,7 +700,7 @@ class ApeEscapeClient(BizHawkClient):
                     elif ctx.slot_data["shufflenet"] == ShuffleNetOption.option_false:
                         writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-                    # Punch Visual glitch in menu fix
+            # Punch Visual glitch in menu fix
             if (menuState == 0) and (menuState2 == 1):
 
                 # Replace all values from 0x0E78C0 to 0x0E78DF to this:
@@ -705,9 +713,9 @@ class ApeEscapeClient(BizHawkClient):
                 if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite:  # and self.replacePunch == True:
                     writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
                     print("Replaced Punch visuals")
-                    self.replacePunch = False
-            else:
-                self.replacePunch = True
+                    #self.replacePunch = False
+            #else:
+                #self.replacePunch = True
 
             # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
             if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
