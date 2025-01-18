@@ -94,6 +94,7 @@ class ApeEscapeClient(BizHawkClient):
         self.MM_MonkeyHead_Button = 0
         self.TVT_Lobby_Button = 0
         self.bool_MMDoubleDoor = False
+        self.bool_LampGlobal = False
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -782,10 +783,11 @@ class ApeEscapeClient(BizHawkClient):
 
             # ===== Lamp Unlocks =======
             # Tables for Lamp updates
-            localLampsUpdate = {0x08: CBLampState,0x14: CPLampState,0x16: TVTTankLampState, 0x1D: MMLampState}
-            globalLampsUpdate = {0x0A: DILampState,0x11: CrCLampState,0x15: SFLampState,0x16: TVTLobbyLampState}
+            localLampsUpdate = {21: CBLampState,53: CPLampState, 79: MMLampState}
+            globalLampsUpdate = {26: DILampState,46: CrCLampState,57: SFLampState,66: TVTTankLampState}
+            bothLampsUpdate = {65: TVTLobbyLampState}
             # Execute the Lamp unlocking code segment
-            Lamps_Reads = [localLampsUpdate,globalLampsUpdate,currentLevel,LocalLamp_LocalUpdate,GlobalLamp_LocalUpdate]
+            Lamps_Reads = [currentRoom,NearbyRoom,localLampsUpdate,globalLampsUpdate,bothLampsUpdate,LocalLamp_LocalUpdate,GlobalLamp_LocalUpdate]
             await self.lamps_unlocks_handling(ctx,Lamps_Reads)
             # =======================
 
@@ -1147,33 +1149,102 @@ class ApeEscapeClient(BizHawkClient):
 
     async def lamps_unlocks_handling(self, ctx: "BizHawkClientContext", Lamps_Reads) -> None:
         # Variables
-        localLampsUpdate = Lamps_Reads[0]
-        globalLampsUpdate = Lamps_Reads[1]
-        currentLevel = Lamps_Reads[2]
-        LocalLamp_LocalUpdate = Lamps_Reads[3]
-        GlobalLamp_LocalUpdate = Lamps_Reads[4]
+        currentRoom = Lamps_Reads[0]
+        NearbyRoom = Lamps_Reads[1]
+        localLampsUpdate = Lamps_Reads[2]
+        globalLampsUpdate = Lamps_Reads[3]
+        bothLampsUpdate = Lamps_Reads[4]
+        LocalLamp_LocalUpdate = Lamps_Reads[5]
+        GlobalLamp_LocalUpdate = Lamps_Reads[6]
 
         Lamps_writes = []
 
         # Trigger Monkey Lamps depending on Lamp states
-        if (currentLevel in globalLampsUpdate):
-            if globalLampsUpdate[currentLevel] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+
+        #Lamps that are both affected by Local and Global values
+
+        if (NearbyRoom in bothLampsUpdate and NearbyRoom != currentRoom):
+            if bothLampsUpdate[NearbyRoom] == 0:
+                print("Update Local")
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                print("[LAMP]N_both Global Update")
                 Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            elif globalLampsUpdate[currentLevel] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+            elif bothLampsUpdate[NearbyRoom] == 1:
+                print("[LAMP]N_both Global Update(With ITEM)")
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+                #Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+        if (NearbyRoom in globalLampsUpdate and NearbyRoom != currentRoom):
+            if globalLampsUpdate[NearbyRoom] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+                print("[LAMP]N_global Global Update")
+                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            elif globalLampsUpdate[NearbyRoom] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                print("[LAMP]N_global Global Update(With ITEM)")
+                #Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+        if (currentRoom in bothLampsUpdate):
+            #print(self.bool_LampGlobal)
+            if bothLampsUpdate[currentRoom] == 0:
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                if self.bool_LampGlobal == False:
+                    self.bool_LampGlobal = True
+                    print("[LAMP]C_both Global Update")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                else:
+                    #Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+            elif bothLampsUpdate[currentRoom] == 1:
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+                print("[LAMP]C_both Global Update(With ITEM)")
                 Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-        elif GlobalLamp_LocalUpdate != 0x9082007A:
-            Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
-            Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
 
-        if (currentLevel in localLampsUpdate):
-            if localLampsUpdate[currentLevel] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+        # Lamps that detect only Global values
+        if (currentRoom in globalLampsUpdate):
+            print(self.bool_LampGlobal)
+            if globalLampsUpdate[currentRoom] == 0:
+                print("[LAMP]C_global Global Update")
+                if self.bool_LampGlobal == False:
+                    self.bool_LampGlobal = True
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                else:
+                    #Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+            elif globalLampsUpdate[currentRoom] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                print("[LAMP]C_global Global Update(With ITEM)")
+                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+        if (currentRoom in localLampsUpdate):
+            if localLampsUpdate[currentRoom] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+                print("Update Local")
                 Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            elif localLampsUpdate[currentLevel] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
+            elif localLampsUpdate[currentRoom] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
                 Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-        elif LocalLamp_LocalUpdate != 0x9062007A:
-            Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+        if (NearbyRoom in localLampsUpdate and NearbyRoom != currentRoom):
+            if localLampsUpdate[NearbyRoom] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            elif localLampsUpdate[NearbyRoom] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+
+        if ((currentRoom in localLampsUpdate) == False) and (NearbyRoom in localLampsUpdate == False) and ((currentRoom in bothLampsUpdate) == False) and ((NearbyRoom in bothLampsUpdate) == False):
+            print("No lamp in room or nearby Rooms")
+            if LocalLamp_LocalUpdate != 0x9062007A:
+                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+
+        if ((currentRoom in globalLampsUpdate) == False and ((currentRoom in bothLampsUpdate) == False)):
+            print("Setting Lamp to false")
+            self.bool_LampGlobal = False
+            if (NearbyRoom not in globalLampsUpdate) and (NearbyRoom not in bothLampsUpdate):
+                if GlobalLamp_LocalUpdate != 0x9082007A:
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
 
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 

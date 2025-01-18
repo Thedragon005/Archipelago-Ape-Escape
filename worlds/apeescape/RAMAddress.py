@@ -1025,7 +1025,7 @@ class RAM:
     }
     localLamp_localUpdate = 0x097474 # Default : 9062007A. Set this to 0 to disable
     globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
-    globalLamp_globalUpdate = 0x097568 # Default : 1444000F. Set this to 0 to disable
+    globalLamp_globalUpdate = 0x097568 # 0x097568 Default : 1444000F. Set this to 0 to disable
 
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
