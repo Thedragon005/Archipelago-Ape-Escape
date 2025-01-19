@@ -783,7 +783,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ===== Lamp Unlocks =======
             # Tables for Lamp updates
-            localLampsUpdate = {21: CBLampState,53: CPLampState, 79: MMLampState}
+            localLampsUpdate = {20: CBLampState,53: CPLampState, 79: MMLampState}
             globalLampsUpdate = {26: DILampState,46: CrCLampState,57: SFLampState,66: TVTTankLampState}
             bothLampsUpdate = {65: TVTLobbyLampState}
             # Execute the Lamp unlocking code segment
@@ -1162,7 +1162,7 @@ class ApeEscapeClient(BizHawkClient):
         # Trigger Monkey Lamps depending on Lamp states
 
         #Lamps that are both affected by Local and Global values
-
+        # TODO Check a way to disable CrC Cinematic
         if (NearbyRoom in bothLampsUpdate and NearbyRoom != currentRoom):
             if bothLampsUpdate[NearbyRoom] == 0:
                 print("Update Local")
@@ -1239,8 +1239,9 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
 
         if ((currentRoom in globalLampsUpdate) == False and ((currentRoom in bothLampsUpdate) == False)):
-            print("Setting Lamp to false")
-            self.bool_LampGlobal = False
+            if self.bool_LampGlobal == True:
+                print("Setting Lamp to false")
+                self.bool_LampGlobal = False
             if (NearbyRoom not in globalLampsUpdate) and (NearbyRoom not in bothLampsUpdate):
                 if GlobalLamp_LocalUpdate != 0x9082007A:
                     Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
@@ -1323,7 +1324,14 @@ class ApeEscapeClient(BizHawkClient):
 
         WN_writes = []
         # Base variables
-        if waternetState <= 0x01:
+        if waternetState == 0x00:
+            WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.canDiveAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_ReplenishOxygenUWAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+        elif waternetState == 0x01:
+            WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.canDiveAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.swim_ReplenishOxygenUWAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
