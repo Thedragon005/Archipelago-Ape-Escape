@@ -154,12 +154,14 @@ class ApeEscapeWorld(World):
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
         # Water Net shuffle handling
-        if self.options.shufflewaternet == "false":
+        if self.options.shufflewaternet == 0x00: # Off
             self.multiworld.push_precollected(waternet)
-        else:
+        elif self.options.shufflewaternet == 0x01: # Progressive
             self.itempool += [watercatch]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
+        else: # On
+            self.itempool += [waternet]
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
@@ -261,6 +263,7 @@ class ApeEscapeWorld(World):
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
+            "lowoxygensounds": self.options.lowoxygensounds.value,
             "levelnames": bytestowrite, # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids, # Not used by the client. List of level ids in entrance order.
             "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.

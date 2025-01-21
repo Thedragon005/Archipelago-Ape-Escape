@@ -88,6 +88,8 @@ class ApeEscapeClient(BizHawkClient):
         # default to true, as we don't want to send a deathlink until playing
         self.sending_death_link: bool = True
         self.ignore_next_death_link = False
+        self.lowOxygenCounter = 0
+        self.bool_lowOxygen = 0
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -625,6 +627,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             else:
                 # (waternetstate > 0x01)
+                writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.canDiveAddress, 0x08018664.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x0C021DFE.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.swim_ReplenishOxygenUWAddress, 0xA4500018.to_bytes(4, "little"), "MainRAM")]
@@ -669,11 +672,36 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 writes += [(RAM.canWaterCatchAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
 
-            # WaterCatch unlocking stuff bellow
-            if watercatchState == 0x00:
-                writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            # Low Oxygen Sounds
+            if spikeState2 in swimming:
+
+                # Off
+                if ctx.slot_data["lowoxygensounds"] == 0x00:
+                    writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                # Half Beeps
+                elif ctx.slot_data["lowoxygensounds"] == 0x01:
+
+                    self.lowOxygenCounter += 1
+                    #Should start at 1
+                    print(self.lowOxygenCounter)
+                    if self.lowOxygenCounter <= 2:
+                        writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+                        writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+                    elif self.lowOxygenCounter <= 3:
+                        writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                        writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                    elif self.lowOxygenCounter > 3:
+                        self.lowOxygenCounter = 0
+
+                # On (Vanilla)
+                else:
+                    print("Vanilla")
+                    writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
             else:
-                writes += [(RAM.canWaterCatchAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                if self.lowOxygenCounter != 1:
+                    self.lowOxygenCounter = 1
 
             # Unequip the Time Net if it was shuffled. Note that just checking the Net option is not sufficient to known if the net was actually shuffled - we need to ensure there are locations in this world that don't require net to be sure.
             if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true and (ctx.slot_data["coin"] == CoinOption.option_true or ctx.slot_data["mailbox"] == MailboxOption.option_true):

@@ -41,15 +41,15 @@ class LogicOption(Choice):
 class SuperFlyerOption(Choice):
     """Choose if the Super Flyer trick should be put into logic.
 
-        true: Super Flyer is put into logic.
         false: Super Flyer is not put into logic.
+        true: Super Flyer is put into logic.
 
-        Supported values: true, false
+        Supported values: false, true
         Default value: false
     """
     display_name = "Super Flyer"
-    option_true = 0x01
     option_false = 0x00
+    option_true = 0x01
     default = option_false
 
 
@@ -99,16 +99,16 @@ class KeyOption(Choice):
 class CoinOption(Choice):
     """Choose if Specter Coins should be added as locations.
 
-        true: The 60 Specter Coins are added as locations.
         false: Specter Coins are not locations.
+        true: The 60 Specter Coins are added as locations.
 
-        Supported values: true, false
+        Supported values: false, true
         Default value: false
     """
 
     display_name = "Coin"
-    option_true = 0x01
     option_false = 0x00
+    option_true = 0x01
     default = option_false
 
 
@@ -116,16 +116,16 @@ class MailboxOption(Choice):
     """Choose if mailboxes should act as locations.
         Mailboxes in training rooms will never be locations.
 
-        true: The 63 available mailboxes are added as locations.
         false: Mailboxes are not locations.
+        true: The 63 available mailboxes are added as locations.
 
-        Supported values: true, false
+        Supported values: false, true
         Default value: false
     """
 
     display_name = "Mailbox"
-    option_true = 0x01
     option_false = 0x00
+    option_true = 0x01
     default = option_false
 
 
@@ -161,34 +161,53 @@ class ShuffleNetOption(Choice):
     """Choose if the Time Net should be shuffled.
         This option requires at least one of coins and mailboxes to be shuffled to be used - if all locations in this world require the net, the net will be given at game start.
 
-        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations if this happens.
         false: Time Net is not shuffled, and is given at game start.
+        true: Time Net is shuffled into the pool. The mailboxes in the Time Station will also be locations if this happens.
 
-        Supported values: true, false
+        Supported values: false, true
         Default value: false
     """
     display_name = "Shuffle Net"
-    option_true = 0x01
     option_false = 0x00
+    option_true = 0x01
     default = option_false
 
 
 class ShuffleWaterNetOption(Choice):
     """Choose if the Water Net should be shuffled.
-        This option splits the Water Net item into 2 distinct items:
-        Progressive Water Net: The first allows Spike to swim on the surface and avoid drowning after a few seconds. The second allows Spike to dive underwater.
-        Water Catch: Allows shooting the Water Net.
 
-        true: Water Net is shuffled, adding Progressive Water Net and Water Catch to the pool.
-        false: Water Net is not shuffled, and is given at game start.
+        off: Water Net is not shuffled, and is given at game start.
+        progressive: Water Net is shuffled and split into parts, adding two Progressive Water Net and Water Catch to the pool.
+        - Progressive Water Net : The first allows Spike to swim on the surface and avoid drowning after a few seconds. The second allows Spike to dive underwater.
+        - Water Catch: Allows shooting the Water Net.
+        on: Water Net is shuffled, adding it to the pool.
 
-        Supported values: true, false
-        Default value: false
+
+        Supported values: off, progressive, on
+        Default value: off
     """
     display_name = "Shuffle Water Net"
-    option_true = 0x01
-    option_false = 0x00
-    default = option_false
+    option_off = 0x00
+    option_progressive = 0x01
+    option_on = 0x02
+    default = option_off
+
+class LowOxygenSounds(Choice):
+    """How quickly the oxygen beep sound effect will play
+
+        off: Low Oxygen sounds will not play at all.
+        half: Low Oxygen sounds will be cut in half
+        on: Low Oxygen Sounds will play as vanilla
+
+
+        Supported values: off, half, on
+        Default value: off
+    """
+    display_name = "Low Oxygen Sounds"
+    option_off = 0x00
+    option_half = 0x01
+    option_on = 0x02
+    default = option_on
 
 
 @dataclass
@@ -203,4 +222,5 @@ class ApeEscapeOptions(PerGameCommonOptions):
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
+    lowoxygensounds: LowOxygenSounds
     death_link: DeathLink
