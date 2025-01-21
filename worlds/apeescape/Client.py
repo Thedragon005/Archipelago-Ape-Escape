@@ -95,6 +95,7 @@ class ApeEscapeClient(BizHawkClient):
         self.TVT_Lobby_Button = 0
         self.bool_MMDoubleDoor = False
         self.bool_LampGlobal = False
+        self.lowOxygenCounter = 1
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -1323,6 +1324,7 @@ class ApeEscapeClient(BizHawkClient):
         watercatchState = WN_Reads[7]
 
         WN_writes = []
+
         # Base variables
         if waternetState == 0x00:
             WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
@@ -1338,6 +1340,7 @@ class ApeEscapeClient(BizHawkClient):
             WN_writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
         else:
             # (waternetstate > 0x01)
+            WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.canDiveAddress, 0x08018664.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x0C021DFE.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.swim_ReplenishOxygenUWAddress, 0xA4500018.to_bytes(4, "little"), "MainRAM")]
@@ -1378,6 +1381,38 @@ class ApeEscapeClient(BizHawkClient):
             WN_writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
         else:
             WN_writes += [(RAM.canWaterCatchAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+
+        # Low Oxygen Sounds
+        if spikeState2 in swimming:
+
+            # Off
+            if ctx.slot_data["lowoxygensounds"] == 0x00:
+                WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+            # Half Beeps
+            elif ctx.slot_data["lowoxygensounds"] == 0x01:
+
+                self.lowOxygenCounter += 1
+                # Should start at 1
+                print(self.lowOxygenCounter)
+                if self.lowOxygenCounter <= 2:
+                    WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+                    WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+                elif self.lowOxygenCounter <= 3:
+                    WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                    WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C028004.to_bytes(4, "little"), "MainRAM")]
+                elif self.lowOxygenCounter > 3:
+                    self.lowOxygenCounter = 0
+
+            # On (Vanilla)
+            else:
+                print("Vanilla")
+                WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+                WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
+        else:
+            if self.lowOxygenCounter != 1:
+                self.lowOxygenCounter = 1
+
         await bizhawk.write(ctx.bizhawk_ctx,WN_writes)
 
     async def handle_death_link(self, ctx: "BizHawkClientContext",DL_Reads) -> None:

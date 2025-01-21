@@ -1052,7 +1052,9 @@ class RAM:
     swim_ReplenishOxygenUWAddress = 0x06141C # Default : A4500018, Disable : 00000000 4 bytes
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
-
+    swim_oxygenLowLevelSoundAddress = 0x061458  # Default : 3C02800F, disable : 3C028004 4 bytes
+    swim_oxygenMidLevelSoundAddress = 0x061490  # Default : 3C02800F, disable : 3C028004 4 bytes
+    
     MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
     MM_Clown_State = 0x174072
     MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5

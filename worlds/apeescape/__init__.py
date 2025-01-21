@@ -184,12 +184,14 @@ class ApeEscapeWorld(World):
             self.itempool += [MM_Lamp]
 
         # Water Net shuffle handling
-        if self.options.shufflewaternet == "false":
+        if self.options.shufflewaternet == 0x00:  # Off
             self.multiworld.push_precollected(waternet)
-        else:
+        elif self.options.shufflewaternet == 0x01:  # Progressive
             self.itempool += [watercatch]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
+        else:  # On
+            self.itempool += [waternet]
 
         # Net shuffle handling.
         if self.options.shufflenet == "false":
