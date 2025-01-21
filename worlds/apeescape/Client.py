@@ -183,6 +183,7 @@ class ApeEscapeClient(BizHawkClient):
             #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
+                Menuwrites += [(RAM.cookieAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
