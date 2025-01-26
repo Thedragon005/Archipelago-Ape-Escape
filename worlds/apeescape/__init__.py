@@ -297,6 +297,7 @@ class ApeEscapeWorld(World):
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
+            "lowoxygensounds": self.options.lowoxygensounds.value,
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
