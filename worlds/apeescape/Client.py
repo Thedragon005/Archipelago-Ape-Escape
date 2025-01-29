@@ -751,8 +751,12 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.GadgetTrainingsUnlockAddress, 0x8C63FDCC.to_bytes(4, "little"), "MainRAM")]
 
             # Kickout Prevention
-            if kickoutofLevel != 0 :
-                writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            if gameState == RAM.gameState["InLevel"]:
+                if kickoutofLevel != 0:
+                    writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            else:
+                if kickoutofLevel == 0:
+                    writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
