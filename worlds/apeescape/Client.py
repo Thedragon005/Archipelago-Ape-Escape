@@ -751,9 +751,8 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.GadgetTrainingsUnlockAddress, 0x8C63FDCC.to_bytes(4, "little"), "MainRAM")]
 
             # Kickout Prevention
-            if kickoutofLevel != 0:
+            if kickoutofLevel != 0 :
                 writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
@@ -818,7 +817,7 @@ class ApeEscapeClient(BizHawkClient):
             await self.level_select_optimization(ctx, LSO_Reads)
             # ======================================
 
-            if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntroTT"]:
+            if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
                 # ** Not required anymore
@@ -833,7 +832,7 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
 
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
-            if gameState == RAM.gameState["LevelIntro"]:
+            if gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
                 print("In level intro state.")
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
                 firstroomids = ctx.slot_data["firstrooms"]
