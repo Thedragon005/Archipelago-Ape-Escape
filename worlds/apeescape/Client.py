@@ -787,10 +787,12 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.worldScrollToRightDPAD, 0x0009.to_bytes(2, "little"), "MainRAM")]
                         writes += [(RAM.worldScrollToRightR1, 0x0009.to_bytes(2, "little"), "MainRAM")]
 
-            if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntroTT"]:
+            # ======================================
+
+            if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
-
+                # ** Not required anymore
                 #if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
                     #writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
 
@@ -802,7 +804,7 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
 
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
-            if gameState == RAM.gameState["LevelIntro"]:
+            if gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
                 print("In level intro state.")
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
                 firstroomids = ctx.slot_data["firstrooms"]
