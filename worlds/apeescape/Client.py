@@ -740,10 +740,15 @@ class ApeEscapeClient(BizHawkClient):
             # Required apes (to match hundo)
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-                (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
+            # Training Room Unlock state:
+            # Due to a Bug with Gadget Training, will
+            if (transitionPhase == 0x06 and NearbyRoom == 90) or currentRoom == 90:
+                writes += [(RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            else:
+                writes += [(RAM.GadgetTrainingsUnlockAddress, 0x8C63FDCC.to_bytes(4, "little"), "MainRAM")]
 
             # Kickout Prevention
             if kickoutofLevel != 0:

@@ -1173,7 +1173,7 @@ class RAM:
     menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
     punchVisualAddress = 0x0E78C0
-    transitionPhase = 0x0F447C
+    transitionPhase = 0x0F447C # Default : 8C63FDCC
     # 0x01 = ?? Maybe spawning
     # 0x02 = Black screen fading out
     # 0x03 = in level, not near a transition
