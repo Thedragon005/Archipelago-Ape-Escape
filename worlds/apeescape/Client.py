@@ -327,6 +327,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
                 (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
                 (RAM.punchVisualAddress, 32, "MainRAM"),
+                (RAM.transitionPhase,1,"MainRAM"),
+                (RAM.Nearby_RoomID,1,"MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -364,6 +366,8 @@ class ApeEscapeClient(BizHawkClient):
             status_currentLevel = int.from_bytes(reads[30], byteorder="little")
             isUnderwater = int.from_bytes(reads[31], byteorder="little")
             punchVisualAddress = int.from_bytes(reads[32], byteorder="little")
+            transitionPhase = int.from_bytes(reads[33], byteorder="little")
+            NearbyRoom = int.from_bytes(reads[34], byteorder="little")
 
             DL_Reads = [cookies,gameRunning,gameState]
             await self.handle_death_link(ctx,DL_Reads)
@@ -539,11 +543,9 @@ class ApeEscapeClient(BizHawkClient):
             # Required apes (to match hundo)
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
-                (RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(1, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
-
             # For coin tracking to be ignored while in Level Select
 
             if RAM.gameState["LevelSelect"] == gameState:
@@ -600,6 +602,12 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
                 }])
+            # Training Room Unlock state:
+            # Due to a Bug with Gadget Training, will
+            if (transitionPhase == 0x06 and NearbyRoom == 90) or currentRoom == 90:
+                writes += [(RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            else:
+                writes += [(RAM.GadgetTrainingsUnlockAddress, 0x8C63FDCC.to_bytes(4, "little"), "MainRAM")]
 
             if kickoutofLevel != 0:
                 writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
