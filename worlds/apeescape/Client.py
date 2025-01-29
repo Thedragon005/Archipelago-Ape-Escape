@@ -1239,19 +1239,24 @@ class ApeEscapeClient(BizHawkClient):
 
             # This part could still be conditional if you're in a level and/or certains rooms within a level to not update
             # I will check this another time
-
+            print((currentRoom in localLampsUpdate))
             if ((currentRoom in localLampsUpdate) == False) and ((currentRoom in bothLampsUpdate) == False):
-                print("[LAMP]No lamp in room")
+                print("[LAMP]Local No lamp in room")
                 if LocalLamp_LocalUpdate != 0x9062007A:
                     Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
 
             if ((currentRoom in globalLampsUpdate) == False and ((currentRoom in bothLampsUpdate) == False)):
-                print("[LAMP]No lamp in room")
+                print("[LAMP]Global No lamp in room")
                 if GlobalLamp_LocalUpdate != 0x9082007A:
                     Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                     Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
 
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
+
+    async def traps_handling(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
+        print("a")
+        # Notes for traps for now :
+        # Banana Peel = Slip by setting SpikeState2 to 0x2F
 
     async def level_select_optimization(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
         # For coin display to be ignored while in Level Select
@@ -1267,7 +1272,7 @@ class ApeEscapeClient(BizHawkClient):
         LS_Writes = []
 
         if RAM.gameState["LevelSelect"] == gameState:
-            if CoinTable != RAM.blank_coinTable and TempCoinTable == RAM.blank_coinTable:
+            if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
                 LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
             if SA_Completed != 0x00 and Temp_SA_Completed == 0xFF:
@@ -1277,7 +1282,7 @@ class ApeEscapeClient(BizHawkClient):
                 LS_Writes += [(RAM.Temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
 
         else:
-            if CoinTable == RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable:
+            if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
                 LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
 
