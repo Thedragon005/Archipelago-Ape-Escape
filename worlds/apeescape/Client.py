@@ -47,6 +47,10 @@ EXPECTED_ROM_NAME = "ape escape / AP 2"
 class ApeEscapeClient(BizHawkClient):
     game = "Ape Escape"
     system = "PSX"
+
+    #TODO Remove when doing official PR
+    client_version = "0.6.5"
+
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
     local_found_key_items: Dict[str, bool]
@@ -89,7 +93,9 @@ class ApeEscapeClient(BizHawkClient):
         # default to true, as we don't want to send a deathlink until playing
         self.sending_death_link: bool = True
         self.ignore_next_death_link = False
-        self.CrCButton = 0
+        self.DIButton = 0
+        self.CrCWaterButton = 0
+        self.CrCBasementButton = 0
         self.MM_Painting_Button = 0
         self.MM_MonkeyHead_Button = 0
         self.TVT_Lobby_Button = 0
@@ -115,6 +121,10 @@ class ApeEscapeClient(BizHawkClient):
 
         if not self.game == "Ape Escape":
             return False
+        # TODO Remove when doing official PR
+        logger.info("================================================")
+        logger.info("Archipelago Ape Escape version "  + self.client_version)
+        logger.info("================================================")
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
@@ -136,7 +146,9 @@ class ApeEscapeClient(BizHawkClient):
                 return
             keys = dict(args["keys"])
             print(keys)
-            self.CrCButton = keys.get(str(ctx.auth) + "_CrcButton", None)
+            self.DIButton = keys.get(str(ctx.auth) + "_DIButton", None)
+            self.CrCWaterButton = keys.get(str(ctx.auth) + "_CrCWaterButton", None)
+            self.CrCBasementButton = keys.get(str(ctx.auth) + "_CrCBasementButton", None)
             self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
             self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
             self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
@@ -337,7 +349,7 @@ class ApeEscapeClient(BizHawkClient):
             GlobalLamp_GlobalUpdate = int.from_bytes(lampReads[10], byteorder="little")
 
             locksTuples = [
-                # Buttons
+                # Doors
                 (RAM.temp_MMLobbyDoorAddress, 1, "MainRAM"),
                 (RAM.MM_Lobby_DoubleDoor_OpenAddress, 1, "MainRAM"),
                 (RAM.MM_Jake_DefeatedAddress, 1, "MainRAM"),
@@ -347,11 +359,15 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Nathalie_RescuedAddress, 1, "MainRAM"),
-
-                # Doors
                 (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
-                (RAM.CrC_Button_Pressed, 1, "MainRAM"),
-                (RAM.CrC_Door_Visual, 1, "MainRAM"),
+
+                # Buttons
+                (RAM.DI_Button_Pressed, 1, "MainRAM"),
+                (RAM.DI_Button_DoorVisual, 1, "MainRAM"),
+                (RAM.CrC_Water_ButtonPressed, 1, "MainRAM"),
+                (RAM.CrC_Water_DoorVisual, 1, "MainRAM"),
+                (RAM.CrC_Basement_ButtonPressed, 1, "MainRAM"),
+                (RAM.CrC_Basement_DoorVisual1, 1, "MainRAM"),
                 (RAM.TVT_Lobby_Button, 1, "MainRAM"),
                 (RAM.TVT_Lobby_Water_HitBox, 1, "MainRAM"),
                 (RAM.MM_MonkeyHead_Button, 1, "MainRAM"),
@@ -375,14 +391,18 @@ class ApeEscapeClient(BizHawkClient):
             MM_Lobby_DoorDetection = int.from_bytes(locksReads[9], byteorder="little")
 
             # Buttons
-            CrC_ButtonPressed = int.from_bytes(locksReads[10], byteorder="little")
-            CrC_Door_Visual = int.from_bytes(locksReads[11], byteorder="little")
-            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[12], byteorder="little")
-            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[13], byteorder="little")
-            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[14], byteorder="little")
-            MM_MonkeyHead_Door = int.from_bytes(locksReads[15], byteorder="little")
-            MM_Painting_ButtonPressed = int.from_bytes(locksReads[16], byteorder="little")
-            MM_Painting_Visual = int.from_bytes(locksReads[17], byteorder="little")
+            DI_Button_Pressed = int.from_bytes(locksReads[10], byteorder="little")
+            DI_Button_DoorVisual = int.from_bytes(locksReads[11], byteorder="little")
+            CrC_Water_ButtonPressed = int.from_bytes(locksReads[12], byteorder="little")
+            CrC_Water_Door_Visual = int.from_bytes(locksReads[13], byteorder="little")
+            CrC_Basement_ButtonPressed = int.from_bytes(locksReads[14], byteorder="little")
+            CrC_Basement_DoorVisual1 = int.from_bytes(locksReads[15], byteorder="little")
+            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[16], byteorder="little")
+            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[17], byteorder="little")
+            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[18], byteorder="little")
+            MM_MonkeyHead_Door = int.from_bytes(locksReads[19], byteorder="little")
+            MM_Painting_ButtonPressed = int.from_bytes(locksReads[20], byteorder="little")
+            MM_Painting_Visual = int.from_bytes(locksReads[21], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -788,7 +808,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ===== Permanent Buttons =======
             # Execute the Buttons handling code segment
-            Button_Reads = [currentRoom,CrC_ButtonPressed,TVT_Lobby_ButtonPressed,MM_MonkeyHead_ButtonPressed,MM_Painting_ButtonPressed,CrC_Door_Visual,TVT_Lobby_Water_Hitbox,MM_MonkeyHead_Door,MM_Painting_Visual]
+            Button_Reads = [currentRoom,DI_Button_Pressed,CrC_Water_ButtonPressed,CrC_Basement_ButtonPressed,TVT_Lobby_ButtonPressed,MM_MonkeyHead_ButtonPressed,MM_Painting_ButtonPressed,DI_Button_DoorVisual,CrC_Water_Door_Visual,CrC_Basement_DoorVisual1,TVT_Lobby_Water_Hitbox,MM_MonkeyHead_Door,MM_Painting_Visual]
             await self.permanent_buttons_handling(ctx,Button_Reads)
             # =======================
 
@@ -1023,25 +1043,51 @@ class ApeEscapeClient(BizHawkClient):
     async def permanent_buttons_handling(self, ctx: "BizHawkClientContext", Button_Reads) -> None:
 
         currentRoom = Button_Reads[0]
-        CrC_ButtonPressed = Button_Reads[1]
-        TVT_Lobby_ButtonPressed = Button_Reads[2]
-        MM_MonkeyHead_ButtonPressed = Button_Reads[3]
-        MM_Painting_ButtonPressed = Button_Reads[4]
-        CrC_Door_Visual = Button_Reads[5]
-        TVT_Lobby_Water_Hitbox = Button_Reads[6]
-        MM_MonkeyHead_Door = Button_Reads[7]
-        MM_Painting_Visual = Button_Reads[8]
+        DI_Button_Pressed = Button_Reads[1]
+        CrC_Water_ButtonPressed = Button_Reads[2]
+        CrC_Basement_ButtonPressed = Button_Reads[3]
+        TVT_Lobby_ButtonPressed = Button_Reads[4]
+        MM_MonkeyHead_ButtonPressed = Button_Reads[5]
+        MM_Painting_ButtonPressed = Button_Reads[6]
+        DI_Button_DoorVisual = Button_Reads[7]
+        CrC_Water_DoorVisual = Button_Reads[8]
+        CrC_Basement_DoorVisual1 = Button_Reads[9]
+        TVT_Lobby_Water_Hitbox = Button_Reads[10]
+        MM_MonkeyHead_Door = Button_Reads[11]
+        MM_Painting_Visual = Button_Reads[12]
 
         Button_Writes = []
 
-        # If CrC_ButtonRoom button is pressed,send the value "{Player}_CrcButton" to the server's Datastorage
+        # If CrC_ButtonRoom button is pressed,send the value "{Player}_CrCWaterButton" to the server's Datastorage
         # This behavior unlocks the door permanently after you press the button once.
-        if currentRoom == 49:
-            if CrC_ButtonPressed == 0x01:
-                if self.CrCButton != 1:
+        if currentRoom == 28:
+            if DI_Button_Pressed == 0x01:
+                if self.DIButton != 1:
                     await ctx.send_msgs([{
                         "cmd": "Set",
-                        "key": str(ctx.player_names[ctx.slot]) + "_CrcButton",
+                        "key": str(ctx.player_names[ctx.slot]) + "_DIButton",
+                        "default": 0,
+                        "want_reply": False,
+                        "operations": [{"operation": "replace", "value": 1}]
+
+                    }])
+        if currentRoom == 49:
+            if CrC_Water_ButtonPressed == 0x01:
+                if self.CrCWaterButton != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Set",
+                        "key": str(ctx.player_names[ctx.slot]) + "_CrCWaterButton",
+                        "default": 0,
+                        "want_reply": False,
+                        "operations": [{"operation": "replace", "value": 1}]
+
+                    }])
+        if currentRoom == 47:
+            if CrC_Basement_ButtonPressed == 0x01:
+                if self.CrCBasementButton != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Set",
+                        "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
                         "default": 0,
                         "want_reply": False,
                         "operations": [{"operation": "replace", "value": 1}]
@@ -1084,17 +1130,54 @@ class ApeEscapeClient(BizHawkClient):
 
                     }])
 
-        # Crumbling Castle door unlock check
-        if currentRoom == 45:
-            if CrC_Door_Visual != 0x00:
-                if self.CrCButton != 1:
+        # Dexter's Island Slide Room button unlock
+        if currentRoom == 28:
+            if DI_Button_DoorVisual != 0x00:
+                if self.DIButton != 1:
                     await ctx.send_msgs([{
                         "cmd": "Get",
-                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrcButton"]
+                        "keys": [str(ctx.player_names[ctx.slot]) + "_DIButton"]
                     }])
-                if self.CrCButton == 1:
-                    Button_Writes += [(RAM.CrC_Door_Visual, 0x00.to_bytes(1, "little"), "MainRAM")]
+                if self.DIButton == 1:
+                    Button_Writes += [(RAM.DI_Button_DoorVisual, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.DI_Button_DoorHitBox, 0xDC.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.DI_Button_Visual1, 0x80162250.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.DI_Button_Visual2, 0x80162268.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.DI_Button_Visual3, 0x80162390.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.DI_Button_Visual4, 0x80162288.to_bytes(4, "little"), "MainRAM")]
+
+
+        # Crumbling Castle Water Room door unlock check
+        if currentRoom == 45:
+            if CrC_Water_DoorVisual != 0x00:
+                if self.CrCWaterButton != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Get",
+                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrCWaterButton"]
+                    }])
+                if self.CrCWaterButton == 1:
+                    Button_Writes += [(RAM.CrC_Water_DoorVisual, 0x00.to_bytes(1, "little"), "MainRAM")]
                     Button_Writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+        # Crumbling Castle Basement Room door unlock check
+        if currentRoom == 47:
+            if CrC_Basement_DoorVisual1 != 0x00:
+                if self.CrCBasementButton != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Get",
+                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
+                    }])
+                if self.CrCBasementButton == 1:
+                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
+
 
         # TV Tower water draining check
         if currentRoom == 65:

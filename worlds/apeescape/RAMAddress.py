@@ -1114,10 +1114,32 @@ class RAM:
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
 
+    DI_Button_Pressed = 0x0F53AC # Activated = 0x01
+    DI_Button_DoorVisual = 0x0BFC8F # Activated = 0x00
+    DI_Button_DoorHitBox = 0x1676F7 # Activated = 0xDC
+    DI_Button_Visual1 = 0x0BFCB8 #4 bytes : Activated = 80162250
+    DI_Button_Visual2 = 0x0BFCBC  # 4 bytes : Activated = 80162268
+    DI_Button_Visual3 = 0x0BFCC0  # 4 bytes : Activated = 80162390
+    DI_Button_Visual4 = 0x0BFCC4  # 4 bytes : Activated = 80162288
 
-    #CrC_Button_Visual = 0x0C0778 # 16 bytes : Activated = BCEA1680D4EA168000EC1680F8EA1680 , Disabled = 08E5168020E5168048E6168040E51680
-    CrC_Button_Pressed = 0x173242 # 1 byte : While in room 49 -> Pressed = 0x01, Unpressed = 0x00 -> Send event object
-    CrC_Door_Visual = 0x0C05AE  # 1 byte : Open = 0x00 , Closed = 0x16
+    CrC_Basement_ButtonPressed = 0x184D46 # Pressed = 0x01
+    CrC_Basement_DoorHitBox1 = 0x1810A8 #[4b] Activated = F200F808
+    CrC_Basement_DoorHitBox2 = 0x1810AC #[4b] Activated =  0008FB00
+    CrC_Basement_DoorHitBox3 = 0x1810B0 #[4b] Activated =  01000400
+    CrC_Basement_DoorVisual1 = 0x0E7AC1 # Activated = 0x00
+    CrC_Basement_DoorVisual2 = 0x0E7ACD # Activated = 0xF0
+    CrC_Basement_ButtonVisual1 = 0x0C1518 # [4b] Activated = 80178ADC
+    CrC_Basement_ButtonVisual2 = 0x0C151C  # [4b] Activated = 80178AF4
+    CrC_Basement_ButtonVisual3 = 0x0C1520  # [4b] Activated = 80178C14
+    CrC_Basement_ButtonVisual4 = 0x0C1524  # [4b] Activated = 80178B0C
+
+
+    CrC_Water_ButtonPressed = 0x173242 # 1 byte : While in room 49 -> Pressed = 0x01, Unpressed = 0x00 -> Send event object
+    CrC_Water_DoorVisual = 0x0C05AE  # 1 byte : Open = 0x00 , Closed = 0x16
+    #CrC_Button_Visual1 = 0x0C0778 # 4 bytes : Activated =
+    #CrC_Button_Visual2 = 0x0C077C  # 4 bytes : Activated =
+    #CrC_Button_Visual3 = 0x0C0780  # 4 bytes : Activated =
+    #CrC_Button_Visual4 = 0x0C0784  # 4 bytes : Activated =
     #Set TR4_TransitionEnabled to 0x00 to permit access to the transition, 0x03 to deny transition
 
     MM_Painting_Button = 0x17EACE # Active 0x01 ROOM = 82
