@@ -46,6 +46,10 @@ EXPECTED_ROM_NAME = "ape escape / AP 2"
 class ApeEscapeClient(BizHawkClient):
     game = "Ape Escape"
     system = "PSX"
+
+    #TODO Remove when doing official PR
+    client_version = "0.6.5"
+
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
     local_found_key_items: Dict[str, bool]
@@ -109,6 +113,9 @@ class ApeEscapeClient(BizHawkClient):
 
         if not self.game == "Ape Escape":
             return False
+        logger.info("================================================")
+        logger.info("Archipelago Ape Escape version "  + self.client_version)
+        logger.info("================================================")
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
