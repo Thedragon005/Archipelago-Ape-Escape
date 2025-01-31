@@ -196,7 +196,7 @@ class LowOxygenSounds(Choice):
     """How quickly the oxygen beep sound effect will play
 
         off: Low Oxygen sounds will not play at all.
-        half: Low Oxygen sounds will be cut in half
+        half: Frequency of Low Oxygen sounds will be cut in half
         on: Low Oxygen Sounds will play as vanilla
 
 
