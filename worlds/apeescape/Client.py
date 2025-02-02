@@ -706,7 +706,7 @@ class ApeEscapeClient(BizHawkClient):
                             bosses_to_send.add(key_list[i] + self.offset)
                             MM_Jake_Defeated = 1
                     elif (currentRoom == 71):
-                        if int.from_bytes(bossesList[i], byteorder='little') == 0x05:
+                        if int.from_bytes(bossesList[i], byteorder='little') == 0x00:
                             bosses_to_send.add(key_list[i] + self.offset)
                             MM_Professor_Rescued = 1
                     else:
@@ -802,7 +802,7 @@ class ApeEscapeClient(BizHawkClient):
                 }])
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom,NearbyRoom,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress]
+            MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -964,11 +964,12 @@ class ApeEscapeClient(BizHawkClient):
 
         currentRoom = MM_Reads[0]
         NearbyRoom = MM_Reads[1]
-        MM_Jake_Defeated = MM_Reads[2]
-        MM_Lobby_DoubleDoor = MM_Reads[3]
-        MM_Lobby_DoorDetection = MM_Reads[4]
-        MM_Lobby_DoubleDoor_Open = MM_Reads[5]
-        MM_Jake_DefeatedAddress = MM_Reads[6]
+        transitionPhase = MM_Reads[2]
+        MM_Jake_Defeated = MM_Reads[3]
+        MM_Lobby_DoubleDoor = MM_Reads[4]
+        MM_Lobby_DoorDetection = MM_Reads[5]
+        MM_Lobby_DoubleDoor_Open = MM_Reads[6]
+        MM_Jake_DefeatedAddress = MM_Reads[7]
 
 
         MM_Writes = []
@@ -1330,14 +1331,14 @@ class ApeEscapeClient(BizHawkClient):
 
             # This part could still be conditional if you're in a level and/or certains rooms within a level to not update
             # I will check this another time
-            print((currentRoom in localLampsUpdate))
+            #print((currentRoom in localLampsUpdate))
             if ((currentRoom in localLampsUpdate) == False) and ((currentRoom in bothLampsUpdate) == False):
-                print("[LAMP]Local No lamp in room")
+                #print("[LAMP]Local No lamp in room")
                 if LocalLamp_LocalUpdate != 0x9062007A:
                     Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
 
             if ((currentRoom in globalLampsUpdate) == False and ((currentRoom in bothLampsUpdate) == False)):
-                print("[LAMP]Global No lamp in room")
+                #print("[LAMP]Global No lamp in room")
                 if GlobalLamp_LocalUpdate != 0x9082007A:
                     Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                     Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
