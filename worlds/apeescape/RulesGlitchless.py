@@ -540,9 +540,9 @@ def set_glitchless_rules(self):
     connect_regions(self, AERoom.W9L1Crater.value, AELocation.W9L1Schafette.value,
                     lambda state: MM_SHA(state, self) and HasFlyer(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Outside.value, AELocation.W9L1Donovan.value,
-                    lambda state: MM_UFODoor(state, self) and HasNet(state, self))
+                    lambda state: MM_UFOMonkeys(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Outside.value, AELocation.W9L1Laura.value,
-                    lambda state: MM_UFODoor(state, self) and HasNet(state, self))
+                    lambda state: MM_UFOMonkeys(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Uribe.value,
                     lambda state: MM_UFODoor(state, self) and HasPunch(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Gordo.value,
@@ -946,7 +946,7 @@ def CC_ButtonRoom(state, world):
 
 
 def CP_Lamp(state, world):
-    return state.has(AEItem.CB_Lamp.value, world.player, 1) and HasNet(state, world)
+    return state.has(AEItem.CP_Lamp.value, world.player, 1) and HasNet(state, world)
 
 
 def CP_FrontSewer(state, world):
@@ -1016,9 +1016,11 @@ def MM_Lobby_DoubleDoor(state, world):
 def MM_SHA(state, world):
     return MM_Lobby_DoubleDoor(state, world)
 
+def MM_UFOMonkeys(state, world):
+    return MM_SHA(state, world) and HasNet(state,world) and HasSling(state, world)
 
 def MM_UFODoor(state, world):
-    return MM_SHA(state, world) and MM_Lamp(state, world) and HasSling(state, world)
+    return MM_UFOMonkeys(state, world) and MM_Lamp(state, world)
 
 
 def MM_DoubleDoor(state, world):

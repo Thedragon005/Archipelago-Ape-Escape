@@ -540,9 +540,9 @@ def set_ij_rules(self):
     connect_regions(self, AERoom.W9L1Crater.value, AELocation.W9L1Schafette.value,
                     lambda state: MM_SHA(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Outside.value, AELocation.W9L1Donovan.value,
-                    lambda state: MM_UFODoor(state, self) and HasNet(state, self))
+                    lambda state: MM_UFOMonkeys(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Outside.value, AELocation.W9L1Laura.value,
-                    lambda state: MM_UFODoor(state, self) and HasNet(state, self))
+                    lambda state: MM_UFOMonkeys(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Uribe.value,
                     lambda state: MM_UFODoor(state, self) and HasPunch(state, self) and HasNet(state, self))
     connect_regions(self, AERoom.W9L1Castle.value, AELocation.W9L1Gordo.value,
@@ -1015,10 +1015,11 @@ def MM_Lobby_DoubleDoor(state, world):
 def MM_SHA(state, world):
     return MM_Lobby_DoubleDoor(state, world)
 
+def MM_UFOMonkeys(state, world):
+    return MM_SHA(state, world) and HasNet(state, world) and (HasClub(state, world) or HasSling(state, world) or HasPunch(state, world))
 
 def MM_UFODoor(state, world):
-    return MM_SHA(state, world) and MM_Lamp(state, world) and (HasClub(state, world) or HasSling(state, world) or HasPunch(state, world))
-
+    return MM_UFOMonkeys(state, world) and MM_Lamp(state, world)
 
 def MM_DoubleDoor(state, world):
     return MM_UFODoor(state, world) and HasHoop(state, world) and HasRC(state, world)
