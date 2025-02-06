@@ -1568,12 +1568,12 @@ class ApeEscapeClient(BizHawkClient):
         if gameState == RAM.gameState["LevelSelect"] or debug:
             for x in range(len(levels_list)):
                 if int.from_bytes(monkeylevelCounts[x], byteorder="little") < hundoMonkeysCount[levels_list[x]]:
-                    #print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
+                    print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed
 
-        PPMUnlock = (key == reqkeys[21] and allCompleted)
+        PPMUnlock = (key >= reqkeys[21] and allCompleted)
 
         # Set unlocked/locked state of levels
         # This does not handle assignment of Specter Coin icons.
