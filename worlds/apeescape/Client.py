@@ -903,7 +903,7 @@ class ApeEscapeClient(BizHawkClient):
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed
 
-        PPMUnlock = (key == reqkeys[21] and allCompleted)
+        PPMUnlock = (key >= reqkeys[21] and allCompleted)
 
         # Set unlocked/locked state of levels
         # This does not handle assignment of Specter Coin icons.
