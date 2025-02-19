@@ -130,9 +130,9 @@ class MailboxOption(Choice):
 
 
 class LampOption(Choice):
-    """Choose if Monkey lamps should be locked and shuffled into the multiworld.
+    """Choose if Monkey Lamps should be locked and shuffled into the multiworld.
 
-        false: Monkey Lamps are unlocked the vanilla way (By catching enough monkeys)
+        false: Monkey Lamps act as in the original game (catching enough monkeys in their level opens the door)
         true: The 8 Monkey Lamps will unlock when catching enough monkeys AND having their corresponding item
 
         Supported values: true, false
@@ -193,10 +193,10 @@ class ShuffleWaterNetOption(Choice):
     """Choose if the Water Net should be shuffled.
 
         off: Water Net is not shuffled, and is given at game start.
-        progressive: Water Net is shuffled and split into parts, adding two Progressive Water Net and Water Catch to the pool.
+        progressive: Water Net is shuffled and split into parts, adding two Progressive Water Nets and Water Catch to the pool.
         - Progressive Water Net : The first allows Spike to swim on the surface and avoid drowning after a few seconds. The second allows Spike to dive underwater.
         - Water Catch: Allows shooting the Water Net.
-        on: Water Net is shuffled, adding it to the pool.
+        on: Water Net is shuffled, adding it to the pool as a single item.
 
 
         Supported values: off, progressive, on
@@ -210,21 +210,21 @@ class ShuffleWaterNetOption(Choice):
 
 
 class LowOxygenSounds(Choice):
-    """How quickly the oxygen beep sound effect will play
+    """Choose how quickly the low oxygen beep sound effect will play when underwater.
 
         off: Low Oxygen sounds will not play at all.
-        half: Low Oxygen sounds will be cut in half
-        on: Low Oxygen Sounds will play as vanilla
+        half: Low Oxygen sounds will play less frequently.
+        on: Low Oxygen Sounds will play normally.
 
 
         Supported values: off, half, on
-        Default value: off
+        Default value: half
     """
     display_name = "Low Oxygen Sounds"
     option_off = 0x00
     option_half = 0x01
     option_on = 0x02
-    default = option_on
+    default = option_half
 
 
 @dataclass

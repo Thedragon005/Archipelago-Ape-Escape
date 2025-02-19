@@ -920,6 +920,7 @@ class RAM:
         "TVT_Tank_Lamp": 0x156,
         "MM_Lamp": 0x157,
         "MMLobbyDoubleDoorKey": 0x403,
+        "Token": 0x300,
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,

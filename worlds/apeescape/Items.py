@@ -31,6 +31,7 @@ item_table = {
     # Keys
     AEItem.Key.value: RAM.items["Key"],
     AEItem.Victory.value: RAM.items["Victory"],
+    AEItem.MMLobbyDoubleDoorKey.value: RAM.items["MMLobbyDoubleDoorKey"],
 
     # Monkey Lamps
     AEItem.CB_Lamp.value: RAM.items["CB_Lamp"],
@@ -42,8 +43,8 @@ item_table = {
     AEItem.TVT_Tank_Lamp.value: RAM.items["TVT_Tank_Lamp"],
     AEItem.MM_Lamp.value: RAM.items["MM_Lamp"],
 
-    #Locks
-    AEItem.MMLobbyDoubleDoorKey.value: RAM.items["MMLobbyDoubleDoorKey"],
+    # Other
+    AEItem.Token.value: RAM.items["MMLobbyDoubleDoorKey"],
 
     # Junk
     AEItem.Nothing.value: RAM.items["Nothing"],
