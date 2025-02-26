@@ -1194,6 +1194,9 @@ class RAM:
     currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
     menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
+    Controls_DPAD_STARTSELECT_L3R3 = 0x0B87A2
+    Controls_TriggersShapes = 0x0B87A3
+
     punchVisualAddress = 0x0E78C0
     transitionPhase = 0x0F447C # Default : 8C63FDCC
     # 0x01 = ?? Maybe spawning
@@ -1209,6 +1212,7 @@ class RAM:
     # Junk addresses
     energyChipsAddress = 0x0F44B8
     cookieAddress = 0x0EC2C8
+    instakillAddress = 0x0EC2C9
     livesAddress = 0x0F448C
     flashAddress = 0x0F51C1
     rocketAddress = 0x0F51C2
