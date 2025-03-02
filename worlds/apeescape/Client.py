@@ -335,7 +335,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
                 (RAM.punchVisualAddress, 32, "MainRAM"),
                 (RAM.transitionPhase,1,"MainRAM"),
-                (RAM.Nearby_RoomID,1,"MainRAM")
+                (RAM.Nearby_RoomIDAddress,1,"MainRAM")
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -376,7 +376,7 @@ class ApeEscapeClient(BizHawkClient):
             transitionPhase = int.from_bytes(reads[33], byteorder="little")
             NearbyRoom = int.from_bytes(reads[34], byteorder="little")
 
-            DL_Reads = [cookies,gameRunning,gameState]
+            DL_Reads = [cookies,gameRunning,gameState,menuState2,spikeState2]
             await self.handle_death_link(ctx,DL_Reads)
 
             CoinReadsTupples = [
@@ -521,9 +521,10 @@ class ApeEscapeClient(BizHawkClient):
                 # Rearange the array if there is 2 indexes for the same mailbox
                 for i in range(len(val_list)):
                     strVal = str(val_list[i])
+                    print(strVal)
                     if strVal.__contains__("{"):
                         strVal = strVal.replace("{", "").replace("}", "")
-                        strVal.split(",")
+                        strVal = strVal.split(",")
                         for j in range(len(strVal)):
                             key_list.append(key_list[i])
                             val_list.append(int(strVal[j]))
@@ -533,6 +534,7 @@ class ApeEscapeClient(BizHawkClient):
                         if val_list[i] == mailboxID and boolGotMail:
                             mail_to_send.add(key_list[i] + self.offset)
                 if mail_to_send is not None and mail_to_send != set():
+                    print("Sent:" + str(key_list[i]) + ":" + str(mailboxID))
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
                         "locations": list(x for x in mail_to_send)
@@ -858,9 +860,13 @@ class ApeEscapeClient(BizHawkClient):
         cookies = DL_Reads[0]
         gameRunning = DL_Reads[1]
         gamestate = DL_Reads[2]
+        menuState2 = DL_Reads[3]
+        spikestate2 = DL_Reads[4]
+
+        OnTree = {56, 57, 58, 59, 60}
 
         DL_writes = []
-
+        DL_writes2 = []
         if ctx.slot_data["death_link"] == Toggle.option_true:
             if "DeathLink" not in ctx.tags:
                 await ctx.update_death_link(True)
@@ -871,11 +877,16 @@ class ApeEscapeClient(BizHawkClient):
                     await self.send_deathlink(ctx)
                 elif cookies != 0x00:
                     self.sending_death_link = False
-            if self.pending_death_link:
+            # Wait on exiting menu before sending deathlink
+            if self.pending_death_link and menuState2 != 1:
                 DL_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                DL_writes += [(RAM.instakillAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                if spikestate2 in OnTree:
+                    DL_writes2 += [(RAM.Controls_TriggersShapes, 0xFD.to_bytes(1, "little"), "MainRAM")]
                 self.pending_death_link = False
                 self.sending_death_link = True
                 await bizhawk.write(ctx.bizhawk_ctx, DL_writes)
+                await bizhawk.write(ctx.bizhawk_ctx, DL_writes2)
 
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
