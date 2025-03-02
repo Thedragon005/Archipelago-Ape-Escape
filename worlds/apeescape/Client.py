@@ -518,7 +518,17 @@ class ApeEscapeClient(BizHawkClient):
                 val_list = list(mailboxesaddrs.values())
 
                 mail_to_send = set()
-
+                # Rearange the array if there is 2 indexes for the same mailbox
+                for i in range(len(val_list)):
+                    strVal = str(val_list[i])
+                    if strVal.__contains__("{"):
+                        strVal = strVal.replace("{", "").replace("}", "")
+                        strVal.split(",")
+                        for j in range(len(strVal)):
+                            key_list.append(key_list[i])
+                            val_list.append(int(strVal[j]))
+                        val_list.pop(i)
+                        key_list.pop(i)
                 for i in range(len(val_list)):
                         if val_list[i] == mailboxID and boolGotMail:
                             mail_to_send.add(key_list[i] + self.offset)

@@ -607,7 +607,7 @@ class RAM:
             410 : 100
         },
         5: {  # triceratops
-            411 : 116,
+            411 : {101, 116},
             412 : 41
         },
         6: {  # 2-1
@@ -615,7 +615,7 @@ class RAM:
             414 : 71
         },
         7: {  # mushroom area
-            415 : 38,
+            415 : {38, 99},
             416 : 24
         },
         8: {  # fish room
@@ -633,7 +633,7 @@ class RAM:
             422 : 105,
             423 : 103,
             424 : 22,
-            425 : 81
+            425 : 81,
         },
         12: {  # fan basement
             426 : 80,
@@ -664,7 +664,7 @@ class RAM:
         #},
         20: {  # 4-1
             434 : 25,
-            435 : 82
+            435 : {22, 82}
         },
         21: {  # second room
             436 : 72
@@ -684,7 +684,7 @@ class RAM:
 
         #},
         26: {  # gallery/boulder
-            442 : 72
+            442: {32, 72}
         },
         #27: {  # tentacle room
 
@@ -732,7 +732,7 @@ class RAM:
 
         #},
         41: {  # gong room
-            453 : 25
+            453: {25, 56}
         },
         42: {  # middle room
             454 : 34,
@@ -1011,8 +1011,6 @@ class RAM:
         83: 0xdfcae,
         91: 0xdfcb0
     }
-
-
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
@@ -1059,6 +1057,7 @@ class RAM:
     endingCoinAddress = 0x0DFBD2 # Not used,could be used for a loop if current coin system is buggy
     temp_startingCoinAddress = 0x0DFBF0 # Copy all 64 bytes of coin here while entering Level Select
     blank_coinTable = 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
+    blank_coinTable2 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     totalCoinsAddress = 0x0F44BA
 
     SA_CompletedAddress = 0x0DFDD0 # Completed = 0x19, not completed = 00
@@ -1078,10 +1077,12 @@ class RAM:
 
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
-
-    currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
+    currentLoadedSave = 0x0E0034  # Not used for now,but could be used somehow
     menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
+    Controls_DPAD_STARTSELECT_L3R3 = 0x0B87A2
+    Controls_TriggersShapes = 0x0B87A3
+
     punchVisualAddress = 0x0E78C0
     transitionPhase = 0x0F447C # Default : 8C63FDCC
     # 0x01 = ?? Maybe spawning
@@ -1094,6 +1095,7 @@ class RAM:
     # Junk addresses
     energyChipsAddress = 0x0F44B8
     cookieAddress = 0x0EC2C8
+    instakillAddress = 0x0EC2C9
     livesAddress = 0x0F448C
     flashAddress = 0x0F51C1
     rocketAddress = 0x0F51C2
@@ -1110,28 +1112,29 @@ class RAM:
     startOfEraNames = 0x139B20
 
     # Rooms ER values here
-    Spike_X_Pos     = 0x0EC204
-    Spike_Y_Pos     = 0x0EC208
-    Spike_Z_Pos     = 0x0EC20C
-    Nearby_RoomID   = 0x0E38B4
-    Nearby_DoorID   = 0x0E38A4
+    Spike_X_PosAddress = 0x0EC204
+    Spike_Y_PosAddress = 0x0EC208
+    Spike_Z_PosAddress = 0x0EC20C
+    Nearby_RoomIDAddress = 0x0E38B4
+    Nearby_DoorIDAddress = 0x0E38A4
 
-    TargetRoomID1   = 0x154380
-    TR1_DoorID      = 0x15437C
-    TargetRoomID2   = 0x154358
-    TR2_DoorID      = 0x154354
-    TargetRoomID3   = 0x154330
-    TR3_DoorID      = 0x15432C
-    TargetRoomID4   = 0x154308
-    TR4_DoorID      = 0x154304
-    TargetRoomID5   = 0x1542E0
-    TR5_DoorID      = 0x1542DC
-    TargetRoomID6   = 0x1542B8
-    TR6_DoorID      = 0x1542B4
-    TargetRoomID7   = 0x154290
-    TR7_DoorID      = 0x15428C
-    TargetRoomID8   = 0x154268
-    TR8_DoorID      = 0x154264
+    TargetRoomID1Address = 0x154380
+    TR1_DoorIDAddress = 0x15437C
+    TargetRoomID2Address = 0x154358
+    TR2_DoorIDAddress = 0x154354
+    TargetRoomID3Address = 0x154330
+    TR3_DoorIDAddress = 0x15432C
+    TargetRoomID4Address = 0x154308
+    TR4_DoorIDAddress = 0x154304
+    TR4_TransitionEnabled = 0x1542BC  # For CrC_Boss_Door -> Blocked value : 0x03, Opened Value : 0x00
+    TargetRoomID5Address = 0x1542E0
+    TR5_DoorIDAddress = 0x1542DC
+    TargetRoomID6Address = 0x1542B8
+    TR6_DoorIDAddress = 0x1542B4
+    TargetRoomID7Address = 0x154290
+    TR7_DoorIDAddress = 0x15428C
+    TargetRoomID8Address = 0x154268
+    TR8_DoorIDAddress = 0x154264
 
     kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000
 
@@ -1146,8 +1149,7 @@ class RAM:
     # 2 Boss in waiting
     # 3 Boss in progress
     roomStatus = 0x17C5A2
-    #Find better name please...
-
+    # Find better name please...
 
     # Specter bosses values
     S1_P2_State = 0x144A04
@@ -1163,7 +1165,7 @@ class RAM:
     # Detect when readingMail = 2 then check what mailbox it is
     mailboxIDAddress = 0x0A6CD2
     mailboxIDAddress_PAL = 0x0A6DB2
-    #DIFF = NTSC + E0
+    # DIFF = NTSC + E0
     # Associate by room just to be sure, since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,
