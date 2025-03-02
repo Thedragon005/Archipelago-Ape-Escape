@@ -434,7 +434,7 @@ class ApeEscapeClient(BizHawkClient):
             Menuwrites = []
 
             # Handle death link
-            DL_Reads = [cookies,gameRunning,gameState,menuState2,spikeState2]
+            DL_Reads = [cookies,gameRunning,gameState]
             await self.handle_death_link(ctx,DL_Reads)
 
             #  When in Menu,change the behavior of "NewGame" to warp you to time station instead
@@ -1522,13 +1522,9 @@ class ApeEscapeClient(BizHawkClient):
         cookies = DL_Reads[0]
         gameRunning = DL_Reads[1]
         gamestate = DL_Reads[2]
-        menuState2 = DL_Reads[3]
-        spikestate2 = DL_Reads[4]
-
-        OnTree = {56,57,58,59,60}
 
         DL_writes = []
-        DL_writes2 = []
+
         if ctx.slot_data["death_link"] == Toggle.option_true:
             if "DeathLink" not in ctx.tags:
                 await ctx.update_death_link(True)
@@ -1538,16 +1534,11 @@ class ApeEscapeClient(BizHawkClient):
                     await self.send_deathlink(ctx)
                 elif cookies != 0x00:
                     self.sending_death_link = False
-            # Wait on exiting menu before sending deathlink
-            if self.pending_death_link and menuState2 != 1:
+            if self.pending_death_link:
                 DL_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                DL_writes += [(RAM.instakillAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                if spikestate2 in OnTree:
-                    DL_writes2 += [(RAM.Controls_TriggersShapes, 0xFD.to_bytes(1, "little"), "MainRAM")]
                 self.pending_death_link = False
                 self.sending_death_link = True
                 await bizhawk.write(ctx.bizhawk_ctx,DL_writes)
-                await bizhawk.write(ctx.bizhawk_ctx, DL_writes2)
 
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
