@@ -732,7 +732,7 @@ class ApeEscapeClient(BizHawkClient):
                     strVal = str(val_list[i])
                     if strVal.__contains__("{"):
                         strVal = strVal.replace("{", "").replace("}", "")
-                        strVal.split(",")
+                        strVal = strVal.split(",")
                         for j in range(len(strVal)):
                             key_list.append(key_list[i])
                             val_list.append(int(strVal[j]))
