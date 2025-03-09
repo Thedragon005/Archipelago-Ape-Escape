@@ -74,12 +74,12 @@ class ApeEscapeWorld(World):
         self.entrance: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.coin: Optional[int] = 0
+        self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
-
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
 
@@ -91,6 +91,7 @@ class ApeEscapeWorld(World):
         self.entrance = self.options.entrance.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.coin = self.options.coin.value
+        self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value

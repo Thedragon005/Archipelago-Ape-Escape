@@ -906,13 +906,13 @@ def TJ_Mushroom(state, world):
     return (HasMobility(state, world) and CanHitMultiple(state, world)) or SuperFlyer(state, world)
 
 def CB_Lamp(state, world):
-    return state.has(AEItem.CB_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CB_Lamp.value, world.player, 1))
 
 def CR_Inside(state, world):
     return HasSling(state, world) or HasPunch(state, world)
 
 def DI_Lamp(state, world):
-    return state.has(AEItem.DI_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.DI_Lamp.value, world.player, 1))
 
 
 def DI_SecondHalf(state, world):
@@ -931,7 +931,7 @@ def WSW_FourthRoom(state, world):
     return True
 
 def CrC_Lamp(state, world):
-    return state.has(AEItem.CrC_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CrC_Lamp.value, world.player, 1))
 
 
 def CC_5Monkeys(state, world):
@@ -946,7 +946,7 @@ def CC_ButtonRoom(state, world):
     return CC_WaterRoom(state, world) and (CanSwim(state, world) or HasFlyer(state, world))
 
 def CP_Lamp(state, world):
-    return state.has(AEItem.CP_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CP_Lamp.value, world.player, 1))
 
 
 def CP_FrontSewer(state, world):
@@ -962,7 +962,7 @@ def CP_BackSewer(state, world):
 
 
 def SF_Lamp(state, world):
-    return state.has(AEItem.SF_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.SF_Lamp.value, world.player, 1))
 
 def SF_CarRoom(state, world):
     return HasSling(state, world) or (HasHoop(state, world) and HasFlyer(state, world)) or HasRC(state, world) or HasPunch(state, world)
@@ -972,10 +972,10 @@ def SF_MechRoom(state, world):
     return HasSling(state, world) or (HasHoop(state, world) and HasFlyer(state, world)) or (SF_Lamp(state, world) and ((HasClub(state, world) and HasRC(state, world)) or HasPunch(state, world))) or SuperFlyer(state, world)
 
 def TVT_Lobby_Lamp(state, world):
-    return state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1))
 
 def TVT_Tank_Lamp(state, world):
-    return state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1))
 
 
 def TVT_HitButton(state, world):
@@ -990,7 +990,7 @@ def TVT_BossRoom(state, world):
     return TVT_TankRoom(state, world) and TVT_Tank_Lamp(state, world)
 
 def MM_Lamp(state, world):
-    return state.has(AEItem.MM_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.MM_Lamp.value, world.player, 1))
 
 
 def MM_Natalie(state, world):

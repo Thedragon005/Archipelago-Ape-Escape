@@ -1,7 +1,6 @@
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AERoom, AELocation
 
-
 def set_glitchless_rules(self):
     # This is the logic for being able to catch every monkey to access the second Specter fight. The logic for the fight itself would be Sling + CanHitMultiple + Net.
     # Make sure to update this condition properly when alternate Peak Point Matrix unlock conditions are added.
@@ -905,13 +904,13 @@ def TJ_Mushroom(state, world):
     return HasMobility(state, world) and CanHitMultiple(state, world)
 
 def CB_Lamp(state, world):
-    return state.has(AEItem.CB_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CB_Lamp.value, world.player, 1))
 
 def CR_Inside(state, world):
     return HasSling(state, world) or HasPunch(state, world)
 
 def DI_Lamp(state, world):
-    return state.has(AEItem.DI_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.DI_Lamp.value, world.player, 1))
 
 
 def DI_SecondHalf(state, world):
@@ -930,10 +929,11 @@ def WSW_FourthRoom(state, world):
     return CanHitMultiple(state, world) or HasFlyer(state, world)
 
 def CrC_Lamp(state, world):
-    return state.has(AEItem.CrC_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CrC_Lamp.value, world.player, 1))
 
 
 def CC_5Monkeys(state, world):
+
     return CrC_Lamp(state, world) and (HasClub(state, world) or HasFlyer(state, world) or HasPunch(state, world))
 
 
@@ -946,7 +946,7 @@ def CC_ButtonRoom(state, world):
 
 
 def CP_Lamp(state, world):
-    return state.has(AEItem.CP_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CP_Lamp.value, world.player, 1))
 
 
 def CP_FrontSewer(state, world):
@@ -962,7 +962,7 @@ def CP_BackSewer(state, world):
 
 
 def SF_Lamp(state, world):
-    return state.has(AEItem.SF_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.SF_Lamp.value, world.player, 1))
 
 def SF_CarRoom(state, world):
     return HasRC(state, world) or HasPunch(state, world)
@@ -973,10 +973,10 @@ def SF_MechRoom(state, world):
 
 
 def TVT_Lobby_Lamp(state, world):
-    return state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1))
 
 def TVT_Tank_Lamp(state, world):
-    return state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1))
 
 def TVT_HitButton(state, world):
     return HasFlyer(state, world) and CanHitOnce(state, world)
@@ -989,8 +989,6 @@ def TVT_TankRoom(state, world):
 def TVT_BossRoom(state, world):
     return TVT_TankRoom(state, world) and TVT_Tank_Lamp(state, world)
 
-def MM_Lamp(state, world):
-    return state.has(AEItem.MM_Lamp.value, world.player, 1) and HasNet(state, world)
 
 
 def MM_Natalie(state, world):
@@ -1018,6 +1016,9 @@ def MM_SHA(state, world):
 
 def MM_UFOMonkeys(state, world):
     return MM_SHA(state, world) and HasNet(state,world) and HasSling(state, world)
+
+def MM_Lamp(state, world):
+    return (world.options.lamp == "false" and HasNet(state, world) and MM_UFOMonkeys(state, world)) or (state.has(AEItem.MM_Lamp.value, world.player, 1))
 
 def MM_UFODoor(state, world):
     return MM_UFOMonkeys(state, world) and MM_Lamp(state, world)

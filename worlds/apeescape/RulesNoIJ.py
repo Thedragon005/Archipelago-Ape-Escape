@@ -995,7 +995,7 @@ def CR_Inside(state, world):
 
 
 def CB_Lamp(state, world):
-    return state.has(AEItem.CB_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CB_Lamp.value, world.player, 1))
 
 
 def DI_SecondHalf(state, world):
@@ -1003,7 +1003,7 @@ def DI_SecondHalf(state, world):
 
 
 def DI_Lamp(state, world):
-    return state.has(AEItem.DI_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.DI_Lamp.value, world.player, 1))
 
 
 def DI_Boulders(state, world):
@@ -1019,7 +1019,7 @@ def WSW_FourthRoom(state, world):
 
 
 def CrC_Lamp(state, world):
-    return state.has(AEItem.CrC_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CrC_Lamp.value, world.player, 1))
 
 
 def CC_5Monkeys(state, world):
@@ -1040,7 +1040,7 @@ def CC_ButtonRoom(state, world):
 
 
 def CP_Lamp(state, world):
-    return state.has(AEItem.CP_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.CP_Lamp.value, world.player, 1))
 
 
 def CP_FrontSewer(state, world):
@@ -1056,7 +1056,7 @@ def CP_BackSewer(state, world):
 
 
 def SF_Lamp(state, world):
-    return state.has(AEItem.SF_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.SF_Lamp.value, world.player, 1))
 
 
 def SF_CarRoom(state, world):
@@ -1071,11 +1071,10 @@ def SF_MechRoom(state, world):
 
 
 def TVT_Lobby_Lamp(state, world):
-    return state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1) and HasNet(state, world)
-
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1))
 
 def TVT_Tank_Lamp(state, world):
-    return state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1))
 
 
 def TVT_HitButton(state, world):
@@ -1091,7 +1090,7 @@ def TVT_BossRoom(state, world):
 
 
 def MM_Lamp(state, world):
-    return state.has(AEItem.MM_Lamp.value, world.player, 1) and HasNet(state, world)
+    return (world.options.lamp == "false" and HasNet(state, world)) or (state.has(AEItem.MM_Lamp.value, world.player, 1))
 
 
 def MM_Natalie(state, world):
