@@ -1021,7 +1021,7 @@ def MM_Lamp(state, world):
     return (world.options.lamp == "false" and HasNet(state, world) and MM_UFOMonkeys(state, world)) or (state.has(AEItem.MM_Lamp.value, world.player, 1))
 
 def MM_UFODoor(state, world):
-    return MM_UFOMonkeys(state, world) and MM_Lamp(state, world)
+    return MM_Lamp(state, world)
 
 
 def MM_DoubleDoor(state, world):
