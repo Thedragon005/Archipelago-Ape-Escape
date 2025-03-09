@@ -164,16 +164,7 @@ class ApeEscapeWorld(World):
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
         # Monkey Lamps shuffle
-        if self.options.lamp == "false":
-            self.multiworld.push_precollected(CB_Lamp)
-            self.multiworld.push_precollected(DI_Lamp)
-            self.multiworld.push_precollected(CrC_Lamp)
-            self.multiworld.push_precollected(CP_Lamp)
-            self.multiworld.push_precollected(SF_Lamp)
-            self.multiworld.push_precollected(TVT_Lobby_Lamp)
-            self.multiworld.push_precollected(TVT_Tank_Lamp)
-            self.multiworld.push_precollected(MM_Lamp)
-        else:
+        if self.options.lamp == "true":
             self.itempool += [CB_Lamp]
             self.itempool += [DI_Lamp]
             self.itempool += [CrC_Lamp]
