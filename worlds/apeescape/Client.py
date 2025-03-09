@@ -96,7 +96,7 @@ class ApeEscapeClient(BizHawkClient):
         self.ignore_next_death_link = False
         self.DIButton = 0
         self.CrCWaterButton = 0
-        self.CrCBasementButton = 0
+        #self.CrCBasementButton = 0
         self.MM_Painting_Button = 0
         self.MM_MonkeyHead_Button = 0
         self.TVT_Lobby_Button = 0
@@ -149,7 +149,7 @@ class ApeEscapeClient(BizHawkClient):
             print(keys)
             self.DIButton = keys.get(str(ctx.auth) + "_DIButton", None)
             self.CrCWaterButton = keys.get(str(ctx.auth) + "_CrCWaterButton", None)
-            self.CrCBasementButton = keys.get(str(ctx.auth) + "_CrCBasementButton", None)
+            #self.CrCBasementButton = keys.get(str(ctx.auth) + "_CrCBasementButton", None)
             self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
             self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
             self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
@@ -1110,17 +1110,17 @@ class ApeEscapeClient(BizHawkClient):
                         "operations": [{"operation": "replace", "value": 1}]
 
                     }])
-        if currentRoom == 47:
-            if CrC_Basement_ButtonPressed == 0x01:
-                if self.CrCBasementButton != 1:
-                    await ctx.send_msgs([{
-                        "cmd": "Set",
-                        "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
-                        "default": 0,
-                        "want_reply": False,
-                        "operations": [{"operation": "replace", "value": 1}]
-
-                    }])
+        #if currentRoom == 47:
+        #    if CrC_Basement_ButtonPressed == 0x01:
+        #        if self.CrCBasementButton != 1:
+        #            await ctx.send_msgs([{
+        #                "cmd": "Set",
+        #                "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
+        #                "default": 0,
+        #                "want_reply": False,
+        #                "operations": [{"operation": "replace", "value": 1}]
+        #
+        #            }])
         if currentRoom == 65:
             if TVT_Lobby_ButtonPressed == 0x01:
                 if self.TVT_Lobby_Button != 1:
@@ -1188,23 +1188,23 @@ class ApeEscapeClient(BizHawkClient):
                     Button_Writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # Crumbling Castle Basement Room door unlock check
-        if currentRoom == 47:
-            if CrC_Basement_DoorVisual1 != 0x00:
-                if self.CrCBasementButton != 1:
-                    await ctx.send_msgs([{
-                        "cmd": "Get",
-                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
-                    }])
-                if self.CrCBasementButton == 1:
-                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
-                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
+        #if currentRoom == 47:
+        #    if CrC_Basement_DoorVisual1 != 0x00:
+        #        if self.CrCBasementButton != 1:
+        #            await ctx.send_msgs([{
+        #                "cmd": "Get",
+        #                "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
+        #            }])
+        #        if self.CrCBasementButton == 1:
+        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
+        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
 
 
         # TV Tower water draining check
