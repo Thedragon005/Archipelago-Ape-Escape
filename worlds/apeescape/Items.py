@@ -32,6 +32,19 @@ item_table = {
     AEItem.Key.value: RAM.items["Key"],
     AEItem.Victory.value: RAM.items["Victory"],
 
+    # Monkey Lamps
+    AEItem.CB_Lamp.value: RAM.items["CB_Lamp"],
+    AEItem.DI_Lamp.value: RAM.items["DI_Lamp"],
+    AEItem.CrC_Lamp.value: RAM.items["CrC_Lamp"],
+    AEItem.CP_Lamp.value: RAM.items["CP_Lamp"],
+    AEItem.SF_Lamp.value: RAM.items["SF_Lamp"],
+    AEItem.TVT_Lobby_Lamp.value: RAM.items["TVT_Lobby_Lamp"],
+    AEItem.TVT_Tank_Lamp.value: RAM.items["TVT_Tank_Lamp"],
+    AEItem.MM_Lamp.value: RAM.items["MM_Lamp"],
+
+    #Locks
+    AEItem.MMLobbyDoubleDoorKey.value: RAM.items["MMLobbyDoubleDoorKey"],
+
     # Junk
     AEItem.Nothing.value: RAM.items["Nothing"],
     AEItem.Shirt.value: RAM.items["Shirt"],
@@ -43,13 +56,25 @@ item_table = {
     AEItem.Flash.value: RAM.items["Flash"],
     AEItem.ThreeFlash.value: RAM.items["ThreeFlash"],
     AEItem.Rocket.value: RAM.items["Rocket"],
-    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"],
+    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"]
 }
 
 event_table = {
 }
 
 def createItemGroups():
+    #Alliases for items
+    GROUPED_ITEMS.setdefault("Club", []).append("Stun Club")
+    GROUPED_ITEMS.setdefault("Net", []).append("Time Net")
+    GROUPED_ITEMS.setdefault("Radar", []).append("Monkey Radar")
+    GROUPED_ITEMS.setdefault("Slingshot", []).append("Slingback Shooter")
+    GROUPED_ITEMS.setdefault("Sling", []).append("Slingback Shooter")
+    GROUPED_ITEMS.setdefault("Hoop", []).append("Super Hoop")
+    GROUPED_ITEMS.setdefault("Punch", []).append("Magic Punch")
+    GROUPED_ITEMS.setdefault("Flyer", []).append("Sky Flyer")
+    GROUPED_ITEMS.setdefault("Car", []).append("R.C. Car")
+    GROUPED_ITEMS.setdefault("Water Net", []).append("Progressive Water Net")
+
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Stun Club")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Time Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Monkey Radar")
@@ -61,5 +86,13 @@ def createItemGroups():
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Progressive Water Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Water Catch")
+
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CB_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.DI_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CrC_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CP_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.TVT_Lobby_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.TVT_Tank_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.MM_Lamp.value)
 
 createItemGroups()

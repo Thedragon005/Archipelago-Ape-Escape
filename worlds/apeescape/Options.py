@@ -129,9 +129,25 @@ class MailboxOption(Choice):
     default = option_false
 
 
+class LampOption(Choice):
+    """Choose if Monkey lamps should be locked and shuffled into the multiworld.
+
+        false: Monkey Lamps are unlocked the vanilla way (By catching enough monkeys)
+        true: The 8 Monkey Lamps will unlock when catching enough monkeys AND having their corresponding item
+
+        Supported values: true, false
+        Default value: false
+    """
+
+    display_name = "Monkey Lamps"
+    option_false = 0x00
+    option_true = 0x01
+    default = option_false
+
+
 class GadgetOption(Choice):
     """Choose the starting gadget from the non-net gadgets.
-    
+
         club: Start with the Stun Club.
         radar: Start with the Monkey Radar.
         sling: Start with the Slingback Shooter.
@@ -144,7 +160,7 @@ class GadgetOption(Choice):
         Supported values: club, radar, sling, hoop, flyer, car, punch, none
         Default value: club
     """
-    
+
     display_name = "Gadget"
     option_club = 0x00
     option_radar = 0x01
@@ -192,11 +208,12 @@ class ShuffleWaterNetOption(Choice):
     option_on = 0x02
     default = option_off
 
+
 class LowOxygenSounds(Choice):
     """How quickly the oxygen beep sound effect will play
 
         off: Low Oxygen sounds will not play at all.
-        half: Frequency of Low Oxygen sounds will be cut in half
+        half: Low Oxygen sounds will be cut in half
         on: Low Oxygen Sounds will play as vanilla
 
 
@@ -219,6 +236,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     unlocksperkey: KeyOption
     coin: CoinOption
     mailbox: MailboxOption
+    lamp: LampOption
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption

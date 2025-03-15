@@ -39,7 +39,7 @@ class ApeEscapeWeb(WebWorld):
         ["Thedragon005"]
     )
 
-    tutorials = [setup_en,setup_fr]
+    tutorials = [setup_en, setup_fr]
 
 
 class ApeEscapeWorld(World):
@@ -74,12 +74,12 @@ class ApeEscapeWorld(World):
         self.entrance: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.coin: Optional[int] = 0
+        self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
-
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
 
@@ -91,6 +91,7 @@ class ApeEscapeWorld(World):
         self.entrance = self.options.entrance.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.coin = self.options.coin.value
+        self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
@@ -138,10 +139,20 @@ class ApeEscapeWorld(World):
         victory = self.create_item(AEItem.Victory.value)
 
         waternet = self.create_item(AEItem.WaterNet.value)
-        #progwaternet = self.create_item(AEItem.ProgWaterNet.value)
+        # progwaternet = self.create_item(AEItem.ProgWaterNet.value)
         watercatch = self.create_item(AEItem.WaterCatch.value)
 
-        #self.multiworld.push_precollected(waternet)
+        CB_Lamp = self.create_item(AEItem.CB_Lamp.value)
+        DI_Lamp = self.create_item(AEItem.DI_Lamp.value)
+        CrC_Lamp = self.create_item(AEItem.CrC_Lamp.value)
+        CP_Lamp = self.create_item(AEItem.CP_Lamp.value)
+        SF_Lamp = self.create_item(AEItem.SF_Lamp.value)
+        TVT_Lobby_Lamp = self.create_item(AEItem.TVT_Lobby_Lamp.value)
+        TVT_Tank_Lamp = self.create_item(AEItem.TVT_Tank_Lamp.value)
+        MM_Lamp = self.create_item(AEItem.MM_Lamp.value)
+        MMLobbyDoubleDoorKey = self.create_item(AEItem.MMLobbyDoubleDoorKey.value)
+
+        self.itempool += [MMLobbyDoubleDoorKey]
 
         # Create enough keys to access every level, depending on the key option
         if self.options.unlocksperkey == 0x00:
@@ -153,14 +164,25 @@ class ApeEscapeWorld(World):
         elif self.options.unlocksperkey == 0x03:
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
+        # Monkey Lamps shuffle
+        if self.options.lamp == "true":
+            self.itempool += [CB_Lamp]
+            self.itempool += [DI_Lamp]
+            self.itempool += [CrC_Lamp]
+            self.itempool += [CP_Lamp]
+            self.itempool += [SF_Lamp]
+            self.itempool += [TVT_Lobby_Lamp]
+            self.itempool += [TVT_Tank_Lamp]
+            self.itempool += [MM_Lamp]
+
         # Water Net shuffle handling
-        if self.options.shufflewaternet == 0x00: # Off
+        if self.options.shufflewaternet == 0x00:  # Off
             self.multiworld.push_precollected(waternet)
-        elif self.options.shufflewaternet == 0x01: # Progressive
+        elif self.options.shufflewaternet == 0x01:  # Progressive
             self.itempool += [watercatch]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
             self.itempool += [self.create_item(AEItem.ProgWaterNet.value)]
-        else: # On
+        else:  # On
             self.itempool += [waternet]
 
         # Net shuffle handling.
@@ -260,6 +282,7 @@ class ApeEscapeWorld(World):
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
+            "lamp": self.options.lamp.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,

@@ -880,9 +880,11 @@ class RAM:
             501: 0x143E1F
         },
         70: {  # MM_Jake
-
+            503: 0x1422E6
         },
-
+        71: {  # Circus (Professor)
+            502: 0x0E6BA9
+        },
         #Victory conditions calculated separately, no values there
         83: {  # Specter 1 Phase 1
 
@@ -909,6 +911,15 @@ class RAM:
         "WaterNet": 0x400,
         "ProgWaterNet": 0x401,
         "WaterCatch": 0x402,
+        "CB_Lamp": 0x150,
+        "DI_Lamp": 0x151,
+        "CrC_Lamp": 0x152,
+        "CP_Lamp": 0x153,
+        "SF_Lamp": 0x154,
+        "TVT_Lobby_Lamp": 0x155,
+        "TVT_Tank_Lamp": 0x156,
+        "MM_Lamp": 0x157,
+        "MMLobbyDoubleDoorKey": 0x403,
         "Nothing": 0x0,
         "Shirt": 0x210,
         "Triangle": 0x211,
@@ -920,6 +931,7 @@ class RAM:
         "FiveCookies": 0x217,
         "ThreeFlash": 0x218,
         "ThreeRocket": 0x219
+
     }
 
     caughtStatus = {
@@ -1011,6 +1023,162 @@ class RAM:
         83: 0xdfcae,
         91: 0xdfcb0
     }
+    localLamp_localUpdate = 0x097474 # Default : 9062007A. Set this to 0 to disable
+    globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
+    globalLamp_globalUpdate = 0x097568 # 0x097568 Default : 1444000F. Set this to 0 to disable
+
+    lampDoors_toggles = {
+        #CBLamp
+        #Array order : bytesToWrite,OpenValue,ClosedValue
+        20: {  # CB_LampDoor
+            0x0C01AB: [1,0xF4,0xF8],  #CB_LampDoor_Visual1 Open = F4
+            0x0C01AF: [1,0x00,0x80],  #CB_LampDoor_Visual2 Open = 00
+            0x177B77: [1,0xF4,0xF8],  #CB_LampDoor_Hitbox Open = F4
+        },
+        53: {  # CP_Lamp
+            0x0E7901:[1,0x00,0x10],  # CP_LampDoor_Visual1 Open = 00
+            0x0E7903:[1,0x10,0x00],  # CP_LampDoor_Visual2 Open = 10
+            0x0E7907:[1,0xF0,0x00],  # CP_LampDoor_Visual3 Open = F0
+            0x0E7909:[1,0x00,0x10],  # CP_LampDoor_Visual4 Open = 00
+            0x17ABA0:[2,0xE0C0,0xE200],  # CP_LampDoor_Hitbox1 Open = E0C0
+            0x17ABA6:[2,0x0040,0x0180],  # CP_LampDoor_Hitbox2 Open = 0040
+            0x17ABA9:[2,0x8003,0x8000],  # CP_LampDoor_Hitbox3 Open = 8003
+        },
+        79: {  # MM_Lamp
+            0x0E79D1:[1,0x00,0x10],  # MM_LampDoorL_Visual1 Open = 00
+            0x0E79C1:[1,0x00,0x10],  # MM_LampDoorL_Visual2 Open = 00
+            0x0E79C5:[1,0xF0,0x00],  # MM_LampDoorL_Visual3 Open = F0
+            0x0E79CD:[1,0x10,0x00],  # MM_LampDoorL_Visual4 Open = 10
+            0x0E79E1:[1,0x00,0x10],  # MM_LampDoorR_Visual1 Open = 00
+            0x0E79E5:[1,0x10,0x00],  # MM_LampDoorR_Visual2 Open = 10
+            0x0E79ED:[1,0xF0,0x00],  # MM_LampDoorR_Visual3 Open = F0
+            0x0E79F1:[1,0x00,0x10],  # MM_LampDoorR_Visual4 Open = 00
+            0x173C08:[2,0xFD40,0xFE80],  # MM_LampDoorL_Hitbox1 Open = FD40
+            0x173C0C:[4,0x00400B80,0x018009C0],  # MM_LampDoorL_Hitbox2 Open = 00400B80
+            0x173C12:[2,0x0180,0x0040],  # MM_LampDoorL_Hitbox3 Open = 0180
+            0x173CB0:[2,0x02C0,0x0180],  # MM_LampDoorR_Hitbox1 Open = 02C0
+            0x173CB4:[4,0x00400B80,0x018009C0],  # MM_LampDoorR_Hitbox2 Open = 00400B80
+            0x173CBA:[2,0x0180,0x0040]  # MM_LampDoorR_Hitbox3 Open = 0180
+        },
+        26: {  # DI_Lamp
+            0x0BFDAB:[1,0xF2,0xF6],  # DI_LampDoor_Visual1 Open = F2 | Closed = F6
+            0x0BFDAF:[1,0x00,0x80],  # DI_LampDoor_Visual2 Open = 00 | Closed = 80
+            0x169653:[1,0xF2,0xF6],  # DI_LampDoor_Hitbox Open = F2 | Closed = F6
+        },
+        46: {  # CrC_Lamp
+            0x0E7981:[1,0x00,0x10],  # CrC_LampDoorL_Visual1 Open = 00
+            0x0E7985:[1,0xF0,0x00],  # CrC_LampDoorL_Visual2 Open = F0
+            0x0E798D:[1,0x10,0x00],  # CrC_LampDoorL_Visual3 Open = 10
+            0x0E7991:[1,0x00,0x10],  # CrC_LampDoorL_Visual4 Open = 00
+            0x0E79A1:[1,0x00,0x10],  # CrC_LampDoorR_Visual1 Open = 00
+            0x0E79A5:[1,0x10,0x00],  # CrC_LampDoorR_Visual2 Open = 10
+            0x0E79AD:[1,0xF0,0x00],  # CrC_LampDoorR_Visual3 Open = F0
+            0x0E79B1:[1,0x00,0x10],  # CrC_LampDoorR_Visual4 Open = 00
+            0x1710C0:[2,0x0040,0x0100],  # CrC_LampDoorL_Hitbox1 Open = 0040
+            0x1710C4:[4,0x00400400,0x010002C0],  # CrC_LampDoorL_Hitbox2 Open = 00400400
+            0x1710CA:[2,0x0100,0x0040],  # CrC_LampDoorL_Hitbox3 Open = 0100
+            0x1710F8:[2,0x03C0,0x0300],  # CrC_LampDoorR_Hitbox1 Open = 03C0
+            0x1710FC:[4,0x00400400,0x010002C0],  # CrC_LampDoorR_Hitbox2 Open = 00400400
+            0x171102:[2,0x0100,0x0040],  # CrC_LampDoorR_Hitbox3 Open = 0100
+        },
+        57: {  # SF_Lamp
+            0x0C04AD:[1,0x0B,0x0D],  # SF_LampDoor_Visual1 Open = 0B
+            0x0C04AF:[1,0x00,0x80],  # SF_LampDoor_Visual2 Open = 00
+            0x0C056D:[1,0x11,0x0F],  # SF_LampDoor_Visual3 Open = 11
+            0x0C056F:[1,0x00,0x80],  # SF_LampDoor_Visual4 Open = 00
+            0x16A499:[1,0x0B,0x0D],  # SF_LampDoor_Hitbox1 Open = 0B
+            0x16A461:[1,0x11,0x0F],  # SF_LampDoor_Hitbox2 Open = 11
+        },
+        65: {  # TVT_LobbyLamp
+            0x0C042D:[1,0xFF,0xFD],  # TvtL_LampDoorL_Visual1 Open = FF
+            0x0C042F:[1,0x00,0x80],  # TvtL_LampDoorL_Visual2 Open = 00
+            0x0C046D:[1,0xF9,0xFB],  # TvtL_LampDoorR_Visual1 Open = F9
+            0x0C046F:[1,0x00,0x80],  # TvtL_LampDoorR_Visual2 Open = 00
+            0x170C51:[1,0xFF,0xFD],  # TvtL_LampDoorL_Hitbox1 Open = FF
+            0x170C65:[1,0x80,0x00],  # TvtL_LampDoorL_Hitbox2 Open = 80
+            0x170C89:[1,0xF9,0xFB],  # TvtL_LampDoorR_Hitbox1 Open = F9
+            0x170C9D:[1,0x80,0x00],  # TvtL_LampDoorR_Hitbox2 Open = 80
+        },
+        66: {  # TVT_TankLamp
+            0x0C05AC:[4,0x00000DC0,0x80000F40],  # TvtTR_LampDoorL_Visual Open = 00000DC0
+            0x0C056C:[4,0x00001240,0x800010C0],  # TvtTR_LampDoorR_Visual Open = 00001240
+            0x16C294:[2,0x0DC0,0x0F40],  # TvtTR_LampDoorL_Hitbox1 Open = 0DC0
+            0x16C2A9:[1,0x80,0x00],  # TvtTR_LampDoorL_Hitbox2 Open = 80
+            0x16C2CC:[2,0x1240,0x10C0],  # TvtTR_LampDoorR_Hitbox1 Open = 1240
+            0x16C2E1:[1,0x80,0x00],  # TvtTR_LampDoorR_Hitbox2 Open = 80
+        },
+    }
+
+    CB_LampDoor_Visual1 = 0x0C01AB # Open = F4 | Closed = F8
+    CB_LampDoor_Visual2 = 0x0C01AF # Open = 00 | Closed = 80
+    CB_LampDoor_Hitbox = 0x177B77 # Open = F4 | Closed = F8
+
+    DI_LampDoor_Visual1 = 0x0BFDAB # Open = F2 | Closed = F6
+    DI_LampDoor_Visual2 = 0x0BFDAF # Open = 00 | Closed = 80
+    DI_LampDoor_Hitbox = 0x169653 # Open = F2 | Closed = F6
+
+    CrC_LampDoorL_Visual1 = 0x0E7981 #Open = 00
+    CrC_LampDoorL_Visual2 = 0x0E7985 #Open = F0
+    CrC_LampDoorL_Visual3 = 0x0E798D #Open = 10
+    CrC_LampDoorL_Visual4 = 0x0E7991 #Open = 00
+    CrC_LampDoorR_Visual1 = 0x0E79A1 #Open = 00
+    CrC_LampDoorR_Visual2 = 0x0E79A5 #Open = 10
+    CrC_LampDoorR_Visual3 = 0x0E79AD #Open = F0
+    CrC_LampDoorR_Visual4 = 0x0E79B1 #Open = 00
+    CrC_LampDoorL_Hitbox1 = 0x1710C0 #2b Open = 0040
+    CrC_LampDoorL_Hitbox2 = 0x1710C4 #4b Open = 00400400
+    CrC_LampDoorL_Hitbox3 = 0x1710CA #2b Open = 0100
+    CrC_LampDoorR_Hitbox1 = 0x1710F8 #2b Open = 03C0
+    CrC_LampDoorR_Hitbox2 = 0x1710FC #4b Open = 00400400
+    CrC_LampDoorR_Hitbox3 = 0x171102 #2b Open = 0100
+
+    CP_LampDoor_Visual1 = 0x0E7901 #Open = 00
+    CP_LampDoor_Visual2 = 0x0E7903 #Open = 10
+    CP_LampDoor_Visual3 = 0x0E7907 #Open = F0
+    CP_LampDoor_Visual4 = 0x0E7909 #Open = 00
+    CP_LampDoor_Hitbox1 = 0x17ABA0 #2b Open = E0C0
+    CP_LampDoor_Hitbox2 = 0x17ABA6 #2b Open = 0040
+    CP_LampDoor_Hitbox3 = 0x17ABA9 #2b Open = 8003
+
+    SF_LampDoor_Visual1 = 0x0C04AD # Open = 11
+    SF_LampDoor_Visual2 = 0x0C04AF # Open = 0
+    SF_LampDoor_Visual3 = 0x0C056D # Open = 17
+    SF_LampDoor_Visual4 = 0x0C056F # Open = 0
+    SF_LampDoor_Hitbox1 = 0x16A499 # Open = 11
+    SF_LampDoor_Hitbox2 = 0x16A461 # Open = 17
+
+    TvtL_LampDoorL_Visual1 = 0x0C042D # Open = FF
+    TvtL_LampDoorL_Visual2 = 0x0C042F # Open = 00
+    TvtL_LampDoorR_Visual1 = 0x0C046D # Open = F9
+    TvtL_LampDoorR_Visual2 = 0x0C046F # Open = 00
+    TvtL_LampDoorL_Hitbox1 = 0x170C51 # Open = FF
+    TvtL_LampDoorL_Hitbox2 = 0x170C65 # Open = 80
+    TvtL_LampDoorR_Hitbox1 = 0x170C89 # Open = F9
+    TvtL_LampDoorR_Hitbox2 = 0x170C9D # Open = 80
+
+    TvtTR_LampDoorL_Visual = 0x0C05AC  # 4b Open = 00000DC0
+    TvtTR_LampDoorR_Visual = 0x0C056C  # 4b Open = 00001240
+    TvtTR_LampDoorL_Hitbox1 = 0x16C294 # 2b Open = 0DC0
+    TvtTR_LampDoorL_Hitbox2 = 0x16C2A9 # Open = 80
+    TvtTR_LampDoorR_Hitbox1 = 0x16C2CC # 2b Open = 1240
+    TvtTR_LampDoorR_Hitbox2 = 0x16C2E1 # Open = 80
+
+    MM_LampDoorL_Visual1 = 0x0E79D1  # Open = 00
+    MM_LampDoorL_Visual2 = 0x0E79C1  # Open = 00
+    MM_LampDoorL_Visual3 = 0x0E79C5  # Open = F0
+    MM_LampDoorL_Visual4 = 0x0E79CD  # Open = 10
+    MM_LampDoorR_Visual1 = 0x0E79E1  # Open = 00
+    MM_LampDoorR_Visual2 = 0x0E79E5  # Open = 10
+    MM_LampDoorR_Visual3 = 0x0E79ED  # Open = F0
+    MM_LampDoorR_Visual4 = 0x0E79F1  # Open = 00
+
+    MM_LampDoorL_Hitbox1 = 0x173C08  # 2b Open = FD40
+    MM_LampDoorL_Hitbox2 = 0x173C0C  # 4b Open = 00400B80
+    MM_LampDoorL_Hitbox3 = 0x173C12  # 2b Open = 0180
+    MM_LampDoorR_Hitbox1 = 0x173CB0  # 2b Open = 02C0
+    MM_LampDoorR_Hitbox2 = 0x173CB4  # 4b Open = 00400B80
+    MM_LampDoorR_Hitbox3 = 0x173CBA  # 2b Open = 0180
+
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
@@ -1025,17 +1193,40 @@ class RAM:
     tempWaterNetAddress = 0x0DFBE2
     tempWaterCatchAddress = 0x0DFBE3
 
+    temp_MMLobbyDoorAddress = 0x0DFC58
+
+
     isUnderwater = 0x0F4DCA
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
     swim_oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
-    swim_oxygenLowLevelSoundAddress = 0x061458 # Default : 3C02800F, disable : 3C028004 4 bytes
-    swim_oxygenMidLevelSoundAddress = 0x061490  # Default : 3C02800F, disable : 3C028004 4 bytes
     swim_oxygenReplenishSoundAddress = 0x06140C # Default : 0C021DFE, disable : 00000000 4 bytes
     swim_ReplenishOxygenUWAddress = 0x06141C # Default : A4500018, Disable : 00000000 4 bytes
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
     swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
+    swim_oxygenLowLevelSoundAddress = 0x061458  # Default : 3C02800F, disable : 3C028004 4 bytes
+    swim_oxygenMidLevelSoundAddress = 0x061490  # Default : 3C02800F, disable : 3C028004 4 bytes
+    
+    MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
+    MM_Clown_State = 0x174072
+    MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
+    MM_Nathalie_CutsceneState = 0x0DFDDE #play cutscene = 0x00, cutscene played = 0x0D
+    MM_Nathalie_Rescued_Local = 0x16F34E # When in Room 76 : Nathalie rescued = 0x01
+    MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
 
+
+    temp_MM_Professor_RescuedAddress = 0x0DFC5C
+    temp_MM_Nathalie_RescuedAddress = 0x0DFC5E
+    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
+
+    MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence.If JakeDefeated = 5 it will open the door
+    MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
+    MM_Lobby_JakeDoorFenceAddress = 0x174FA6 #Maybe not used
+    MM_Lobby_DoorDetection = 0x0963C8 # 4b : Default to 8C820000.8C800000 Prevent the door detection code from kicking in
+
+    MM_NathalieDoor_Visual1 = 0x0BFCEF # Open 0x00
+    MM_NathalieDoor_Visual2 = 0x0BFE0F # Open 0x00
+    MM_NathalieDoor_Hitbox = 0x167965  # Open 0x80
 
     gameRunningAddress = 0x0B01C0
 
@@ -1060,10 +1251,12 @@ class RAM:
     blank_coinTable2 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     totalCoinsAddress = 0x0F44BA
 
+
     SA_CompletedAddress = 0x0DFDD0 # Completed = 0x19, not completed = 00
     Temp_SA_CompletedAddress = 0x0DFC56
     GA_CompletedAddress = 0x0DFDD1 # Completed = 0x19, not completed = 00
     Temp_GA_CompletedAddress = 0x0DFC57
+
 
     levelselectFonts = 0x139CF6 # 0x36 = Classic One  0x26 = Current One
     time_attack_Times = 0x0DFD44
@@ -1077,7 +1270,85 @@ class RAM:
 
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
-    currentLoadedSave = 0x0E0034  # Not used for now,but could be used somehow
+
+    DI_Button_Pressed = 0x0F53AC # Activated = 0x01
+    DI_Button_DoorVisual = 0x0BFC8F # Activated = 0x00
+    DI_Button_DoorHitBox = 0x1676F7 # Activated = 0xDC
+    DI_Button_Visual1 = 0x0BFCB8 #4 bytes : Activated = 80162250
+    DI_Button_Visual2 = 0x0BFCBC  # 4 bytes : Activated = 80162268
+    DI_Button_Visual3 = 0x0BFCC0  # 4 bytes : Activated = 80162390
+    DI_Button_Visual4 = 0x0BFCC4  # 4 bytes : Activated = 80162288
+
+    CrC_Basement_ButtonPressed = 0x184D46 # Pressed = 0x01
+    CrC_Basement_DoorHitBox1 = 0x1810A8 #[4b] Activated = F200F808
+    CrC_Basement_DoorHitBox2 = 0x1810AC #[4b] Activated =  0008FB00
+    CrC_Basement_DoorHitBox3 = 0x1810B0 #[4b] Activated =  01000400
+    CrC_Basement_DoorVisual1 = 0x0E7AC1 # Activated = 0x00
+    CrC_Basement_DoorVisual2 = 0x0E7ACD # Activated = 0xF0
+    CrC_Basement_ButtonVisual1 = 0x0C1518 # [4b] Activated = 80178ADC
+    CrC_Basement_ButtonVisual2 = 0x0C151C  # [4b] Activated = 80178AF4
+    CrC_Basement_ButtonVisual3 = 0x0C1520  # [4b] Activated = 80178C14
+    CrC_Basement_ButtonVisual4 = 0x0C1524  # [4b] Activated = 80178B0C
+
+
+    CrC_Water_ButtonPressed = 0x173242 # 1 byte : While in room 49 -> Pressed = 0x01, Unpressed = 0x00 -> Send event object
+    CrC_Water_DoorVisual = 0x0C05AE  # 1 byte : Open = 0x00 , Closed = 0x16
+    #CrC_Button_Visual1 = 0x0C0778 # 4 bytes : Activated =
+    #CrC_Button_Visual2 = 0x0C077C  # 4 bytes : Activated =
+    #CrC_Button_Visual3 = 0x0C0780  # 4 bytes : Activated =
+    #CrC_Button_Visual4 = 0x0C0784  # 4 bytes : Activated =
+    #Set TR4_TransitionEnabled to 0x00 to permit access to the transition, 0x03 to deny transition
+
+    MM_Painting_Button = 0x17EACE # Active 0x01 ROOM = 82
+    MM_Painting_Visual = 0x0C1569 # Active Value = 0x06
+    MM_Painting_HitBox = 0x18CF31  # Active Value = 0x06
+    MM_Painting_VisualStair1 = 0x0C0EAE # Active Value = 0x03
+    MM_Painting_VisualStair2 = 0x0C0ECE # Active Value = 0x03
+    MM_Painting_VisualStair3 = 0x0C0EEE # Active Value = 0x03
+    MM_Painting_HitBoxStair1 = 0x18CEA1 # Active Value = 0x00
+    MM_Painting_HitBoxStair2 = 0x18CED9 # Active Value = 0x00
+    MM_Painting_HitBoxStair3 = 0x18CF11 # Active Value = 0x00
+    MM_Painting_VisualFence = 0x0C0F4E # Active Value = 0x00
+    MM_Painting_HitBoxFence = 0x18CF81 # Active Value = 0x80
+
+    MM_MonkeyHead_Button = 0x174ECE # Active 0x01 ROOM = 84
+    MM_MonkeyHead_Door = 0x0AFA22 # Lasers = 0x00 NO LASERS = 0x01
+
+    TVT_Lobby_Button = 0x1710E6 # Active 0x01 ROOM = 65
+
+    TVT_Lobby_Water_HitBox = 0x170EFF # Active Value = 0
+    TVT_Lobby_Water_DoorHitbox1 = 0x170E5D # Active Value = 80
+    TVT_Lobby_Water_DoorHitbox2 = 0x170E25 # Active Value = 80
+    TVT_Lobby_Water_DoorVisualP1 = 0x0C04CF # Active Value = 0
+    TVT_Lobby_Water_DoorVisualP2 = 0x0C04EF # Active Value = 0
+    TVT_Lobby_Water_BackColor1 = 0x0C0698 # Active Value = AC78
+    TVT_Lobby_Water_BackColor2 = 0x0C069C # Active Value = AC90
+    TVT_Lobby_Water_BackColor3 = 0x0C06A0 # Active Value = AE14
+    TVT_Lobby_Water_BackColor4 = 0x0C06A4 # Active Value = AC9C
+    TVT_Lobby_Water_BackColor5 = 0x0C06B8 # Active Value = B1B8
+    TVT_Lobby_Water_ColorS1P1 = 0x0C06BC # Active Value = B1D0
+    TVT_Lobby_Water_ColorS1P2 = 0x0C06C0 # Active Value = B2EC
+    TVT_Lobby_Water_TunnelColorS1P1 = 0x0C06C4 # Active Value = B1E4
+    TVT_Lobby_Water_TunnelColorS1P2 = 0x0C07B8 # Active Value = B9A0
+    TVT_Lobby_Water_TunnelColorS2P1 = 0x0C07BC # Active Value = B9B8
+    TVT_Lobby_Water_TunnelColorS2P2 = 0x0C07C0 # Active Value = BB44
+    TVT_Lobby_Water_TunnelColorS2P3 = 0x0C07C4 # Active Value = B9C4
+    TVT_Lobby_WaterVisual1 = 0x0C07EA # Active Value = F70C
+    TVT_Lobby_WaterVisual2 = 0x0C07EF # Active Value = 0
+    TVT_Lobby_WaterVisual3 = 0x0C080A # Active Value = F70C
+    TVT_Lobby_WaterVisual4 = 0x0C080F # Active Value = 0
+
+
+    tempCB_LampAddress = 0x0DFBE4
+    tempDI_LampAddress = 0x0DFBE5
+    tempCrC_LampAddress = 0x0DFBE6
+    tempCP_LampAddress = 0x0DFBE7
+    tempSF_LampAddress = 0x0DFBE8
+    tempTVT_Lobby_LampAddress = 0x0DFBE9
+    tempTVT_Tank_LampAddress = 0x0DFBEA
+    tempMM_LampAddress = 0x0DFBEB
+
+    currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
     menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
     Controls_DPAD_STARTSELECT_L3R3 = 0x0B87A2
@@ -1091,6 +1362,9 @@ class RAM:
     # 0x04 or 0x05 = near a transition
     # 0x06 = Starting transition
     # 0x19 = Spawning in air
+
+
+
 
     # Junk addresses
     energyChipsAddress = 0x0F44B8
@@ -1116,7 +1390,7 @@ class RAM:
     Spike_Y_PosAddress = 0x0EC208
     Spike_Z_PosAddress = 0x0EC20C
     Nearby_RoomIDAddress = 0x0E38B4
-    Nearby_DoorIDAddress = 0x0E38A4
+    Nearby_DoorIDAddress   = 0x0E38A4
 
     TargetRoomID1Address = 0x154380
     TR1_DoorIDAddress = 0x15437C
@@ -1126,7 +1400,7 @@ class RAM:
     TR3_DoorIDAddress = 0x15432C
     TargetRoomID4Address = 0x154308
     TR4_DoorIDAddress = 0x154304
-    TR4_TransitionEnabled = 0x1542BC  # For CrC_Boss_Door -> Blocked value : 0x03, Opened Value : 0x00
+    TR4_TransitionEnabled = 0x1542BC # For CrC_Boss_Door -> Blocked value : 0x03, Opened Value : 0x00
     TargetRoomID5Address = 0x1542E0
     TR5_DoorIDAddress = 0x1542DC
     TargetRoomID6Address = 0x1542B8
@@ -1149,7 +1423,8 @@ class RAM:
     # 2 Boss in waiting
     # 3 Boss in progress
     roomStatus = 0x17C5A2
-    # Find better name please...
+    #Find better name please...
+
 
     # Specter bosses values
     S1_P2_State = 0x144A04
@@ -1165,7 +1440,7 @@ class RAM:
     # Detect when readingMail = 2 then check what mailbox it is
     mailboxIDAddress = 0x0A6CD2
     mailboxIDAddress_PAL = 0x0A6DB2
-    # DIFF = NTSC + E0
+    #DIFF = NTSC + E0
     # Associate by room just to be sure, since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,

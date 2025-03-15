@@ -538,6 +538,8 @@ def create_regions(world: "ApeEscapeWorld"):
     l9120 = Region(AERoom.W9L1GoKarz.value, player, multiworld)
     
     l9115.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l9115) for loc_name in get_array([205])]
+    l915.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l915) for loc_name in get_array([502])]
+    l916.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], l916) for loc_name in get_array([503])]
     goopo = Region(AELocation.W9L1Goopo.value, player, multiworld)
     goopo.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], goopo) for loc_name in get_array([181])]
     porto = Region(AELocation.W9L1Porto.value, player, multiworld)
