@@ -935,7 +935,7 @@ def CrC_Lamp(state, world):
 
 
 def CC_5Monkeys(state, world):
-    return CrC_Lamp(state, world) and (HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world))
+    return CrC_Lamp(state, world) and HasNet(state, world) and (HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasPunch(state, world))
 
 
 def CC_WaterRoom(state, world):

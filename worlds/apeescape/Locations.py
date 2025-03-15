@@ -645,7 +645,7 @@ def createLocationGroups():
         if "Coin" in locname:
             GROUPED_LOCATIONS.setdefault("Specter Coins", []).append(locname)
 
-        if "Specter" in locname or "Boss" in locname:
+        if ("Specter" in locname or "Boss" in locname) and "Specters Factory" not in locname:
             GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
 
         if "Mailbox" in locname:

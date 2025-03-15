@@ -1029,82 +1029,83 @@ class RAM:
 
     lampDoors_toggles = {
         #CBLamp
+        #Array order : bytesToWrite,OpenValue,ClosedValue
         20: {  # CB_LampDoor
-            0x0C01AB: [1,0xF4],  #CB_LampDoor_Visual1 Open = F4
-            0x0C01AF: [1,0x00],  #CB_LampDoor_Visual2 Open = 00
-            0x177B77: [1,0xF4],  #CB_LampDoor_Hitbox Open = F4
+            0x0C01AB: [1,0xF4,0xF8],  #CB_LampDoor_Visual1 Open = F4
+            0x0C01AF: [1,0x00,0x80],  #CB_LampDoor_Visual2 Open = 00
+            0x177B77: [1,0xF4,0xF8],  #CB_LampDoor_Hitbox Open = F4
         },
         53: {  # CP_Lamp
-            0x0E7901:[1,0x00],  # CP_LampDoor_Visual1 Open = 00
-            0x0E7903:[1,0x10],  # CP_LampDoor_Visual2 Open = 10
-            0x0E7907:[1,0xF0],  # CP_LampDoor_Visual3 Open = F0
-            0x0E7909:[1,0x00],  # CP_LampDoor_Visual4 Open = 00
-            0x17ABA0:[2,0xE0C0],  # CP_LampDoor_Hitbox1 Open = E0C0
-            0x17ABA6:[2,0x0040],  # CP_LampDoor_Hitbox2 Open = 0040
-            0x17ABA9:[2,0x8003],  # CP_LampDoor_Hitbox3 Open = 8003
+            0x0E7901:[1,0x00,0x10],  # CP_LampDoor_Visual1 Open = 00
+            0x0E7903:[1,0x10,0x00],  # CP_LampDoor_Visual2 Open = 10
+            0x0E7907:[1,0xF0,0x00],  # CP_LampDoor_Visual3 Open = F0
+            0x0E7909:[1,0x00,0x10],  # CP_LampDoor_Visual4 Open = 00
+            0x17ABA0:[2,0xE0C0,0xE200],  # CP_LampDoor_Hitbox1 Open = E0C0
+            0x17ABA6:[2,0x0040,0x0180],  # CP_LampDoor_Hitbox2 Open = 0040
+            0x17ABA9:[2,0x8003,0x8000],  # CP_LampDoor_Hitbox3 Open = 8003
         },
         79: {  # MM_Lamp
-            0x0E79D1:[1,0x00],  # MM_LampDoorL_Visual1 Open = 00
-            0x0E79C1:[1,0x00],  # MM_LampDoorL_Visual2 Open = 00
-            0x0E79C5:[1,0xF0],  # MM_LampDoorL_Visual3 Open = F0
-            0x0E79CD:[1,0x10],  # MM_LampDoorL_Visual4 Open = 10
-            0x0E79E1:[1,0x00],  # MM_LampDoorR_Visual1 Open = 00
-            0x0E79E5:[1,0x10],  # MM_LampDoorR_Visual2 Open = 10
-            0x0E79ED:[1,0xF0],  # MM_LampDoorR_Visual3 Open = F0
-            0x0E79F1:[1,0x00],  # MM_LampDoorR_Visual4 Open = 00
-            0x173C08:[2,0xFD40],  # MM_LampDoorL_Hitbox1 Open = FD40
-            0x173C0C:[4,0x00400B80],  # MM_LampDoorL_Hitbox2 Open = 00400B80
-            0x173C12:[2,0x0180],  # MM_LampDoorL_Hitbox3 Open = 0180
-            0x173CB0:[2,0x02C0],  # MM_LampDoorR_Hitbox1 Open = 02C0
-            0x173CB4:[4,0x00400B80],  # MM_LampDoorR_Hitbox2 Open = 00400B80
-            0x173CBA:[2,0x0180]  # MM_LampDoorR_Hitbox3 Open = 0180
+            0x0E79D1:[1,0x00,0x10],  # MM_LampDoorL_Visual1 Open = 00
+            0x0E79C1:[1,0x00,0x10],  # MM_LampDoorL_Visual2 Open = 00
+            0x0E79C5:[1,0xF0,0x00],  # MM_LampDoorL_Visual3 Open = F0
+            0x0E79CD:[1,0x10,0x00],  # MM_LampDoorL_Visual4 Open = 10
+            0x0E79E1:[1,0x00,0x10],  # MM_LampDoorR_Visual1 Open = 00
+            0x0E79E5:[1,0x10,0x00],  # MM_LampDoorR_Visual2 Open = 10
+            0x0E79ED:[1,0xF0,0x00],  # MM_LampDoorR_Visual3 Open = F0
+            0x0E79F1:[1,0x00,0x10],  # MM_LampDoorR_Visual4 Open = 00
+            0x173C08:[2,0xFD40,0xFE80],  # MM_LampDoorL_Hitbox1 Open = FD40
+            0x173C0C:[4,0x00400B80,0x018009C0],  # MM_LampDoorL_Hitbox2 Open = 00400B80
+            0x173C12:[2,0x0180,0x0040],  # MM_LampDoorL_Hitbox3 Open = 0180
+            0x173CB0:[2,0x02C0,0x0180],  # MM_LampDoorR_Hitbox1 Open = 02C0
+            0x173CB4:[4,0x00400B80,0x018009C0],  # MM_LampDoorR_Hitbox2 Open = 00400B80
+            0x173CBA:[2,0x0180,0x0040]  # MM_LampDoorR_Hitbox3 Open = 0180
         },
         26: {  # DI_Lamp
-            0x0BFDAB:[1,0xF2],  # DI_LampDoor_Visual1 Open = F2 | Closed = F6
-            0x0BFDAF:[1,0x00],  # DI_LampDoor_Visual2 Open = 00 | Closed = 80
-            0x169653:[1,0xF2],  # DI_LampDoor_Hitbox Open = F2 | Closed = F6
+            0x0BFDAB:[1,0xF2,0xF6],  # DI_LampDoor_Visual1 Open = F2 | Closed = F6
+            0x0BFDAF:[1,0x00,0x80],  # DI_LampDoor_Visual2 Open = 00 | Closed = 80
+            0x169653:[1,0xF2,0xF6],  # DI_LampDoor_Hitbox Open = F2 | Closed = F6
         },
         46: {  # CrC_Lamp
-            0x0E7981:[1,0x00],  # CrC_LampDoorL_Visual1 Open = 00
-            0x0E7985:[1,0xF0],  # CrC_LampDoorL_Visual2 Open = F0
-            0x0E798D:[1,0x10],  # CrC_LampDoorL_Visual3 Open = 10
-            0x0E7991:[1,0x00],  # CrC_LampDoorL_Visual4 Open = 00
-            0x0E79A1:[1,0x00],  # CrC_LampDoorR_Visual1 Open = 00
-            0x0E79A5:[1,0x10],  # CrC_LampDoorR_Visual2 Open = 10
-            0x0E79AD:[1,0xF0],  # CrC_LampDoorR_Visual3 Open = F0
-            0x0E79B1:[1,0x00],  # CrC_LampDoorR_Visual4 Open = 00
-            0x1710C0:[2,0x0040],  # CrC_LampDoorL_Hitbox1 Open = 0040
-            0x1710C4:[4,0x00400400],  # CrC_LampDoorL_Hitbox2 Open = 00400400
-            0x1710CA:[2,0x0100],  # CrC_LampDoorL_Hitbox3 Open = 0100
-            0x1710F8:[2,0x03C0],  # CrC_LampDoorR_Hitbox1 Open = 03C0
-            0x1710FC:[4,0x00400400],  # CrC_LampDoorR_Hitbox2 Open = 00400400
-            0x171102:[2,0x0100],  # CrC_LampDoorR_Hitbox3 Open = 0100
+            0x0E7981:[1,0x00,0x10],  # CrC_LampDoorL_Visual1 Open = 00
+            0x0E7985:[1,0xF0,0x00],  # CrC_LampDoorL_Visual2 Open = F0
+            0x0E798D:[1,0x10,0x00],  # CrC_LampDoorL_Visual3 Open = 10
+            0x0E7991:[1,0x00,0x10],  # CrC_LampDoorL_Visual4 Open = 00
+            0x0E79A1:[1,0x00,0x10],  # CrC_LampDoorR_Visual1 Open = 00
+            0x0E79A5:[1,0x10,0x00],  # CrC_LampDoorR_Visual2 Open = 10
+            0x0E79AD:[1,0xF0,0x00],  # CrC_LampDoorR_Visual3 Open = F0
+            0x0E79B1:[1,0x00,0x10],  # CrC_LampDoorR_Visual4 Open = 00
+            0x1710C0:[2,0x0040,0x0100],  # CrC_LampDoorL_Hitbox1 Open = 0040
+            0x1710C4:[4,0x00400400,0x010002C0],  # CrC_LampDoorL_Hitbox2 Open = 00400400
+            0x1710CA:[2,0x0100,0x0040],  # CrC_LampDoorL_Hitbox3 Open = 0100
+            0x1710F8:[2,0x03C0,0x0300],  # CrC_LampDoorR_Hitbox1 Open = 03C0
+            0x1710FC:[4,0x00400400,0x010002C0],  # CrC_LampDoorR_Hitbox2 Open = 00400400
+            0x171102:[2,0x0100,0x0040],  # CrC_LampDoorR_Hitbox3 Open = 0100
         },
         57: {  # SF_Lamp
-            0x0C04AD:[1,0x0B],  # SF_LampDoor_Visual1 Open = 0B
-            0x0C04AF:[1,0x00],  # SF_LampDoor_Visual2 Open = 00
-            0x0C056D:[1,0x11],  # SF_LampDoor_Visual3 Open = 11
-            0x0C056F:[1,0x00],  # SF_LampDoor_Visual4 Open = 00
-            0x16A499:[1,0x0B],  # SF_LampDoor_Hitbox1 Open = 0B
-            0x16A461:[1,0x11],  # SF_LampDoor_Hitbox2 Open = 11
+            0x0C04AD:[1,0x0B,0x0D],  # SF_LampDoor_Visual1 Open = 0B
+            0x0C04AF:[1,0x00,0x80],  # SF_LampDoor_Visual2 Open = 00
+            0x0C056D:[1,0x11,0x0F],  # SF_LampDoor_Visual3 Open = 11
+            0x0C056F:[1,0x00,0x80],  # SF_LampDoor_Visual4 Open = 00
+            0x16A499:[1,0x0B,0x0D],  # SF_LampDoor_Hitbox1 Open = 0B
+            0x16A461:[1,0x11,0x0F],  # SF_LampDoor_Hitbox2 Open = 11
         },
         65: {  # TVT_LobbyLamp
-            0x0C042D:[1,0xFF],  # TvtL_LampDoorL_Visual1 Open = FF
-            0x0C042F:[1,0x00],  # TvtL_LampDoorL_Visual2 Open = 00
-            0x0C046D:[1,0xF9],  # TvtL_LampDoorR_Visual1 Open = F9
-            0x0C046F:[1,0x00],  # TvtL_LampDoorR_Visual2 Open = 00
-            0x170C51:[1,0xFF],  # TvtL_LampDoorL_Hitbox1 Open = FF
-            0x170C65:[1,0x80],  # TvtL_LampDoorL_Hitbox2 Open = 80
-            0x170C89:[1,0xF9],  # TvtL_LampDoorR_Hitbox1 Open = F9
-            0x170C9D:[1,0x80],  # TvtL_LampDoorR_Hitbox2 Open = 80
+            0x0C042D:[1,0xFF,0xFD],  # TvtL_LampDoorL_Visual1 Open = FF
+            0x0C042F:[1,0x00,0x80],  # TvtL_LampDoorL_Visual2 Open = 00
+            0x0C046D:[1,0xF9,0xFB],  # TvtL_LampDoorR_Visual1 Open = F9
+            0x0C046F:[1,0x00,0x80],  # TvtL_LampDoorR_Visual2 Open = 00
+            0x170C51:[1,0xFF,0xFD],  # TvtL_LampDoorL_Hitbox1 Open = FF
+            0x170C65:[1,0x80,0x00],  # TvtL_LampDoorL_Hitbox2 Open = 80
+            0x170C89:[1,0xF9,0xFB],  # TvtL_LampDoorR_Hitbox1 Open = F9
+            0x170C9D:[1,0x80,0x00],  # TvtL_LampDoorR_Hitbox2 Open = 80
         },
         66: {  # TVT_TankLamp
-            0x0C05AC:[4,0x00],  # TvtTR_LampDoorL_Visual Open = 00000DC0
-            0x0C056C:[4,0x00],  # TvtTR_LampDoorR_Visual Open = 00001240
-            0x16C294:[2,0x0DC0],  # TvtTR_LampDoorL_Hitbox1 Open = 0DC0
-            0x16C2A9:[1,0x80],  # TvtTR_LampDoorL_Hitbox2 Open = 80
-            0x16C2CC:[2,0x1240],  # TvtTR_LampDoorR_Hitbox1 Open = 1240
-            0x16C2E1:[1,0x80],  # TvtTR_LampDoorR_Hitbox2 Open = 80
+            0x0C05AC:[4,0x00000DC0,0x80000F40],  # TvtTR_LampDoorL_Visual Open = 00000DC0
+            0x0C056C:[4,0x00001240,0x800010C0],  # TvtTR_LampDoorR_Visual Open = 00001240
+            0x16C294:[2,0x0DC0,0x0F40],  # TvtTR_LampDoorL_Hitbox1 Open = 0DC0
+            0x16C2A9:[1,0x80,0x00],  # TvtTR_LampDoorL_Hitbox2 Open = 80
+            0x16C2CC:[2,0x1240,0x10C0],  # TvtTR_LampDoorR_Hitbox1 Open = 1240
+            0x16C2E1:[1,0x80,0x00],  # TvtTR_LampDoorR_Hitbox2 Open = 80
         },
     }
 
@@ -1209,6 +1210,8 @@ class RAM:
     MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
     MM_Clown_State = 0x174072
     MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
+    MM_Nathalie_CutsceneState = 0x0DFDDE #play cutscene = 0x00, cutscene played = 0x0D
+    MM_Nathalie_Rescued_Local = 0x16F34E # When in Room 76 : Nathalie rescued = 0x01
     MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
 
 
