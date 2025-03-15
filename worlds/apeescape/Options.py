@@ -9,33 +9,110 @@ class GoalOption(Choice):
 
         first: First Specter fight in Monkey Madness.
         second: Second Specter fight in Peak Point Matrix.
+        coinhunt: Collecting enough Specter Token items throughout the world.
 
-        Supported values: first, second
+        Supported values: first, second, tokenhunt
         Default value: first
     """
 
     display_name = "Goal"
     option_first = 0x00
     option_second = 0x01
+    option_tokenhunt = 0x02
     default = option_first
+
+
+class BossRequirementOption(Choice):
+    """Choose the requirement to start the goal boss, if any.
+
+        vanilla: The vanilla condition for reaching the boss. For Specter 1, this is just reaching the room, and for Specter 2, this is catching all monkeys.
+        coins: Collecting enough Specter Token items throughout the world.
+
+        Supported values: vanilla, coins
+        Default value: vanilla
+    """
+
+    display_name = "Boss Requirement"
+    option_vanilla = 0x00
+    option_coins = 0x01
+    default = option_vanilla
+
+
+class RequiredTokensOption(Range):
+    """Choose the required number of Specter Tokens for goal.
+
+        Supported values: 5 - 60
+        Default value: 20
+    """
+
+    display_name = "Required Tokens"
+    range_start = 5
+    range_end = 60
+    default = 20
+
+
+class TotalTokensOption(Range):
+    """Choose the total number of Specter Tokens in the item pool.
+
+        Supported values: 5 - 60
+        Default value: 30
+    """
+
+    display_name = "Total Tokens"
+    range_start = 5
+    range_end = 60
+    default = 30
+
+
+class TokenLocationsOption(Choice):
+    """Choose where Specter Tokens can be placed in the multiworld.
+
+        monkeys: Specter Tokens can only be placed on monkeys in your world.
+        ownworld: Specter Tokens can be placed anywhere in your world.
+        anywhere: Specter Tokens can be placed anywhere in the multiworld.
+
+        Supported values: monkeys, ownworld, anywhere
+        Default value: ownworld
+    """
+
+    display_name = "Token Locations"
+    option_monkeys = 0x00
+    option_ownworld = 0x01
+    option_anywhere = 0x02
+    default = option_ownworld
 
 
 class LogicOption(Choice):
     """Choose expected trick knowledge.
 
-        glitchless: No glitches required.
-        noij: Almost all tricks and glitches can be required, except infinite jump.
-        ij: All tricks and glitches can be required.
+        normal: No advanced movement tech or out of bounds required, and hard monkeys will guarantee a helpful gadget. Some additional difficult or precise jumps won't be required either. May still require some out of the box thinking or non-standard routes. Suitable for casual players.
+        hard: Movement tech can be required in places with a low penalty for failing. Suitable for players with speedrun knowledge.
+        expert: All tricks and glitches can be required, and some monkeys may require resetting the room if not caught in a certain way. Can also require obscure game knowledge. Suitable for those seeking the ultimate challenge.
 
-        Supported values: glitchless, noij, ij
-        Default value: glitchless
+        Supported values: normal, hard, expert
+        Default value: normal
     """
 
     display_name = "Logic"
-    option_glitchless = 0x00
-    option_noij = 0x01
-    option_ij = 0x02
-    default = option_glitchless
+    option_normal = 0x00
+    option_hard = 0x01
+    option_expert = 0x02
+    default = option_normal
+
+
+class InfiniteJumpOption(Choice):
+    """Choose if the Infinite Jump trick should be put into logic.
+
+        false: Infinite Jump is not put into logic.
+        true: Infinite Jump is put into logic.
+
+        Supported values: false, true
+        Default value: false
+    """
+    display_name = "Infinite Jump"
+    option_false = 0x00
+    option_true = 0x01
+    default = option_false
 
 
 class SuperFlyerOption(Choice):
@@ -132,10 +209,10 @@ class MailboxOption(Choice):
 class LampOption(Choice):
     """Choose if Monkey Lamps should be locked and shuffled into the multiworld.
 
-        false: Monkey Lamps act as in the original game (catching enough monkeys in their level opens the door)
-        true: The 8 Monkey Lamps will unlock when catching enough monkeys AND having their corresponding item
+        false: Monkey Lamps will act in vanilla (catch enough monkeys in their level to open the door)
+        true: The 8 Monkey Lamps will be items in the multiworld, that open their respective door when received.
 
-        Supported values: true, false
+        Supported values: false, true
         Default value: false
     """
 
@@ -146,7 +223,7 @@ class LampOption(Choice):
 
 
 class GadgetOption(Choice):
-    """Choose the starting gadget from the non-net gadgets.
+    """Choose a starting gadget aside from the Time Net.
 
         club: Start with the Stun Club.
         radar: Start with the Monkey Radar.
@@ -155,9 +232,10 @@ class GadgetOption(Choice):
         flyer: Start with the Sky Flyer.
         car: Start with the RC Car.
         punch: Start with the Magic Punch.
+        waternet: Start with the Water Net.
         none: Start with no additional gadgets.
 
-        Supported values: club, radar, sling, hoop, flyer, car, punch, none
+        Supported values: club, radar, sling, hoop, flyer, car, punch, waternet, none
         Default value: club
     """
 
@@ -169,6 +247,7 @@ class GadgetOption(Choice):
     option_flyer = 0x04
     option_car = 0x05
     option_punch = 0x06
+    option_waternet = 0x07
     option_none = 0x08
     default = option_club
 
@@ -230,7 +309,12 @@ class LowOxygenSounds(Choice):
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
     goal: GoalOption
+    bossrequirement: BossRequirementOption
+    requiredtokens: RequiredTokensOption
+    totaltokens: TotalTokensOption
+    tokenlocations: TokenLocationsOption
     logic: LogicOption
+    infinitejump: InfiniteJumpOption
     superflyer: SuperFlyerOption
     entrance: EntranceOption
     unlocksperkey: KeyOption

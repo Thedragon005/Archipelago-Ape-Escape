@@ -184,7 +184,7 @@ class ApeEscapeWorld(World):
             self.itempool += [MM_Lamp]
 
         # Water Net shuffle handling
-        if self.options.shufflewaternet == 0x00:  # Off
+        if self.options.shufflewaternet == 0x00 or self.options.gadget == 0x07:  # Off or Starting Gadget
             self.multiworld.push_precollected(waternet)
         elif self.options.shufflewaternet == 0x01:  # Progressive
             self.itempool += [watercatch]
@@ -287,6 +287,10 @@ class ApeEscapeWorld(World):
 
         return {
             "goal": self.options.goal.value,
+            "bossrequirement": self.options.bossrequirement.value,
+            "requiredtokens": self.options.requiredtokens.value,
+            "totaltokens": self.options.totaltokens.value,
+            "tokenlocations": self.options.tokenlocations.value,
             "logic": self.options.logic.value,
             "entrance": self.options.entrance.value,
             "unlocksperkey": self.options.unlocksperkey.value,
@@ -294,6 +298,7 @@ class ApeEscapeWorld(World):
             "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
             "lamp": self.options.lamp.value,
+            "infinitejump": self.options.infinitejump.value,
             "superflyer": self.options.superflyer.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,

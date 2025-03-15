@@ -939,7 +939,7 @@ class ApeEscapeClient(BizHawkClient):
             elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
                 gadgets_Writes += [(RAM.triangleGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 gadgets_Writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-            elif ctx.slot_data["gadget"] == GadgetOption.option_none:
+            elif ctx.slot_data["gadget"] == GadgetOption.option_none or ctx.slot_data["gadget"] == GadgetOption.option_waternet:
                 gadgets_Writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                 if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
