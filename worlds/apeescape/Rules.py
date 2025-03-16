@@ -58,6 +58,7 @@ def set_entrances(self):
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
+# For the logic behind door shuffle, this is the section to change.
 def set_doors(self):
     # I'm not sure if these have to be manually connected in both directions?
     # Time Station
@@ -294,7 +295,7 @@ def set_locations(self):
         connect_regions(self, AEDoor.L11.value, AELocation.Coin1.value,
                         lambda state: True)
     
-	if self.options.mailbox == "true":
+    if self.options.mailbox == "true":
         connect_regions(self, AEDoor.L11.value, AELocation.Mailbox1.value,
                         lambda state: True)
         connect_regions(self, AEDoor.L11.value, AELocation.Mailbox2.value,
@@ -498,15 +499,23 @@ def character_lookup(byte):
 
 
 def fixed_levels(levellist, entoption):
+    # Always reset position of Peak Point Matrix
     for x in range (0, 22):
-        if levellist[x].entrance == 0x1E: # Always reset position of Peak Point Matrix
+        if levellist[x].entrance == 0x1E:
             levellist[x], levellist[21] = levellist[21], levellist[x]
-        if levellist[x].entrance == 0x18 and (entoption == 0x01 or entoption == 0x02): # Monkey Madness
-            levellist[x], levellist[20] = levellist[20], levellist[x]
-        if levellist[x].entrance == 0x07 and (entoption == 0x01 or entoption == 0x03): # Stadium Attack
-            levellist[x], levellist[6] = levellist[6], levellist[x]
-        if levellist[x].entrance == 0x0E and (entoption == 0x01 or entoption == 0x03): # Gladiator Attack
-            levellist[x], levellist[13] = levellist[13], levellist[x]
+    # Reset position of Monkey Madness if the option requires it
+    if entoption == 0x01 or entoption == 0x02:
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x18 
+                levellist[x], levellist[20] = levellist[20], levellist[x]
+    # Reset position of races if the option requires it
+    if entoption == 0x01 or entoption == 0x03:
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x07: # Stadium Attack
+                levellist[x], levellist[6] = levellist[6], levellist[x]
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x0E: # Gladiator Attack
+                levellist[x], levellist[13] = levellist[13], levellist[x]
     return levellist
 
 
