@@ -5,6 +5,7 @@ import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
 from Options import Toggle
 from NetUtils import ClientStatus
+from worlds.oot.Patches import get_override_table_bytes
 
 # TODO: REMOVE ASAP - Borrowed from MM2
 # This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
@@ -48,7 +49,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     #TODO Remove when doing official PR
-    client_version = "0.7.0"
+    client_version = "0.6.5"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -94,7 +95,7 @@ class ApeEscapeClient(BizHawkClient):
         self.ignore_next_death_link = False
         self.DIButton = 0
         self.CrCWaterButton = 0
-        #self.CrCBasementButton = 0
+        self.CrCBasementButton = 0
         self.MM_Painting_Button = 0
         self.MM_MonkeyHead_Button = 0
         self.TVT_Lobby_Button = 0
@@ -147,7 +148,7 @@ class ApeEscapeClient(BizHawkClient):
             print(keys)
             self.DIButton = keys.get(str(ctx.auth) + "_DIButton", None)
             self.CrCWaterButton = keys.get(str(ctx.auth) + "_CrCWaterButton", None)
-            #self.CrCBasementButton = keys.get(str(ctx.auth) + "_CrCBasementButton", None)
+            self.CrCBasementButton = keys.get(str(ctx.auth) + "_CrCBasementButton", None)
             self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
             self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
             self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
@@ -354,11 +355,10 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.MM_Professor_RescuedAddress, 1, "MainRAM"),
                 (RAM.MM_Clown_State, 1, "MainRAM"),
-                (RAM.MM_Nathalie_RescuedAddress, 1, "MainRAM"),
+                (RAM.MM_Natalie_RescuedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
-                (RAM.temp_MM_Nathalie_RescuedAddress, 1, "MainRAM"),
-                (RAM.MM_Nathalie_Rescued_Local, 1, "MainRAM"),
+                (RAM.temp_MM_Natalie_RescuedAddress, 1, "MainRAM"),
                 (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
 
                 # Buttons
@@ -384,26 +384,25 @@ class ApeEscapeClient(BizHawkClient):
             MM_Jake_DefeatedAddress = int.from_bytes(locksReads[2], byteorder="little")
             MM_Professor_RescuedAddress = int.from_bytes(locksReads[3], byteorder="little")
             MM_Clown_State = int.from_bytes(locksReads[4], byteorder="little")
-            MM_Nathalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder="little")
+            MM_Natalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder="little")
             MM_Jake_Defeated = int.from_bytes(locksReads[6], byteorder="little")
             MM_Professor_Rescued = int.from_bytes(locksReads[7], byteorder="little")
-            MM_Nathalie_Rescued = int.from_bytes(locksReads[8], byteorder="little")
-            MM_Nathalie_Rescued_Local = int.from_bytes(locksReads[9], byteorder="little")
-            MM_Lobby_DoorDetection = int.from_bytes(locksReads[10], byteorder="little")
+            MM_Natalie_Rescued = int.from_bytes(locksReads[8], byteorder="little")
+            MM_Lobby_DoorDetection = int.from_bytes(locksReads[9], byteorder="little")
 
             # Buttons
-            DI_Button_Pressed = int.from_bytes(locksReads[11], byteorder="little")
-            DI_Button_DoorVisual = int.from_bytes(locksReads[12], byteorder="little")
-            CrC_Water_ButtonPressed = int.from_bytes(locksReads[13], byteorder="little")
-            CrC_Water_Door_Visual = int.from_bytes(locksReads[14], byteorder="little")
-            CrC_Basement_ButtonPressed = int.from_bytes(locksReads[15], byteorder="little")
-            CrC_Basement_DoorVisual1 = int.from_bytes(locksReads[16], byteorder="little")
-            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[17], byteorder="little")
-            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[18], byteorder="little")
-            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[19], byteorder="little")
-            MM_MonkeyHead_Door = int.from_bytes(locksReads[20], byteorder="little")
-            MM_Painting_ButtonPressed = int.from_bytes(locksReads[21], byteorder="little")
-            MM_Painting_Visual = int.from_bytes(locksReads[22], byteorder="little")
+            DI_Button_Pressed = int.from_bytes(locksReads[10], byteorder="little")
+            DI_Button_DoorVisual = int.from_bytes(locksReads[11], byteorder="little")
+            CrC_Water_ButtonPressed = int.from_bytes(locksReads[12], byteorder="little")
+            CrC_Water_Door_Visual = int.from_bytes(locksReads[13], byteorder="little")
+            CrC_Basement_ButtonPressed = int.from_bytes(locksReads[14], byteorder="little")
+            CrC_Basement_DoorVisual1 = int.from_bytes(locksReads[15], byteorder="little")
+            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[16], byteorder="little")
+            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[17], byteorder="little")
+            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[18], byteorder="little")
+            MM_MonkeyHead_Door = int.from_bytes(locksReads[19], byteorder="little")
+            MM_Painting_ButtonPressed = int.from_bytes(locksReads[20], byteorder="little")
+            MM_Painting_Visual = int.from_bytes(locksReads[21], byteorder="little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -463,8 +462,8 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Professor_Rescued == 0xFF:
                 MM_Professor_Rescued = 0
 
-            if MM_Nathalie_Rescued == 0xFF:
-                MM_Nathalie_Rescued = 0
+            if MM_Natalie_Rescued == 0xFF:
+                MM_Natalie_Rescued = 0
 
             # Get WaterNet state from memory
             waternetState = 0
@@ -523,7 +522,7 @@ class ApeEscapeClient(BizHawkClient):
                         elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
                             if waternetState != 2:
                                 waternetState += 1
-                        elif (item.item - self.offset) == RAM.items["MMLobbyDoubleDoorKey"]:
+                        elif (item.item - self.offset) == RAM.items["MMDoubleDoorKey"]:
                             MM_Lobby_DoubleDoor = 1
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
                             watercatchState = 1
@@ -672,16 +671,14 @@ class ApeEscapeClient(BizHawkClient):
             if gameState != RAM.gameState["LevelSelect"]:
                 # If the previous address is empty it means you are too far, go back once
                 # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
-                coins_to_send = set()
                 if (previousCoinStateRoom == 0xFF or previousCoinStateRoom == 0x00) and (
                         self.currentCoinAddress > RAM.startingCoinAddress):
                     self.currentCoinAddress -= 2
                 # Check for new coins from current coin address
                 if currentCoinStateRoom != 0xFF and currentCoinStateRoom != 0x00:
-                    coins_to_send.add(int(currentCoinStateRoom + self.offset + 300))
                     await ctx.send_msgs([{
                         "cmd": "LocationChecks",
-                        "locations": list(x for x in coins_to_send)
+                        "locations": list(x for x in [currentCoinStateRoom + self.offset + 300])
                     }])
                     self.currentCoinAddress += 2
 
@@ -731,7 +728,6 @@ class ApeEscapeClient(BizHawkClient):
 
                 mail_to_send = set()
                 # Rearange the array if there is 2 indexes for the same mailbox
-
                 for i in range(len(val_list)):
                     strVal = str(val_list[i])
                     if strVal.__contains__("{"):
@@ -778,29 +774,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
-
-            #Deactivate Monkeys detection for lamps and switch to manual door opening if lamp shuffle is activated
-            #Condition for some rooms that require the same addresses to function properly
-            specialrooms = [41,44,67,75,76]
-
-            if ctx.slot_data["lamp"] == 0x00:
-                writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
-                #writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            else:
-                if NearbyRoom in specialrooms and transitionPhase == 0x06:
-                    writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-                    # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
-                    # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                    writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                    writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                elif (currentRoom not in specialrooms) or transitionPhase == 0x06:
-                    writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                    writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                    writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-
-# Training Room Unlock state:
+            # Training Room Unlock state:
             # Due to a Bug with Gadget Training, will
             if (transitionPhase == 0x06 and NearbyRoom == 90) or currentRoom == 90:
                 writes += [(RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
@@ -839,7 +813,7 @@ class ApeEscapeClient(BizHawkClient):
                 }])
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress,MM_Nathalie_RescuedAddress,MM_Nathalie_Rescued,MM_Nathalie_Rescued_Local]
+            MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -849,16 +823,15 @@ class ApeEscapeClient(BizHawkClient):
             await self.permanent_buttons_handling(ctx,Button_Reads)
             # =======================
 
-            if ctx.slot_data["lamp"] == 0x01:
-                # ===== Lamp Unlocks =======
-                # Tables for Lamp updates
-                localLampsUpdate = {20: CBLampState,53: CPLampState, 79: MMLampState}
-                globalLampsUpdate = {26: DILampState,46: CrCLampState,57: SFLampState,66: TVTTankLampState}
-                bothLampsUpdate = {65: TVTLobbyLampState}
-                # Execute the Lamp unlocking code segment
-                Lamps_Reads = [currentRoom,NearbyRoom,localLampsUpdate,globalLampsUpdate,bothLampsUpdate,LocalLamp_LocalUpdate,GlobalLamp_LocalUpdate,transitionPhase]
-                await self.lamps_unlocks_handling(ctx,Lamps_Reads)
-                # =======================
+            # ===== Lamp Unlocks =======
+            # Tables for Lamp updates
+            localLampsUpdate = {20: CBLampState,53: CPLampState, 79: MMLampState}
+            globalLampsUpdate = {26: DILampState,46: CrCLampState,57: SFLampState,66: TVTTankLampState}
+            bothLampsUpdate = {65: TVTLobbyLampState}
+            # Execute the Lamp unlocking code segment
+            Lamps_Reads = [currentRoom,NearbyRoom,localLampsUpdate,globalLampsUpdate,bothLampsUpdate,LocalLamp_LocalUpdate,GlobalLamp_LocalUpdate,transitionPhase]
+            await self.lamps_unlocks_handling(ctx,Lamps_Reads)
+            # =======================
 
             # ===== Water Net =======
             # Swim/Dive Prevention code
@@ -933,8 +906,6 @@ class ApeEscapeClient(BizHawkClient):
         punchVisualAddress = Gadgets_Reads[6]
 
         gadgets_Writes = []
-        punch_Guards = []
-        punch_Writes = []
 
         # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
         if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
@@ -968,7 +939,7 @@ class ApeEscapeClient(BizHawkClient):
             elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
                 gadgets_Writes += [(RAM.triangleGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 gadgets_Writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-            elif ctx.slot_data["gadget"] == GadgetOption.option_none:
+            elif ctx.slot_data["gadget"] == GadgetOption.option_none or ctx.slot_data["gadget"] == GadgetOption.option_waternet:
                 gadgets_Writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                 if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
@@ -986,17 +957,13 @@ class ApeEscapeClient(BizHawkClient):
             #print(punchVisualAddress.to_bytes(32,"little"))
             #print(bytes_ToWrite)
             if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite: #and self.replacePunch == True:
-
                 #print(punchVisualAddress)
                 #print(int.from_bytes(bytes_ToWrite))
-                punch_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
-                punch_Guards += [(RAM.menuStateAddress, 0x00, "MainRAM")]
-                punch_Guards += [(RAM.menuState2Address, 0x01, "MainRAM")]
+                gadgets_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
                 print("Replaced Punch visuals")
                 self.replacePunch = False
                 #print("Fix Punch")
                 #gadgets_Writes += [(RAM.unlockedGadgetsAddress, 0x24.to_bytes(1, "little"), "MainRAM")]
-                await bizhawk.guarded_write(ctx.bizhawk_ctx, punch_Writes,punch_Guards)
         else:
             self.replacePunch = True
             # Set gadget state to "Punch" only,will get replaced automatically by the writes on next client's pass
@@ -1014,9 +981,6 @@ class ApeEscapeClient(BizHawkClient):
         MM_Lobby_DoorDetection = MM_Reads[5]
         MM_Lobby_DoubleDoor_Open = MM_Reads[6]
         MM_Jake_DefeatedAddress = MM_Reads[7]
-        MM_Nathalie_RescuedAddress = MM_Reads[8]
-        MM_Nathalie_Rescued = MM_Reads[9]
-        MM_Nathalie_Rescued_Local = MM_Reads[10]
 
 
         MM_Writes = []
@@ -1024,26 +988,12 @@ class ApeEscapeClient(BizHawkClient):
         if MM_Jake_Defeated > 0:
             MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-        if MM_Nathalie_RescuedAddress > 0:
-            MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
-
-        if currentRoom == 76:
-            if MM_Nathalie_Rescued_Local == 0x01:
-                MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
-        if NearbyRoom == 75 and MM_Nathalie_Rescued != 0x01 and transitionPhase == 0x06:
-            MM_Writes += [(RAM.MM_Nathalie_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
-
-        if NearbyRoom == 69 and transitionPhase == 0x06:
+        if NearbyRoom == 69 and currentRoom != 69:
             print("Next room == Lobby")
             if MM_Lobby_DoubleDoor == 0x00:
                 if MM_Lobby_DoorDetection != 0x8C800000:
                     MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
                     print("Double Door Item not acquired,disable door detection")
-
-        if NearbyRoom == 70 and transitionPhase == 0x06:
-            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-            print("Changed room Detection for Jake")
-
         if currentRoom == 69:
             # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
 
@@ -1144,17 +1094,17 @@ class ApeEscapeClient(BizHawkClient):
                         "operations": [{"operation": "replace", "value": 1}]
 
                     }])
-        #if currentRoom == 47:
-        #    if CrC_Basement_ButtonPressed == 0x01:
-        #        if self.CrCBasementButton != 1:
-        #            await ctx.send_msgs([{
-        #                "cmd": "Set",
-        #                "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
-        #                "default": 0,
-        #                "want_reply": False,
-        #                "operations": [{"operation": "replace", "value": 1}]
-        #
-        #            }])
+        if currentRoom == 47:
+            if CrC_Basement_ButtonPressed == 0x01:
+                if self.CrCBasementButton != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Set",
+                        "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
+                        "default": 0,
+                        "want_reply": False,
+                        "operations": [{"operation": "replace", "value": 1}]
+
+                    }])
         if currentRoom == 65:
             if TVT_Lobby_ButtonPressed == 0x01:
                 if self.TVT_Lobby_Button != 1:
@@ -1222,23 +1172,23 @@ class ApeEscapeClient(BizHawkClient):
                     Button_Writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # Crumbling Castle Basement Room door unlock check
-        #if currentRoom == 47:
-        #    if CrC_Basement_DoorVisual1 != 0x00:
-        #        if self.CrCBasementButton != 1:
-        #            await ctx.send_msgs([{
-        #                "cmd": "Get",
-        #                "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
-        #            }])
-        #        if self.CrCBasementButton == 1:
-        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
+        if currentRoom == 47:
+            if CrC_Basement_DoorVisual1 != 0x00:
+                if self.CrCBasementButton != 1:
+                    await ctx.send_msgs([{
+                        "cmd": "Get",
+                        "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
+                    }])
+                if self.CrCBasementButton == 1:
+                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
+                    Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
 
 
         # TV Tower water draining check
@@ -1314,41 +1264,97 @@ class ApeEscapeClient(BizHawkClient):
         GlobalLamp_LocalUpdate = Lamps_Reads[6]
         transitionPhase = Lamps_Reads[7]
 
-        #Lamps_writes = []
+        Lamps_writes = []
 
-        lampDoors_toggles = RAM.lampDoors_toggles
         # Trigger Monkey Lamps depending on Lamp states
-        boolOpenDoor = False
 
-        # Update lamp doors depending on value
-        #print(lampDoors_toggles.keys())
-        GotLamp = False
-        if currentRoom in localLampsUpdate:
-            GotLamp = localLampsUpdate[currentRoom] == 0x01
-        elif currentRoom in globalLampsUpdate:
-            GotLamp = globalLampsUpdate[currentRoom] == 0x01
-        elif currentRoom in bothLampsUpdate:
-            GotLamp = bothLampsUpdate[currentRoom] == 0x01
 
-        if currentRoom in lampDoors_toggles.keys() and GotLamp:
-            lamplist_keys = list(lampDoors_toggles[currentRoom].keys())
-            lamplist_values = list(lampDoors_toggles[currentRoom].values())
+        #Pseudo
 
-            print(lamplist_values)
-            for x in range(len(lamplist_keys)):
-                Lamps_writes = []
-                Lamps_Guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
-                #lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
-                lamp_values = list(lamplist_values[x])
-                lamp_bytes = lamp_values[0]
-                lamp_openvalue = lamp_values[1].to_bytes(lamp_bytes, "little")
-                lamp_closedvalue = lamp_values[2].to_bytes(lamp_bytes, "little")
-                lamp_address = (lamplist_keys[x])
-                Lamps_writes += [(lamp_address, lamp_openvalue, "MainRAM")]
-                Lamps_Guards += [(lamp_address, lamp_closedvalue, "MainRAM")]
+        # If there is a transition in progress (0x06), check if state of the nearby room need to be updated
+        # (Checking if nearby room is in a list and then update the state)
 
-                await bizhawk.guarded_write(ctx.bizhawk_ctx,Lamps_writes,Lamps_Guards)
-        #await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
+        # If there is not a transition, check for current room state and update it with the right values
+
+        #Lamps that are both affected by Local and Global values
+
+        #TODO Check for a way to disable CrC Cinematic and TVTTank_Lamp cinematic while in the level (Valid also for ER)
+
+        if transitionPhase == 0x06:
+            if (NearbyRoom in bothLampsUpdate and NearbyRoom != currentRoom):
+                if bothLampsUpdate[NearbyRoom] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    print("[LAMP]N_both Global Update")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif bothLampsUpdate[NearbyRoom] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                    print("[LAMP]N_both Global Update(With ITEM)")
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+            elif (NearbyRoom in globalLampsUpdate and NearbyRoom != currentRoom):
+                if globalLampsUpdate[NearbyRoom] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+                    print("[LAMP]N_global Global Update")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif globalLampsUpdate[NearbyRoom] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                    print("[LAMP]N_global Global Update(With ITEM)")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+            elif (NearbyRoom in localLampsUpdate and NearbyRoom != currentRoom):
+                if localLampsUpdate[NearbyRoom] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif localLampsUpdate[NearbyRoom] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+        else:
+            if (currentRoom in bothLampsUpdate):
+                # print(self.bool_LampGlobal)
+                if bothLampsUpdate[currentRoom] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    print("[LAMP]C_both Global Update")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif bothLampsUpdate[currentRoom] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+                    print("[LAMP]C_both Global Update(With ITEM)")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+            # Lamps that detect only Global values
+            elif (currentRoom in globalLampsUpdate):
+                if globalLampsUpdate[currentRoom] == 0 and GlobalLamp_LocalUpdate != 0x00000000:
+                    print("[LAMP]C_global Global Update")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif globalLampsUpdate[currentRoom] == 1 and GlobalLamp_LocalUpdate != 0x9082007A:
+                    print("[LAMP]C_global Global Update(With ITEM)")
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+            elif (currentRoom in localLampsUpdate):
+                if localLampsUpdate[currentRoom] == 0 and LocalLamp_LocalUpdate != 0x00000000:
+                    print("[LAMP]C_local local Update")
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                elif localLampsUpdate[currentRoom] == 1 and LocalLamp_LocalUpdate != 0x9062007A:
+                    print("[LAMP]C_local local Update(With ITEM)")
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+
+            # This part could still be conditional if you're in a level and/or certains rooms within a level to not update
+            # I will check this another time
+            #print((currentRoom in localLampsUpdate))
+            if ((currentRoom in localLampsUpdate) == False) and ((currentRoom in bothLampsUpdate) == False):
+                #print("[LAMP]Local No lamp in room")
+                if LocalLamp_LocalUpdate != 0x9062007A:
+                    Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+
+            if ((currentRoom in globalLampsUpdate) == False and ((currentRoom in bothLampsUpdate) == False)):
+                #print("[LAMP]Global No lamp in room")
+                if GlobalLamp_LocalUpdate != 0x9082007A:
+                    Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                    Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+
+        await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 
     async def traps_handling(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
         print("a")
