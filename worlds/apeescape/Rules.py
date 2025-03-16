@@ -144,19 +144,40 @@ def CanWaterCatch(state, world):
 
 
 def CanHitOnce(state, world):
-    return HasClub(state, world) or HasSling(state, world) or HasPunch(state, world)
+    return HasClub(state, world) or HasRadar(state, world) or HasSling(state, world) or HasHoop(state, world) or HasFlyer(state, world) or HasRC(state, world) or HasPunch(state, world)
 
 
 def CanHitMultiple(state, world):
-    return HasClub(state, world) or HasPunch(state, world)
+    if world.options.logic == "normal":
+        return HasClub(state, world) or HasSling(state, world) or HasPunch(state, world)
+    else:
+        return HasClub(state, world) or HasSling(state, world) or HasHoop(state, world) or HasPunch(state, world)
 
 
 def CanHitWheel(state, world):
-    return HasClub(state, world) or HasPunch(state, world)
+    if world.options.logic == "normal" or world.options.logic == "hard":
+        return CanHitMultiple(state, world)
+    else:
+        return CanHitMultiple(state, world) or HasFlyer(state, world) or HasRC(state, world)
 
 
+# TODO: Pass in a specific region here
 def SuperFlyer(state, world):
-    return HasFlyer(state, world) and (HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state,world)) and world.options.superflyer == "true"
+    # If the option is off, Super Flyer is not in logic.
+    if world.options.superflyer == "false":
+        return False
+
+    # If the difficulty is normal, Super Flyer is never in logic.
+    if world.options.logic == "normal":
+        return False
+
+    # If the player does not have the required gadgets, Super Flyer is unavailable.
+    if (HasFlyer(state, world) and (HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state,world))) == False:
+        return False
+
+    # If the player can reach this location without activating the Flyer, Super Flyer is available. To check for this, we check for the ability to access this region on a modified CollectionState. The Radar conveniently has the same ground pound properties as the Flyer while introducing no new access, and so replacing the Flyer with the Radar in this state serves as a valid check.
+    # TODO: actually implement the above description LOL (right now placement could expect two Super Flyers)
+    return True
 
 
 def IJ(state, world):
