@@ -239,7 +239,6 @@ def set_doors(self):
     connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R15T16.value, lambda state: True)
     connect_regions(self, AEDoor.L91R16T13E.value, AEDoor.L91R13T16X.value, lambda state: True)
     # Peak Point Matrix
-    connect_regions(self, AEDoor.FIRSTDOOR.value, AEDoor.SECONDDOOR.value, lambda state: True)
 
 
 # A transition is defined as navigating between two doors in the same room.
