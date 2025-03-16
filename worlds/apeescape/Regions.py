@@ -93,8 +93,10 @@ def create_regions(world: "ApeEscapeWorld"):
     L21R1T3 = Region(AEDoor.TJ_ENTRY_FISH.value, player, multiworld)
     L21R1T5 = Region(AEDoor.TJ_ENTRY_BOULDER.value, player, multiworld)
     L21R2T1 = Region(AEDoor.TJ_MUSHROOM_ENTRY.value, player, multiworld)
+    L21R2HELP = Region(AEDoor.TJ_MUSHROOMMAIN.value, player, multiworld)
     L21R3T1 = Region(AEDoor.TJ_FISH_ENTRY.value, player, multiworld)
     L21R3T4 = Region(AEDoor.TJ_FISH_TENT.value, player, multiworld)
+    L21R3HELP = Region(AEDoor.TJ_FISHBOAT.value, player, multiworld)
     L21R4T3 = Region(AEDoor.TJ_TENT_FISH.value, player, multiworld)
     L21R4T5 = Region(AEDoor.TJ_TENT_BOULDER.value, player, multiworld)
     L21R5T1 = Region(AEDoor.TJ_BOULDER_ENTRY.value, player, multiworld)
@@ -137,8 +139,8 @@ def create_regions(world: "ApeEscapeWorld"):
     L22R1T32 = Region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value, player, multiworld)
     L22R1T41 = Region(AEDoor.DR_OUTSIDE_WATER_SIDE.value, player, multiworld)
     L22R1T42 = Region(AEDoor.DR_OUTSIDE_WATER_LEDGE.value, player, multiworld)
-    L22R2T11 = Region(AEDoor.DR_FAN_OUTISIDE_FENCE.value, player, multiworld)
-    L22R2T12 = Region(AEDoor.DR_FAN_OUTISIDE_HOLE.value, player, multiworld)
+    L22R2T11 = Region(AEDoor.DR_FAN_OUTSIDE_FENCE.value, player, multiworld)
+    L22R2T12 = Region(AEDoor.DR_FAN_OUTSIDE_HOLE.value, player, multiworld)
     L22R3T11 = Region(AEDoor.DR_OBELISK_BOTTOM.value, player, multiworld)
     L22R3T12 = Region(AEDoor.DR_OBELISK_TOP.value, player, multiworld)
     L22R4T11 = Region(AEDoor.DR_WATER_SIDE.value, player, multiworld)
@@ -175,6 +177,7 @@ def create_regions(world: "ApeEscapeWorld"):
     L23 = Region(AEDoor.CR_ENTRY.value, player, multiworld)
     L23R1T2 = Region(AEDoor.CR_ENTRY_SIDE_ROOM.value, player, multiworld)
     L23R1T3 = Region(AEDoor.CR_ENTRY_MAIN_RUINS.value, player, multiworld)
+    L23R1HELP = Region(AEDoor.CR_ENTRYOBA.value, player, multiworld)
     L23R2T1 = Region(AEDoor.CR_SIDE_ROOM_ENTRY.value, player, multiworld)
     L23R3T1 = Region(AEDoor.CR_MAIN_RUINS_ENTRY.value, player, multiworld)
     L23R3T4 = Region(AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, player, multiworld)
@@ -252,9 +255,10 @@ def create_regions(world: "ApeEscapeWorld"):
     L43R3T1 = Region(AEDoor.DI_SLIDE_ROOM_STOMACH.value, player, multiworld)
     L43R3T41 = Region(AEDoor.DI_SLIDE_ROOM_GALLERY.value, player, multiworld)
     L43R3T42 = Region(AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, player, multiworld)
-    L43R4T31 = Region(AEDoor.DI_GALLERY_SLIDE_ROOM_UP.value, player, multiworld)
+    L43R4T31 = Region(AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, player, multiworld)
     L43R4T32 = Region(AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, player, multiworld)
     L43R4T5 = Region(AEDoor.DI_GALLERY_TENTACLE.value, player, multiworld)
+    L43R4HELP = Region(AEDoor.DI_GALLERYBOULDER.value, player, multiworld)
     L43R5T4 = Region(AEDoor.DI_TENTACLE.value, player, multiworld)
     
     stuw = Region(AELocation.W4L3Stuw.value, player, multiworld)
@@ -424,9 +428,10 @@ def create_regions(world: "ApeEscapeWorld"):
     L73R2T1 = Region(AEDoor.CC_CASTLEMAIN_ENTRY.value, player, multiworld)
     L73R2T3 = Region(AEDoor.CC_CASTLEMAIN_BELL.value, player, multiworld)
     L73R2T4 = Region(AEDoor.CC_CASTLEMAIN_ELEVATOR.value, player, multiworld)
+    L73R2HELP = Region(AEDoor.CC_CASTLEMAINTHRONEROOM.value, player, multiworld)
     L73R3T1 = Region(AEDoor.CC_BELL_ENTRY.value, player, multiworld)
     L73R3T2 = Region(AEDoor.CC_BELL_CASTLE.value, player, multiworld)
-    L73R4T3 = Region(AEDoor.CC_ELEVATOR_CASTLEMAIN.value, player, multiworld)
+    L73R4T2 = Region(AEDoor.CC_ELEVATOR_CASTLEMAIN.value, player, multiworld)
     L73R4T5 = Region(AEDoor.CC_ELEVATOR_BASEMENT.value, player, multiworld)
     L73R5T1 = Region(AEDoor.CC_BASEMENT_ENTRY.value, player, multiworld)
     L73R5T4 = Region(AEDoor.CC_BASEMENT_ELEVATOR.value, player, multiworld)
@@ -486,6 +491,7 @@ def create_regions(world: "ApeEscapeWorld"):
     L81R2T3 = Region(AEDoor.CP_SEWERSFRONT_BARREL.value, player, multiworld)
     L81R3T1 = Region(AEDoor.CP_BARREL_OUTSIDE.value, player, multiworld)
     L81R3T2 = Region(AEDoor.CP_BARREL_SEWERS_FRONT.value, player, multiworld)
+    L81R3HELP = Region(AEDoor.CP_BARRELSEWERMIDDLE.value, player, multiworld)
 
     kaine = Region(AELocation.W8L1Kaine.value, player, multiworld)
     kaine.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], kaine) for loc_name in get_array([146])]
@@ -530,13 +536,19 @@ def create_regions(world: "ApeEscapeWorld"):
     L82R6T5 = Region(AEDoor.SF_LAVA_MECH.value, player, multiworld)
     L82R6T7 = Region(AEDoor.SF_LAVA_CONVEYOR.value, player, multiworld)
     L82R7T6 = Region(AEDoor.SF_CONVEYOR_LAVA.value, player, multiworld)
-    L82R7T71 = Region(AEDoor.SF_CONVEYOR_CONVEYOR1.value, player, multiworld)
-    L82R7T72 = Region(AEDoor.SF_CONVEYOR_CONVEYOR2.value, player, multiworld)
-    L82R7T73 = Region(AEDoor.SF_CONVEYOR_CONVEYOR3.value, player, multiworld)
-    L82R7T74 = Region(AEDoor.SF_CONVEYOR_CONVEYOR4.value, player, multiworld)
-    L82R7T75 = Region(AEDoor.SF_CONVEYOR_CONVEYOR5.value, player, multiworld)
-    L82R7T76 = Region(AEDoor.SF_CONVEYOR_CONVEYOR6.value, player, multiworld)
-    L82R7T77 = Region(AEDoor.SF_CONVEYOR_CONVEYOR7.value, player, multiworld)
+    L82R7T71E = Region(AEDoor.SF_CONVEYOR_CONVEYOR1_ENTRY.value, player, multiworld)
+    L82R7T71X = Region(AEDoor.SF_CONVEYOR_CONVEYOR1_EXIT.value, player, multiworld)
+    L82R7T72E = Region(AEDoor.SF_CONVEYOR_CONVEYOR2_ENTRY.value, player, multiworld)
+    L82R7T72X = Region(AEDoor.SF_CONVEYOR_CONVEYOR2_EXIT.value, player, multiworld)
+    L82R7T73E = Region(AEDoor.SF_CONVEYOR_CONVEYOR3_ENTRY.value, player, multiworld)
+    L82R7T73X = Region(AEDoor.SF_CONVEYOR_CONVEYOR3_EXIT.value, player, multiworld)
+    L82R7T74E = Region(AEDoor.SF_CONVEYOR_CONVEYOR4_ENTRY.value, player, multiworld)
+    L82R7T74X = Region(AEDoor.SF_CONVEYOR_CONVEYOR4_EXIT.value, player, multiworld)
+    L82R7T75E = Region(AEDoor.SF_CONVEYOR_CONVEYOR5_ENTRY.value, player, multiworld)
+    L82R7T75X = Region(AEDoor.SF_CONVEYOR_CONVEYOR5_EXIT.value, player, multiworld)
+    L82R7T76E = Region(AEDoor.SF_CONVEYOR_CONVEYOR6_ENTRY.value, player, multiworld)
+    L82R7T76X = Region(AEDoor.SF_CONVEYOR_CONVEYOR6_EXIT.value, player, multiworld)
+    L82R7T77E = Region(AEDoor.SF_CONVEYOR_CONVEYOR7_ENTRY.value, player, multiworld)
 
     bigshow = Region(AELocation.W8L2BigShow.value, player, multiworld)
     bigshow.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bigshow) for loc_name in get_array([159])]
@@ -607,14 +619,18 @@ def create_regions(world: "ApeEscapeWorld"):
     L91R1T10 = Region(AEDoor.MM_SL_HUB_CRATER.value, player, multiworld)
     L91R2T1 = Region(AEDoor.MM_WESTERN_SL_HUB.value, player, multiworld)
     L91R3T1 = Region(AEDoor.MM_COASTER_ENTRY_SL_HUB.value, player, multiworld)
-    L91R3T6 = Region(AEDoor.MM_COASTER_ENTRY_COASTER1.value, player, multiworld)
+    L91R3T6E = Region(AEDoor.MM_COASTER_ENTRY_COASTER1.value, player, multiworld)
+    L91R3T9X = Region(AEDoor.MM_COASTER_ENTRY_DISEMBARK.value, player, multiworld)
     L91R4T1 = Region(AEDoor.MM_CIRCUS_SL_HUB.value, player, multiworld)
     L91R5T1 = Region(AEDoor.MM_GO_KARZ_SL_HUB.value, player, multiworld)
-    L91R6T7 = Region(AEDoor.MM_COASTER1_COASTER2.value, player, multiworld)
-    L91R7T8 = Region(AEDoor.MM_COASTER2_HAUNTED_HOUSE.value, player, multiworld)
+    L91R6T3X = Region(AEDoor.MM_COASTER1_COASTER2.value, player, multiworld)
+    L91R6T7E = Region(AEDoor.MM_COASTER1_COASTER2.value, player, multiworld)
+    L91R7T6X = Region(AEDoor.MM_COASTER2_HAUNTED_HOUSE.value, player, multiworld)
+    L91R7T8E = Region(AEDoor.MM_COASTER2_HAUNTED_HOUSE.value, player, multiworld)
+    L91R8T7X = Region(AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, player, multiworld)
     L91R8T9 = Region(AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, player, multiworld)
+    L91R9T3E = Region(AEDoor.MM_COFFIN_COASTER_ENTRY.value, player, multiworld)
     L91R9T8 = Region(AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, player, multiworld)
-    L91R9T10 = Region(AEDoor.MM_COFFIN_COASTER_ENTRY.value, player, multiworld)
     L91R10T1 = Region(AEDoor.MM_CRATER_SL_HUB.value, player, multiworld)
     L91R10T11 = Region(AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, player, multiworld)
     L91R11T10 = Region(AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, player, multiworld)
@@ -624,12 +640,14 @@ def create_regions(world: "ApeEscapeWorld"):
     L91R13T11 = Region(AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, player, multiworld)
     L91R13T14 = Region(AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, player, multiworld)
     L91R13T15 = Region(AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, player, multiworld)
-    L91R13T17 = Region(AEDoor.MM_CASTLE_MAIN_SPECTER1.value, player, multiworld)
+    L91R13T16X = Region(AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value, player, multiworld)
+    L91R13T17E = Region(AEDoor.MM_CASTLE_MAIN_SPECTER1.value, player, multiworld)
     L91R14T13 = Region(AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, player, multiworld)
     L91R15T13 = Region(AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, player, multiworld)
     L91R15T16 = Region(AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value, player, multiworld)
     L91R16T15 = Region(AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, player, multiworld)
-    L91R16T13 = Region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, player, multiworld)
+    L91R16T13E = Region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, player, multiworld)
+    L91R17T13X = Region(AEDoor.MM_SPECTER1_ROOM.value, player, multiworld)
     
     L91R13T17.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L91R13T17) for loc_name in get_array([205])]
     L91R4T1.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L91R4T1) for loc_name in get_array([502])]
@@ -688,25 +706,27 @@ def create_regions(world: "ApeEscapeWorld"):
                L11, noonan, jorjy, nati, trayc,
                L12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
                L13, L13R1T2, L13R1T3, L13R2T1, L13R3T1, scotty, coco, jthomas, mattie, barney, rocky, moggan,
-               L21, L21R1T2, L21R1T3, L21R1T5, L21R2T1, L21R3T1, L21R3T4, L21R4T3, L21R4T5, L21R5T1, L21R5T4, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar,
+               L21, L21R1T2, L21R1T3, L21R1T5, L21R2T1, L21R3T1, L21R3T4, L21R4T3, L21R4T5, L21R5T1, L21R5T4, L21R2HELP, L21R3HELP, marquez, livinston, george, maki, herb, dilweed, mitong, stoddy, nasus, selur, elehcim, gonzo, alphonse, zanzibar,
                L22, L22R1T21, L22R1T22, L22R1T31, L22R1T32, L22R1T41, L22R1T42, L22R2T11, L22R2T12, L22R3T11, L22R3T12, L22R4T11, L22R4T12, kyle, stan, kenny, cratman, mooshy, nuzzy, mav, papou, trance, bernt, runt, hoolah, chino,
-               L23, L23R1T2, L23R1T3, L23R2T1, L23R3T1, L23R3T4, L23R4T3, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
+               L23, L23R1T2, L23R1T3, L23R2T1, L23R3T1, L23R3T4, L23R4T3, L23R1HELP, bazzle, freeto, troopa, stymie, spanky, jesta, pally, crash,
                L31,
                L41, L41R1T2, L41R2T1, coolblue, sandy, shelle, gidget, shaka, maxmahalo, moko, puka,
                L42, L42R1T2, L42R2T1, chip, oreo, puddles, kalama, iz, bongbong, jux, pickles,
-               L43, L43R1T2, L43R2T1, L43R2T3, L43R3T1, L43R3T41, L43R3T42, L43R4T31, L43R4T32, L43R4T5, L43R5T4, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee, frederic, baba, quirck,
+               L43, L43R1T2, L43R2T1, L43R2T3, L43R3T1, L43R3T41, L43R3T42, L43R4T31, L43R4T32, L43R4T5, L43R5T4, L43R4HELP, tonton, stuw, mars, murky, horke, howeerd, robbin, jakkee, frederic, baba, quirck,
                L51, popcicle, iced, rickets, skeens, denggoy, chilly,
                L52, L52R1T2, L52R2T1, L52R2T3, L52R3T2, storm, qube, ranix, sharpe, sticky, droog, gash, kundra, shadow,
                L53, L53R1T2, L53R1T3, L53R2T1, L53R3T1, punky, ameego, yoky, jory, crank, claxter, looza, roti, dissa,
                L61,
                L71, L71R1T2, L71R1T3, L71R2T1, L71R3T1, taku, rocka, maralea, wog, mayi, owyang, long, elly, chunky, voti, queltin, phaldo,
                L72, L72R1T2, L72R2T1, L72R2T3, L72R3T2, L72R3T4, L72R4T3, L72R4T5, L72R5T4, minky, zobbro, xeeto, moops, zanabi, doxs, buddah, fooey, kong, phool,
-               L73, L73R1T2, L73R1T3, L73R1T5, L73R1T7, L73R2T1, L73R2T3, L73R2T4, L73R3T1, L73R3T2, L73R4T3, L73R4T5, L73R5T1, L73R5T4, L73R5T61, L73R5T62, L73R6T51, L73R6T52, L73R7T1,
+               L73, L73R1T2, L73R1T3, L73R1T5, L73R1T7, L73R2T1, L73R2T3, L73R2T4, L73R3T1, L73R3T2, L73R4T2, L73R4T5, L73R5T1, L73R5T4, L73R5T61, L73R5T62, L73R6T51, L73R6T52, L73R7T1, L73R2HELP,
                robart, igor, naners, neeners, charles, gustav, wilhelm, emmanuel, sircutty, calligan, castalist, deveneom, astur, kilserack, ringo, densil, figero, fej, joey, donqui,
-               L81, L81R1T2, L81R1T3, L81R2T1, L81R2T3, L81R3T1, L81R3T2, kaine, jaxx, gehry, alcatraz, tino, qbee, mcmanic, dywan, ckhutch, winky, bluv, camper, huener,
-               L82, L82R1T2, L82R2T1, L82R2T3, L82R2T41, L82R2T42, L82R2T5, L82R3T2, L82R4T21, L82R4T22, L82R5T2, L82R5T6, L82R6T5, L82R6T7, L82R7T6, L82R7T71, L82R7T72, L82R7T73, L82R7T74, L82R7T75, L82R7T76, L82R7T77, bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
+               L81, L81R1T2, L81R1T3, L81R2T1, L81R2T3, L81R3T1, L81R3T2, L81R3HELP, kaine, jaxx, gehry, alcatraz, tino, qbee, mcmanic, dywan, ckhutch, winky, bluv, camper, huener,
+               L82, L82R1T2, L82R2T1, L82R2T3, L82R2T41, L82R2T42, L82R2T5, L82R3T2, L82R4T21, L82R4T22, L82R5T2, L82R5T6, L82R6T5, L82R6T7, L82R7T6,
+               L82R7T71E, L82R7T71X, L82R7T72E, L82R7T72X, L82R7T73E, L82R7T73X, L82R7T74E, L82R7T74X,L82R7T75E, L82R7T75X, L82R7T76E, L82R7T76X, L82R7T77E,
+               bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
                L83, L83R1T2, L83R2T1, L83R2T3, L83R2T4, L83R3T2, L83R4T2, L83R4T5, L83R4T6, L83R5T4, L83R6T4, fredo, charlee, mach3, tortuss, manic, ruptdis, eighty7, danio, roosta, tellis, whack, frostee,
-               L91, L91R1T2, L91R1T3, L91R1T4, L91R1T5, L91R1T10, L91R2T1, L91R3T1, L91R3T6, L91R4T1, L91R5T1, L91R6T7, L91R7T8, L91R8T9, L91R9T8, L91R9T10, L91R10T1, L91R10T11, L91R11T10, L91R11T12, L91R11T13, L91R12T11, L91R13T11, L91R13T14, L91R13T15, L91R13T17, L91R14T13, L91R15T13, L91R15T16, L91R16T15, L91R16T13,
+               L91, L91R1T2, L91R1T3, L91R1T4, L91R1T5, L91R1T10, L91R2T1, L91R3T1, L91R3T6E, L91R3T9X, L91R4T1, L91R5T1, L91R6T3X, L91R6T7E, L91R7T6X, L91R7T8E, L91R8T9, L91R9T3E, L91R9T8, L91R10T1, L91R10T11, L91R11T10, L91R11T12, L91R11T13, L91R12T11, L91R13T11, L91R13T14, L91R13T15, L91R13T16X, L91R13T17E, L91R14T13, L91R15T13, L91R15T16, L91R16T15, L91R16T13E, L91R17T13X, 
                goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
 
 

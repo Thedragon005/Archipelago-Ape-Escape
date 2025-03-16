@@ -355,10 +355,10 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.MM_Professor_RescuedAddress, 1, "MainRAM"),
                 (RAM.MM_Clown_State, 1, "MainRAM"),
-                (RAM.MM_Nathalie_RescuedAddress, 1, "MainRAM"),
+                (RAM.MM_Natalie_RescuedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
                 (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
-                (RAM.temp_MM_Nathalie_RescuedAddress, 1, "MainRAM"),
+                (RAM.temp_MM_Natalie_RescuedAddress, 1, "MainRAM"),
                 (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
 
                 # Buttons
@@ -384,10 +384,10 @@ class ApeEscapeClient(BizHawkClient):
             MM_Jake_DefeatedAddress = int.from_bytes(locksReads[2], byteorder="little")
             MM_Professor_RescuedAddress = int.from_bytes(locksReads[3], byteorder="little")
             MM_Clown_State = int.from_bytes(locksReads[4], byteorder="little")
-            MM_Nathalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder="little")
+            MM_Natalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder="little")
             MM_Jake_Defeated = int.from_bytes(locksReads[6], byteorder="little")
             MM_Professor_Rescued = int.from_bytes(locksReads[7], byteorder="little")
-            MM_Nathalie_Rescued = int.from_bytes(locksReads[8], byteorder="little")
+            MM_Natalie_Rescued = int.from_bytes(locksReads[8], byteorder="little")
             MM_Lobby_DoorDetection = int.from_bytes(locksReads[9], byteorder="little")
 
             # Buttons
@@ -462,8 +462,8 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Professor_Rescued == 0xFF:
                 MM_Professor_Rescued = 0
 
-            if MM_Nathalie_Rescued == 0xFF:
-                MM_Nathalie_Rescued = 0
+            if MM_Natalie_Rescued == 0xFF:
+                MM_Natalie_Rescued = 0
 
             # Get WaterNet state from memory
             waternetState = 0

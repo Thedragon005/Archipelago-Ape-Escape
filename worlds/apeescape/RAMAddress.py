@@ -1058,12 +1058,12 @@ class RAM:
     
     MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
     MM_Clown_State = 0x174072
-    MM_Nathalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
+    MM_Natalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
     MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
 
 
     temp_MM_Professor_RescuedAddress = 0x0DFC5C
-    temp_MM_Nathalie_RescuedAddress = 0x0DFC5E
+    temp_MM_Natalie_RescuedAddress = 0x0DFC5E
     temp_MM_Jake_DefeatedAddress = 0x0DFC5A
 
     MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence.If JakeDefeated = 5 it will open the door
