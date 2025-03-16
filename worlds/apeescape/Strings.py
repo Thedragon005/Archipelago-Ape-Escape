@@ -618,6 +618,7 @@ class AEDoor(Enum):
     MM_INSIDE_CLIMB_OUTSIDE_CLIMB = "Monkey Madness: Inside Climb - Outside Climb"
     MM_OUTSIDE_CLIMB_INSIDE_CLIMB = "Monkey Madness: Outside Climb - Inside Climb"
     MM_OUTSIDE_CLIMB_CASTLE_MAIN = "Monkey Madness: Outside Climb - Castle Main"
+    PPM_ENTRY = "Peak Point Matrix: Entry"
 
 class AEItem(Enum):
     Club = "Stun Club"

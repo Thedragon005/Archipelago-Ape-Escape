@@ -1,10 +1,8 @@
 from typing import TYPE_CHECKING
 
-from .Regions import ApeEscapeLevel
-from .RulesGlitchless import set_glitchless_rules
-from .RulesNoIJ import set_noij_rules
-from .RulesIJ import set_ij_rules
-# from .Regions import connect_regions
+from .Regions import connect_regions, ApeEscapeLevel
+from .Strings import AEItem, AEDoor, AELocation
+
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
 
@@ -23,14 +21,194 @@ def set_rules(world: "ApeEscapeWorld"):
     if (world.options.entrance != 0x00):
         world.levellist.sort()
 
-    if world.options.logic == "glitchless":
-        set_glitchless_rules(world)
-    elif world.options.logic == "noij":
-        set_noij_rules(world)
-    elif world.options.logic == "ij":
-        set_ij_rules(world)
+    set_entrances(world)
+    set_doors(world)
+    set_transitions(world)
+    set_locations(world)
 
 
+# Entrances are specifically connections between the Time Station (level select) and a level.
+def set_entrances(self):
+    connect_regions(self, "Menu", AEDoor.TS.value, lambda state: True)
+    connect_regions(self, "Menu", AEDoor.L11.value, lambda state: Keys(state, self, self.levellist[0].keys))
+    connect_regions(self, "Menu", AEDoor.L12.value, lambda state: Keys(state, self, self.levellist[1].keys))
+    # Add the rest of the Menu -> Level Entry connections (copy from other Rules).
+
+
+# A door is defined as a connection between rooms, typically bi-directional.
+def set_doors(self):
+    # I'm not sure if these have to be manually connected in both directions?
+    # Time Station
+    connect_regions(self, AEDoor.TSR1T2.value, AEDoor.TSR2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.TSR2T1.value, AEDoor.TSR1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.TSR1T3.value, AEDoor.TSR3T1.value, lambda state: True)
+    connect_regions(self, AEDoor.TSR3T1.value, AEDoor.TSR1T3.value, lambda state: True)
+    # Fossil Field
+    # Primordial Ooze
+
+
+# A transition is defined as navigating between two doors in the same room.
+def set_transitions(self):
+    # Time Station
+    connect_regions(self, AEDoor.TS.value, AEDoor.TSR1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.TS.value, AEDoor.TSR1T3.value, lambda state: True)
+    # Fossil Field
+    # Primordial Ooze
+
+
+# A location is always accessed from a transition. The level entrance is a special case of a transition.
+def set_locations(self):
+    # Time Station
+    if self.options.mailbox == "true" or (self.options.shufflenet == "true" and self.options.coin == "true"):
+        connect_regions(self, AEDoor.TS.value, AELocation.Mailbox60.value, lambda state: True)
+        connect_regions(self, AEDoor.TS.value, AELocation.Mailbox61.value, lambda state: True)
+        connect_regions(self, AEDoor.TSR3T1.value, AELocation.Mailbox62.value, lambda state: True)
+        connect_regions(self, AEDoor.TSR2T1.value, AELocation.Mailbox63.value, lambda state: True)
+
+    # Fossil Field
+    connect_regions(self, AEDoor.L11.value, AELocation.W1L1Noonan.value, lambda state: HasNet(state, self))
+    connect_regions(self, AEDoor.L11.value, AELocation.W1L1Jorjy.value, lambda state: HasNet(state, self))
+    connect_regions(self, AEDoor.L11.value, AELocation.W1L1Nati.value, lambda state: HasNet(state, self))
+    if self.options.logic == "normal":
+       connect_regions(self, AEDoor.L11.value, AELocation.W1L1TrayC.value,
+                        lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
+    else:
+       connect_regions(self, AEDoor.L11.value, AELocation.W1L1TrayC.value,
+                        lambda state: HasNet(state, self))
+
+    if self.options.coin == "true":
+        connect_regions(self, AERoom.W1L1Main.value, AELocation.Coin1.value,
+                        lambda state: True)
+    
+	if self.options.mailbox == "true":
+        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox1.value,
+                        lambda state: True)
+        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox2.value,
+                        lambda state: True)
+        connect_regions(self, AERoom.W1L1Main.value, AELocation.Mailbox3.value,
+                        lambda state: CanHitOnce(state, self))
+
+
+# Item Checking Helper Functions
+def Keys(state, world, count):
+    return state.has(AEItem.Key.value, world.player, count)
+
+
+def HasClub(state, world):
+    return state.has(AEItem.Club.value, world.player, 1)
+
+
+def HasNet(state, world):
+    return state.has(AEItem.Net.value, world.player, 1)
+
+
+def HasRadar(state, world):
+    return state.has(AEItem.Radar.value, world.player, 1)
+
+
+def HasSling(state, world):
+    return state.has(AEItem.Sling.value, world.player, 1)
+
+
+def HasHoop(state, world):
+    return state.has(AEItem.Hoop.value, world.player, 1)
+
+
+def HasFlyer(state, world):
+    return state.has(AEItem.Flyer.value, world.player, 1)
+
+
+def HasRC(state, world):
+    return state.has(AEItem.Car.value, world.player, 1)
+
+
+def HasPunch(state, world):
+    return state.has(AEItem.Punch.value, world.player, 1)
+
+
+def HasWaterNet(state, world):
+    return CanWaterCatch(state, world)
+
+
+def CanSwim(state, world):
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 1))
+
+
+def CanDive(state, world):
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 2))
+
+
+# Logic Helper Functions
+def CanWaterCatch(state, world):
+    return (state.has(AEItem.WaterNet.value, world.player, 1) or (state.has(AEItem.WaterCatch.value, world.player, 1) and state.has(AEItem.ProgWaterNet.value, world.player, 1)))
+
+
+def CanHitOnce(state, world):
+    return HasClub(state, world) or HasSling(state, world) or HasPunch(state, world)
+
+
+def CanHitMultiple(state, world):
+    return HasClub(state, world) or HasPunch(state, world)
+
+
+def CanHitWheel(state, world):
+    return HasClub(state, world) or HasPunch(state, world)
+
+
+def SuperFlyer(state, world):
+    return HasFlyer(state, world) and (HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state,world)) and world.options.superflyer == "true"
+
+
+def IJ(state, world):
+    return HasSling(state, world) and world.options.infinitejump == "true"
+
+
+# Lamp and Door Functions
+def MM_DoubleDoor(state, world):
+    return state.has(AEItem.MMDoubleDoorKey.value, world.player, 1)
+
+
+def CB_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.CB_Lamp.value, world.player, 1)
+
+
+def DI_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.DI_Lamp.value, world.player, 1)
+
+
+def CRC_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.CrC_Lamp.value, world.player, 1)
+
+
+def CP_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.CP_Lamp.value, world.player, 1)
+
+
+def SF_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.SF_Lamp.value, world.player, 1)
+
+
+def TVT_Lobby_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1)
+
+
+def TVT_Tank_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1)
+
+
+def MM_Lamp(state, world):
+    # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    return state.has(AEItem.MM_Lamp.value, world.player, 1)
+
+
+# Entrance Shuffle Helper Functions
 def initialize_level_list():
     levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
     levelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]

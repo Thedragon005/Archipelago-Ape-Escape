@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Region, Entrance
 from .Locations import location_table, ApeEscapeLocation
-from .Strings import AERoom, AELocation
+from .Strings import AEDoor, AELocation
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
@@ -29,6 +29,7 @@ def create_regions(world: "ApeEscapeWorld"):
     # menu
     menu = Region("Menu", player, multiworld)
 
+    # Format for region names is LevelRoomTransition, so L73R3T2 is Level 7-3 (Crumbling Castle) Room 3 (Bell Tower) Transition to room 2 (Castle Main). A lack of a Room or Transition is the default spawn location for that level.
     # Time Station
     TS = Region(AEDoor.TIME_ENTRY.value, player, multiworld)
     TSR1T2 = Region(AEDoor.TIME_MAIN_TRAINING.value, player, multiworld)
@@ -423,8 +424,8 @@ def create_regions(world: "ApeEscapeWorld"):
     L73R2T1 = Region(AEDoor.CC_CASTLEMAIN_ENTRY.value, player, multiworld)
     L73R2T3 = Region(AEDoor.CC_CASTLEMAIN_BELL.value, player, multiworld)
     L73R2T4 = Region(AEDoor.CC_CASTLEMAIN_ELEVATOR.value, player, multiworld)
-    L73R3T1 = Region(AEDoor.CC_CASTLEMAIN_ENTRY.value, player, multiworld)
-    L73R3T2 = Region(AEDoor.CC_CASTLEMAIN_ENTRY.value, player, multiworld)
+    L73R3T1 = Region(AEDoor.CC_BELL_ENTRY.value, player, multiworld)
+    L73R3T2 = Region(AEDoor.CC_BELL_CASTLE.value, player, multiworld)
     L73R4T3 = Region(AEDoor.CC_ELEVATOR_CASTLEMAIN.value, player, multiworld)
     L73R4T5 = Region(AEDoor.CC_ELEVATOR_BASEMENT.value, player, multiworld)
     L73R5T1 = Region(AEDoor.CC_BASEMENT_ENTRY.value, player, multiworld)
@@ -711,7 +712,7 @@ def create_regions(world: "ApeEscapeWorld"):
 
     if options.goal == "second":
         # 9-2
-        L92 = Region(AERoom.W9L2Boss.value, player, multiworld)
+        L92 = Region(AEDoor.PPM_ENTRY.value, player, multiworld)
         L92.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L92) for loc_name in get_array([206])]
         regions += [L92]
 
@@ -741,7 +742,7 @@ def create_regions(world: "ApeEscapeWorld"):
         coin14.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin14) for loc_name in get_array([314])]
         coin17 = Region(AELocation.Coin17.value, player, multiworld)
         coin17.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin17) for loc_name in get_array([317])]
-        coin19 = Region(AERoom.W3L1Coin19.value, player, multiworld)
+        coin19 = Region(AEDoor.SA_ENTRY.value, player, multiworld)
         coin19.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin19) for loc_name in get_array([295, 296, 297, 298, 299])]
         coin21 = Region(AELocation.Coin21.value, player, multiworld)
         coin21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin21) for loc_name in get_array([321])]
@@ -765,7 +766,7 @@ def create_regions(world: "ApeEscapeWorld"):
         coin34.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin34) for loc_name in get_array([334])]
         coin35 = Region(AELocation.Coin35.value, player, multiworld)
         coin35.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin35) for loc_name in get_array([335])]
-        coin36 = Region(AERoom.W6L1Coin36.value, player, multiworld)
+        coin36 = Region(AEDoor.GA_ENTRY.value.value, player, multiworld)
         coin36.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin36) for loc_name in get_array([290, 291, 292, 293, 294])]
         coin37 = Region(AELocation.Coin37.value, player, multiworld)
         coin37.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin37) for loc_name in get_array([337])]
