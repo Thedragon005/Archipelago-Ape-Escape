@@ -307,7 +307,7 @@ def set_transitions(self):
                         lambda state: TODO)
     else:
         connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T4.value, 
-                        lambda state: TODO)    
+                        lambda state: TODO)
     # Tent/Vine Room
     connect_regions(self, AEDoor.L21R4T3.value, AEDoor.L21R4T5.value, lambda state: True)
     if self.options.logic == "normal":
@@ -334,7 +334,7 @@ def set_transitions(self):
                         lambda state: TODO)
     else:
         connect_regions(self, AEDoor.L21R5T4.value, AEDoor.L21R5T1.value, 
-                        lambda state: TODO)    
+                        lambda state: TODO)
 
     # Dark Ruins
     # Outside
@@ -351,7 +351,8 @@ def set_transitions(self):
                         lambda state: TODO)
     connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T31.value, lambda state: True)
     connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T32.value, 
-                        lambda state: TODO) # CREATES EVENT ITEM (pushing the block)
+                        lambda state: TODO)
+    self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block") # Event Item
     connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T41.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
@@ -359,10 +360,10 @@ def set_transitions(self):
                         lambda state: TODO)
     else:
         connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T42.value, 
-                        lambda state: TODO)        
+                        lambda state: TODO)
     connect_regions(self, AEDoor.L22R1T21.value, AEDoor.L22.value, lambda state: True)
     connect_regions(self, AEDoor.L22R1T22.value, AEDoor.L22.value, 
-                        lambda state: TODO) # NEEDS EVENT ITEM (pushing the block)
+                        lambda state: state.has("DR-Block", world.player, 1))
     connect_regions(self, AEDoor.L22R1T31.value, AEDoor.L22.value, lambda state: True)
     connect_regions(self, AEDoor.L22R1T32.value, AEDoor.L22.value, lambda state: True)
     connect_regions(self, AEDoor.L22R1T41.value, AEDoor.L22.value, lambda state: True)
@@ -392,7 +393,7 @@ def set_transitions(self):
                         lambda state: TODO)
     else:
         connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23.value, 
-                        lambda state: TODO)	
+                        lambda state: TODO)
     # Relics
     connect_regions(self, AEDoor.L23R3T1.value, AEDoor.L23R3T4.value, 
                         lambda state: TODO)
@@ -412,17 +413,268 @@ def set_transitions(self):
                         lambda state: TODO)
 
     # Dexter's Island
+    # Outside
+    connect_regions(self, AEDoor.L43.value, AEDoor.L43R1T2.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L43R1T2.value, AEDoor.L43.value, lambda state: True)
+    # Stomach
+    connect_regions(self, AEDoor.L43R2T1.value, AEDoor.L43R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L43R2T3.value, AEDoor.L43R2T1.value, lambda state: True)
+    # Slide
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T42.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T42.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T42.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T41.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T41.value, 
+                        lambda state: TODO)
+    if self.options.logic == "expert":
+        connect_regions(self, AEDoor.L43R3T42.value, AEDoor.L43R3T1.value, 
+                        lambda state: IJ(state, self))
+    connect_regions(self, AEDoor.L43R3T41.value, AEDoor.L43R3T1.value, 
+                        lambda state: TODO)
+    self.__add_event_location(self.L43R3T41, "Dexter's Island - Button Reached", "DI-Button") # Event Item
+    # Gallery
+    connect_regions(self, AEDoor.L43R4T32.value, AEDoor.L43R4T31.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R4T32.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R4HELP.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R4HELP.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L43R4HELP.value, AEDoor.L43R4T31.value, lambda state: True)
+    connect_regions(self, AEDoor.L43R4HELP.value, AEDoor.L43R4T5.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L43R4T5.value, AEDoor.L43R4HELP.value, 
+                        lambda state: TODO)
+
     # Snowy Mammoth (level contains a single room)
     # Frosty Retreat
+    # Outside
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L52.value, AEDoor.L52R1T2.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L52.value, AEDoor.L52R1T2.value, 
+                        lambda state: TODO)
+    # Caverns
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L52R2T1.value, AEDoor.L52R2T3.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L52R2T1.value, AEDoor.L52R2T3.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L52R2T3.value, AEDoor.L52R2T1.value, lambda state: True)
+
     # Hot Springs
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L53.value, AEDoor.L53R1T2.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L53.value, AEDoor.L53R1T2.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L53.value, AEDoor.L53R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L53R1T2.value, AEDoor.L53.value, lambda state: True)
+    connect_regions(self, AEDoor.L53R1T3.value, AEDoor.L53.value, lambda state: True)
+
     # Gladiator Attack (level contains a single room)
     # Sushi Temple
+    connect_regions(self, AEDoor.L71.value, AEDoor.L71R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.L71.value, AEDoor.L71R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L71R1T2.value, AEDoor.L71.value, lambda state: True)
+    connect_regions(self, AEDoor.L71R1T3.value, AEDoor.L71.value, lambda state: True)
+
     # Wabi Sabi Wall
+    # Entry
+    connect_regions(self, AEDoor.L72.value, AEDoor.L72R1T2.value, lambda state: True)
+    # Gong Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L72R2T1.value, AEDoor.L72R2T3.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L72R2T1.value, AEDoor.L72R2T3.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L72R2T3.value, AEDoor.L72R2T1.value, lambda state: True)
+    # Middle
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L72R3T2.value, AEDoor.L72R3T4.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L72R3T2.value, AEDoor.L72R3T4.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L72R3T4.value, AEDoor.L72R3T2.value, lambda state: True)
+    # Obstacle Course
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R4T5.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R4T5.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R4T5.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L72R4T5.value, AEDoor.L72R4T3.value, lambda state: True)
+
     # Crumbling Castle
+    # Outside
+    connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T2.value, lambda state: True)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T5.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T5.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T3.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L73R1T2.value, AEDoor.L73.value, lambda state: True)
+    connect_regions(self, AEDoor.L73R1T5.value, AEDoor.L73.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L73R1T3.value, AEDoor.L73.value, lambda state: True)
+    # Boss Door - must be able to reach and hit the button in another room.
+    connect_regions(self, AEDoor.L73R1T3.value, AEDoor.L73R1T7.value, 
+                        lambda state: state.has("CC-Button", world.player, 1) and CanHitOnce(state, self)) 
+    # Castle
+    connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L73R2T3.value, AEDoor.L73R2T1.value, lambda state: True)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2T4.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2T4.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2T1.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2T1.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2HELP.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2HELP.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2HELP.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2HELP.value, 
+                        lambda state: TODO)
+    # Bell Tower
+    connect_regions(self, AEDoor.L73R3T2.value, AEDoor.L73R3T1.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L73R3T1.value, AEDoor.L73R3T2.value, lambda state: True)
+    # Elevator Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R4T2.value, AEDoor.L73R4T5.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R4T2.value, AEDoor.L73R4T5.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L73R4T5.value, AEDoor.L73R4T2.value, lambda state: True)
+    # Waterway
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R5T1.value, AEDoor.L73R5T4.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R5T1.value, AEDoor.L73R5T4.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R5T4.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R5T4.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R5T4.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L73R5T62.value, AEDoor.L73R5T4.value, lambda state: True)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T1.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T1.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T1.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T61.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T61.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T62.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T62.value, 
+                        lambda state: TODO)
+    # Button Room
+    connect_regions(self, AEDoor.L73R6T51.value, AEDoor.L73R6T52.value, lambda state: True)
+    connect_regions(self, AEDoor.L73R6T52.value, AEDoor.L73R6T51.value, lambda state: True)
+    self.__add_event_location(self.L73R6T51, "Crumbling Castle - Button Reached", "CC-Button") # Event Item
+    
     # City Park
+    # Outside
+
+    # Front Sewer
+
+    # Back Sewer
+
+
     # Specter's Factory
+    # Outside
+
+    # Main Factory
+
+    # Triple Wheel
+
+    # Mech Room
+
+    # Lava Room
+
+    # Conveyor Room (at least it's all True...)
+
+
     # TV Tower
+    # Outside
+
+    # Lobby
+
+    # Tank Room
+
+
     # Monkey Madness
+    # Specter Land
+
+    # Coaster (several one-way connections here)
+
+    # Crater
+
+    # Castle Outside
+    
+    self.__add_event_location(self.L91R12T11, "Monkey Madness - Spawn UFOs", "MM-UFOs") # Event Item
+
+    # Castle Foyer
+
+    # Monkey Head + Inside Climb + Outside Climb
+    self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button") # Event Item
+    
+    self.__add_event_location(self.L91R16T13E, "Monkey Madness - Specter 1 Open", "MM-Painting") # Event Item
+
+
     # Peak Point Matrix (level contains a single room)
 
 
@@ -465,9 +717,9 @@ def set_locations(self):
     # Dark Ruins
     # Cryptic Relics
     # Stadium Attack
-    # Crabby Beach
+    # Crabby Beach (Needs events on monkeys)
     # Coral Cave
-    # Dexter's Island
+    # Dexter's Island (Needs events on monkeys)
     # Snowy Mammoth
     # Frosty Retreat
     # Hot Springs
@@ -475,10 +727,10 @@ def set_locations(self):
     # Sushi Temple
     # Wabi Sabi Wall
     # Crumbling Castle
-    # City Park
-    # Specter's Factory
-    # TV Tower
-    # Monkey Madness
+    # City Park (Needs events on monkeys)
+    # Specter's Factory (Needs events on monkeys)
+    # TV Tower (Needs events on monkeys)
+    # Monkey Madness (Needs events on specific? monkeys)
     # Peak Point Matrix
 
 
@@ -585,6 +837,7 @@ def MM_DoubleDoor(state, world):
 # TODO: All logic around lamps with event items.
 def CB_Lamp(state, world):
     # Check for the state of the option. If lamps are shuffled, return what's written. Else, check for X monkey events in the level.
+    # return state.has("CB Monkey", world.player, 3)
     return state.has(AEItem.CB_Lamp.value, world.player, 1)
 
 
