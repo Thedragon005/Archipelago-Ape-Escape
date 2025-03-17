@@ -421,7 +421,7 @@ doorTransitions = {
     AEDoor.DR_OUTSIDE_HOLE.value: {11, 3},
     AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value: {11, 4},
     AEDoor.DR_OUTSIDE_OBELISK_TOP.value: {11, 5},
-    AEDoor.DR_OUTSIDE_WATER_SIDE.value: {11, 6},
+    AEDoor.DR_OUTSIDE_WATER_BUTTON.value: {11, 6},
     AEDoor.DR_OUTSIDE_WATER_LEDGE.value: {11, 7},
     AEDoor.DR_FAN_OUTSIDE_FENCE.value: {12, 2},
     AEDoor.DR_FAN_OUTSIDE_HOLE.value: {12, 0},

@@ -471,7 +471,7 @@ class AEDoor(Enum):
     DR_OUTSIDE_HOLE = "Dark Ruins: Outside - Fan Basement (Hole)"
     DR_OUTSIDE_OBELISK_BOTTOM = "Dark Ruins: Outside - Obelisk Inside (Bottom)"
     DR_OUTSIDE_OBELISK_TOP = "Dark Ruins: Outside - Obelisk Inside (Top)"
-    DR_OUTSIDE_WATER_SIDE = "Dark Ruins: Outside - Water Room (Side)"
+    DR_OUTSIDE_WATER_BUTTON = "Dark Ruins: Outside - Water Room (Side)"
     DR_OUTSIDE_WATER_LEDGE = "Dark Ruins: Outside - Water Room (Ledge)"
     DR_FAN_OUTSIDE_FENCE = "Dark Ruins: Fan Basement - Outside (Fence)"
     DR_FAN_OUTSIDE_HOLE = "Dark Ruins: Fan Basement - Outside (Hole)"

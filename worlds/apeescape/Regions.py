@@ -137,7 +137,7 @@ def create_regions(world: "ApeEscapeWorld"):
     L22R1T22 = Region(AEDoor.DR_OUTSIDE_HOLE.value, player, multiworld)
     L22R1T31 = Region(AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value, player, multiworld)
     L22R1T32 = Region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value, player, multiworld)
-    L22R1T41 = Region(AEDoor.DR_OUTSIDE_WATER_SIDE.value, player, multiworld)
+    L22R1T41 = Region(AEDoor.DR_OUTSIDE_WATER_BUTTON.value, player, multiworld)
     L22R1T42 = Region(AEDoor.DR_OUTSIDE_WATER_LEDGE.value, player, multiworld)
     L22R2T11 = Region(AEDoor.DR_FAN_OUTSIDE_FENCE.value, player, multiworld)
     L22R2T12 = Region(AEDoor.DR_FAN_OUTSIDE_HOLE.value, player, multiworld)

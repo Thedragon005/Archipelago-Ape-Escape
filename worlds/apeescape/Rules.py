@@ -52,22 +52,21 @@ def set_entrances(self):
     connect_regions(self, "Menu", AEDoor.L82.value, lambda state: Keys(state, self, self.levellist[18].keys))
     connect_regions(self, "Menu", AEDoor.L83.value, lambda state: Keys(state, self, self.levellist[19].keys))
     connect_regions(self, "Menu", AEDoor.L91.value, lambda state: Keys(state, self, self.levellist[20].keys))
-    if options.goal == "second":
-        #TODO: Make the condition for entering Peak Point Matrix reflect the YAML settings
-        connect_regions(self, "Menu", AEDoor.L92.value, lambda state: Keys(state, self, self.levellist[21].keys))
+    # TODO: Make the condition for entering Peak Point Matrix reflect the YAML settings
+    connect_regions(self, "Menu", AEDoor.L92.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
 # For the logic behind door shuffle, this is the section to change.
 def set_doors(self):
-    # I'm not sure if these have to be manually connected in both directions?
+    # I'm not sure if these have to be manually connected in both directions? There are a few one-ways in here, so probably better to be explicit?
     # Time Station
     connect_regions(self, AEDoor.TSR1T2.value, AEDoor.TSR2T1.value, lambda state: True)
     connect_regions(self, AEDoor.TSR1T3.value, AEDoor.TSR3T1.value, lambda state: True)
     connect_regions(self, AEDoor.TSR2T1.value, AEDoor.TSR1T2.value, lambda state: True)
     connect_regions(self, AEDoor.TSR3T1.value, AEDoor.TSR1T3.value, lambda state: True)
-    # Fossil Field
-    # Primordial Ooze
+    # Fossil Field (level contains no doors)
+    # Primordial Ooze (level contains no doors)
     # Molten Lava
     connect_regions(self, AEDoor.L13R1T2.value, AEDoor.L13R2T1.value, lambda state: True)
     connect_regions(self, AEDoor.L13R1T3.value, AEDoor.L13R3T1.value, lambda state: True)
@@ -104,7 +103,7 @@ def set_doors(self):
     connect_regions(self, AEDoor.L23R3T1.value, AEDoor.L23R1T3.value, lambda state: True)
     connect_regions(self, AEDoor.L23R3T4.value, AEDoor.L23R4T3.value, lambda state: True)
     connect_regions(self, AEDoor.L23R4T3.value, AEDoor.L23R3T4.value, lambda state: True)
-    # Stadium Attack
+    # Stadium Attack (level contains no doors)
     # Crabby Beach
     connect_regions(self, AEDoor.L41R1T2.value, AEDoor.L41R2T1.value, lambda state: True)
     connect_regions(self, AEDoor.L41R2T1.value, AEDoor.L41R1T2.value, lambda state: True)
@@ -122,7 +121,7 @@ def set_doors(self):
     connect_regions(self, AEDoor.L43R4T32.value, AEDoor.L43R3T42.value, lambda state: True)
     connect_regions(self, AEDoor.L43R4T5.value, AEDoor.L43R5T4.value, lambda state: True)
     connect_regions(self, AEDoor.L43R5T4.value, AEDoor.L43R4T5.value, lambda state: True)
-    # Snowy Mammoth
+    # Snowy Mammoth (level contains no doors)
     # Frosty Retreat
     connect_regions(self, AEDoor.L52R1T2.value, AEDoor.L52R2T1.value, lambda state: True)
     connect_regions(self, AEDoor.L52R2T1.value, AEDoor.L52R1T2.value, lambda state: True)
@@ -133,7 +132,7 @@ def set_doors(self):
     connect_regions(self, AEDoor.L53R1T3.value, AEDoor.L53R3T1.value, lambda state: True)
     connect_regions(self, AEDoor.L53R2T1.value, AEDoor.L53R1T2.value, lambda state: True)
     connect_regions(self, AEDoor.L53R3T1.value, AEDoor.L53R1T3.value, lambda state: True)
-    # Gladiator Attack
+    # Gladiator Attack (level contains no doors)
     # Sushi Temple
     connect_regions(self, AEDoor.L71R1T2.value, AEDoor.L71R2T1.value, lambda state: True)
     connect_regions(self, AEDoor.L71R1T3.value, AEDoor.L71R3T1.value, lambda state: True)
@@ -239,28 +238,184 @@ def set_doors(self):
     connect_regions(self, AEDoor.L91R15T16.value, AEDoor.L91R16T15.value, lambda state: True)
     connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R15T16.value, lambda state: True)
     connect_regions(self, AEDoor.L91R16T13E.value, AEDoor.L91R13T16X.value, lambda state: True)
-    # Peak Point Matrix
+    # Peak Point Matrix (level contains no doors)
 
 
 # A transition is defined as navigating between two doors in the same room.
 def set_transitions(self):
+    # I'm not sure if these have to be manually connected in both directions? I think they do because connections are asymmetric.
     # Time Station
     connect_regions(self, AEDoor.TS.value, AEDoor.TSR1T2.value, lambda state: True)
     connect_regions(self, AEDoor.TS.value, AEDoor.TSR1T3.value, lambda state: True)
-    # Fossil Field
-    # Primordial Ooze
+    connect_regions(self, AEDoor.TSR1T2.value, AEDoor.TS.value, lambda state: True)
+    connect_regions(self, AEDoor.TSR1T3.value, AEDoor.TS.value, lambda state: True)
+
+    # Fossil Field (level contains a single room)
+    # Primordial Ooze (level contains a single room)
     # Molten Lava
+    connect_regions(self, AEDoor.L13.value, AEDoor.L13R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.L13.value, AEDoor.L13R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L13R1T2.value, AEDoor.L13.value, lambda state: True)
+    connect_regions(self, AEDoor.L13R1T3.value, AEDoor.L13.value, lambda state: True)
+
     # Thick Jungle
+    # Entry Room
+    connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T2.value, lambda state: True)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T3.value, 
+                        lambda state: CanSwim(state, self))
+    else:
+        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T3.value, 
+                        lambda state: CanSwim(state, self) or ((IJ(state, self) or HasHoop(state, self)) and HasFlyer(state, self)))
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T5.value, 
+                        lambda state: CanSwim(state, self))
+    else:
+        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T5.value, 
+                        lambda state: CanSwim(state, self) or HasFlyer(state, self))
+    connect_regions(self, AEDoor.L21R1T2.value, AEDoor.L21.value, lambda state: True)
+    connect_regions(self, AEDoor.L21R1T3.value, AEDoor.L21.value, 
+                        lambda state: CanDive(state, self))
+    connect_regions(self, AEDoor.L21R1T5.value, AEDoor.L21.value, 
+                        lambda state: CanSwim(state, self))
+    # Mushroom Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R2HELP.value, 
+                        lambda state: HasFlyer(state, self) and CanHitWheel(state, self))
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R2HELP.value, 
+                        lambda state: (IJ(state, self) or HasHoop(state, self) or (HasFlyer(state, self) and CanHitWheel(state, self))))
+    else:
+        connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R2HELP.value, 
+                        lambda state: IJ(state, self) or HasHoop(state, self) or HasFlyer(state, self))
+    # Fish Room   TODO: FILL OUT THE ACTUAL LOGIC BELOW THIS POINT (can copy/paste + find/replace)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L21R3T1.value, AEDoor.L21R3HELP.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L21R3T1.value, AEDoor.L21R3HELP.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L21R3T4.value, AEDoor.L21R3HELP.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L21R3T4.value, AEDoor.L21R3HELP.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T1.value, lambda state: True)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T4.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T4.value, 
+                        lambda state: TODO)    
+    # Tent/Vine Room
+    connect_regions(self, AEDoor.L21R4T3.value, AEDoor.L21R4T5.value, lambda state: True)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R4T3.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R4T3.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R4T3.value, 
+                        lambda state: TODO)
+    # Boulder Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R5T4.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R5T4.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R5T4.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L21R5T4.value, AEDoor.L21R5T1.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L21R5T4.value, AEDoor.L21R5T1.value, 
+                        lambda state: TODO)    
+
     # Dark Ruins
+    # Outside
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T21.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T21.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T21.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T22.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T31.value, lambda state: True)
+    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T32.value, 
+                        lambda state: TODO) # CREATES EVENT ITEM (pushing the block)
+    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T41.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T42.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T42.value, 
+                        lambda state: TODO)        
+    connect_regions(self, AEDoor.L22R1T21.value, AEDoor.L22.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R1T22.value, AEDoor.L22.value, 
+                        lambda state: TODO) # NEEDS EVENT ITEM (pushing the block)
+    connect_regions(self, AEDoor.L22R1T31.value, AEDoor.L22.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R1T32.value, AEDoor.L22.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R1T41.value, AEDoor.L22.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R1T42.value, AEDoor.L22.value, lambda state: True)
+    # Fan Basement
+    connect_regions(self, AEDoor.L22R2T11.value, AEDoor.L22R2T12.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R2T12.value, AEDoor.L22R2T11.value, lambda state: True)
+    # Obelisk
+    connect_regions(self, AEDoor.L22R3T11.value, AEDoor.L22R3T12.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R3T12.value, AEDoor.L22R3T11.value, lambda state: True)
+    # Water Basement
+    connect_regions(self, AEDoor.L22R4T11.value, AEDoor.L22R4T12.value, lambda state: True)
+    connect_regions(self, AEDoor.L22R4T12.value, AEDoor.L22R4T11.value, lambda state: True)
+
     # Cryptic Relics
-    # Stadium Attack
+    # Entry Area
+    connect_regions(self, AEDoor.L23.value, AEDoor.L23R1HELP.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L23R1T2.value, AEDoor.L23R1HELP.value, lambda state: True)
+    connect_regions(self, AEDoor.L23R1T3.value, AEDoor.L23R1HELP.value, lambda state: True)
+    connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23R1T2.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23R1T3.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23.value, 
+                        lambda state: TODO)	
+    # Relics
+    connect_regions(self, AEDoor.L23R3T1.value, AEDoor.L23R3T4.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L23R3T4.value, AEDoor.L23R3T1.value, 
+                        lambda state: TODO)
+
+    # Stadium Attack (level contains a single room)
     # Crabby Beach
+    connect_regions(self, AEDoor.L41.value, AEDoor.L41R1T2.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L41R1T2.value, AEDoor.L41.value, lambda state: True)
+
     # Coral Cave
+    connect_regions(self, AEDoor.L42.value, AEDoor.L42R1T2.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L42R1T2.value, AEDoor.L42.value, 
+                        lambda state: TODO)
+
     # Dexter's Island
-    # Snowy Mammoth
+    # Snowy Mammoth (level contains a single room)
     # Frosty Retreat
     # Hot Springs
-    # Gladiator Attack
+    # Gladiator Attack (level contains a single room)
     # Sushi Temple
     # Wabi Sabi Wall
     # Crumbling Castle
@@ -268,7 +423,8 @@ def set_transitions(self):
     # Specter's Factory
     # TV Tower
     # Monkey Madness
-    # Peak Point Matrix
+    # Peak Point Matrix (level contains a single room)
+
 
 
 # A location is always accessed from a transition. The level entrance is a special case of a transition.
