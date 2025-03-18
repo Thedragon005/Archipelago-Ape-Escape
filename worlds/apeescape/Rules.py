@@ -238,7 +238,6 @@ def set_doors(self):
     connect_regions(self, AEDoor.L91R15T16.value, AEDoor.L91R16T15.value, lambda state: True)
     connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R15T16.value, lambda state: True)
     connect_regions(self, AEDoor.L91R16T13E.value, AEDoor.L91R13T16X.value, lambda state: True)
-    # Peak Point Matrix (level contains no doors)
 
 
 # A transition is defined as navigating between two doors in the same room.
@@ -628,55 +627,216 @@ def set_transitions(self):
     
     # City Park
     # Outside
-
+    connect_regions(self, AEDoor.L81.value, AEDoor.L81R1T2.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L81.value, AEDoor.L81R1T3.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L81.value, AEDoor.L81R1T3.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L81R1T2.value, AEDoor.L81.value, lambda state: True)
+    connect_regions(self, AEDoor.L81R1T3.value, AEDoor.L81.value, 
+                        lambda state: TODO)
     # Front Sewer
-
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R2T3.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R2T3.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R2T3.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R2T1.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R2T1.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R2T1.value, 
+                        lambda state: TODO)
     # Back Sewer
-
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L81R3T1.value, AEDoor.L81R3HELP.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L81R3T1.value, AEDoor.L81R3HELP.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L81R3T2.value, AEDoor.L81R3HELP.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L81R3HELP.value, AEDoor.L81R3T1.value, lambda state: True)
+    connect_regions(self, AEDoor.L81R3HELP.value, AEDoor.L81R3T2.value, 
+                        lambda state: TODO)
 
     # Specter's Factory
     # Outside
-
+    connect_regions(self, AEDoor.L82.value, AEDoor.L82R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R1T2.value, AEDoor.L82.value, 
+                        lambda state: TODO)
     # Main Factory
-
+    connect_regions(self, AEDoor.L82R2T1.value, AEDoor.L82R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R2T41.value, AEDoor.L82R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T41.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T42.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T42.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T42.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T3.value, lambda state: True)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T5.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T5.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T5.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L82R2T5.value, AEDoor.L82R2T42.value, 
+                        lambda state: TODO)
     # Triple Wheel
-
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R4T22.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R4T22.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R4T22.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L82R4T22.value, AEDoor.L82R4T21.value, lambda state: True)
     # Mech Room
-
+    connect_regions(self, AEDoor.L82R5T2.value, AEDoor.L82R5T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R5T6.value, AEDoor.L82R5T2.value, lambda state: True)
     # Lava Room
-
+    if self.options.logic == "normal" or self.options.logic == "expert":
+        connect_regions(self, AEDoor.L82R6T5.value, AEDoor.L82R6T7.value, 
+                        lambda state: TODO)
+    else: # This is correct as CanHitWheel includes Flyer only on expert, making hard the unique.
+        connect_regions(self, AEDoor.L82R6T5.value, AEDoor.L82R6T7.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L82R6T7.value, AEDoor.L82R6T5.value, lambda state: True)
     # Conveyor Room (at least it's all True...)
-
+    connect_regions(self, AEDoor.L82R7T71X.value, AEDoor.L82R7T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T72X.value, AEDoor.L82R7T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T73X.value, AEDoor.L82R7T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T74X.value, AEDoor.L82R7T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T75X.value, AEDoor.L82R7T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T76X.value, AEDoor.L82R7T6.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T71E.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T72E.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T73E.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T74E.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T75E.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T76E.value, lambda state: True)
+    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T77E.value, lambda state: True)
 
     # TV Tower
     # Outside
-
+    connect_regions(self, AEDoor.L83.value, AEDoor.L83R1T2.value, lambda state: True)
     # Lobby
-
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R2T3.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R2T3.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R2T4.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L83R2T3.value, AEDoor.L83R2T1.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L83R2T4.value, AEDoor.L83R2T1.value, lambda state: True)
     # Tank Room
-
+    connect_regions(self, AEDoor.L83R4T2.value, AEDoor.L83R4T5.value, lambda state: True)
+    connect_regions(self, AEDoor.L83R4T2.value, AEDoor.L83R4T6.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L83R4T5.value, AEDoor.L83R4T2.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L83R4T5.value, AEDoor.L83R4T2.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L83R4T6.value, AEDoor.L83R4T2.value, lambda state: True)
 
     # Monkey Madness
     # Specter Land
-
+    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T4.value, lambda state: True)
+    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T5.value, lambda state: True)
+    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T10.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L91R1T2.value, AEDoor.L91.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R1T3.value, AEDoor.L91.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R1T4.value, AEDoor.L91.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R1T5.value, AEDoor.L91.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R1T10.value, AEDoor.L91.value, lambda state: True)
     # Coaster (several one-way connections here)
-
+    connect_regions(self, AEDoor.L91R3T1.value, AEDoor.L91R3T6E.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R6T3X.value, AEDoor.L91R6T7E.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R7T6X.value, AEDoor.L91R7T8E.value, lambda state: True)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L91R8T7X.value, AEDoor.L91R8T9.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L91R8T7X.value, AEDoor.L91R8T9.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L91R9T8.value, AEDoor.L91R9T3E.value, 
+                        lambda state: HasNet(state, self))
+    connect_regions(self, AEDoor.L91R3T9X.value, AEDoor.L91R3T1.value, lambda state: True)
     # Crater
-
+    connect_regions(self, AEDoor.L91R10T1.value, AEDoor.L91R10T11.value, lambda state: True)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.L91R10T11.value, AEDoor.L91R10T1.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L91R10T11.value, AEDoor.L91R10T1.value, 
+                        lambda state: TODO)
     # Castle Outside
-    
+    connect_regions(self, AEDoor.L91R11T10.value, AEDoor.L91R11T12.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R11T10.value, AEDoor.L91R11T13.value, 
+                        lambda state: MM_Lamp(state, self))
+    connect_regions(self, AEDoor.L91R11T12.value, AEDoor.L91R11T10.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R11T13.value, AEDoor.L91R11T10.value, lambda state: True)
     self.__add_event_location(self.L91R12T11, "Monkey Madness - Spawn UFOs", "MM-UFOs") # Event Item
-
     # Castle Foyer
-
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T14.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T14.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal": # This will reference MM-Painting
+        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T17E.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T17E.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L91R13T14.value, AEDoor.L91R13T11.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L91R13T14.value, AEDoor.L91R13T15.value, # This will reference MM-Button
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.L91R13T15.value, AEDoor.L91R13T14.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R13T16X.value, AEDoor.L91R13T11.value, lambda state: True)
     # Monkey Head + Inside Climb + Outside Climb
-    self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button") # Event Item
-    
+    connect_regions(self, AEDoor.L91R15T13.value, AEDoor.L91R15T16.value, lambda state: True)
+    connect_regions(self, AEDoor.L91R15T16.value, AEDoor.L91R15T13.value, lambda state: True)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R16T13E.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R16T13E.value, 
+                        lambda state: TODO)
+	self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button") # Event Item
     self.__add_event_location(self.L91R16T13E, "Monkey Madness - Specter 1 Open", "MM-Painting") # Event Item
-
-
-    # Peak Point Matrix (level contains a single room)
-
 
 
 # A location is always accessed from a transition. The level entrance is a special case of a transition.
