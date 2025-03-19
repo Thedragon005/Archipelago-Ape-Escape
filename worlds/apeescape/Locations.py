@@ -397,6 +397,7 @@ hundoMonkeysCount = {
     0x18: 24 # Specter
 }
 
+# These values are the room ID of the room, and the door ID the room is entered through. To get these, stand near the transition that leads to that entrance. As an example, {45, 5} will spawn Spike at the top of the Bell Tower, as though he entered from outside. 
 doorTransitions = {
     AEDoor.FF_ENTRY.value: {1, 0},
     AEDoor.PO_ENTRY.value: {2, 0},
@@ -490,11 +491,11 @@ doorTransitions = {
     AEDoor.CC_CASTLEMAIN_ELEVATOR.value: {46, 1},
     AEDoor.CC_BASEMENT_ENTRY.value: {47, 0},
     AEDoor.CC_BASEMENT_BUTTON_DOWN.value: {47, 2},
-    AEDoor.CC_BASEMENT_BUTTON_UP.value: {47, 3}, # IHNN note: I renamed these from left/right and didn't verify I matched them correctly.
+    AEDoor.CC_BASEMENT_BUTTON_UP.value: {47, 3},
     AEDoor.CC_BASEMENT_ELEVATOR.value: {47, 4},
     AEDoor.CC_BOSS_ROOM.value: {48, 0},
-    AEDoor.CC_BUTTON_BASEMENT_LEDGE.value: {49, 0}, # IHNN note: I renamed these from left/right and didn't verify I matched them correctly.
     AEDoor.CC_BUTTON_BASEMENT_WATER.value: {49, 2},
+    AEDoor.CC_BUTTON_BASEMENT_LEDGE.value: {49, 0},
     AEDoor.CC_ELEVATOR_CASTLEMAIN.value: {50, 0},
     AEDoor.CC_ELEVATOR_BASEMENT.value: {50, 2},
     AEDoor.CC_BELL_CASTLE.value: {51, 0},
@@ -525,7 +526,7 @@ doorTransitions = {
     AEDoor.SF_CONVEYOR4_ENTRY.value: {61, 5},
     AEDoor.SF_CONVEYOR5_ENTRY.value: {61, 4},
     AEDoor.SF_CONVEYOR6_ENTRY.value: {61, 3},
-    AEDoor.SF_CONVEYOR7_ENTRY.value: {61, 2}, # IHNN note - reversed the directions to match the convention elsewhere
+    AEDoor.SF_CONVEYOR7_ENTRY.value: {61, 2},
     AEDoor.SF_MECH_FACTORY.value: {62, 0},
     AEDoor.SF_MECH_LAVA.value: {62, 2},
     AEDoor.TVT_ENTRY.value: {63, 0},
@@ -548,12 +549,16 @@ doorTransitions = {
     AEDoor.MM_GO_KARZ_SL_HUB.value: {70, 0},
     AEDoor.MM_CIRCUS_SL_HUB.value: {71, 0},
     AEDoor.MM_COASTER_ENTRY_SL_HUB.value: {72, 0},
-    AEDoor.MM_COASTER_ENTRY_COASTER1.value: {72, 2}, # IHNN note - after adding missing regions and renaming for clarity, I put the transitions that are ENTERED here. If this is wrong, I'm making the note so it's easier to track down.
-    AEDoor.MM_COASTER1_COASTER2.value: {73, 0},
-    AEDoor.MM_COASTER2_HAUNTED_HOUSE.value: {74, 0},
-    AEDoor.MM_HAUNTED_HOUSE_COFFIN.value: {75, 0}, # IHNN note - Haunted House - Coffin was missing, this was labelled as "Haunted House -> Coaster 2" which is not a valid connection. I didn't change the second value here from 0, this will need to be re-checked and I'm not sure what exactly is being checked.
+    AEDoor.MM_COASTER_ENTRY_COASTER1.value: {72, 2}, # IHNN note - Entrance only door, normally inaccessible. Equivalent to 72, 3.
+    AEDoor.MM_COASTER_ENTRY_DISEMBARK.value: {72, 3},
+    AEDoor.MM_COASTER1_ENTRY.value: {73, 0},
+    AEDoor.MM_COASTER1_COASTER2.value: {73, 2}, # IHNN note - Entrance only door, normally inaccessible. Equivalent to 73, 0.
+    AEDoor.MM_COASTER2_ENTRY.value: {74, 0},
+    AEDoor.MM_COASTER2_HAUNTED_HOUSE.value: {74, 2}, # IHNN note - Entrance only door, normally inaccessible. Equivalent to 74, 0.
+    AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value: {75, 0},
+    AEDoor.MM_HAUNTED_HOUSE_COFFIN.value: {75, 3},
     AEDoor.MM_COFFIN_HAUNTED_HOUSE.value: {76, 0},
-    AEDoor.MM_COFFIN_COASTER_ENTRY.value: {76, 2},
+    AEDoor.MM_COFFIN_COASTER_ENTRY.value: {76, 2}, # IHNN note - Entrance only door, normally inaccessible. Spawns Spike in the center of the coffins.
     AEDoor.MM_WESTERN_SL_HUB.value: {77, 0},
     AEDoor.MM_CRATER_SL_HUB.value: {78, 0},
     AEDoor.MM_CRATER_OUTSIDE_CASTLE.value: {78, 2},
@@ -563,19 +568,19 @@ doorTransitions = {
     AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value: {80, 0},
     AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value: {80, 2},
     AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value: {80, 3},
-    AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value: {80, 4}, # IHNN note - this is an "exit only" transition. If we need to document those, most of the rest are missing.
-    AEDoor.MM_CASTLE_MAIN_SPECTER1.value: {80, 5}, # IHNN note - this transition was missing, the second value is assumed.
+    AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value: {80, 4},
+    # AEDoor.MM_CASTLE_MAIN_SPECTER1.value: {80, 5}, # IHNN note - Invalid connection.
     AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value: {81, 2},
     AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value: {81, 0},
     AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value: {82, 0},
-    AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value: {82, 2},
+    AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value: {82, 2}, # IHNN note - Entrance only door, normally inaccessible. Spawns Spike at the top, by the mech.
     AEDoor.MM_SPECTER1_CASTLE_MAIN.value: {83, 0},
     AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value: {84, 0},
     AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value: {85, 0},
     AEDoor.TIME_ENTRY.value: {88, 0},
     AEDoor.TIME_MAIN_TRAINING.value: {88, 3},
     AEDoor.TIME_MAIN_MINIGAME.value: {88, 2},
-    AEDoor.TIME_MINIGAME_MAIN.value: {91, 0},
+    AEDoor.TIME_MINIGAME_MAIN.value: {91, 1},
     AEDoor.TIME_TRAINING_MAIN.value: {90, 0},
     AEDoor.TIME_TRAINING_WATERNET.value: {90, 1},
     AEDoor.TIME_TRAINING_RADAR.value: {90, 2},
