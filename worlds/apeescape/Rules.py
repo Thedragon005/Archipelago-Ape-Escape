@@ -1209,7 +1209,12 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Thick Jungle
-    
+    # Entry
+    # Fish
+    # Tent
+    # Boulder
+    # Mushroom
+
     if self.options.coin == "true":
         connect_regions(self, AEDoor.TJ_ENTRY.value, AELocation.Coin6.value, 
                         lambda state: TODO)
@@ -1240,6 +1245,10 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Dark Ruins
+    # Outside
+    # Fan
+    # Obelisk
+    # Water
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.DR_ENTRY.value, AELocation.Coin11.value, 
@@ -1269,6 +1278,10 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Cryptic Relics
+    # Entry
+    # Side Room
+    # Main Ruins
+    # Pillar
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Coin17.value, 
@@ -1291,6 +1304,8 @@ def set_locations(self):
                         lambda state: CanSwim(state, self))
 
     # Crabby Beach (Needs events on monkeys)
+    # First
+    # Second
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CB_SECOND_ROOM_ENTRY.value, AELocation.Coin21.value, 
@@ -1304,6 +1319,8 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Coral Cave
+    # First
+    # Second
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.Coin23.value, 
@@ -1315,6 +1332,11 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Dexter's Island (Needs events on monkeys)
+    # Outside
+    # Stomach
+    # Slide
+    # Gallery
+    # Tentacle
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.Coin24.value, 
@@ -1349,6 +1371,9 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Frosty Retreat
+    # Entry
+    # Water
+    # Caverns
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.FR_ENTRY_CAVERNS.value, AELocation.Coin30.value, 
@@ -1362,6 +1387,9 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Hot Springs
+    # Entry
+    # Onsen
+    # Polar Bear
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.HS_HOT_SPRING.value, AELocation.Coin34.value, 
@@ -1382,6 +1410,9 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Sushi Temple
+    # Entry
+    # Temple
+    # Well
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.Coin37.value, 
@@ -1399,6 +1430,11 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Wabi Sabi Wall
+    # Entry
+    # Gong
+    # Middle
+    # Obstacle Course
+    # Barrel
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AELocation.Coin40.value, 
@@ -1418,6 +1454,13 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Crumbling Castle
+    # Outside
+    # Castle
+    # Bell Tower
+    # Elevator
+    # Waterway
+    # Button Room
+    # Boss Room
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AELocation.Coin45.value, 
@@ -1433,6 +1476,9 @@ def set_locations(self):
                         lambda state: TODO)
 
     # City Park (Needs events on monkeys)
+    # Outside
+    # Front Sewer
+    # Back Sewer
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.Coin53.value, 
@@ -1447,6 +1493,12 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Specter's Factory (Needs events on monkeys)
+    # Outside
+    # Factory
+    # Car Room
+    # Lava Room
+    # Conveyor Room
+    # Mech Room
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.Coin58.value, 
@@ -1458,6 +1510,12 @@ def set_locations(self):
                         lambda state: TODO)
 
     # TV Tower (Needs events on monkeys)
+    # Outside
+    # Basement
+    # Lobby
+    # Tank
+    # Fan
+    # Boss
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.Coin64.value, 
@@ -1466,7 +1524,20 @@ def set_locations(self):
                         lambda state: TODO)
 
     # Monkey Madness (Needs events on specific? monkeys)
-    
+    # Coaster (multiple rooms)
+    # Haunted House
+    # Coffin Room
+    # Circus
+    # Go Karz
+    # Western Land
+    # Crater
+    # Castle Outside
+    # Castle Foyer
+    # Inside Climb
+    # Space Climb
+    # Monkey Head Room
+    # "Warning" Side Room
+    # Specter 1
     if self.options.coin == "true":
         connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Coin73.value, 
                         lambda state: TODO)

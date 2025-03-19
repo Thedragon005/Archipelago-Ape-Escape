@@ -519,13 +519,13 @@ doorTransitions = {
     AEDoor.SF_WHEEL_FACTORY_BOTTOM.value: {60, 0},
     AEDoor.SF_WHEEL_FACTORY_TOP.value: {60, 2},
     AEDoor.SF_CONVEYOR_LAVA.value: {61, 0},
-    AEDoor.SF_CONVEYOR1_ENTRY.value: {61, 2},
-    AEDoor.SF_CONVEYOR2_ENTRY.value: {61, 3},
-    AEDoor.SF_CONVEYOR3_ENTRY.value: {61, 4},
+    AEDoor.SF_CONVEYOR1_ENTRY.value: {61, 7},
+    AEDoor.SF_CONVEYOR2_ENTRY.value: {61, 7},
+    AEDoor.SF_CONVEYOR3_ENTRY.value: {61, 6},
     AEDoor.SF_CONVEYOR4_ENTRY.value: {61, 5},
-    AEDoor.SF_CONVEYOR5_ENTRY.value: {61, 6},
-    AEDoor.SF_CONVEYOR6_ENTRY.value: {61, 7},
-    AEDoor.SF_CONVEYOR7_ENTRY.value: {61, 7}, # IHNN note - this seems wrong in some way? Another thought - are we numbering the conveyors the same way? To me, conveyor 1 is the one at the ground floor, and the numbering goes up from there.
+    AEDoor.SF_CONVEYOR5_ENTRY.value: {61, 4},
+    AEDoor.SF_CONVEYOR6_ENTRY.value: {61, 3},
+    AEDoor.SF_CONVEYOR7_ENTRY.value: {61, 2}, # IHNN note - reversed the directions to match the convention elsewhere
     AEDoor.SF_MECH_FACTORY.value: {62, 0},
     AEDoor.SF_MECH_LAVA.value: {62, 2},
     AEDoor.TVT_ENTRY.value: {63, 0},
@@ -563,7 +563,7 @@ doorTransitions = {
     AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value: {80, 0},
     AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value: {80, 2},
     AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value: {80, 3},
-    AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value: {80, 4}, # IHNN note - this is not a valid connection
+    AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value: {80, 4}, # IHNN note - this is an "exit only" transition. If we need to document those, most of the rest are missing.
     AEDoor.MM_CASTLE_MAIN_SPECTER1.value: {80, 5}, # IHNN note - this transition was missing, the second value is assumed.
     AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value: {81, 2},
     AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value: {81, 0},
