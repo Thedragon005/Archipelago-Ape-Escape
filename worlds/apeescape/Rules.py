@@ -30,30 +30,30 @@ def set_rules(world: "ApeEscapeWorld"):
 # Entrances are specifically connections between the Time Station (level select) and a level.
 # If we ever want to change the starting room of a level, this is where we would set that room.
 def set_entrances(self):
-    connect_regions(self, "Menu", AEDoor.TS.value, lambda state: True)
-    connect_regions(self, "Menu", AEDoor.L11.value, lambda state: Keys(state, self, self.levellist[0].keys))
-    connect_regions(self, "Menu", AEDoor.L12.value, lambda state: Keys(state, self, self.levellist[1].keys))
-    connect_regions(self, "Menu", AEDoor.L13.value, lambda state: Keys(state, self, self.levellist[2].keys))
-    connect_regions(self, "Menu", AEDoor.L21.value, lambda state: Keys(state, self, self.levellist[3].keys))
-    connect_regions(self, "Menu", AEDoor.L22.value, lambda state: Keys(state, self, self.levellist[4].keys))
-    connect_regions(self, "Menu", AEDoor.L23.value, lambda state: Keys(state, self, self.levellist[5].keys))
-    connect_regions(self, "Menu", AEDoor.L31.value, lambda state: Keys(state, self, self.levellist[6].keys))
-    connect_regions(self, "Menu", AEDoor.L41.value, lambda state: Keys(state, self, self.levellist[7].keys))
-    connect_regions(self, "Menu", AEDoor.L42.value, lambda state: Keys(state, self, self.levellist[8].keys))
-    connect_regions(self, "Menu", AEDoor.L43.value, lambda state: Keys(state, self, self.levellist[9].keys))
-    connect_regions(self, "Menu", AEDoor.L51.value, lambda state: Keys(state, self, self.levellist[10].keys))
-    connect_regions(self, "Menu", AEDoor.L52.value, lambda state: Keys(state, self, self.levellist[11].keys))
-    connect_regions(self, "Menu", AEDoor.L53.value, lambda state: Keys(state, self, self.levellist[12].keys))
-    connect_regions(self, "Menu", AEDoor.L61.value, lambda state: Keys(state, self, self.levellist[13].keys))
-    connect_regions(self, "Menu", AEDoor.L71.value, lambda state: Keys(state, self, self.levellist[14].keys))
-    connect_regions(self, "Menu", AEDoor.L72.value, lambda state: Keys(state, self, self.levellist[15].keys))
-    connect_regions(self, "Menu", AEDoor.L73.value, lambda state: Keys(state, self, self.levellist[16].keys))
-    connect_regions(self, "Menu", AEDoor.L81.value, lambda state: Keys(state, self, self.levellist[17].keys))
-    connect_regions(self, "Menu", AEDoor.L82.value, lambda state: Keys(state, self, self.levellist[18].keys))
-    connect_regions(self, "Menu", AEDoor.L83.value, lambda state: Keys(state, self, self.levellist[19].keys))
-    connect_regions(self, "Menu", AEDoor.L91.value, lambda state: Keys(state, self, self.levellist[20].keys))
+    connect_regions(self, "Menu", AEDoor.TIME_ENTRY.value, lambda state: True)
+    connect_regions(self, "Menu", AEDoor.FF_ENTRY.value, lambda state: Keys(state, self, self.levellist[0].keys))
+    connect_regions(self, "Menu", AEDoor.PO_ENTRY.value, lambda state: Keys(state, self, self.levellist[1].keys))
+    connect_regions(self, "Menu", AEDoor.ML_ENTRY.value, lambda state: Keys(state, self, self.levellist[2].keys))
+    connect_regions(self, "Menu", AEDoor.TJ_ENTRY.value, lambda state: Keys(state, self, self.levellist[3].keys))
+    connect_regions(self, "Menu", AEDoor.DR_ENTRY.value, lambda state: Keys(state, self, self.levellist[4].keys))
+    connect_regions(self, "Menu", AEDoor.CR_ENTRY.value, lambda state: Keys(state, self, self.levellist[5].keys))
+    connect_regions(self, "Menu", AEDoor.SA_ENTRY.value, lambda state: Keys(state, self, self.levellist[6].keys))
+    connect_regions(self, "Menu", AEDoor.CB_ENTRY.value, lambda state: Keys(state, self, self.levellist[7].keys))
+    connect_regions(self, "Menu", AEDoor.CCAVE_ENTRY.value, lambda state: Keys(state, self, self.levellist[8].keys))
+    connect_regions(self, "Menu", AEDoor.DI_ENTRY.value, lambda state: Keys(state, self, self.levellist[9].keys))
+    connect_regions(self, "Menu", AEDoor.SM_ENTRY.value, lambda state: Keys(state, self, self.levellist[10].keys))
+    connect_regions(self, "Menu", AEDoor.FR_ENTRY.value, lambda state: Keys(state, self, self.levellist[11].keys))
+    connect_regions(self, "Menu", AEDoor.HS_ENTRY.value, lambda state: Keys(state, self, self.levellist[12].keys))
+    connect_regions(self, "Menu", AEDoor.GA_ENTRY.value, lambda state: Keys(state, self, self.levellist[13].keys))
+    connect_regions(self, "Menu", AEDoor.ST_ENTRY.value, lambda state: Keys(state, self, self.levellist[14].keys))
+    connect_regions(self, "Menu", AEDoor.WSW_ENTRY.value, lambda state: Keys(state, self, self.levellist[15].keys))
+    connect_regions(self, "Menu", AEDoor.CC_ENTRY.value, lambda state: Keys(state, self, self.levellist[16].keys))
+    connect_regions(self, "Menu", AEDoor.CP_ENTRY.value, lambda state: Keys(state, self, self.levellist[17].keys))
+    connect_regions(self, "Menu", AEDoor.SF_ENTRY.value, lambda state: Keys(state, self, self.levellist[18].keys))
+    connect_regions(self, "Menu", AEDoor.TVT_ENTRY.value, lambda state: Keys(state, self, self.levellist[19].keys))
+    connect_regions(self, "Menu", AEDoor.MM_SL_HUB.value, lambda state: Keys(state, self, self.levellist[20].keys))
     # TODO: Make the condition for entering Peak Point Matrix reflect the YAML settings
-    connect_regions(self, "Menu", AEDoor.L92.value, lambda state: Keys(state, self, self.levellist[21].keys))
+    connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
@@ -61,781 +61,781 @@ def set_entrances(self):
 def set_doors(self):
     # I'm not sure if these have to be manually connected in both directions? There are a few one-ways in here, so probably better to be explicit?
     # Time Station
-    connect_regions(self, AEDoor.TSR1T2.value, AEDoor.TSR2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.TSR1T3.value, AEDoor.TSR3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.TSR2T1.value, AEDoor.TSR1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.TSR3T1.value, AEDoor.TSR1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_MAIN.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_MINIGAME.value, AEDoor.TIME_MINIGAME_MAIN.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_MAIN_TRAINING.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_MINIGAME_MAIN.value, AEDoor.TIME_MAIN_MINIGAME.value, lambda state: True)
     # Fossil Field (level contains no doors)
     # Primordial Ooze (level contains no doors)
     # Molten Lava
-    connect_regions(self, AEDoor.L13R1T2.value, AEDoor.L13R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L13R1T3.value, AEDoor.L13R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L13R2T1.value, AEDoor.L13R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L13R3T1.value, AEDoor.L13R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_ENTRY_VOLCANO.value, AEDoor.ML_VOLCANO_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_ENTRY_TRICERATOPS.value, AEDoor.ML_TRICERATOPS_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_VOLCANO_ENTRY.value, AEDoor.ML_ENTRY_VOLCANO.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_TRICERATOPS_ENTRY.value, AEDoor.ML_ENTRY_TRICERATOPS.value, lambda state: True)
     # Thick Jungle
-    connect_regions(self, AEDoor.L21R1T2.value, AEDoor.L21R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R1T3.value, AEDoor.L21R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R1T5.value, AEDoor.L21R5T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R3T1.value, AEDoor.L21R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R3T4.value, AEDoor.L21R4T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R4T3.value, AEDoor.L21R3T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R5T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R1T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R5T4.value, AEDoor.L21R4T5.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_ENTRY_MUSHROOM.value, AEDoor.TJ_MUSHROOM_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_ENTRY_FISH.value, AEDoor.TJ_FISH_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_ENTRY_BOULDER.value, AEDoor.TJ_BOULDER_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AEDoor.TJ_ENTRY_MUSHROOM.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_FISH_ENTRY.value, AEDoor.TJ_ENTRY_FISH.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_FISH_TENT.value, AEDoor.TJ_TENT_FISH.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_TENT_FISH.value, AEDoor.TJ_FISH_TENT.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_TENT_BOULDER.value, AEDoor.TJ_BOULDER_TENT.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_BOULDER_ENTRY.value, AEDoor.TJ_ENTRY_BOULDER.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_BOULDER_TENT.value, AEDoor.TJ_TENT_BOULDER.value, lambda state: True)
     # Dark Ruins
-    connect_regions(self, AEDoor.L22R1T21.value, AEDoor.L22R2T11.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T22.value, AEDoor.L22R2T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T31.value, AEDoor.L22R3T11.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T32.value, AEDoor.L22R3T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T41.value, AEDoor.L22R4T11.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T42.value, AEDoor.L22R4T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R2T11.value, AEDoor.L22R1T21.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R2T12.value, AEDoor.L22R1T22.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R3T11.value, AEDoor.L22R1T31.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R3T12.value, AEDoor.L22R1T32.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R4T11.value, AEDoor.L22R1T41.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R4T12.value, AEDoor.L22R1T42.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_FENCE.value, AEDoor.DR_FAN_OUTSIDE_FENCE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_HOLE.value, AEDoor.DR_FAN_OUTSIDE_HOLE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value, AEDoor.DR_OBELISK_BOTTOM.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, AEDoor.DR_OBELISK_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_WATER_BUTTON.value, AEDoor.DR_WATER_SIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, AEDoor.DR_WATER_LEDGE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_FAN_OUTSIDE_FENCE.value, AEDoor.DR_OUTSIDE_FENCE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_FAN_OUTSIDE_HOLE.value, AEDoor.DR_OUTSIDE_HOLE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OBELISK_TOP.value, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_WATER_SIDE.value, AEDoor.DR_OUTSIDE_WATER_BUTTON.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_WATER_LEDGE.value, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, lambda state: True)
     # Cryptic Relics
-    connect_regions(self, AEDoor.L23R1T2.value, AEDoor.L23R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R1T3.value, AEDoor.L23R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R2T1.value, AEDoor.L23R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R3T1.value, AEDoor.L23R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R3T4.value, AEDoor.L23R4T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R4T3.value, AEDoor.L23R3T4.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_ENTRY_SIDE_ROOM.value, AEDoor.CR_SIDE_ROOM_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_ENTRY_MAIN_RUINS.value, AEDoor.CR_MAIN_RUINS_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_SIDE_ROOM_ENTRY.value, AEDoor.CR_ENTRY_SIDE_ROOM.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_MAIN_RUINS_ENTRY.value, AEDoor.CR_ENTRY_MAIN_RUINS.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, lambda state: True)
     # Stadium Attack (level contains no doors)
     # Crabby Beach
-    connect_regions(self, AEDoor.L41R1T2.value, AEDoor.L41R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L41R2T1.value, AEDoor.L41R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.CB_ENTRY_SECOND_ROOM.value, AEDoor.CB_SECOND_ROOM_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CB_SECOND_ROOM_ENTRY.value, AEDoor.CB_ENTRY_SECOND_ROOM.value, lambda state: True)
     # Coral Cave
-    connect_regions(self, AEDoor.L42R1T2.value, AEDoor.L42R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L42R2T1.value, AEDoor.L42R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, lambda state: True)
     # Dexter's Island
-    connect_regions(self, AEDoor.L43R1T2.value, AEDoor.L43R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R2T1.value, AEDoor.L43R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R2T3.value, AEDoor.L43R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R3T41.value, AEDoor.L43R4T31.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R3T42.value, AEDoor.L43R4T32.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R3T41.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R4T32.value, AEDoor.L43R3T42.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R4T5.value, AEDoor.L43R5T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R5T4.value, AEDoor.L43R4T5.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_ENTRY_STOMACH.value, AEDoor.DI_STOMACH_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_STOMACH_ENTRY.value, AEDoor.DI_ENTRY_STOMACH.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_STOMACH_SLIDE_ROOM.value, AEDoor.DI_SLIDE_ROOM_STOMACH.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_STOMACH_SLIDE_ROOM.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY.value, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, AEDoor.DI_SLIDE_ROOM_GALLERY.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_GALLERY_TENTACLE.value, AEDoor.DI_TENTACLE.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_TENTACLE.value, AEDoor.DI_GALLERY_TENTACLE.value, lambda state: True)
     # Snowy Mammoth (level contains no doors)
     # Frosty Retreat
-    connect_regions(self, AEDoor.L52R1T2.value, AEDoor.L52R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L52R2T1.value, AEDoor.L52R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L52R2T3.value, AEDoor.L52R3T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L52R3T2.value, AEDoor.L52R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.FR_ENTRY_CAVERNS.value, AEDoor.FR_CAVERNS_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AEDoor.FR_ENTRY_CAVERNS.value, lambda state: True)
+    connect_regions(self, AEDoor.FR_CAVERNS_WATER.value, AEDoor.FR_WATER_CAVERNS.value, lambda state: True)
+    connect_regions(self, AEDoor.FR_WATER_CAVERNS.value, AEDoor.FR_CAVERNS_WATER.value, lambda state: True)
     # Hot Springs
-    connect_regions(self, AEDoor.L53R1T2.value, AEDoor.L53R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L53R1T3.value, AEDoor.L53R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L53R2T1.value, AEDoor.L53R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L53R3T1.value, AEDoor.L53R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_ENTRY_HOT_SPRING.value, AEDoor.HS_HOT_SPRING.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value, AEDoor.HS_POLAR_BEAR_CAVE.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_HOT_SPRING.value, AEDoor.HS_ENTRY_HOT_SPRING.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value, lambda state: True)
     # Gladiator Attack (level contains no doors)
     # Sushi Temple
-    connect_regions(self, AEDoor.L71R1T2.value, AEDoor.L71R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L71R1T3.value, AEDoor.L71R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L71R2T1.value, AEDoor.L71R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L71R3T1.value, AEDoor.L71R1T3.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_ENTRY_TEMPLE.value, AEDoor.ST_TEMPLE.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_ENTRY_WELL.value, AEDoor.ST_WELL.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_TEMPLE.value, AEDoor.ST_ENTRY_TEMPLE.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_WELL.value, AEDoor.ST_ENTRY_WELL.value, lambda state: True)
     # Wabi Sabi Wall
-    connect_regions(self, AEDoor.L72R1T2.value, AEDoor.L72R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R2T1.value, AEDoor.L72R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R2T3.value, AEDoor.L72R3T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R3T2.value, AEDoor.L72R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R3T4.value, AEDoor.L72R4T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R3T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R4T5.value, AEDoor.L72R5T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L72R5T4.value, AEDoor.L72R4T5.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AEDoor.WSW_GONG_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AEDoor.WSW_ENTRY_GONG.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_GONG_MIDDLE.value, AEDoor.WSW_MIDDLE_GONG.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_MIDDLE_GONG.value, AEDoor.WSW_GONG_MIDDLE.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_MIDDLE_OBSTACLE.value, AEDoor.WSW_OBSTACLE_MIDDLE.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AEDoor.WSW_MIDDLE_OBSTACLE.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_OBSTACLE_BARREL.value, AEDoor.WSW_BARREL_OBSTACLE.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AEDoor.WSW_OBSTACLE_BARREL.value, lambda state: True)
     # Crumbling Castle
-    connect_regions(self, AEDoor.L73R1T2.value, AEDoor.L73R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R1T3.value, AEDoor.L73R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R1T5.value, AEDoor.L73R5T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R1T7.value, AEDoor.L73R7T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R2T3.value, AEDoor.L73R3T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R4T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R3T1.value, AEDoor.L73R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R3T2.value, AEDoor.L73R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R4T2.value, AEDoor.L73R2T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R4T5.value, AEDoor.L73R5T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R5T1.value, AEDoor.L73R1T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R4T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R6T51.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R5T62.value, AEDoor.L73R6T52.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R6T51.value, AEDoor.L73R5T61.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R6T52.value, AEDoor.L73R5T62.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R7T1.value, AEDoor.L73R1T7.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY_CASTLE.value, AEDoor.CC_CASTLEMAIN_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_BELL_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY_BASEMENT.value, AEDoor.CC_BASEMENT_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY_BOSS.value, AEDoor.CC_BOSS_ROOM.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_ENTRY_CASTLE.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_CASTLEMAIN_BELL.value, AEDoor.CC_BELL_CASTLE.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AEDoor.CC_ENTRY_BELL.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BELL_CASTLE.value, AEDoor.CC_CASTLEMAIN_BELL.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ELEVATOR_BASEMENT.value, AEDoor.CC_BASEMENT_ELEVATOR.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BASEMENT_ENTRY.value, AEDoor.CC_ENTRY_BASEMENT.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_ELEVATOR_BASEMENT.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BUTTON_BASEMENT_WATER.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_UP.value, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_WATER.value, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value, AEDoor.CC_BASEMENT_BUTTON_UP.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BOSS_ROOM.value, AEDoor.CC_ENTRY_BOSS.value, lambda state: True)
     # City Park
-    connect_regions(self, AEDoor.L81R1T2.value, AEDoor.L81R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R1T3.value, AEDoor.L81R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R3T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R3T1.value, AEDoor.L81R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R3T2.value, AEDoor.L81R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_ENTRY_SEWERS_FRONT.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_OUTSIDE_BARREL.value, AEDoor.CP_BARREL_OUTSIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AEDoor.CP_ENTRY_SEWERS_FRONT.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AEDoor.CP_BARREL_SEWERS_FRONT.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_BARREL_OUTSIDE.value, AEDoor.CP_OUTSIDE_BARREL.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_BARREL_SEWERS_FRONT.value, AEDoor.CP_SEWERSFRONT_BARREL.value, lambda state: True)
     # Specter's Factory
-    connect_regions(self, AEDoor.L82R1T2.value, AEDoor.L82R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T1.value, AEDoor.L82R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R3T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T41.value, AEDoor.L82R4T21.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R4T22.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T5.value, AEDoor.L82R5T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R3T2.value, AEDoor.L82R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R2T41.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R4T22.value, AEDoor.L82R2T42.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R5T2.value, AEDoor.L82R2T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R5T6.value, AEDoor.L82R6T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R6T5.value, AEDoor.L82R5T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R6T7.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R6T7.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AEDoor.SF_FACTORY_OUTSIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_OUTSIDE.value, AEDoor.SF_OUTSIDE_FACTORY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_RC_CAR_FACTORY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_WHEEL_FACTORY_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_MECH.value, AEDoor.SF_MECH_FACTORY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AEDoor.SF_FACTORY_RC_CAR.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_FACTORY_WHEEL_BOTTOM.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_WHEEL_FACTORY_TOP.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_MECH_FACTORY.value, AEDoor.SF_FACTORY_MECH.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_MECH_LAVA.value, AEDoor.SF_LAVA_MECH.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_LAVA_MECH.value, AEDoor.SF_MECH_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_LAVA_CONVEYOR.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_LAVA_CONVEYOR.value, lambda state: True)
     # Specter's Factory Conveyor Room
-    connect_regions(self, AEDoor.L82R7T71E.value, AEDoor.L82R7T71X.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T72E.value, AEDoor.L82R7T71X.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T73E.value, AEDoor.L82R7T72X.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T74E.value, AEDoor.L82R7T73X.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T75E.value, AEDoor.L82R7T74X.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T76E.value, AEDoor.L82R7T75X.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T77E.value, AEDoor.L82R7T76X.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR1_ENTRY.value, AEDoor.SF_CONVEYOR1_EXIT.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR2_ENTRY.value, AEDoor.SF_CONVEYOR1_EXIT.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR3_ENTRY.value, AEDoor.SF_CONVEYOR2_EXIT.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR4_ENTRY.value, AEDoor.SF_CONVEYOR3_EXIT.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR5_ENTRY.value, AEDoor.SF_CONVEYOR4_EXIT.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR6_ENTRY.value, AEDoor.SF_CONVEYOR5_EXIT.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR7_ENTRY.value, AEDoor.SF_CONVEYOR6_EXIT.value, lambda state: True)
     # TV Tower
-    connect_regions(self, AEDoor.L83R1T2.value, AEDoor.L83R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R2T3.value, AEDoor.L83R3T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R2T4.value, AEDoor.L83R4T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R3T2.value, AEDoor.L83R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R4T2.value, AEDoor.L83R2T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R4T5.value, AEDoor.L83R5T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R4T6.value, AEDoor.L83R6T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R5T4.value, AEDoor.L83R4T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R6T4.value, AEDoor.L83R4T6.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_OUTSIDE_LOBBY.value, AEDoor.TVT_LOBBY_OUTSIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_OUTSIDE_LOBBY.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_LOBBY_WATER.value, AEDoor.TVT_WATER_LOBBY.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_LOBBY_TANK.value, AEDoor.TVT_TANK_LOBBY.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AEDoor.TVT_LOBBY_WATER.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AEDoor.TVT_LOBBY_TANK.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_TANK_FAN.value, AEDoor.TVT_FAN_TANK.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_TANK_BOSS.value, AEDoor.TVT_BOSS_TANK.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_FAN_TANK.value, AEDoor.TVT_TANK_FAN.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AEDoor.TVT_TANK_BOSS.value, lambda state: True)
     # Monkey Madness
-    connect_regions(self, AEDoor.L91R1T2.value, AEDoor.L91R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T3.value, AEDoor.L91R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T4.value, AEDoor.L91R4T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T5.value, AEDoor.L91R5T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T10.value, AEDoor.L91R10T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R2T1.value, AEDoor.L91R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R3T1.value, AEDoor.L91R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R3T6E.value, AEDoor.L91R6T3X.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R4T1.value, AEDoor.L91R1T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R5T1.value, AEDoor.L91R1T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R6T7E.value, AEDoor.L91R7T6X.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R7T8E.value, AEDoor.L91R8T7X.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R8T9.value, AEDoor.L91R9T8.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R9T3E.value, AEDoor.L91R3T9X.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R9T8.value, AEDoor.L91R8T9.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R10T1.value, AEDoor.L91R1T10.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R10T11.value, AEDoor.L91R11T10.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R11T10.value, AEDoor.L91R10T11.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R11T12.value, AEDoor.L91R12T11.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R11T13.value, AEDoor.L91R13T11.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R12T11.value, AEDoor.L91R11T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R11T13.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R13T14.value, AEDoor.L91R14T13.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R13T15.value, AEDoor.L91R15T13.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R13T17E.value, AEDoor.L91R17T13X.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R14T13.value, AEDoor.L91R13T14.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R15T13.value, AEDoor.L91R13T15.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R15T16.value, AEDoor.L91R16T15.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R15T16.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R16T13E.value, AEDoor.L91R13T16X.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_WESTERN.value, AEDoor.MM_WESTERN_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_COASTER.value, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_CIRCUS.value, AEDoor.MM_CIRCUS_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_GO_KARZ.value, AEDoor.MM_GO_KARZ_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_CRATER.value, AEDoor.MM_CRATER_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AEDoor.MM_SL_HUB_WESTERN.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AEDoor.MM_SL_HUB_COASTER.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_COASTER1.value, AEDoor.MM_COASTER1_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CIRCUS_SL_HUB.value, AEDoor.MM_SL_HUB_CIRCUS.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AEDoor.MM_SL_HUB_GO_KARZ.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER1_COASTER2.value, AEDoor.MM_COASTER2_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER2_HAUNTED_HOUSE.value, AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COFFIN_COASTER_ENTRY.value, AEDoor.MM_COASTER_ENTRY_DISEMBARK.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AEDoor.MM_SL_HUB_CRATER.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, AEDoor.MM_SPECTER1_ROOM.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value, lambda state: True)
 
 
 # A transition is defined as navigating between two doors in the same room.
 def set_transitions(self):
     # I'm not sure if these have to be manually connected in both directions? I think they do because connections are asymmetric.
     # Time Station
-    connect_regions(self, AEDoor.TS.value, AEDoor.TSR1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.TS.value, AEDoor.TSR1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.TSR1T2.value, AEDoor.TS.value, lambda state: True)
-    connect_regions(self, AEDoor.TSR1T3.value, AEDoor.TS.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_ENTRY.value, AEDoor.TIME_MAIN_TRAINING.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_ENTRY.value, AEDoor.TIME_MAIN_MINIGAME.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_MINIGAME.value, AEDoor.TIME_ENTRY.value, lambda state: True)
 
     # Fossil Field (level contains a single room)
     # Primordial Ooze (level contains a single room)
     # Molten Lava
-    connect_regions(self, AEDoor.L13.value, AEDoor.L13R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L13.value, AEDoor.L13R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L13R1T2.value, AEDoor.L13.value, lambda state: True)
-    connect_regions(self, AEDoor.L13R1T3.value, AEDoor.L13.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_ENTRY.value, AEDoor.ML_ENTRY_VOLCANO.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_ENTRY.value, AEDoor.ML_ENTRY_TRICERATOPS.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_ENTRY_VOLCANO.value, AEDoor.ML_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.ML_ENTRY_TRICERATOPS.value, AEDoor.ML_ENTRY.value, lambda state: True)
 
     # Thick Jungle
     # Entry Room
-    connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_MUSHROOM.value, lambda state: True)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T3.value, 
+        connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_FISH.value, 
                         lambda state: CanSwim(state, self))
     else:
-        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T3.value, 
+        connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_FISH.value, 
                         lambda state: CanSwim(state, self) or ((IJ(state, self) or HasHoop(state, self)) and HasFlyer(state, self)))
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T5.value, 
+        connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_BOULDER.value, 
                         lambda state: CanSwim(state, self))
     else:
-        connect_regions(self, AEDoor.L21.value, AEDoor.L21R1T5.value, 
+        connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_BOULDER.value, 
                         lambda state: CanSwim(state, self) or HasFlyer(state, self))
-    connect_regions(self, AEDoor.L21R1T2.value, AEDoor.L21.value, lambda state: True)
-    connect_regions(self, AEDoor.L21R1T3.value, AEDoor.L21.value, 
+    connect_regions(self, AEDoor.TJ_ENTRY_MUSHROOM.value, AEDoor.TJ_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_ENTRY_FISH.value, AEDoor.TJ_ENTRY.value, 
                         lambda state: CanDive(state, self))
-    connect_regions(self, AEDoor.L21R1T5.value, AEDoor.L21.value, 
+    connect_regions(self, AEDoor.TJ_ENTRY_BOULDER.value, AEDoor.TJ_ENTRY.value, 
                         lambda state: CanSwim(state, self))
     # Mushroom Room
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R2HELP.value, 
+        connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AEDoor.TJ_MUSHROOMMAIN.value, 
                         lambda state: HasFlyer(state, self) and CanHitWheel(state, self))
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R2HELP.value, 
+        connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AEDoor.TJ_MUSHROOMMAIN.value, 
                         lambda state: (IJ(state, self) or HasHoop(state, self) or (HasFlyer(state, self) and CanHitWheel(state, self))))
     else:
-        connect_regions(self, AEDoor.L21R2T1.value, AEDoor.L21R2HELP.value, 
+        connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AEDoor.TJ_MUSHROOMMAIN.value, 
                         lambda state: IJ(state, self) or HasHoop(state, self) or HasFlyer(state, self))
-    # Fish Room   TODO: FILL OUT THE ACTUAL LOGIC BELOW THIS POINT (can copy/paste + find/replace)
+    # Fish Room
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L21R3T1.value, AEDoor.L21R3HELP.value, 
+        connect_regions(self, AEDoor.TJ_FISH_ENTRY.value, AEDoor.TJ_FISHBOAT.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L21R3T1.value, AEDoor.L21R3HELP.value, 
+        connect_regions(self, AEDoor.TJ_FISH_ENTRY.value, AEDoor.TJ_FISHBOAT.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L21R3T4.value, AEDoor.L21R3HELP.value, 
+        connect_regions(self, AEDoor.TJ_FISH_TENT.value, AEDoor.TJ_FISHBOAT.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L21R3T4.value, AEDoor.L21R3HELP.value, 
+        connect_regions(self, AEDoor.TJ_FISH_TENT.value, AEDoor.TJ_FISHBOAT.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T1.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_FISHBOAT.value, AEDoor.TJ_FISH_ENTRY.value, lambda state: True)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T4.value, 
+        connect_regions(self, AEDoor.TJ_FISHBOAT.value, AEDoor.TJ_FISH_TENT.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L21R3HELP.value, AEDoor.L21R3T4.value, 
+        connect_regions(self, AEDoor.TJ_FISHBOAT.value, AEDoor.TJ_FISH_TENT.value, 
                         lambda state: TODO)
     # Tent/Vine Room
-    connect_regions(self, AEDoor.L21R4T3.value, AEDoor.L21R4T5.value, lambda state: True)
+    connect_regions(self, AEDoor.TJ_TENT_FISH.value, AEDoor.TJ_TENT_BOULDER.value, lambda state: True)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R4T3.value, 
+        connect_regions(self, AEDoor.TJ_TENT_BOULDER.value, AEDoor.TJ_TENT_FISH.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R4T3.value, 
+        connect_regions(self, AEDoor.TJ_TENT_BOULDER.value, AEDoor.TJ_TENT_FISH.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L21R4T5.value, AEDoor.L21R4T3.value, 
+        connect_regions(self, AEDoor.TJ_TENT_BOULDER.value, AEDoor.TJ_TENT_FISH.value, 
                         lambda state: TODO)
     # Boulder Room
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R5T4.value, 
+        connect_regions(self, AEDoor.TJ_BOULDER_ENTRY.value, AEDoor.TJ_BOULDER_TENT.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R5T4.value, 
+        connect_regions(self, AEDoor.TJ_BOULDER_ENTRY.value, AEDoor.TJ_BOULDER_TENT.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L21R5T1.value, AEDoor.L21R5T4.value, 
+        connect_regions(self, AEDoor.TJ_BOULDER_ENTRY.value, AEDoor.TJ_BOULDER_TENT.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L21R5T4.value, AEDoor.L21R5T1.value, 
+        connect_regions(self, AEDoor.TJ_BOULDER_TENT.value, AEDoor.TJ_BOULDER_ENTRY.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L21R5T4.value, AEDoor.L21R5T1.value, 
+        connect_regions(self, AEDoor.TJ_BOULDER_TENT.value, AEDoor.TJ_BOULDER_ENTRY.value, 
                         lambda state: TODO)
 
     # Dark Ruins
     # Outside
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T21.value, 
+        connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_FENCE.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T21.value, 
+        connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_FENCE.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T21.value, 
+        connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_FENCE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T22.value, 
+    connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_HOLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T31.value, lambda state: True)
-    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T32.value, 
+    connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, 
                         lambda state: TODO)
     self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block") # Event Item
-    connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T41.value, 
+    connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_WATER_BUTTON.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T42.value, 
+        connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L22.value, AEDoor.L22R1T42.value, 
+        connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L22R1T21.value, AEDoor.L22.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T22.value, AEDoor.L22.value, 
-                        lambda state: state.has("DR-Block", world.player, 1))
-    connect_regions(self, AEDoor.L22R1T31.value, AEDoor.L22.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T32.value, AEDoor.L22.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T41.value, AEDoor.L22.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R1T42.value, AEDoor.L22.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_FENCE.value, AEDoor.DR_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_HOLE.value, AEDoor.DR_ENTRY.value, 
+                        lambda state: state.has("DR-Block", self.player, 1))
+    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value, AEDoor.DR_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, AEDoor.DR_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_WATER_BUTTON.value, AEDoor.DR_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, AEDoor.DR_ENTRY.value, lambda state: True)
     # Fan Basement
-    connect_regions(self, AEDoor.L22R2T11.value, AEDoor.L22R2T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R2T12.value, AEDoor.L22R2T11.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_FAN_OUTSIDE_FENCE.value, AEDoor.DR_FAN_OUTSIDE_HOLE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_FAN_OUTSIDE_HOLE.value, AEDoor.DR_FAN_OUTSIDE_FENCE.value, lambda state: True)
     # Obelisk
-    connect_regions(self, AEDoor.L22R3T11.value, AEDoor.L22R3T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R3T12.value, AEDoor.L22R3T11.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AEDoor.DR_OBELISK_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_OBELISK_TOP.value, AEDoor.DR_OBELISK_BOTTOM.value, lambda state: True)
     # Water Basement
-    connect_regions(self, AEDoor.L22R4T11.value, AEDoor.L22R4T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L22R4T12.value, AEDoor.L22R4T11.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_WATER_SIDE.value, AEDoor.DR_WATER_LEDGE.value, lambda state: True)
+    connect_regions(self, AEDoor.DR_WATER_LEDGE.value, AEDoor.DR_WATER_SIDE.value, lambda state: True)
 
     # Cryptic Relics
     # Entry Area
-    connect_regions(self, AEDoor.L23.value, AEDoor.L23R1HELP.value, 
+    connect_regions(self, AEDoor.CR_ENTRY.value, AEDoor.CR_CR_ENTRYOBA.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L23R1T2.value, AEDoor.L23R1HELP.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R1T3.value, AEDoor.L23R1HELP.value, lambda state: True)
-    connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23R1T2.value, 
+    connect_regions(self, AEDoor.CR_ENTRY_SIDE_ROOM.value, AEDoor.CR_CR_ENTRYOBA.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_ENTRY_MAIN_RUINS.value, AEDoor.CR_CR_ENTRYOBA.value, lambda state: True)
+    connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY_SIDE_ROOM.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23R1T3.value, 
+    connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY_MAIN_RUINS.value, 
                         lambda state: TODO)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23.value, 
+        connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L23R1HELP.value, AEDoor.L23.value, 
+        connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY.value, 
                         lambda state: TODO)
     # Relics
-    connect_regions(self, AEDoor.L23R3T1.value, AEDoor.L23R3T4.value, 
+    connect_regions(self, AEDoor.CR_MAIN_RUINS_ENTRY.value, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L23R3T4.value, AEDoor.L23R3T1.value, 
+    connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AEDoor.CR_MAIN_RUINS_ENTRY.value, 
                         lambda state: TODO)
 
     # Stadium Attack (level contains a single room)
     # Crabby Beach
-    connect_regions(self, AEDoor.L41.value, AEDoor.L41R1T2.value, 
+    connect_regions(self, AEDoor.CB_ENTRY.value, AEDoor.CB_ENTRY_SECOND_ROOM.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L41R1T2.value, AEDoor.L41.value, lambda state: True)
+    connect_regions(self, AEDoor.CB_ENTRY_SECOND_ROOM.value, AEDoor.CB_ENTRY.value, lambda state: True)
 
     # Coral Cave
-    connect_regions(self, AEDoor.L42.value, AEDoor.L42R1T2.value, 
+    connect_regions(self, AEDoor.CCAVE_ENTRY.value, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L42R1T2.value, AEDoor.L42.value, 
+    connect_regions(self, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, AEDoor.CCAVE_ENTRY.value, 
                         lambda state: TODO)
 
     # Dexter's Island
     # Outside
-    connect_regions(self, AEDoor.L43.value, AEDoor.L43R1T2.value, 
+    connect_regions(self, AEDoor.DI_ENTRY.value, AEDoor.DI_ENTRY_STOMACH.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L43R1T2.value, AEDoor.L43.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_ENTRY_STOMACH.value, AEDoor.DI_ENTRY.value, lambda state: True)
     # Stomach
-    connect_regions(self, AEDoor.L43R2T1.value, AEDoor.L43R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R2T3.value, AEDoor.L43R2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_STOMACH_ENTRY.value, AEDoor.DI_STOMACH_SLIDE_ROOM.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_STOMACH_SLIDE_ROOM.value, AEDoor.DI_STOMACH_ENTRY.value, lambda state: True)
     # Slide
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T42.value, 
+        connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T42.value, 
+        connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T42.value, 
+        connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, 
                         lambda state: TODO)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T41.value, 
+        connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L43R3T1.value, AEDoor.L43R3T41.value, 
+        connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY.value, 
                         lambda state: TODO)
     if self.options.logic == "expert":
-        connect_regions(self, AEDoor.L43R3T42.value, AEDoor.L43R3T1.value, 
+        connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AEDoor.DI_SLIDE_ROOM_STOMACH.value, 
                         lambda state: IJ(state, self))
-    connect_regions(self, AEDoor.L43R3T41.value, AEDoor.L43R3T1.value, 
+    connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY.value, AEDoor.DI_SLIDE_ROOM_STOMACH.value, 
                         lambda state: TODO)
     self.__add_event_location(self.L43R3T41, "Dexter's Island - Button Reached", "DI-Button") # Event Item
     # Gallery
-    connect_regions(self, AEDoor.L43R4T32.value, AEDoor.L43R4T31.value, 
+    connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R4T32.value, 
+    connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R4HELP.value, 
+        connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, AEDoor.DI_GALLERYBOULDER.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L43R4T31.value, AEDoor.L43R4HELP.value, 
+        connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, AEDoor.DI_GALLERYBOULDER.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L43R4HELP.value, AEDoor.L43R4T31.value, lambda state: True)
-    connect_regions(self, AEDoor.L43R4HELP.value, AEDoor.L43R4T5.value, 
+    connect_regions(self, AEDoor.DI_GALLERYBOULDER.value, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, lambda state: True)
+    connect_regions(self, AEDoor.DI_GALLERYBOULDER.value, AEDoor.DI_GALLERY_TENTACLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L43R4T5.value, AEDoor.L43R4HELP.value, 
+    connect_regions(self, AEDoor.DI_GALLERY_TENTACLE.value, AEDoor.DI_GALLERYBOULDER.value, 
                         lambda state: TODO)
 
     # Snowy Mammoth (level contains a single room)
     # Frosty Retreat
     # Outside
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L52.value, AEDoor.L52R1T2.value, 
+        connect_regions(self, AEDoor.FR_ENTRY.value, AEDoor.FR_ENTRY_CAVERNS.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L52.value, AEDoor.L52R1T2.value, 
+        connect_regions(self, AEDoor.FR_ENTRY.value, AEDoor.FR_ENTRY_CAVERNS.value, 
                         lambda state: TODO)
     # Caverns
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L52R2T1.value, AEDoor.L52R2T3.value, 
+        connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AEDoor.FR_CAVERNS_WATER.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L52R2T1.value, AEDoor.L52R2T3.value, 
+        connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AEDoor.FR_CAVERNS_WATER.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L52R2T3.value, AEDoor.L52R2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.FR_CAVERNS_WATER.value, AEDoor.FR_CAVERNS_ENTRY.value, lambda state: True)
 
     # Hot Springs
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L53.value, AEDoor.L53R1T2.value, 
+        connect_regions(self, AEDoor.HS_ENTRY.value, AEDoor.HS_ENTRY_HOT_SPRING.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L53.value, AEDoor.L53R1T2.value, 
+        connect_regions(self, AEDoor.HS_ENTRY.value, AEDoor.HS_ENTRY_HOT_SPRING.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L53.value, AEDoor.L53R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L53R1T2.value, AEDoor.L53.value, lambda state: True)
-    connect_regions(self, AEDoor.L53R1T3.value, AEDoor.L53.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_ENTRY.value, AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_ENTRY_HOT_SPRING.value, AEDoor.HS_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value, AEDoor.HS_ENTRY.value, lambda state: True)
 
     # Gladiator Attack (level contains a single room)
     # Sushi Temple
-    connect_regions(self, AEDoor.L71.value, AEDoor.L71R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L71.value, AEDoor.L71R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L71R1T2.value, AEDoor.L71.value, lambda state: True)
-    connect_regions(self, AEDoor.L71R1T3.value, AEDoor.L71.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_ENTRY.value, AEDoor.ST_ENTRY_TEMPLE.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_ENTRY.value, AEDoor.ST_ENTRY_WELL.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_ENTRY_TEMPLE.value, AEDoor.ST_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.ST_ENTRY_WELL.value, AEDoor.ST_ENTRY.value, lambda state: True)
 
     # Wabi Sabi Wall
     # Entry
-    connect_regions(self, AEDoor.L72.value, AEDoor.L72R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_ENTRY.value, AEDoor.WSW_ENTRY_GONG.value, lambda state: True)
     # Gong Room
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L72R2T1.value, AEDoor.L72R2T3.value, 
+        connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AEDoor.WSW_GONG_MIDDLE.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L72R2T1.value, AEDoor.L72R2T3.value, 
+        connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AEDoor.WSW_GONG_MIDDLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L72R2T3.value, AEDoor.L72R2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_GONG_MIDDLE.value, AEDoor.WSW_GONG_ENTRY.value, lambda state: True)
     # Middle
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L72R3T2.value, AEDoor.L72R3T4.value, 
+        connect_regions(self, AEDoor.WSW_MIDDLE_GONG.value, AEDoor.WSW_MIDDLE_OBSTACLE.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L72R3T2.value, AEDoor.L72R3T4.value, 
+        connect_regions(self, AEDoor.WSW_MIDDLE_GONG.value, AEDoor.WSW_MIDDLE_OBSTACLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L72R3T4.value, AEDoor.L72R3T2.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_MIDDLE_OBSTACLE.value, AEDoor.WSW_MIDDLE_GONG.value, lambda state: True)
     # Obstacle Course
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R4T5.value, 
+        connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AEDoor.WSW_OBSTACLE_BARREL.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R4T5.value, 
+        connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AEDoor.WSW_OBSTACLE_BARREL.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L72R4T3.value, AEDoor.L72R4T5.value, 
+        connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AEDoor.WSW_OBSTACLE_BARREL.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L72R4T5.value, AEDoor.L72R4T3.value, lambda state: True)
+    connect_regions(self, AEDoor.WSW_OBSTACLE_BARREL.value, AEDoor.WSW_OBSTACLE_MIDDLE.value, lambda state: True)
 
     # Crumbling Castle
     # Outside
-    connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY.value, AEDoor.CC_ENTRY_CASTLE.value, lambda state: True)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T5.value, 
+        connect_regions(self, AEDoor.CC_ENTRY.value, AEDoor.CC_ENTRY_BASEMENT.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T5.value, 
+        connect_regions(self, AEDoor.CC_ENTRY.value, AEDoor.CC_ENTRY_BASEMENT.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L73.value, AEDoor.L73R1T3.value, 
+    connect_regions(self, AEDoor.CC_ENTRY.value, AEDoor.CC_ENTRY_BELL.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L73R1T2.value, AEDoor.L73.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R1T5.value, AEDoor.L73.value, 
+    connect_regions(self, AEDoor.CC_ENTRY_CASTLE.value, AEDoor.CC_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY_BASEMENT.value, AEDoor.CC_ENTRY.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L73R1T3.value, AEDoor.L73.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_ENTRY.value, lambda state: True)
     # Boss Door - must be able to reach and hit the button in another room.
-    connect_regions(self, AEDoor.L73R1T3.value, AEDoor.L73R1T7.value, 
-                        lambda state: state.has("CC-Button", world.player, 1) and CanHitOnce(state, self)) 
+    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_ENTRY_BOSS.value, 
+                        lambda state: state.has("CC-Button", self.player, 1) and CanHitOnce(state, self)) 
     # Castle
-    connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R2T3.value, AEDoor.L73R2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAIN_BELL.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_CASTLEMAIN_BELL.value, AEDoor.CC_CASTLEMAIN_ENTRY.value, lambda state: True)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2T4.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2T4.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2T1.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_CASTLEMAIN_ENTRY.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2T1.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_CASTLEMAIN_ENTRY.value, 
                         lambda state: TODO)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2HELP.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAINTHRONEROOM.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R2T1.value, AEDoor.L73R2HELP.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAINTHRONEROOM.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2HELP.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_CASTLEMAINTHRONEROOM.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R2T4.value, AEDoor.L73R2HELP.value, 
+        connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_CASTLEMAINTHRONEROOM.value, 
                         lambda state: TODO)
     # Bell Tower
-    connect_regions(self, AEDoor.L73R3T2.value, AEDoor.L73R3T1.value, 
+    connect_regions(self, AEDoor.CC_BELL_CASTLE.value, AEDoor.CC_BELL_ENTRY.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L73R3T1.value, AEDoor.L73R3T2.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AEDoor.CC_BELL_CASTLE.value, lambda state: True)
     # Elevator Room
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R4T2.value, AEDoor.L73R4T5.value, 
+        connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AEDoor.CC_ELEVATOR_BASEMENT.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R4T2.value, AEDoor.L73R4T5.value, 
+        connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AEDoor.CC_ELEVATOR_BASEMENT.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L73R4T5.value, AEDoor.L73R4T2.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_ELEVATOR_BASEMENT.value, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, lambda state: True)
     # Waterway
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R5T1.value, AEDoor.L73R5T4.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ENTRY.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R5T1.value, AEDoor.L73R5T4.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ENTRY.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R5T4.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R5T4.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R5T61.value, AEDoor.L73R5T4.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L73R5T62.value, AEDoor.L73R5T4.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_UP.value, AEDoor.CC_BASEMENT_ELEVATOR.value, lambda state: True)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T1.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_ENTRY.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T1.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_ENTRY.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T1.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_ENTRY.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T61.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T61.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T62.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_BUTTON_UP.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L73R5T4.value, AEDoor.L73R5T62.value, 
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_BASEMENT_BUTTON_UP.value, 
                         lambda state: TODO)
     # Button Room
-    connect_regions(self, AEDoor.L73R6T51.value, AEDoor.L73R6T52.value, lambda state: True)
-    connect_regions(self, AEDoor.L73R6T52.value, AEDoor.L73R6T51.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_WATER.value, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value, lambda state: True)
+    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value, AEDoor.CC_BUTTON_BASEMENT_WATER.value, lambda state: True)
     self.__add_event_location(self.L73R6T51, "Crumbling Castle - Button Reached", "CC-Button") # Event Item
     
     # City Park
     # Outside
-    connect_regions(self, AEDoor.L81.value, AEDoor.L81R1T2.value, 
+    connect_regions(self, AEDoor.CP_ENTRY.value, AEDoor.CP_ENTRY_SEWERS_FRONT.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L81.value, AEDoor.L81R1T3.value, 
+        connect_regions(self, AEDoor.CP_ENTRY.value, AEDoor.CP_OUTSIDE_BARREL.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L81.value, AEDoor.L81R1T3.value, 
+        connect_regions(self, AEDoor.CP_ENTRY.value, AEDoor.CP_OUTSIDE_BARREL.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L81R1T2.value, AEDoor.L81.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R1T3.value, AEDoor.L81.value, 
+    connect_regions(self, AEDoor.CP_ENTRY_SEWERS_FRONT.value, AEDoor.CP_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_OUTSIDE_BARREL.value, AEDoor.CP_ENTRY.value, 
                         lambda state: TODO)
     # Front Sewer
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R2T3.value, 
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AEDoor.CP_SEWERSFRONT_BARREL.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R2T3.value, 
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AEDoor.CP_SEWERSFRONT_BARREL.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L81R2T1.value, AEDoor.L81R2T3.value, 
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AEDoor.CP_SEWERSFRONT_BARREL.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R2T1.value, 
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R2T1.value, 
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L81R2T3.value, AEDoor.L81R2T1.value, 
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, 
                         lambda state: TODO)
     # Back Sewer
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L81R3T1.value, AEDoor.L81R3HELP.value, 
+        connect_regions(self, AEDoor.CP_BARREL_OUTSIDE.value, AEDoor.CP_BARRELSEWERMIDDLE.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L81R3T1.value, AEDoor.L81R3HELP.value, 
+        connect_regions(self, AEDoor.CP_BARREL_OUTSIDE.value, AEDoor.CP_BARRELSEWERMIDDLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L81R3T2.value, AEDoor.L81R3HELP.value, 
+    connect_regions(self, AEDoor.CP_BARREL_SEWERS_FRONT.value, AEDoor.CP_BARRELSEWERMIDDLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L81R3HELP.value, AEDoor.L81R3T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L81R3HELP.value, AEDoor.L81R3T2.value, 
+    connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AEDoor.CP_BARREL_OUTSIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AEDoor.CP_BARREL_SEWERS_FRONT.value, 
                         lambda state: TODO)
 
     # Specter's Factory
     # Outside
-    connect_regions(self, AEDoor.L82.value, AEDoor.L82R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R1T2.value, AEDoor.L82.value, 
+    connect_regions(self, AEDoor.SF_ENTRY.value, AEDoor.SF_OUTSIDE_FACTORY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AEDoor.SF_ENTRY.value, 
                         lambda state: TODO)
     # Main Factory
-    connect_regions(self, AEDoor.L82R2T1.value, AEDoor.L82R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T41.value, AEDoor.L82R2T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T1.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T41.value, 
+    connect_regions(self, AEDoor.SF_FACTORY_OUTSIDE.value, AEDoor.SF_FACTORY_RC_CAR.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_BOTTOM.value, AEDoor.SF_FACTORY_RC_CAR.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_OUTSIDE.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_WHEEL_BOTTOM.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T42.value, 
+        connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T42.value, 
+        connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L82R2T3.value, AEDoor.L82R2T42.value, 
+        connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T3.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_FACTORY_RC_CAR.value, lambda state: True)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T5.value, 
+        connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_FACTORY_MECH.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T5.value, 
+        connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_FACTORY_MECH.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L82R2T42.value, AEDoor.L82R2T5.value, 
+        connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_FACTORY_MECH.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L82R2T5.value, AEDoor.L82R2T42.value, 
+    connect_regions(self, AEDoor.SF_FACTORY_MECH.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
                         lambda state: TODO)
     # Triple Wheel
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R4T22.value, 
+        connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_TOP.value, 
                         lambda state: TODO)
     elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R4T22.value, 
+        connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_TOP.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L82R4T21.value, AEDoor.L82R4T22.value, 
+        connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_TOP.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L82R4T22.value, AEDoor.L82R4T21.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_WHEEL_FACTORY_TOP.value, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, lambda state: True)
     # Mech Room
-    connect_regions(self, AEDoor.L82R5T2.value, AEDoor.L82R5T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R5T6.value, AEDoor.L82R5T2.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_MECH_FACTORY.value, AEDoor.SF_MECH_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_MECH_LAVA.value, AEDoor.SF_MECH_FACTORY.value, lambda state: True)
     # Lava Room
     if self.options.logic == "normal" or self.options.logic == "expert":
-        connect_regions(self, AEDoor.L82R6T5.value, AEDoor.L82R6T7.value, 
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AEDoor.SF_LAVA_CONVEYOR.value, 
                         lambda state: TODO)
     else: # This is correct as CanHitWheel includes Flyer only on expert, making hard the unique.
-        connect_regions(self, AEDoor.L82R6T5.value, AEDoor.L82R6T7.value, 
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AEDoor.SF_LAVA_CONVEYOR.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L82R6T7.value, AEDoor.L82R6T5.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_LAVA_CONVEYOR.value, AEDoor.SF_LAVA_MECH.value, lambda state: True)
     # Conveyor Room (at least it's all True...)
-    connect_regions(self, AEDoor.L82R7T71X.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T72X.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T73X.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T74X.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T75X.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T76X.value, AEDoor.L82R7T6.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T71E.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T72E.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T73E.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T74E.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T75E.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T76E.value, lambda state: True)
-    connect_regions(self, AEDoor.L82R7T6.value, AEDoor.L82R7T77E.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR1_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR2_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR3_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR4_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR5_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR6_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR1_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR2_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR3_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR4_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR5_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR6_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_CONVEYOR7_ENTRY.value, lambda state: True)
 
     # TV Tower
     # Outside
-    connect_regions(self, AEDoor.L83.value, AEDoor.L83R1T2.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_ENTRY.value, AEDoor.TVT_OUTSIDE_LOBBY.value, lambda state: True)
     # Lobby
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R2T3.value, 
+        connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R2T3.value, 
+        connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L83R2T1.value, AEDoor.L83R2T4.value, 
+    connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_TANK.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L83R2T3.value, AEDoor.L83R2T1.value, 
+    connect_regions(self, AEDoor.TVT_LOBBY_WATER.value, AEDoor.TVT_LOBBY_OUTSIDE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L83R2T4.value, AEDoor.L83R2T1.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_LOBBY_TANK.value, AEDoor.TVT_LOBBY_OUTSIDE.value, lambda state: True)
     # Tank Room
-    connect_regions(self, AEDoor.L83R4T2.value, AEDoor.L83R4T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L83R4T2.value, AEDoor.L83R4T6.value, 
+    connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AEDoor.TVT_TANK_FAN.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AEDoor.TVT_TANK_BOSS.value, 
                         lambda state: TODO)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L83R4T5.value, AEDoor.L83R4T2.value, 
+        connect_regions(self, AEDoor.TVT_TANK_FAN.value, AEDoor.TVT_TANK_LOBBY.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L83R4T5.value, AEDoor.L83R4T2.value, 
+        connect_regions(self, AEDoor.TVT_TANK_FAN.value, AEDoor.TVT_TANK_LOBBY.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L83R4T6.value, AEDoor.L83R4T2.value, lambda state: True)
+    connect_regions(self, AEDoor.TVT_TANK_BOSS.value, AEDoor.TVT_TANK_LOBBY.value, lambda state: True)
 
     # Monkey Madness
     # Specter Land
-    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T2.value, lambda state: True)
-    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T3.value, lambda state: True)
-    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T4.value, lambda state: True)
-    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T5.value, lambda state: True)
-    connect_regions(self, AEDoor.L91.value, AEDoor.L91R1T10.value, 
+    connect_regions(self, AEDoor.MM_SL_HUB.value, AEDoor.MM_SL_HUB_WESTERN.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB.value, AEDoor.MM_SL_HUB_COASTER.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB.value, AEDoor.MM_SL_HUB_CIRCUS.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB.value, AEDoor.MM_SL_HUB_GO_KARZ.value, lambda state: True) # This is not a mistake because the apworld pre-opens the Jake arena as part of handling the Lobby door.
+    connect_regions(self, AEDoor.MM_SL_HUB.value, AEDoor.MM_SL_HUB_CRATER.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L91R1T2.value, AEDoor.L91.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T3.value, AEDoor.L91.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T4.value, AEDoor.L91.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T5.value, AEDoor.L91.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R1T10.value, AEDoor.L91.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_WESTERN.value, AEDoor.MM_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_COASTER.value, AEDoor.MM_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_CIRCUS.value, AEDoor.MM_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_GO_KARZ.value, AEDoor.MM_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_SL_HUB_CRATER.value, AEDoor.MM_SL_HUB.value, lambda state: True)
     # Coaster (several one-way connections here)
-    connect_regions(self, AEDoor.L91R3T1.value, AEDoor.L91R3T6E.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R6T3X.value, AEDoor.L91R6T7E.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R7T6X.value, AEDoor.L91R7T8E.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AEDoor.MM_COASTER_ENTRY_COASTER1.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AEDoor.MM_COASTER1_COASTER2.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER2_ENTRY.value, AEDoor.MM_COASTER2_HAUNTED_HOUSE.value, lambda state: True)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L91R8T7X.value, AEDoor.L91R8T9.value, 
+        connect_regions(self, AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value, AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L91R8T7X.value, AEDoor.L91R8T9.value, 
+        connect_regions(self, AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value, AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L91R9T8.value, AEDoor.L91R9T3E.value, 
+    connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AEDoor.MM_COFFIN_COASTER_ENTRY.value, 
                         lambda state: HasNet(state, self))
-    connect_regions(self, AEDoor.L91R3T9X.value, AEDoor.L91R3T1.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_DISEMBARK.value, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, lambda state: True)
     # Crater
-    connect_regions(self, AEDoor.L91R10T1.value, AEDoor.L91R10T11.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, lambda state: True)
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.L91R10T11.value, AEDoor.L91R10T1.value, 
+        connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AEDoor.MM_CRATER_SL_HUB.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L91R10T11.value, AEDoor.L91R10T1.value, 
+        connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AEDoor.MM_CRATER_SL_HUB.value, 
                         lambda state: TODO)
     # Castle Outside
-    connect_regions(self, AEDoor.L91R11T10.value, AEDoor.L91R11T12.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R11T10.value, AEDoor.L91R11T13.value, 
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, 
                         lambda state: MM_Lamp(state, self))
-    connect_regions(self, AEDoor.L91R11T12.value, AEDoor.L91R11T10.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R11T13.value, AEDoor.L91R11T10.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, lambda state: True)
     self.__add_event_location(self.L91R12T11, "Monkey Madness - Spawn UFOs", "MM-UFOs") # Event Item
     # Castle Foyer
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T14.value, 
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T14.value, 
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, 
                         lambda state: TODO)
     if self.options.logic == "normal": # This will reference MM-Painting
-        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T17E.value, 
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L91R13T11.value, AEDoor.L91R13T17E.value, 
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L91R13T14.value, AEDoor.L91R13T11.value, 
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L91R13T14.value, AEDoor.L91R13T15.value, # This will reference MM-Button
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, # This will reference MM-Button
                         lambda state: TODO)
-    connect_regions(self, AEDoor.L91R13T15.value, AEDoor.L91R13T14.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R13T16X.value, AEDoor.L91R13T11.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, lambda state: True)
     # Monkey Head + Inside Climb + Outside Climb
-    connect_regions(self, AEDoor.L91R15T13.value, AEDoor.L91R15T16.value, lambda state: True)
-    connect_regions(self, AEDoor.L91R15T16.value, AEDoor.L91R15T13.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, lambda state: True)
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R16T13E.value, 
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, 
                         lambda state: TODO)
     else:
-        connect_regions(self, AEDoor.L91R16T15.value, AEDoor.L91R16T13E.value, 
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, 
                         lambda state: TODO)
-	self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button") # Event Item
+    self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button") # Event Item
     self.__add_event_location(self.L91R16T13E, "Monkey Madness - Specter 1 Open", "MM-Painting") # Event Item
 
 
@@ -843,32 +843,32 @@ def set_transitions(self):
 def set_locations(self):
     # Time Station
     if self.options.mailbox == "true" or (self.options.shufflenet == "true" and self.options.coin == "true"):
-        connect_regions(self, AEDoor.TS.value, AELocation.Mailbox60.value, lambda state: True)
-        connect_regions(self, AEDoor.TS.value, AELocation.Mailbox61.value, lambda state: True)
-        connect_regions(self, AEDoor.TSR3T1.value, AELocation.Mailbox62.value, lambda state: True)
-        connect_regions(self, AEDoor.TSR2T1.value, AELocation.Mailbox63.value, lambda state: True)
+        connect_regions(self, AEDoor.TIME_ENTRY.value, AELocation.Mailbox60.value, lambda state: True)
+        connect_regions(self, AEDoor.TIME_ENTRY.value, AELocation.Mailbox61.value, lambda state: True)
+        connect_regions(self, AEDoor.TIME_MINIGAME_MAIN.value, AELocation.Mailbox62.value, lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AELocation.Mailbox63.value, lambda state: True)
 
     # Fossil Field
-    connect_regions(self, AEDoor.L11.value, AELocation.W1L1Noonan.value, lambda state: HasNet(state, self))
-    connect_regions(self, AEDoor.L11.value, AELocation.W1L1Jorjy.value, lambda state: HasNet(state, self))
-    connect_regions(self, AEDoor.L11.value, AELocation.W1L1Nati.value, lambda state: HasNet(state, self))
+    connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1Noonan.value, lambda state: HasNet(state, self))
+    connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1Jorjy.value, lambda state: HasNet(state, self))
+    connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1Nati.value, lambda state: HasNet(state, self))
     if self.options.logic == "normal":
-       connect_regions(self, AEDoor.L11.value, AELocation.W1L1TrayC.value,
+       connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1TrayC.value,
                         lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
-       connect_regions(self, AEDoor.L11.value, AELocation.W1L1TrayC.value,
+       connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1TrayC.value,
                         lambda state: HasNet(state, self))
 
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.L11.value, AELocation.Coin1.value,
+        connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.Coin1.value,
                         lambda state: True)
     
     if self.options.mailbox == "true":
-        connect_regions(self, AEDoor.L11.value, AELocation.Mailbox1.value,
+        connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.Mailbox1.value,
                         lambda state: True)
-        connect_regions(self, AEDoor.L11.value, AELocation.Mailbox2.value,
+        connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.Mailbox2.value,
                         lambda state: True)
-        connect_regions(self, AEDoor.L11.value, AELocation.Mailbox3.value,
+        connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.Mailbox3.value,
                         lambda state: CanHitOnce(state, self))
     
     # Primordial Ooze
@@ -931,10 +931,6 @@ def HasPunch(state, world):
     return state.has(AEItem.Punch.value, world.player, 1)
 
 
-def HasWaterNet(state, world):
-    return CanWaterCatch(state, world)
-
-
 def CanSwim(state, world):
     return (state.has(AEItem.WaterNet.value, world.player, 1) or state.has(AEItem.ProgWaterNet.value, world.player, 1))
 
@@ -944,7 +940,7 @@ def CanDive(state, world):
 
 
 # Logic Helper Functions
-def CanWaterCatch(state, world):
+def HasWaterNet(state, world): # CanSwim + CanWaterCatch together
     return (state.has(AEItem.WaterNet.value, world.player, 1) or (state.has(AEItem.WaterCatch.value, world.player, 1) and state.has(AEItem.ProgWaterNet.value, world.player, 1)))
 
 
