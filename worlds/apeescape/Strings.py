@@ -488,6 +488,7 @@ class AEDoor(Enum):
     CR_PILLAR_ROOM_MAIN_RUINS = "Cryptic Relics: Pillar Room - Main Ruins"
     CR_ENTRYOBA = "Cryptic Relics: Entry - Outside Button Area" # Helper Region
     SA_ENTRY = "Stadium Attack: Entry"
+    SA_COMPLETE = "Stadium Attack: Complete"
     CB_ENTRY = "Crabby Beach: Entry"
     CB_ENTRY_SECOND_ROOM = "Crabby Beach: Entry - Second Room"
     CB_SECOND_ROOM_ENTRY = "Crabby Beach: Second Room - Entry"
@@ -518,6 +519,7 @@ class AEDoor(Enum):
     HS_HOT_SPRING = "Hot Springs: Hot Springs - Entry"
     HS_POLAR_BEAR_CAVE = "Hot Springs: Polar Bear Cave - Entry"
     GA_ENTRY = "Gladiator Attack: Entry"
+    GA_COMPLETE = "Gladiator Attack: Complete"
     ST_ENTRY = "Sushi Temple: Entry"
     ST_ENTRY_TEMPLE = "Sushi Temple: Entry - Temple"
     ST_ENTRY_WELL = "Sushi Temple: Entry - Well"
@@ -553,7 +555,7 @@ class AEDoor(Enum):
     CC_BOSS_ROOM = "Crumbling Castle: Boss - Outside"
     CC_CASTLEMAINTHRONEROOM = "Crumbling Castle: Castle Main - Throne Room" # Helper Region
     CP_ENTRY = "City Park: Entry"
-    CP_ENTRY_SEWERS_FRONT = "City Park: Outside - Sewers Front"
+    CP_OUTSIDE_SEWERS_FRONT = "City Park: Outside - Sewers Front"
     CP_OUTSIDE_BARREL = "City Park: Outside - Barrel Room"
     CP_SEWERSFRONT_OUTSIDE = "City Park: Sewers Front - Outside"
     CP_SEWERSFRONT_BARREL = "City Park: Sewers Front - Barrel Room"
@@ -637,6 +639,7 @@ class AEDoor(Enum):
     MM_OUTSIDE_CLIMB_CASTLE_MAIN = "Monkey Madness: Outside Climb - Castle Main"
     MM_SPECTER1_ROOM = "Monkey Madness: Specter 1 Room"
     PPM_ENTRY = "Peak Point Matrix: Entry"
+    PPM_SPECTER2 = "Peak Point Matrix: Specter 2"
 
 class AEItem(Enum):
     Club = "Stun Club"

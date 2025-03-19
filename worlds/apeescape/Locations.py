@@ -500,7 +500,7 @@ doorTransitions = {
     AEDoor.CC_BELL_CASTLE.value: {51, 0},
     AEDoor.CC_BELL_ENTRY.value: {51, 2},
     AEDoor.CP_ENTRY.value: {53, 0},
-    AEDoor.CP_ENTRY_SEWERS_FRONT.value: {53, 2},
+    AEDoor.CP_OUTSIDE_SEWERS_FRONT.value: {53, 2},
     AEDoor.CP_OUTSIDE_BARREL.value: {53, 3},
     AEDoor.CP_SEWERSFRONT_OUTSIDE.value: {54, 0},
     AEDoor.CP_SEWERSFRONT_BARREL.value: {54, 2},
