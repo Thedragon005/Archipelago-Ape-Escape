@@ -990,8 +990,8 @@ class ApeEscapeClient(BizHawkClient):
                 #print(punchVisualAddress)
                 #print(int.from_bytes(bytes_ToWrite))
                 punch_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
-                punch_Guards += [(RAM.menuStateAddress, 0x00, "MainRAM")]
-                punch_Guards += [(RAM.menuState2Address, 0x01, "MainRAM")]
+                punch_Guards += [(RAM.menuStateAddress, 0x00.to_bytes(1,"little"), "MainRAM")]
+                punch_Guards += [(RAM.menuState2Address, 0x01.to_bytes(1,"little"), "MainRAM")]
                 print("Replaced Punch visuals")
                 self.replacePunch = False
                 #print("Fix Punch")
