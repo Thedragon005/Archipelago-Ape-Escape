@@ -78,7 +78,7 @@ class ApeEscapeWorld(World):
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
-        self.itempool: List[ApeEscapeItem] = []
+        self.itempool: List[ApeEscapeItem] = [] # TODO - add the new options (lamp, tokens, etc.)
 
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
@@ -164,7 +164,7 @@ class ApeEscapeWorld(World):
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
         # Monkey Lamps shuffle
-        if self.options.lamp == "false":
+        if self.options.lamp == "false": # TODO / IHNN note - this is wrong and will pre-open ALL LAMP GATES rather than use the vanilla behavior!!!
             self.multiworld.push_precollected(CB_Lamp)
             self.multiworld.push_precollected(DI_Lamp)
             self.multiworld.push_precollected(CrC_Lamp)
