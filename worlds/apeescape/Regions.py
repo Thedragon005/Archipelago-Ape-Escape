@@ -735,9 +735,8 @@ def create_regions(world: "ApeEscapeWorld"):
     if options.goal == "second":
         # 9-2
         L92 = Region(AEDoor.PPM_ENTRY.value, player, multiworld)
-        L92_COMPLETE = Region(AEDoor.PPM_SPECTER2.value, player, multiworld)
-        L92_COMPLETE.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L92_COMPLETE) for loc_name in get_array([206])]
-        regions += [L92, L92_COMPLETE]
+        L92.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L92) for loc_name in get_array([206])]
+        regions += [L92]
 
 
     if options.coin == "true":

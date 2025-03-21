@@ -577,6 +577,7 @@ doorTransitions = {
     AEDoor.MM_SPECTER1_CASTLE_MAIN.value: {83, 0},
     AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value: {84, 0},
     AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value: {85, 0},
+    # AEDoor.PPM_ENTRY.value: {86, 0}, # IHNN note - noticed this was missing, have not validated the room.
     AEDoor.TIME_ENTRY.value: {88, 0},
     AEDoor.TIME_MAIN_TRAINING.value: {88, 3},
     AEDoor.TIME_MAIN_MINIGAME.value: {88, 2},

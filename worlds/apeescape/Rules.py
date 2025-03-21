@@ -1474,7 +1474,7 @@ def set_locations(self):
         connect_regions(self, AEDoor.SA_ENTRY.value, AEDoor.SA_COMPLETE.value, 
                         lambda state: CanSwim(state, self))
 
-    # Crabby Beach (Needs events on monkeys)
+    # Crabby Beach (BIG TODO: Needs events on monkeys)
     # First
     connect_regions(self, AEDoor.CB_ENTRY.value, AELocation.W4L1CoolBlue.value, 
                         lambda state: TODO)
@@ -1565,7 +1565,7 @@ def set_locations(self):
         connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.Mailbox38.value, 
                         lambda state: TODO)
 
-    # Dexter's Island (Needs events on monkeys)
+    # Dexter's Island (BIG TODO: Needs events on monkeys)
     # Outside
     connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.W4L3TonTon.value, 
                         lambda state: TODO)
@@ -1796,8 +1796,48 @@ def set_locations(self):
 
     # Sushi Temple
     # Entry
+    connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.W7L1Taku.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.W7L1Rocka.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.W7L1Maralea.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.W7L1Wog.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.W7L1Wog.value, 
+                        lambda state: TODO)
     # Temple
+    connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Mayi.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Owyang.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Long.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Elly.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Elly.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Chunky.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.W7L1Chunky.value, 
+                        lambda state: TODO)
     # Well
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1Voti.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1Voti.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1QuelTin.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1Phaldo.value, 
+                        lambda state: TODO)
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.ST_ENTRY.value, AELocation.Coin37.value, 
@@ -1816,10 +1856,42 @@ def set_locations(self):
 
     # Wabi Sabi Wall
     # Entry
+    connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AELocation.W7L2Minky.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AELocation.W7L2Zobbro.value, 
+                        lambda state: TODO)
     # Gong
+    connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AELocation.W7L2Xeeto.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AELocation.W7L2Moops.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AELocation.W7L2Zanabi.value, 
+                        lambda state: TODO)
     # Middle
+    connect_regions(self, AEDoor.WSW_MIDDLE_OBSTACLE.value, AELocation.W7L2Doxs.value, 
+                        lambda state: TODO)
     # Obstacle Course
+    connect_regions(self, AEDoor.WSW_OBSTACLE_BARREL.value, AELocation.W7L2Buddha.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AELocation.W7L2Fooey.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AELocation.W7L2Fooey.value, 
+                        lambda state: TODO)
     # Barrel
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Kong.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Kong.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
+                        lambda state: TODO)
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AELocation.Coin40.value, 
@@ -1840,12 +1912,74 @@ def set_locations(self):
 
     # Crumbling Castle
     # Outside
+    connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.W7L3Robart.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.W7L3Igor.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.W7L3Naners.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AELocation.W7L3Neeners.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AELocation.W7L3Charles.value, 
+                        lambda state: TODO)
     # Castle
-    # Bell Tower
-    # Elevator
+    connect_regions(self, AEDoor.CC_CASTLEMAINTHRONEROOM.value, AELocation.W7L3Gustav.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_CASTLEMAINTHRONEROOM.value, AELocation.W7L3Wilhelm.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_CASTLEMAINTHRONEROOM.value, AELocation.W7L3Emmanuel.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_CASTLEMAINTHRONEROOM.value, AELocation.W7L3SirCutty.value, 
+                        lambda state: TODO)
     # Waterway
+    connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Calligan.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Castalist.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Deveneom.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Deveneom.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Deveneom.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Deveneom.value, 
+                        lambda state: TODO)
     # Button Room
+    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_WATER.value, AELocation.W7L3Astur.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_WATER.value, AELocation.W7L3Kilserack.value, 
+                        lambda state: TODO)
+    # Elevator
+    connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AELocation.W7L3Ringo.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AELocation.W7L3Densil.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AELocation.W7L3Figero.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AELocation.W7L3Figero.value, 
+                        lambda state: TODO)
+    # Bell Tower
+    connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AELocation.W7L3Fej.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AELocation.W7L3Joey.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AELocation.W7L3Joey.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AELocation.W7L3Joey.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CC_BELL_CASTLE.value, AELocation.W7L3Donqui.value, 
+                        lambda state: TODO)
     # Boss Room
+    connect_regions(self, AEDoor.CC_BOSS_ROOM.value, AELocation.W7L3Boss73.value, 
+                        lambda state: TODO)
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AELocation.Coin45.value, 
@@ -1860,10 +1994,83 @@ def set_locations(self):
         connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.Mailbox57.value, 
                         lambda state: TODO)
 
-    # City Park (Needs events on monkeys)
+    # City Park (BIG TODO: Needs events on monkeys)
     # Outside
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Kaine.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Kaine.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Jaxx.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Gehry.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Gehry.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Gehry.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.W8L1Alcatraz.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CP_OUTSIDE_BARREL.value, AELocation.W8L1Gehry.value, 
+                        lambda state: TODO)
     # Front Sewer
+    connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.W8L1Tino.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.W8L1QBee.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.W8L1QBee.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.W8L1McManic.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.W8L1QBee.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.W8L1QBee.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.W8L1McManic.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.W8L1McManic.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.W8L1McManic.value, 
+                        lambda state: TODO)
     # Back Sewer
+    connect_regions(self, AEDoor.CP_BARREL_SEWERS_FRONT.value, AELocation.W8L1Dywan.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1CKHutch.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Winky.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1BLuv.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1BLuv.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Camper.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Camper.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Huener.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Huener.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Huener.value, 
+                        lambda state: TODO)
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.Coin53.value, 
@@ -1877,13 +2084,71 @@ def set_locations(self):
         connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.Coin55.value, 
                         lambda state: TODO)
 
-    # Specter's Factory (Needs events on monkeys)
+    # Specter's Factory (BIG TODO: Needs events on monkeys)
     # Outside
+    connect_regions(self, AEDoor.SF_ENTRY.value, AELocation.W8L2BigShow.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AELocation.W8L2Dreos.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AELocation.W8L2BigShow.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AELocation.W8L2BigShow.value, 
+                        lambda state: TODO)
     # Factory
+    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AELocation.W8L2Reznor.value, 
+                        lambda state: TODO)
     # Car Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.W8L2Urkel.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.W8L2Urkel.value, 
+                        lambda state: TODO)
     # Lava Room
+    connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2VanillaS.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2Radd.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2Radd.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2Radd.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2Shimbo.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2Shimbo.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2Shimbo.value, 
+                        lambda state: TODO)
     # Conveyor Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AELocation.W8L2Hurt.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AELocation.W8L2Hurt.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AELocation.W8L2Hurt.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AELocation.W8L2String.value, 
+                        lambda state: TODO)
     # Mech Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.SF_MECH_FACTORY.value, AELocation.W8L2Khamo.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.SF_MECH_FACTORY.value, AELocation.W8L2Khamo.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.SF_MECH_FACTORY.value, AELocation.W8L2Khamo.value, 
+                        lambda state: TODO)
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.Coin58.value, 
@@ -1894,13 +2159,51 @@ def set_locations(self):
         connect_regions(self, AEDoor.SF_ENTRY.value, AELocation.Mailbox58.value, 
                         lambda state: TODO)
 
-    # TV Tower (Needs events on monkeys)
+    # TV Tower (BIG TODO: Needs events on monkeys)
     # Outside
+    connect_regions(self, AEDoor.TVT_ENTRY.value, AELocation.W8L3Fredo.value, 
+                        lambda state: TODO)
     # Basement
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.W8L3Charlee.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.W8L3Charlee.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.W8L3Mach3.value, 
+                        lambda state: TODO)
     # Lobby
+    connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Tortuss.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Manic.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Manic.value, 
+                        lambda state: TODO)
     # Tank
+    connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AELocation.W8L3Ruptdis.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AELocation.W8L3Eighty7.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.TVT_TANK_FAN.value, AELocation.W8L3Danio.value, 
+                        lambda state: TODO)
     # Fan
+    connect_regions(self, AEDoor.TVT_FAN_TANK.value, AELocation.W8L3Roosta.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.TVT_FAN_TANK.value, AELocation.W8L3Tellis.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.TVT_FAN_TANK.value, AELocation.W8L3Whack.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.TVT_FAN_TANK.value, AELocation.W8L3Frostee.value, 
+                        lambda state: TODO)
     # Boss
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AELocation.W8L3Boss83.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AELocation.W8L3Boss83.value, 
+                        lambda state: TODO)
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.Coin64.value, 
@@ -1910,19 +2213,160 @@ def set_locations(self):
 
     # Monkey Madness (Needs events on specific? monkeys)
     # Coaster (multiple rooms)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AELocation.W9L1Goopo.value, 
+                        lambda state: TODO)
     # Haunted House
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value, AELocation.W9L1Porto.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value, AELocation.W9L1Porto.value, 
+                        lambda state: TODO)
     # Coffin Room
+    connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AELocation.W9L1Slam.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AELocation.W9L1Junk.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AELocation.W9L1Crib.value, 
+                        lambda state: TODO)
     # Circus
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_CIRCUS_SL_HUB.value, AELocation.W9L1Professor.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_CIRCUS_SL_HUB.value, AELocation.W9L1Professor.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_CIRCUS_SL_HUB.value, AELocation.W9L1Professor.value, 
+                        lambda state: TODO)
     # Go Karz
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AELocation.W9L1Jake.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AELocation.W9L1Jake.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AELocation.W9L1Jake.value, 
+                        lambda state: TODO)
     # Western Land
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Nak.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Nak.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Nak.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Cloy.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Shaw.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Shaw.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Shaw.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Flea.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Flea.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Flea.value, 
+                        lambda state: TODO)
     # Crater
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
+                        lambda state: TODO)
     # Castle Outside
+    # we need state.has on "MM-UFOs"
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AELocation.W9L1Donovan.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AELocation.W9L1Donovan.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AELocation.W9L1Laura.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AELocation.W9L1Laura.value, 
+                        lambda state: TODO)
     # Castle Foyer
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.W9L1Uribe.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.W9L1Gordo.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.W9L1Gordo.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.W9L1Raeski.value, 
+                        lambda state: TODO)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.W9L1Poopie.value, 
+                        lambda state: TODO)
     # Inside Climb
+    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.W9L1Teacup.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.W9L1Shine.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.W9L1Shine.value, 
+                        lambda state: TODO)
     # Space Climb
+    connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.W9L1Wrench.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.W9L1Bronson.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.W9L1Bronson.value, 
+                        lambda state: TODO)
     # Monkey Head Room
+    connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.W9L1Bungee.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.W9L1Carro.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.W9L1Carro.value, 
+                        lambda state: TODO)
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.W9L1Carlito.value, 
+                        lambda state: TODO)
+    elif self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.W9L1Carlito.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.W9L1Carlito.value, 
+                        lambda state: TODO)
     # "Warning" Side Room
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.W9L1BG.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.W9L1BG.value, 
+                        lambda state: TODO)
     # Specter 1
+    if self.options.logic == "normal" or self.options.logic == "hard":
+        connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
+                        lambda state: TODO)
+    else:
+        connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
+                        lambda state: TODO)
+
     if self.options.coin == "true":
         connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Coin73.value, 
                         lambda state: TODO)
@@ -1950,7 +2394,7 @@ def set_locations(self):
 
     # Peak Point Matrix
     if options.goal == "second":
-        connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.PPM_SPECTER2.value, 
+        connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.Specter2.value, 
                         lambda state: TODO)
 
 
