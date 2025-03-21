@@ -1281,8 +1281,12 @@ def set_locations(self):
                         lambda state: TODO)
 
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.TJ_ENTRY.value, AELocation.Coin6.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal" or self.options.logic == "hard":
+            connect_regions(self, AEDoor.TJ_ENTRY.value, AELocation.Coin6.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.TJ_ENTRY.value, AELocation.Coin6.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.TJ_MUSHROOMMAIN.value, AELocation.Coin7.value, 
                         lambda state: TODO)
         connect_regions(self, AEDoor.TJ_FISHBOAT.value, AELocation.Coin8.value, 
@@ -1296,8 +1300,12 @@ def set_locations(self):
                         lambda state: TODO)
         connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AELocation.Mailbox15.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AELocation.Mailbox16.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AELocation.Mailbox16.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AELocation.Mailbox16.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.TJ_FISHBOAT.value, AELocation.Mailbox17.value, 
                         lambda state: TODO)
         connect_regions(self, AEDoor.TJ_FISHBOAT.value, AELocation.Mailbox18.value, 
@@ -1381,14 +1389,25 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.DR_ENTRY.value, AELocation.Coin11.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.DR_ENTRY.value, AELocation.Coin11.value, 
+                            lambda state: TODO)
+        elif self.options.logic == "hard":
+            connect_regions(self, AEDoor.DR_ENTRY.value, AELocation.Coin11.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.DR_ENTRY.value, AELocation.Coin11.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.DR_OUTSIDE_FENCE.value, AELocation.Coin11.value, 
                         lambda state: True)
         connect_regions(self, AEDoor.DR_FAN_OUTSIDE_HOLE.value, AELocation.Coin12.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Coin13.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Coin13.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Coin13.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.DR_WATER_SIDE.value, AELocation.Coin14.value, 
                         lambda state: TODO)
     if self.options.mailbox == "true":
@@ -1455,8 +1474,12 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Coin17.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal" or self.options.logic == "hard":
+            connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Coin17.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Coin17.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.CR_ENTRY.value, AELocation.Mailbox29.value, 
                         lambda state: TODO)
@@ -1557,8 +1580,12 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.Coin23.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.Coin23.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.Coin23.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.Mailbox37.value, 
                         lambda state: TODO)
@@ -1618,14 +1645,26 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.Coin24.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.Coin24.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.Coin24.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.DI_STOMACH_ENTRY.value, AELocation.Coin25.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AELocation.Coin28.value, 
-                        lambda state: TODO)
-        connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AELocation.Coin28.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AELocation.Coin28.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AELocation.Coin28.value, 
+                            lambda state: TODO)
+        if self.options.logic == "hard": # This connection does not exist on normal difficulty!
+            connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AELocation.Coin28.value, 
+                            lambda state: TODO)
+        elif self.options.logic == "expert":
+            connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AELocation.Coin28.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.Mailbox39.value, 
                         lambda state: TODO)
@@ -1677,8 +1716,12 @@ def set_locations(self):
                         lambda state: TODO)
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.Mailbox44.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.Mailbox45.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.Mailbox45.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.Mailbox45.value, 
+                            lambda state: TODO)
 
     # Frosty Retreat
     # Entry
@@ -1723,12 +1766,20 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.FR_ENTRY_CAVERNS.value, AELocation.Coin30.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.FR_ENTRY_CAVERNS.value, AELocation.Coin30.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.FR_ENTRY_CAVERNS.value, AELocation.Coin30.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.FR_WATER_CAVERNS.value, AELocation.Coin31.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.Coin32.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.Coin32.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.Coin32.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.Mailbox46.value, 
                         lambda state: TODO)
@@ -1779,8 +1830,12 @@ def set_locations(self):
     if self.options.coin == "true":
         connect_regions(self, AEDoor.HS_HOT_SPRING.value, AELocation.Coin34.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Coin35.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Coin35.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Coin35.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.HS_ENTRY.value, AELocation.Mailbox47.value, 
                         lambda state: TODO)
@@ -1844,8 +1899,12 @@ def set_locations(self):
                         lambda state: TODO)
         connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.Coin38.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.ST_WELL.value, AELocation.Coin39.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.ST_WELL.value, AELocation.Coin39.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.ST_WELL.value, AELocation.Coin39.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.ST_TEMPLE.value, AELocation.Mailbox50.value, 
                         lambda state: TODO)
@@ -1898,8 +1957,12 @@ def set_locations(self):
                         lambda state: TODO)
         connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AELocation.Coin41.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.Coin44.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal" or self.options.logic == "hard":
+            connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.Coin44.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.Coin44.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AELocation.Mailbox53.value, 
                         lambda state: TODO)
@@ -2073,14 +2136,29 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.Coin53.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.Coin53.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.CP_ENTRY.value, AELocation.Coin53.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.CP_OUTSIDE_BARREL.value, AELocation.Coin53.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.Coin54.value, 
-                        lambda state: TODO)
-        connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.Coin54.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.Coin54.value, 
+                            lambda state: TODO)
+        elif self.options.logic == "hard":
+            connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.Coin54.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.Coin54.value, 
+                            lambda state: TODO)
+        if self.options.logic == "normal" or self.options.logic == "hard":
+            connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.Coin54.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.Coin54.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.Coin55.value, 
                         lambda state: TODO)
 
@@ -2151,10 +2229,18 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.Coin58.value, 
-                        lambda state: TODO)
-        connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.Coin59.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.Coin58.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.Coin58.value, 
+                            lambda state: TODO)
+        if self.options.logic == "normal" or self.options.logic == "expert": # CanHitWheel includes Flyer on expert.
+            connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.Coin59.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.Coin59.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.SF_ENTRY.value, AELocation.Mailbox58.value, 
                         lambda state: TODO)
@@ -2206,8 +2292,12 @@ def set_locations(self):
                         lambda state: TODO)
     
     if self.options.coin == "true":
-        connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.Coin64.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.Coin64.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.Coin64.value, 
+                            lambda state: TODO)
         connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AELocation.Coin66.value, 
                         lambda state: TODO)
 
@@ -2382,12 +2472,27 @@ def set_locations(self):
                         lambda state: TODO)
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.Coin80.value, 
                         lambda state: TODO)
-        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Coin84.value, 
-                        lambda state: TODO)
-        connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.Coin85.value, 
-                        lambda state: TODO)
-        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Coin82.value, 
-                        lambda state: TODO)
+        if self.options.logic == "normal" or self.options.logic == "hard":
+            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Coin82.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Coin82.value, 
+                            lambda state: TODO
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Coin84.value, 
+                            lambda state: TODO)
+        elif self.options.logic == "hard":
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Coin84.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Coin84.value, 
+                            lambda state: TODO)
+        if self.options.logic == "normal":
+            connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.Coin85.value, 
+                            lambda state: TODO)
+        else:
+            connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.Coin85.value, 
+                            lambda state: TODO)
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AELocation.Mailbox59.value, 
                         lambda state: TODO)
