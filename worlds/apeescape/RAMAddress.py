@@ -1236,23 +1236,23 @@ class RAM:
     Nearby_RoomIDAddress = 0x0E38B4
     Nearby_DoorIDAddress   = 0x0E38A4
 
-    TargetRoomID1Address = 0x154380
-    TR1_DoorIDAddress = 0x15437C
-    TargetRoomID2Address = 0x154358
-    TR2_DoorIDAddress = 0x154354
-    TargetRoomID3Address = 0x154330
-    TR3_DoorIDAddress = 0x15432C
-    TargetRoomID4Address = 0x154308
-    TR4_DoorIDAddress = 0x154304
+    TargetRoomID1Address = 0x154264
+    TR1_DoorIDAddress = 0x154268
+    TargetRoomID2Address = 0x15428C
+    TR2_DoorIDAddress = 0x154290
+    TargetRoomID3Address = 0x1542B4
+    TR3_DoorIDAddress = 0x1542B8
+    TargetRoomID4Address = 0x1542DC
+    TR4_DoorIDAddress = 0x1542E0
     TR4_TransitionEnabled = 0x1542BC # For CrC_Boss_Door -> Blocked value : 0x03, Opened Value : 0x00
-    TargetRoomID5Address = 0x1542E0
-    TR5_DoorIDAddress = 0x1542DC
-    TargetRoomID6Address = 0x1542B8
-    TR6_DoorIDAddress = 0x1542B4
-    TargetRoomID7Address = 0x154290
-    TR7_DoorIDAddress = 0x15428C
-    TargetRoomID8Address = 0x154268
-    TR8_DoorIDAddress = 0x154264
+    TargetRoomID5Address = 0x154304
+    TR5_DoorIDAddress = 0x154308
+    TargetRoomID6Address = 0x15432C
+    TR6_DoorIDAddress = 0x154330
+    TargetRoomID7Address = 0x154354
+    TR7_DoorIDAddress = 0x154358
+    TargetRoomID8Address = 0x15437C
+    TR8_DoorIDAddress = 0x154380
 
     kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000
 
