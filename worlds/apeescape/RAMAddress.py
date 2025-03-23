@@ -631,7 +631,7 @@ class RAM:
         },
         11: {  # 2-2
             422 : 105,
-            423 : 103,
+            423 : {49,103},
             424 : 22,
             425 : 81,
         },
@@ -1238,6 +1238,7 @@ class RAM:
     currentRoomIdAddress = 0x0F4476
     currentLevelAddress = 0x0F4474
     gameStateAddress = 0x0F4470
+
     jakeVictoryAddress = 0x0F447A
     unlockedLevelAddress = 0x0DFC70
     requiredApesAddress = 0x0F44D8
@@ -1430,7 +1431,9 @@ class RAM:
     # Specter bosses values
     S1_P2_State = 0x144A04
     S1_P2_Life = 0x144A06
+    S1_Cutscene_Redirection = 0x137C28  # 4 bytes. When GameState is 0A, change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
     S2_isCaptured = 0x142328
+    S2_Cutscene_Redirection = 0x05C5F0  # 4 bytes. Change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
 

@@ -202,6 +202,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
+                (RAM.S1_Cutscene_Redirection, 4, "MainRAM"),
+                (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -239,7 +241,8 @@ class ApeEscapeClient(BizHawkClient):
             S1_P2_State = int.from_bytes(reads[26], byteorder="little")
             S1_P2_Life = int.from_bytes(reads[27], byteorder="little")
             S2_isCaptured = int.from_bytes(reads[28], byteorder="little")
-
+            S1_Cutscene_Redirection = int.from_bytes(reads[29], byteorder="little")
+            S2_Cutscene_Redirection = int.from_bytes(reads[30], byteorder="little")
             #Related to Gadgets
             gadgetTuples = [
                 (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
@@ -821,6 +824,11 @@ class ApeEscapeClient(BizHawkClient):
                 }])
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
+            Credits_Reads = [currentRoom,gameState,S1_Cutscene_Redirection,S2_Cutscene_Redirection]
+            await self.Credits_handling(ctx, Credits_Reads)
+            # ================================
+            # ===== MM Optimizations =========
+            # Execute the code segment for MM Double Door and related optimizations
             MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress,MM_Nathalie_RescuedAddress,MM_Nathalie_Rescued,MM_Nathalie_Rescued_Local]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
@@ -851,7 +859,7 @@ class ApeEscapeClient(BizHawkClient):
             # ===== Gadgets handling =======
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
-            Gadgets_Reads = [currentLevel,heldGadget,gadgetStateFromServer,crossGadget,menuState,menuState2,punchVisualAddress]
+            Gadgets_Reads = [currentLevel,heldGadget,gadgetStateFromServer,crossGadget,menuState,menuState2,punchVisualAddress,gameState]
             await self.gadgets_handler(ctx,Gadgets_Reads)
             # ======================================
 
@@ -913,6 +921,7 @@ class ApeEscapeClient(BizHawkClient):
         menuState = Gadgets_Reads[4]
         menuState2 = Gadgets_Reads[5]
         punchVisualAddress = Gadgets_Reads[6]
+        gamestate = Gadgets_Reads[7]
 
         gadgets_Writes = []
         punch_Guards = []
@@ -958,15 +967,12 @@ class ApeEscapeClient(BizHawkClient):
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
         # Punch Visual glitch in menu fix
-        if (menuState == 0) and (menuState2 == 1):
+        # Replace all values from 0x0E78C0 to 0x0E78DF to this:
+        # 0010000000000000E00B00000000000000100000000000000000000000000000
+        bytes_ToWrite: bytes = bytes.fromhex(
+            "0010000000000000E00B00000000000000100000000000000000000000000000")
 
-            # Replace all values from 0x0E78C0 to 0x0E78DF to this:
-            # 0010000000000000E00B00000000000000100000000000000000000000000000
-            bytes_ToWrite: bytes = bytes.fromhex(
-                "0010000000000000E00B00000000000000100000000000000000000000000000")
-            ToWrite = 0x0010000000000000E00B00000000000000100000000000000000000000000000
-            #print(punchVisualAddress.to_bytes(32,"little"))
-            #print(bytes_ToWrite)
+        if menuState == 0x00 and menuState2 == 0x01 and gamestate != RAM.gameState['LevelSelect']:
             if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite: #and self.replacePunch == True:
 
                 #print(punchVisualAddress)
@@ -974,17 +980,27 @@ class ApeEscapeClient(BizHawkClient):
                 punch_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
                 punch_Guards += [(RAM.menuStateAddress, 0x00.to_bytes(1,"little"), "MainRAM")]
                 punch_Guards += [(RAM.menuState2Address, 0x01.to_bytes(1,"little"), "MainRAM")]
-                print("Replaced Punch visuals")
-                self.replacePunch = False
-                #print("Fix Punch")
+                #print("Replaced Punch visuals")
                 #gadgets_Writes += [(RAM.unlockedGadgetsAddress, 0x24.to_bytes(1, "little"), "MainRAM")]
+
                 await bizhawk.guarded_write(ctx.bizhawk_ctx, punch_Writes,punch_Guards)
-        else:
-            self.replacePunch = True
-            # Set gadget state to "Punch" only,will get replaced automatically by the writes on next client's pass
-            # Should fix the bug?
 
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
+
+    async def Credits_handling(self, ctx: "BizHawkClientContext", Credits_Reads) -> None:
+        currentRoom = Credits_Reads[0]
+        gamestate = Credits_Reads[1]
+        S1_Cutscene_Redirection = hex(Credits_Reads[2])
+        S2_Cutscene_Redirection = hex(Credits_Reads[3])
+        Credits_Writes = []
+        if gamestate == RAM.gameState['Cutscene2']:
+            if S1_Cutscene_Redirection != 0x2403000D:
+                Credits_Writes += [(RAM.S1_Cutscene_Redirection, 0x2403000D.to_bytes(4, "little"), "MainRAM")]
+
+        if currentRoom == 87:
+            if S2_Cutscene_Redirection != 0x2403000D:
+                Credits_Writes += [(RAM.S2_Cutscene_Redirection, 0x2403000D.to_bytes(4, "little"), "MainRAM")]
+        await bizhawk.write(ctx.bizhawk_ctx, Credits_Writes)
 
     async def MM_Optimizations(self, ctx: "BizHawkClientContext", MM_Reads) -> None:
 
