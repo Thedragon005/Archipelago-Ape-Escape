@@ -615,10 +615,10 @@ def set_transitions(self):
                         lambda state: TODO)
     if self.options.logic == "normal" or self.options.logic == "hard":
         connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY.value, 
-                        lambda state: TODO)
+                        lambda state: state.has("DI-Button", self.player, 1) and CanHitOnce(state, self))
     else:
         connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_SLIDE_ROOM_GALLERY.value, 
-                        lambda state: TODO)
+                        lambda state: (state.has("DI-Button", self.player, 1) and CanHitOnce(state, self)) or IJ(state, self))
     if self.options.logic == "expert":
         connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AEDoor.DI_SLIDE_ROOM_STOMACH.value, 
                         lambda state: IJ(state, self))
@@ -741,7 +741,7 @@ def set_transitions(self):
     connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_ENTRY.value,
                         lambda state: True)
     # Boss Door - must be able to reach and hit the button in another room.
-    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_ENTRY_BOSS.value, 
+    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_ENTRY_BOSS.value,
                         lambda state: state.has("CC-Button", self.player, 1) and CanHitOnce(state, self)) 
     # Castle
     connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAIN_BELL.value,
@@ -1025,7 +1025,8 @@ def set_transitions(self):
     connect_regions(self, AEDoor.MM_SL_HUB_CRATER.value, AEDoor.MM_SL_HUB.value,
                         lambda state: True)
     # Coaster (several one-way connections here)
-    connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AEDoor.MM_COASTER_ENTRY_COASTER1.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AEDoor.MM_COASTER_ENTRY_COASTER1.value,
+                        lambda state: True)
     connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AEDoor.MM_COASTER1_COASTER2.value,
                         lambda state: True)
     connect_regions(self, AEDoor.MM_COASTER2_ENTRY.value, AEDoor.MM_COASTER2_HAUNTED_HOUSE.value,
@@ -1038,7 +1039,8 @@ def set_transitions(self):
                         lambda state: TODO)
     connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AEDoor.MM_COFFIN_COASTER_ENTRY.value, 
                         lambda state: HasNet(state, self))
-    connect_regions(self, AEDoor.MM_COASTER_ENTRY_DISEMBARK.value, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_COASTER_ENTRY_DISEMBARK.value, AEDoor.MM_COASTER_ENTRY_SL_HUB.value,
+                        lambda state: True)
     # Crater
     connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value,
                         lambda state: True)
@@ -1049,7 +1051,8 @@ def set_transitions(self):
         connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AEDoor.MM_CRATER_SL_HUB.value, 
                         lambda state: TODO)
     # Castle Outside
-    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, lambda state: True)
+    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value,
+                        lambda state: True)
     connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value,
                         lambda state: MM_Lamp(state, self))
     connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
@@ -1066,14 +1069,14 @@ def set_transitions(self):
                         lambda state: TODO)
     if self.options.logic == "normal": # This will reference MM-Painting
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
-                        lambda state: TODO)
+                        lambda state: state.has("MM-Painting", self.player, 1))
     else:
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
-                        lambda state: TODO)
+                        lambda state: state.has("MM-Painting", self.player, 1)) or IJ(state, self) or SuperFlyer(state, self))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, 
                         lambda state: TODO)
-    connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, # This will reference MM-Button
-                        lambda state: TODO)
+    connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, 
+                        lambda state: state.has("MM-Button", self.player, 1))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value,
                         lambda state: True)
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value,
