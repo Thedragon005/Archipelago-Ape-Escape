@@ -873,7 +873,7 @@ class RAM:
 
     }
     bossListLocal = {
-        48: {  # CC boss room
+        48: {  # CrC boss room
             500: 0x0E69E1
         },
         68: {  # TVT boss room
@@ -1412,14 +1412,17 @@ class RAM:
     TargetRoomID8Address = 0x15437C
     TR8_DoorIDAddress = 0x154380
 
-    kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000
+    kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000 (050E67EC)
+    CrC_kickoutofLevelAddress = 0x097B24 # 4 bytes : Default 84830188, Disable kickout = 00000000
+    TVT_kickoutofLevelAddress = 0x097B00  # 4 bytes : Default 84830188, Disable kickout = 00000000
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
     spikeState2Address = 0x0EC23E
-
+    spikeHittableAddress = 0x0EC227
+    spikeUltraInstinctAddress = 0x0EC2E2
     # HUGE for ER since when transition it is 98 or 204 ?
     # 1 In cinematic for boss
     # 2 Boss in waiting

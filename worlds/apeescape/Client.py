@@ -48,7 +48,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     #TODO Remove when doing official PR
-    client_version = "0.7.0d"
+    client_version = "0.7.1"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -198,6 +198,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.spikeStateAddress, 1, "MainRAM"),
                 (RAM.spikeState2Address, 1, "MainRAM"),
                 (RAM.kickoutofLevelAddress, 4, "MainRAM"),
+                (RAM.CrC_kickoutofLevelAddress, 4, "MainRAM"),
+                (RAM.TVT_kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.roomStatus, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
@@ -237,12 +239,15 @@ class ApeEscapeClient(BizHawkClient):
             spikeState = int.from_bytes(reads[22], byteorder="little")
             spikeState2 = int.from_bytes(reads[23], byteorder="little")
             kickoutofLevel = int.from_bytes(reads[24], byteorder="little")
-            roomStatus = int.from_bytes(reads[25], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[26], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[27], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[28], byteorder="little")
-            S1_Cutscene_Redirection = int.from_bytes(reads[29], byteorder="little")
-            S2_Cutscene_Redirection = int.from_bytes(reads[30], byteorder="little")
+            CrC_kickoutofLevel = int.from_bytes(reads[25], byteorder="little")
+            TVT_kickoutofLevel = int.from_bytes(reads[26], byteorder="little")
+            roomStatus = int.from_bytes(reads[27], byteorder="little")
+            S1_P2_State = int.from_bytes(reads[28], byteorder="little")
+            S1_P2_Life = int.from_bytes(reads[29], byteorder="little")
+            S2_isCaptured = int.from_bytes(reads[30], byteorder="little")
+            S1_Cutscene_Redirection = int.from_bytes(reads[31], byteorder="little")
+            S2_Cutscene_Redirection = int.from_bytes(reads[32], byteorder="little")
+
             #Related to Gadgets
             gadgetTuples = [
                 (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
@@ -785,20 +790,30 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
-# Training Room Unlock state:
-            # Due to a Bug with Gadget Training, will
+            # Training Room Unlock state:
+            # Due to a Bug with Gadget Training, will lock the gadget training ONLY when going into the room
             if (transitionPhase == 0x06 and NearbyRoom == 90) or currentRoom == 90:
                 writes += [(RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             else:
                 writes += [(RAM.GadgetTrainingsUnlockAddress, 0x8C63FDCC.to_bytes(4, "little"), "MainRAM")]
 
             # Kickout Prevention
+            # Now prevents getting kicked out of a boss level by catching a monkey while the boss is defeated
             if gameState == RAM.gameState["InLevel"]:
                 if kickoutofLevel != 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                if CrC_kickoutofLevel != 0:
+                    writes += [(RAM.CrC_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                if TVT_kickoutofLevel != 0:
+                    writes += [(RAM.TVT_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             else:
                 if kickoutofLevel == 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+                if CrC_kickoutofLevel == 0:
+                    writes += [(RAM.CrC_kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+                if TVT_kickoutofLevel == 0:
+                    writes += [(RAM.TVT_kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
                 coins = set()
