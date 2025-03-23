@@ -48,7 +48,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     #TODO Remove when doing official PR
-    client_version = "0.7.1"
+    client_version = "0.7.2"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -144,7 +144,7 @@ class ApeEscapeClient(BizHawkClient):
                 print(f"invalid Retrieved packet to ApeEscapeClient: {args}")
                 return
             keys = dict(args["keys"])
-            print(keys)
+            #print(keys)
             self.DIButton = keys.get(str(ctx.auth) + "_DIButton", None)
             self.CrCWaterButton = keys.get(str(ctx.auth) + "_CrCWaterButton", None)
             #self.CrCBasementButton = keys.get(str(ctx.auth) + "_CrCBasementButton", None)
@@ -468,13 +468,13 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Lobby_DoubleDoor == 0xFF:
                 MM_Lobby_DoubleDoor = 0
 
-            if MM_Jake_Defeated == 0xFF:
+            if MM_Jake_Defeated > 0x01:
                 MM_Jake_Defeated = 0
 
-            if MM_Professor_Rescued == 0xFF:
+            if MM_Professor_Rescued > 0x01:
                 MM_Professor_Rescued = 0
 
-            if MM_Nathalie_Rescued == 0xFF:
+            if MM_Nathalie_Rescued > 0x01:
                 MM_Nathalie_Rescued = 0
 
             # Get WaterNet state from memory
@@ -804,13 +804,15 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 if CrC_kickoutofLevel != 0:
                     writes += [(RAM.CrC_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.CrC_kickoutofLevelAddress2, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 if TVT_kickoutofLevel != 0:
                     writes += [(RAM.TVT_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             else:
                 if kickoutofLevel == 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                 if CrC_kickoutofLevel == 0:
-                    writes += [(RAM.CrC_kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.CrC_kickoutofLevelAddress, 0x86020166.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.CrC_kickoutofLevelAddress2, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                 if TVT_kickoutofLevel == 0:
                     writes += [(RAM.TVT_kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
 
@@ -844,7 +846,7 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress,MM_Nathalie_RescuedAddress,MM_Nathalie_Rescued,MM_Nathalie_Rescued_Local]
+            MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress,MM_Nathalie_RescuedAddress,MM_Nathalie_Rescued,MM_Nathalie_Rescued_Local,MM_Professor_Rescued]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -1030,15 +1032,30 @@ class ApeEscapeClient(BizHawkClient):
         MM_Nathalie_RescuedAddress = MM_Reads[8]
         MM_Nathalie_Rescued = MM_Reads[9]
         MM_Nathalie_Rescued_Local = MM_Reads[10]
+        MM_Professor_Rescued = MM_Reads[11]
 
 
         MM_Writes = []
-
-        if MM_Jake_Defeated > 0:
+        if MM_Jake_Defeated == 1:
+            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+        else:
+            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
-        if MM_Nathalie_RescuedAddress > 0:
+        if MM_Professor_Rescued == 1:
+            MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.temp_MM_Professor_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+        else:
+            MM_Writes += [(RAM.MM_Professor_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.temp_MM_Professor_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+        if MM_Nathalie_Rescued == 1:
+            MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+        else:
+            MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.temp_MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         #Nathalie's Rescue Coffin room detection (When in the room)
         if currentRoom == 76:
@@ -1049,6 +1066,9 @@ class ApeEscapeClient(BizHawkClient):
         if NearbyRoom == 75 and MM_Nathalie_Rescued != 0x01 and transitionPhase == 0x06:
             MM_Writes += [(RAM.MM_Nathalie_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
+        if NearbyRoom == 76 and MM_Nathalie_Rescued != 0x01 and transitionPhase == 0x06:
+            MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+
         # When going into the MM_Lobby, disable the Door Detection if you don't have the Door Item
         # (Keep it enabled if you have)
         if NearbyRoom == 69 and transitionPhase == 0x06:
@@ -1056,65 +1076,61 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Lobby_DoubleDoor == 0x00:
                 if MM_Lobby_DoorDetection != 0x8C800000:
                     MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
-                    print("Double Door Item not acquired,disable door detection")
-            else:
-                if MM_Lobby_DoorDetection != 0x8C820000:
-                    MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-                    print("Enabled Door detection")
+
 
         # Same detection address needed to check if Jake is supposed to spawn or not.
-        # Put it back to "ON" when transitioning to the Go Karz room
-        if NearbyRoom == 70 and transitionPhase == 0x06:
+        # Put it back to "ON" when transitioning to the Go Karz room or Clown Room
+        if (NearbyRoom == 70 or NearbyRoom == 71 or NearbyRoom == 75) and transitionPhase == 0x06:
+            #if (NearbyRoom == 70):
+                #if MM_Jake_Defeated == 0:
+                #    MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                #else:
+                #    MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+            if (NearbyRoom == 71):
+                MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
             print("Changed room Detection for Jake")
 
+
+
         ## MM_Lobby door handling
-        if currentRoom == 69:
+        if currentRoom == 69 and transitionPhase != 0x06:
             # Open the Electric Door and remove the Hitbox blocking you to go to Go Karz room (Jake fight)
             MM_Writes += [(RAM.MM_Lobby_JakeDoorFenceAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.MM_Lobby_JakeDoor_HitboxAddress, 0x80.to_bytes(1, "little"), "MainRAM")]
+            MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+            if MM_Lobby_DoorDetection != 0x8C800000:
+                print("[MM_Door]Door Detection")
+                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
 
-            if MM_Lobby_DoubleDoor == 0:
-                self.bool_MMDoubleDoor = False
-                # Prevent the door from opening no matter what,even if you defeated Jake
-                if MM_Lobby_DoorDetection != 0x8C800000:
-                    print("[MM_Door]Door Detection")
-                    MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+            door_addresses = RAM.doors_addresses
 
-                if MM_Jake_Defeated == 0x00:
-                    print("Jake NOT Defeated")
-                    #Should not impact if it's not yet defeated since new detection address
-                    #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-            else:
+            if currentRoom in door_addresses.keys():
+                doorlist_keys = list(door_addresses[currentRoom].keys())
+                doorlist_values = list(door_addresses[currentRoom].values())
 
-                # Enable door detection
-                if MM_Lobby_DoorDetection != 0x8C820000:
-                    print("[MM_Door]Door Detection")
-                    MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-
-                if MM_Jake_Defeated == 0x00:
-                    if self.bool_MMDoubleDoor == False:
-                        self.bool_MMDoubleDoor = True
-                        if MM_Lobby_DoubleDoor_Open != 0x05:
-                            print("[MM_Door]Open the Door")
-                            # Set the door to 4 if it is not 5, to open it back
-                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                            MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                #print(doorlist_values)
+                for x in range(len(doorlist_keys)):
+                    Door_writes = []
+                    Door_guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
+                    # lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
+                    door_values = list(doorlist_values[x])
+                    #print(doorlist_values[x])
+                    door_bytes = door_values[0]
+                    door_openvalue = door_values[1].to_bytes(door_bytes, "little")
+                    door_closedvalue = door_values[2].to_bytes(door_bytes, "little")
+                    door_address = (doorlist_keys[x])
+                    #print(door_address)
+                    if MM_Lobby_DoubleDoor == 0:
+                        # Close the door if opened
+                        Door_writes += [(door_address, door_closedvalue, "MainRAM")]
+                        Door_guards += [(door_address, door_openvalue, "MainRAM")]
                     else:
-                        #Then,after the door is open, put back the address to 0
-                        if MM_Jake_DefeatedAddress != 0x00:
-                            print("[MM_Door]Put back Jake_DefeatedAddress")
-                            MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                else:
-                    if MM_Lobby_DoubleDoor_Open != 0x05:
-                        print("[MM_Door]Open the Door")
-                        # Set the door to 4 if it is not 5, to open it back
-                        MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                        MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-        else:
-            # Room not MM_Lobby, reset the variable
-            self.bool_MMDoubleDoor = False
+                        # Open the door if it's closed
+                        Door_writes += [(door_address, door_openvalue, "MainRAM")]
+                        Door_guards += [(door_address, door_closedvalue, "MainRAM")]
+
+                    await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes, Door_guards)
 
         await bizhawk.write(ctx.bizhawk_ctx,MM_Writes)
 

@@ -1023,6 +1023,29 @@ class RAM:
         83: 0xdfcae,
         91: 0xdfcb0
     }
+
+    # Array order : bytesToWrite,OpenValue,ClosedValue
+    doors_addresses = {
+        69: { # MM_DoubleDoor
+            0x0E7901: [1,0x00,0x10],  # MM_DoubleDoorVisualL1
+            0x0E7905: [1,0x10,0x00],  # MM_DoubleDoorVisualL2
+            0x0E790D: [1,0xF0,0x00],  # MM_DoubleDoorVisualL3
+            0x0E7911: [1,0x00,0x10],  # MM_DoubleDoorVisualL4
+            0x0E7921: [1,0x00,0x10],  # MM_DoubleDoorVisualR1
+            0x0E7925: [1,0xF0,0x00],  # MM_DoubleDoorVisualR2
+            0x0E792D: [1,0x10,0x00],  # MM_DoubleDoorVisualR3
+            0x0E7931: [1,0x00,0x10],  # MM_DoubleDoorVisualR4
+            0x170B34: [2,0xFC50,0xFE00],  # MM_DoubleDoorHitboxL1
+            0x170B38: [2,0x1680,0x18D0],  # MM_DoubleDoorHitboxL2
+            0x170B3A: [2,0x0050,0x0200],  # MM_DoubleDoorHitboxL3
+            0x170B3E: [2,0x0200,0x0050],  # MM_DoubleDoorHitboxL4
+            0x170B6C: [2,0x03B0,0x0200],  # MM_DoubleDoorHitboxR1
+            0x170B70: [2,0x1680,0x18D0],  # MM_DoubleDoorHitboxR2
+            0x170B72: [2,0x0050,0x0200],  # MM_DoubleDoorHitboxR3
+            0x170B76: [2,0x0200,0x0050],  # MM_DoubleDoorHitboxR4
+        }
+    }
+
     localLamp_localUpdate = 0x097474 # Default : 9062007A. Set this to 0 to disable
     globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
     globalLamp_globalUpdate = 0x097568 # 0x097568 Default : 1444000F. Set this to 0 to disable
@@ -1215,9 +1238,9 @@ class RAM:
     MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
 
 
+    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
     temp_MM_Professor_RescuedAddress = 0x0DFC5C
     temp_MM_Nathalie_RescuedAddress = 0x0DFC5E
-    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
 
     MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence.If JakeDefeated = 5 it will open the door
     MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
@@ -1413,7 +1436,8 @@ class RAM:
     TR8_DoorIDAddress = 0x154380
 
     kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000 (050E67EC)
-    CrC_kickoutofLevelAddress = 0x097B24 # 4 bytes : Default 84830188, Disable kickout = 00000000
+    CrC_kickoutofLevelAddress = 0x097B20  # 4 bytes : Default 86020166, Disable kickout = 00000000
+    CrC_kickoutofLevelAddress2 = 0x097B24 # 4 bytes : Default 84830188, Disable kickout = 00000000
     TVT_kickoutofLevelAddress = 0x097B00  # 4 bytes : Default 84830188, Disable kickout = 00000000
 
     # 1 = "Net down"

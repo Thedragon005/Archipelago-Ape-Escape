@@ -1087,7 +1087,7 @@ def TVT_BossRoom(state, world):
 
 
 def MM_Lamp(state, world):
-    return (world.options.lamp == "false" and HasNet(state, world) and MM_UFOMonkeys(state, world)) or (state.has(AEItem.MM_Lamp.value, world.player, 1))
+    return (world.options.lamp == "false" and HasNet(state, world) and MM_UFOMonkeys(state, world)) or (state.has(AEItem.MM_Lamp.value, world.player, 1) and MM_SHA(state, world))
 
 def MM_Natalie(state, world):
     return CanHitOnce(state, world) and HasNet(state, world)
