@@ -651,7 +651,7 @@ def create_regions(world: "ApeEscapeWorld"):
     L91R16T13E = Region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, player, multiworld)
     L91R17T13X = Region(AEDoor.MM_SPECTER1_ROOM.value, player, multiworld)
     
-    L91R13T17.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L91R13T17) for loc_name in get_array([205])]
+    L91R17T13X.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L91R17T13X) for loc_name in get_array([205])]
     L91R4T1.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L91R4T1) for loc_name in get_array([502])]
     L91R5T1.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], L91R5T1) for loc_name in get_array([503])]
     goopo = Region(AELocation.W9L1Goopo.value, player, multiworld)
@@ -728,9 +728,9 @@ def create_regions(world: "ApeEscapeWorld"):
                L82R7T71E, L82R7T71X, L82R7T72E, L82R7T72X, L82R7T73E, L82R7T73X, L82R7T74E, L82R7T74X,L82R7T75E, L82R7T75X, L82R7T76E, L82R7T76X, L82R7T77E,
                bigshow, dreos, reznor, urkel, vanillas, radd, shimbo, hurt, strung, khamo,
                L83, L83R1T2, L83R2T1, L83R2T3, L83R2T4, L83R3T2, L83R4T2, L83R4T5, L83R4T6, L83R5T4, L83R6T4, fredo, charlee, mach3, tortuss, manic, ruptdis, eighty7, danio, roosta, tellis, whack, frostee,
-               L91, L91R1T2, L91R1T3, L91R1T4, L91R1T5, L91R1T10, L91R2T1, L91R3T1, L91R3T6E, L91R3T9X, L91R4T1, L91R5T1, L91R6T3X, L91R6T7E, L91R7T6X, L91R7T8E, L91R8T9, L91R9T3E, L91R9T8, L91R10T1, L91R10T11, L91R11T10, L91R11T12, L91R11T13, L91R12T11, L91R13T11, L91R13T14, L91R13T15, L91R13T16X, L91R13T17E, L91R14T13, L91R15T13, L91R15T16, L91R16T15, L91R16T13E, L91R17T13X, 
+               L91, L91R1T2, L91R1T3, L91R1T4, L91R1T5, L91R1T10, L91R2T1, L91R3T1, L91R3T6E, L91R3T9X, L91R4T1, L91R5T1, L91R6T3X, L91R6T7E, L91R7T6X, L91R7T8E, L91R8T7X, L91R8T9, L91R9T3E, L91R9T8, L91R10T1, L91R10T11, L91R11T10, L91R11T12, L91R11T13, L91R12T11, L91R13T11, L91R13T14, L91R13T15, L91R13T16X, L91R13T17E, L91R14T13, L91R15T13, L91R15T16, L91R16T15, L91R16T13E, L91R17T13X, 
                goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
-
+    
 
     if options.goal == "second":
         # 9-2
@@ -788,7 +788,7 @@ def create_regions(world: "ApeEscapeWorld"):
         coin34.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin34) for loc_name in get_array([334])]
         coin35 = Region(AELocation.Coin35.value, player, multiworld)
         coin35.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin35) for loc_name in get_array([335])]
-        coin36 = Region(AEDoor.GA_ENTRY.value.value, player, multiworld)
+        coin36 = Region(AEDoor.GA_ENTRY.value, player, multiworld)
         coin36.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin36) for loc_name in get_array([290, 291, 292, 293, 294])]
         coin37 = Region(AELocation.Coin37.value, player, multiworld)
         coin37.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], coin37) for loc_name in get_array([337])]

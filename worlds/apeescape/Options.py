@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from Options import Choice, DeathLink, PerGameCommonOptions
+from Options import Choice, Range, DeathLink, PerGameCommonOptions
 
 
 class GoalOption(Choice):

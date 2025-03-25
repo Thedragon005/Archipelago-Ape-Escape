@@ -149,9 +149,9 @@ class ApeEscapeWorld(World):
         TVT_Lobby_Lamp = self.create_item(AEItem.TVT_Lobby_Lamp.value)
         TVT_Tank_Lamp = self.create_item(AEItem.TVT_Tank_Lamp.value)
         MM_Lamp = self.create_item(AEItem.MM_Lamp.value)
-        MMDoubleDoorKey = self.create_item(AEItem.MMDoubleDoorKey.value)
+        MM_DoubleDoorKey = self.create_item(AEItem.MM_DoubleDoorKey.value)
 
-        self.itempool += [MMDoubleDoorKey]
+        self.itempool += [MM_DoubleDoorKey]
 
         # Create enough keys to access every level, depending on the key option
         if self.options.unlocksperkey == 0x00:

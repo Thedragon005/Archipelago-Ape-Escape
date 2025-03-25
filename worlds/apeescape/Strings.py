@@ -662,7 +662,7 @@ class AEItem(Enum):
     TVT_Lobby_Lamp = "TV Tower Monkey Lamp (Lobby)"
     TVT_Tank_Lamp = "TV Tower Monkey Lamp (Tank Room)"
     MM_Lamp = "Monkey Madness Monkey Lamp"
-    MM_LobbyDoubleDoorKey = "Monkey Madness Lobby Double Door Key"
+    MM_DoubleDoorKey = "Monkey Madness Lobby Double Door Key"
     Token = "Specter Token"
     Nothing = "Banana Peel"
     Shirt = "Jacket"

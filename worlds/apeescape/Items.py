@@ -41,7 +41,7 @@ item_table = {
     AEItem.TVT_Lobby_Lamp.value: RAM.items["TVT_Lobby_Lamp"],
     AEItem.TVT_Tank_Lamp.value: RAM.items["TVT_Tank_Lamp"],
     AEItem.MM_Lamp.value: RAM.items["MM_Lamp"],
-    AEItem.MMDoubleDoorKey.value: RAM.items["MMDoubleDoorKey"],
+    AEItem.MM_DoubleDoorKey.value: RAM.items["MM_DoubleDoorKey"],
 
     # Other
     AEItem.Token.value: RAM.items["Token"],

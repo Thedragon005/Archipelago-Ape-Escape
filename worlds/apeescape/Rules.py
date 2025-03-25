@@ -946,7 +946,7 @@ def set_transitions(self):
                         lambda state: True)
     # Conveyor Room (at least it's all True...)
     connect_regions(self, AEDoor.SF_CONVEYOR1_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value,
-                        lambda state: True))
+                        lambda state: True)
     connect_regions(self, AEDoor.SF_CONVEYOR2_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value,
                         lambda state: True)
     connect_regions(self, AEDoor.SF_CONVEYOR3_EXIT.value, AEDoor.SF_CONVEYOR_LAVA.value,
@@ -1074,7 +1074,7 @@ def set_transitions(self):
                         lambda state: state.has("MM-Painting", self.player, 1))
     else:
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
-                        lambda state: state.has("MM-Painting", self.player, 1)) or IJ(state, self) or SuperFlyer(state, self))
+                        lambda state: state.has("MM-Painting", self.player, 1)) or IJ(state, self) or SuperFlyer(state, self)
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, 
                         lambda state: HasHoop(state, self) or HasRC(state, self))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, 
@@ -1467,7 +1467,7 @@ def set_locations(self):
         connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.W2L3Spanky.value, 
                         lambda state: ((CanHitWheel(state, self) and CanSwim(state, self)) or IJ(state, self) or HasHoop(state, self) or HasFlyer(state, self)) and HasNet(state, self))
     connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.W2L3Jesta.value, 
-                        lambda state: (CanHitWheel(state, self) or (HasFlyer(state, self) and CanSwim(state, self)) and HasNet(state, self))
+                        lambda state: (CanHitWheel(state, self) or (HasFlyer(state, self) and CanSwim(state, self)) and HasNet(state, self)))
     # Pillar
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value, AELocation.W2L3Pally.value, 
@@ -1694,7 +1694,7 @@ def set_locations(self):
                         lambda state: HasSling(state, self) and HasNet(state, self))
     elif self.options.logic == "hard":
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Rickets.value, 
-                        lambda state: (HasSling(state, self) or (HasClub(state, self) and HasFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (HasSling(state, self) or (HasClub(state, self) and HasFlyer(state, self)) and HasNet(state, self)))
     else:
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Rickets.value, 
                         lambda state: (HasSling(state, self) or HasPunch(state, self) or (HasClub(state, self) and HasFlyer(state, self))) and HasNet(state, self))
@@ -1940,7 +1940,7 @@ def set_locations(self):
                         lambda state: HasNet(state, self))
     # Obstacle Course
     connect_regions(self, AEDoor.WSW_OBSTACLE_BARREL.value, AELocation.W7L2Buddha.value, 
-                        lambda state: )
+                        lambda state: HasNet(state, self))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AELocation.W7L2Fooey.value, 
                         lambda state: HasRC(state, self) and HasNet(state, self))
@@ -2158,7 +2158,7 @@ def set_locations(self):
                             lambda state: HasRC(state, self) or IJ(state, self))
         else:
             connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.Coin54.value, 
-                            lambda state: HasRC(state, self) or IJ(state, self) or (SuperFlyer(state, self))
+                            lambda state: HasRC(state, self) or IJ(state, self) or (SuperFlyer(state, self)))
         if self.options.logic == "normal" or self.options.logic == "hard":
             connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.Coin54.value, 
                             lambda state: HasRC(state, self))
@@ -2269,7 +2269,7 @@ def set_locations(self):
                         lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Manic.value, 
-                        lambda state: (HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self) and HasNet(state, self))
+                        lambda state: (HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self) and HasNet(state, self)))
     # Tank
     connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AELocation.W8L3Ruptdis.value, 
                         lambda state: HasNet(state, self))
@@ -2595,7 +2595,7 @@ def IJ(state, world):
 
 # Lamp and Door Functions
 def MM_DoubleDoor(state, world):
-    return state.has(AEItem.MMDoubleDoorKey.value, world.player, 1)
+    return state.has(AEItem.MM_DoubleDoorKey.value, world.player, 1)
 
 
 # TODO: All logic around lamps with event items.
@@ -2640,6 +2640,14 @@ def MM_Lamp(state, world):
     return state.has(AEItem.MM_Lamp.value, world.player, 1)
 
 
+# Creates an event item in a specified region. Thanks Aquaria for having a good template!
+# Example call: self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
+def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
+    location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
+    region.locations.append(location)
+    location.place_locked_item(ApeEscapeItem(event_name, ItemClassification.progression, None, self.player))
+
+
 # Entrance Shuffle Helper Functions
 def initialize_level_list():
     levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
@@ -2679,7 +2687,7 @@ def fixed_levels(levellist, entoption):
     # Reset position of Monkey Madness if the option requires it
     if entoption == 0x01 or entoption == 0x02:
         for x in range (0, 22):
-            if levellist[x].entrance == 0x18 
+            if levellist[x].entrance == 0x18:
                 levellist[x], levellist[20] = levellist[20], levellist[x]
     # Reset position of races if the option requires it
     if entoption == 0x01 or entoption == 0x03:

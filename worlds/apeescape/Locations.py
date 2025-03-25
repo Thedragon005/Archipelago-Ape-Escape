@@ -460,7 +460,7 @@ doorTransitions = {
     AEDoor.FR_ENTRY_CAVERNS.value: {30, 2},
     AEDoor.FR_WATER_CAVERNS.value: {31, 0},
     AEDoor.FR_CAVERNS_ENTRY.value: {32, 0},
-    AEDoor.FR_CAVERNS_WATERROOM.value: {32, 2},
+    AEDoor.FR_CAVERNS_WATER.value: {32, 2},
     AEDoor.HS_ENTRY.value: {33, 0},
     AEDoor.HS_ENTRY_HOT_SPRING.value: {33, 2},
     AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value: {33, 3},
@@ -574,7 +574,7 @@ doorTransitions = {
     AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value: {81, 0},
     AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value: {82, 0},
     AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value: {82, 2}, # IHNN note - Entrance only door, normally inaccessible. Spawns Spike at the top, by the mech.
-    AEDoor.MM_SPECTER1_CASTLE_MAIN.value: {83, 0},
+    AEDoor.MM_SPECTER1_ROOM.value: {83, 0},
     AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value: {84, 0},
     AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value: {85, 0},
     # AEDoor.PPM_ENTRY.value: {86, 0}, # IHNN note - noticed this was missing, have not validated the room.

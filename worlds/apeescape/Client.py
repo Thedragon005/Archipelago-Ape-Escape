@@ -521,7 +521,7 @@ class ApeEscapeClient(BizHawkClient):
                         elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
                             if waternetState != 2:
                                 waternetState += 1
-                        elif (item.item - self.offset) == RAM.items["MMDoubleDoorKey"]:
+                        elif (item.item - self.offset) == RAM.items["MM_DoubleDoorKey"]:
                             MM_Lobby_DoubleDoor = 1
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
                             watercatchState = 1
