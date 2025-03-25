@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from BaseClasses import Region
+from BaseClasses import Region, Item, ItemClassification, CollectionState
 from .Items import ApeEscapeItem
 from .Locations import ApeEscapeLocation
 from .Regions import connect_regions, ApeEscapeLevel
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 # Creates an event item in a specified region. Thanks Aquaria for having a good template!
-# Example call: self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
+# Example call: self.__add_event_location(self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken", "DR-Block")
 def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
     location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
     region.locations.append(location)
@@ -42,12 +42,12 @@ def set_rules(world: "ApeEscapeWorld"):
 # Create all needed event items for checking access.
 def create_event_items(self):
     # Buttons and state changes.
-    self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
-    self.__add_event_location(self.L43R3T41, "Dexter's Island - Button Reached", "DI-Button")
-    self.__add_event_location(self.L73R6T51, "Crumbling Castle - Button Reached", "CC-Button")
-    self.__add_event_location(self.L91R12T11, "Monkey Madness - Spawn UFOs", "MM-UFOs")
-    self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button")
-    self.__add_event_location(self.L91R16T13E, "Monkey Madness - Specter 1 Open", "MM-Painting")
+    self.__add_event_location(self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken", "DR-Block")
+    self.__add_event_location(self.get_region(AEDoor.DI_SLIDE_ROOM_GALLERY.value), "Dexter's Island - Button Reached", "DI-Button")
+    self.__add_event_location(self.get_region(AEDoor.CC_BASEMENT_BUTTON_DOWN.value), "Crumbling Castle - Button Reached", "CC-Button")
+    self.__add_event_location(self.get_region(AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value), "Monkey Madness - Spawn UFOs", "MM-UFOs")
+    self.__add_event_location(self.get_region(AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value), "Monkey Madness - Monkey Head Room", "MM-Button")
+    self.__add_event_location(self.get_region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value), "Monkey Madness - Specter 1 Open", "MM-Painting")
 
 
 # Entrances are specifically connections between the Time Station (level select) and a level.
@@ -2514,7 +2514,7 @@ def set_locations(self):
                         lambda state: True)
 
     # Peak Point Matrix
-    if options.goal == "second":
+    if self.options.goal == "second":
         connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.Specter2.value, 
                         lambda state: HasSling(state, self) and (HasClub(state, self) or HasHoop(state, self) or HasPunch(state, self)) and HasNet(state, self))
 
