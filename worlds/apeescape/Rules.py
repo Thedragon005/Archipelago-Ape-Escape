@@ -2658,14 +2658,6 @@ def MM_Lamp(state, world):
     return state.has(AEItem.MM_Lamp.value, world.player, 1)
 
 
-# Creates an event item in a specified region. Thanks Aquaria for having a good template!
-# Example call: self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
-def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
-    location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
-    region.locations.append(location)
-    location.place_locked_item(ApeEscapeItem(event_name, ItemClassification.progression, None, self.player))
-
-
 # Entrance Shuffle Helper Functions
 def initialize_level_list():
     levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
