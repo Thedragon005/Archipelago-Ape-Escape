@@ -42,12 +42,12 @@ def set_rules(world: "ApeEscapeWorld"):
 # Create all needed event items for checking access.
 def create_event_items(self):
     # Buttons and state changes.
-    self.__add_event_location(self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken", "DR-Block")
-    self.__add_event_location(self.get_region(AEDoor.DI_SLIDE_ROOM_GALLERY.value), "Dexter's Island - Button Reached", "DI-Button")
-    self.__add_event_location(self.get_region(AEDoor.CC_BASEMENT_BUTTON_DOWN.value), "Crumbling Castle - Button Reached", "CC-Button")
-    self.__add_event_location(self.get_region(AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value), "Monkey Madness - Spawn UFOs", "MM-UFOs")
-    self.__add_event_location(self.get_region(AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value), "Monkey Madness - Monkey Head Room", "MM-Button")
-    self.__add_event_location(self.get_region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value), "Monkey Madness - Specter 1 Open", "MM-Painting")
+    __add_event_location(self, self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken", "DR-Block")
+    __add_event_location(self, self.get_region(AEDoor.DI_SLIDE_ROOM_GALLERY.value), "Dexter's Island - Button Reached", "DI-Button")
+    __add_event_location(self, self.get_region(AEDoor.CC_BASEMENT_BUTTON_DOWN.value), "Crumbling Castle - Button Reached", "CC-Button")
+    __add_event_location(self, self.get_region(AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value), "Monkey Madness - Spawn UFOs", "MM-UFOs")
+    __add_event_location(self, self.get_region(AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value), "Monkey Madness - Monkey Head Room", "MM-Button")
+    __add_event_location(self, self.get_region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value), "Monkey Madness - Specter 1 Open", "MM-Painting")
 
 
 # Entrances are specifically connections between the Time Station (level select) and a level.
@@ -77,7 +77,8 @@ def set_entrances(self):
     connect_regions(self, "Menu", AEDoor.MM_SL_HUB.value, lambda state: Keys(state, self, self.levellist[20].keys))
     # TODO: Make the condition for entering Peak Point Matrix reflect the YAML settings.
     # The "vanilla" condition should probably be done with event items on EVERY monkey...
-    connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
+    if self.options.goal == "second":
+        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
@@ -580,21 +581,21 @@ def set_transitions(self):
 
     # Cryptic Relics
     # Entry Area
-    connect_regions(self, AEDoor.CR_ENTRY.value, AEDoor.CR_CR_ENTRYOBA.value, 
+    connect_regions(self, AEDoor.CR_ENTRY.value, AEDoor.CR_ENTRYOBA.value, 
                         lambda state: CanHitOnce(state, self))
-    connect_regions(self, AEDoor.CR_ENTRY_SIDE_ROOM.value, AEDoor.CR_CR_ENTRYOBA.value,
+    connect_regions(self, AEDoor.CR_ENTRY_SIDE_ROOM.value, AEDoor.CR_ENTRYOBA.value,
                         lambda state: True)
-    connect_regions(self, AEDoor.CR_ENTRY_MAIN_RUINS.value, AEDoor.CR_CR_ENTRYOBA.value,
+    connect_regions(self, AEDoor.CR_ENTRY_MAIN_RUINS.value, AEDoor.CR_ENTRYOBA.value,
                         lambda state: True)
-    connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY_SIDE_ROOM.value, 
+    connect_regions(self, AEDoor.CR_ENTRYOBA.value, AEDoor.CR_ENTRY_SIDE_ROOM.value, 
                         lambda state: CanHitOnce(state, self))
-    connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY_MAIN_RUINS.value, 
+    connect_regions(self, AEDoor.CR_ENTRYOBA.value, AEDoor.CR_ENTRY_MAIN_RUINS.value, 
                         lambda state: CanHitOnce(state, self))
     if self.options.logic == "normal" or self.options.logic == "hard":
-        connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY.value, 
+        connect_regions(self, AEDoor.CR_ENTRYOBA.value, AEDoor.CR_ENTRY.value, 
                         lambda state: HasFlyer(state, self))
     else:
-        connect_regions(self, AEDoor.CR_CR_ENTRYOBA.value, AEDoor.CR_ENTRY.value, 
+        connect_regions(self, AEDoor.CR_ENTRYOBA.value, AEDoor.CR_ENTRY.value, 
                         lambda state: HasFlyer(state, self) or IJ(state, self))
     # Relics
     connect_regions(self, AEDoor.CR_MAIN_RUINS_ENTRY.value, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, 
@@ -1093,7 +1094,7 @@ def set_transitions(self):
                         lambda state: state.has("MM-Painting", self.player, 1))
     else:
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
-                        lambda state: state.has("MM-Painting", self.player, 1)) or IJ(state, self) or SuperFlyer(state, self)
+                        lambda state: state.has("MM-Painting", self.player, 1) or IJ(state, self) or SuperFlyer(state, self))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, 
                         lambda state: HasHoop(state, self) or HasRC(state, self))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, 
@@ -2067,7 +2068,7 @@ def set_locations(self):
     connect_regions(self, AEDoor.CC_BELL_CASTLE.value, AELocation.W7L3Donqui.value, 
                         lambda state: HasNet(state, self))
     # Boss Room
-    connect_regions(self, AEDoor.CC_BOSS_ROOM.value, AELocation.W7L3Boss73.value, 
+    connect_regions(self, AEDoor.CC_BOSS_ROOM.value, AELocation.Boss73.value, 
                         lambda state: CanHitMultiple(state, self))
     
     if self.options.coin == "true":
@@ -2305,10 +2306,10 @@ def set_locations(self):
                         lambda state: CanHitOnce(state, self) and HasNet(state, self))
     # Boss
     if self.options.logic == "normal":
-        connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AELocation.W8L3Boss83.value, 
+        connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AELocation.Boss83.value, 
                         lambda state: HasSling(state, self))
     else:
-        connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AELocation.W8L3Boss83.value, 
+        connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AELocation.Boss83.value, 
                         lambda state: HasSling(state, self) or (HasFlyer(state, self) and HasRC(state, self)))
     
     if self.options.coin == "true":
