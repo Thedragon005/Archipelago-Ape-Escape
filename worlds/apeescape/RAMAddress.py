@@ -1295,7 +1295,7 @@ class RAM:
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
 
-    DI_Button_Pressed = 0x0F53AC # Activated = 0x01
+    DI_Button_Pressed = 0x1693A6 # Activated = 0x01
     DI_Button_DoorVisual = 0x0BFC8F # Activated = 0x00
     DI_Button_DoorHitBox = 0x1676F7 # Activated = 0xDC
     DI_Button_Visual1 = 0x0BFCB8 #4 bytes : Activated = 80162250
