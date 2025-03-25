@@ -799,7 +799,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # Kickout Prevention
             # Now prevents getting kicked out of a boss level by catching a monkey while the boss is defeated
-            if gameState == RAM.gameState["InLevel"]:
+            if gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"]):
                 if kickoutofLevel != 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 if CrC_kickoutofLevel != 0:
@@ -839,6 +839,7 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
                 }])
+
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
             Credits_Reads = [currentRoom,gameState,S1_Cutscene_Redirection,S2_Cutscene_Redirection]
@@ -846,13 +847,13 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress,MM_Nathalie_RescuedAddress,MM_Nathalie_Rescued,MM_Nathalie_Rescued_Local,MM_Professor_Rescued]
+            MM_Reads = [currentRoom,currentLevel,gameState,NearbyRoom,transitionPhase,MM_Jake_Defeated,MM_Lobby_DoubleDoor,MM_Lobby_DoorDetection,MM_Lobby_DoubleDoor_Open,MM_Jake_DefeatedAddress,MM_Nathalie_RescuedAddress,MM_Nathalie_Rescued,MM_Nathalie_Rescued_Local,MM_Professor_Rescued]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
             # ===== Permanent Buttons =======
             # Execute the Buttons handling code segment
-            Button_Reads = [currentRoom,DI_Button_Pressed,CrC_Water_ButtonPressed,CrC_Basement_ButtonPressed,TVT_Lobby_ButtonPressed,MM_MonkeyHead_ButtonPressed,MM_Painting_ButtonPressed,DI_Button_DoorVisual,CrC_Water_Door_Visual,CrC_Basement_DoorVisual1,TVT_Lobby_Water_Hitbox,MM_MonkeyHead_Door,MM_Painting_Visual]
+            Button_Reads = [currentRoom,gameState,DI_Button_Pressed,CrC_Water_ButtonPressed,CrC_Basement_ButtonPressed,TVT_Lobby_ButtonPressed,MM_MonkeyHead_ButtonPressed,MM_Painting_ButtonPressed,DI_Button_DoorVisual,CrC_Water_Door_Visual,CrC_Basement_DoorVisual1,TVT_Lobby_Water_Hitbox,MM_MonkeyHead_Door,MM_Painting_Visual]
             await self.permanent_buttons_handling(ctx,Button_Reads)
             # =======================
 
@@ -863,7 +864,7 @@ class ApeEscapeClient(BizHawkClient):
             # ===== Lamp Unlocks =======
             # Tables for Lamp updates
             # Execute the Lamp unlocking code segment
-            Lamps_Reads = [currentRoom,NearbyRoom,localLampsUpdate,globalLampsUpdate,bothLampsUpdate,LocalLamp_LocalUpdate,GlobalLamp_LocalUpdate,transitionPhase]
+            Lamps_Reads = [gameState,currentRoom,NearbyRoom,localLampsUpdate,globalLampsUpdate,bothLampsUpdate,LocalLamp_LocalUpdate,GlobalLamp_LocalUpdate,transitionPhase]
             await self.lamps_unlocks_handling(ctx,Lamps_Reads)
             # =======================
 
@@ -930,6 +931,7 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
+
     async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads):
         currentLevel = Gadgets_Reads[0]
         heldGadget = Gadgets_Reads[1]
@@ -938,11 +940,13 @@ class ApeEscapeClient(BizHawkClient):
         menuState = Gadgets_Reads[4]
         menuState2 = Gadgets_Reads[5]
         punchVisualAddress = Gadgets_Reads[6]
-        gamestate = Gadgets_Reads[7]
+        gameState = Gadgets_Reads[7]
 
         gadgets_Writes = []
         punch_Guards = []
         punch_Writes = []
+
+
 
         # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
         if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
@@ -989,7 +993,7 @@ class ApeEscapeClient(BizHawkClient):
         bytes_ToWrite: bytes = bytes.fromhex(
             "0010000000000000E00B00000000000000100000000000000000000000000000")
 
-        if menuState == 0x00 and menuState2 == 0x01 and gamestate != RAM.gameState['LevelSelect']:
+        if menuState == 0x00 and menuState2 == 0x01 and gameState != RAM.gameState['LevelSelect']:
             if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite: #and self.replacePunch == True:
 
                 #print(punchVisualAddress)
@@ -1006,11 +1010,17 @@ class ApeEscapeClient(BizHawkClient):
 
     async def Credits_handling(self, ctx: "BizHawkClientContext", Credits_Reads) -> None:
         currentRoom = Credits_Reads[0]
-        gamestate = Credits_Reads[1]
+        gameState = Credits_Reads[1]
         S1_Cutscene_Redirection = hex(Credits_Reads[2])
         S2_Cutscene_Redirection = hex(Credits_Reads[3])
         Credits_Writes = []
-        if gamestate == RAM.gameState['Cutscene2']:
+
+        # Does not execute the function if you not in a level
+        if (gameState not in (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'])):
+            return None
+
+        #print("Credit_handling")
+        if gameState == RAM.gameState['Cutscene2']:
             if S1_Cutscene_Redirection != 0x2403000D:
                 Credits_Writes += [(RAM.S1_Cutscene_Redirection, 0x2403000D.to_bytes(4, "little"), "MainRAM")]
 
@@ -1022,20 +1032,34 @@ class ApeEscapeClient(BizHawkClient):
     async def MM_Optimizations(self, ctx: "BizHawkClientContext", MM_Reads) -> None:
 
         currentRoom = MM_Reads[0]
-        NearbyRoom = MM_Reads[1]
-        transitionPhase = MM_Reads[2]
-        MM_Jake_Defeated = MM_Reads[3]
-        MM_Lobby_DoubleDoor = MM_Reads[4]
-        MM_Lobby_DoorDetection = MM_Reads[5]
-        MM_Lobby_DoubleDoor_Open = MM_Reads[6]
-        MM_Jake_DefeatedAddress = MM_Reads[7]
-        MM_Nathalie_RescuedAddress = MM_Reads[8]
-        MM_Nathalie_Rescued = MM_Reads[9]
-        MM_Nathalie_Rescued_Local = MM_Reads[10]
-        MM_Professor_Rescued = MM_Reads[11]
+        currentLevel = MM_Reads[1]
+        gameState = MM_Reads[2]
+        NearbyRoom = MM_Reads[3]
+        transitionPhase = MM_Reads[4]
+        MM_Jake_Defeated = MM_Reads[5]
+        MM_Lobby_DoubleDoor = MM_Reads[6]
+        MM_Lobby_DoorDetection = MM_Reads[7]
+        MM_Lobby_DoubleDoor_Open = MM_Reads[8]
+        MM_Jake_DefeatedAddress = MM_Reads[9]
+        MM_Nathalie_RescuedAddress = MM_Reads[10]
+        MM_Nathalie_Rescued = MM_Reads[11]
+        MM_Nathalie_Rescued_Local = MM_Reads[12]
+        MM_Professor_Rescued = MM_Reads[13]
 
 
         MM_Writes = []
+        SpecterLevels = (RAM.levels['Specter'],RAM.levels['S_Jake'],RAM.levels['S_Circus'],RAM.levels['S_Coaster'],RAM.levels['S_Western Land'],RAM.levels['S_Castle'])
+        writes = []
+        guards = []
+
+        # Only do the MM_Optimizations IN Monkey Madness,else revert back to default behavior and do nothing else
+        if currentLevel not in SpecterLevels or gameState == RAM.gameState['LevelSelect']:
+            writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
+            guards += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+            await bizhawk.guarded_write(ctx.bizhawk_ctx,writes,guards)
+            return None
+        #print("MM_Optimizations")
+
         if MM_Jake_Defeated == 1:
             MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.temp_MM_Jake_DefeatedAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
@@ -1066,31 +1090,20 @@ class ApeEscapeClient(BizHawkClient):
         if NearbyRoom == 75 and MM_Nathalie_Rescued != 0x01 and transitionPhase == 0x06:
             MM_Writes += [(RAM.MM_Nathalie_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
-        if NearbyRoom == 76 and MM_Nathalie_Rescued != 0x01 and transitionPhase == 0x06:
-            MM_Writes += [(RAM.MM_Nathalie_RescuedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-
         # When going into the MM_Lobby, disable the Door Detection if you don't have the Door Item
-        # (Keep it enabled if you have)
-        if NearbyRoom == 69 and transitionPhase == 0x06:
-            print("Next room == Lobby")
-            if MM_Lobby_DoubleDoor == 0x00:
-                if MM_Lobby_DoorDetection != 0x8C800000:
-                    MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
-
+        if (NearbyRoom == 69 and transitionPhase == 0x06) or (currentRoom == 69 and transitionPhase != 0x06):
+            #print("Next room == Lobby")
+            if MM_Lobby_DoorDetection != 0x8C800000:
+                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+        elif (NearbyRoom != 69 and transitionPhase == 0x06):
+            if MM_Lobby_DoorDetection != 0x8C820000:
+                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
 
         # Same detection address needed to check if Jake is supposed to spawn or not.
         # Put it back to "ON" when transitioning to the Go Karz room or Clown Room
-        if (NearbyRoom == 70 or NearbyRoom == 71 or NearbyRoom == 75) and transitionPhase == 0x06:
-            #if (NearbyRoom == 70):
-                #if MM_Jake_Defeated == 0:
-                #    MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                #else:
-                #    MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-            if (NearbyRoom == 71):
-                MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-            MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-            print("Changed room Detection for Jake")
-
+        #if (NearbyRoom == 71) and transitionPhase == 0x06:
+            #MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            #print("Changed room Detection for Jake")
 
 
         ## MM_Lobby door handling
@@ -1099,9 +1112,6 @@ class ApeEscapeClient(BizHawkClient):
             MM_Writes += [(RAM.MM_Lobby_JakeDoorFenceAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.MM_Lobby_JakeDoor_HitboxAddress, 0x80.to_bytes(1, "little"), "MainRAM")]
             MM_Writes += [(RAM.MM_Lobby_DoubleDoor_OpenAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-            if MM_Lobby_DoorDetection != 0x8C800000:
-                print("[MM_Door]Door Detection")
-                MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
 
             door_addresses = RAM.doors_addresses
 
@@ -1137,21 +1147,27 @@ class ApeEscapeClient(BizHawkClient):
     async def permanent_buttons_handling(self, ctx: "BizHawkClientContext", Button_Reads) -> None:
 
         currentRoom = Button_Reads[0]
-        DI_Button_Pressed = Button_Reads[1]
-        CrC_Water_ButtonPressed = Button_Reads[2]
-        CrC_Basement_ButtonPressed = Button_Reads[3]
-        TVT_Lobby_ButtonPressed = Button_Reads[4]
-        MM_MonkeyHead_ButtonPressed = Button_Reads[5]
-        MM_Painting_ButtonPressed = Button_Reads[6]
-        DI_Button_DoorVisual = Button_Reads[7]
-        CrC_Water_DoorVisual = Button_Reads[8]
-        CrC_Basement_DoorVisual1 = Button_Reads[9]
-        TVT_Lobby_Water_Hitbox = Button_Reads[10]
-        MM_MonkeyHead_Door = Button_Reads[11]
-        MM_Painting_Visual = Button_Reads[12]
+        gameState = Button_Reads[1]
+        DI_Button_Pressed = Button_Reads[2]
+        CrC_Water_ButtonPressed = Button_Reads[3]
+        CrC_Basement_ButtonPressed = Button_Reads[4]
+        TVT_Lobby_ButtonPressed = Button_Reads[5]
+        MM_MonkeyHead_ButtonPressed = Button_Reads[6]
+        MM_Painting_ButtonPressed = Button_Reads[7]
+        DI_Button_DoorVisual = Button_Reads[8]
+        CrC_Water_DoorVisual = Button_Reads[9]
+        CrC_Basement_DoorVisual1 = Button_Reads[10]
+        TVT_Lobby_Water_Hitbox = Button_Reads[11]
+        MM_MonkeyHead_Door = Button_Reads[12]
+        MM_Painting_Visual = Button_Reads[13]
 
         Button_Writes = []
 
+        # Does not execute the function if you not in a level
+        if (gameState not in (RAM.gameState['InLevel'],RAM.gameState['InLevelTT'])):
+            return None
+
+        #print("permanent_buttons_handling")
         # If CrC_ButtonRoom button is pressed,send the value "{Player}_CrCWaterButton" to the server's Datastorage
         # This behavior unlocks the door permanently after you press the button once.
         if currentRoom == 28:
@@ -1337,20 +1353,28 @@ class ApeEscapeClient(BizHawkClient):
 
     async def lamps_unlocks_handling(self, ctx: "BizHawkClientContext", Lamps_Reads) -> None:
         # Variables
-        currentRoom = Lamps_Reads[0]
-        NearbyRoom = Lamps_Reads[1]
-        localLampsUpdate = Lamps_Reads[2]
-        globalLampsUpdate = Lamps_Reads[3]
-        bothLampsUpdate = Lamps_Reads[4]
-        LocalLamp_LocalUpdate = Lamps_Reads[5]
-        GlobalLamp_LocalUpdate = Lamps_Reads[6]
-        transitionPhase = Lamps_Reads[7]
+        gameState = Lamps_Reads[0]
+        currentRoom = Lamps_Reads[1]
+        NearbyRoom = Lamps_Reads[2]
+        localLampsUpdate = Lamps_Reads[3]
+        globalLampsUpdate = Lamps_Reads[4]
+        bothLampsUpdate = Lamps_Reads[5]
+        LocalLamp_LocalUpdate = Lamps_Reads[6]
+        GlobalLamp_LocalUpdate = Lamps_Reads[7]
+        transitionPhase = Lamps_Reads[8]
+
 
         # Deactivate Monkeys detection for lamps and switch to manual door opening if lamp shuffle is activated
         # Condition for some rooms that require the same addresses to function properly
         specialrooms = [41, 44, 67, 75, 76]
 
         Lamps_writes = []
+
+        # Does not execute the function if you not in a level
+        if (gameState not in (RAM.gameState['InLevel'],RAM.gameState['InLevelTT'])):
+            return None
+
+        #print("lamps_unlocks_handling")
 
         lampDoors_toggles = RAM.lampDoors_toggles
         # Trigger Monkey Lamps depending on Lamp states
@@ -1545,7 +1569,7 @@ class ApeEscapeClient(BizHawkClient):
 
         # Oxygen Handling
         if waternetState == 0x00:
-            if gameState == RAM.gameState["InLevel"]:
+            if gameState == RAM.gameState["InLevel"] or gameState == RAM.gameState["InLevelTT"]:
                 if gameRunning == 0x01:
                     # Set the air to the "Limited" value if 2 conditions:
                     # Oxygen is higher that "Limited" value AND spike is Swimming or Grounded
@@ -1564,6 +1588,7 @@ class ApeEscapeClient(BizHawkClient):
                         # You died while swimming, reset Oxygen to "Limited" value prevent death loops
                         WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                         WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
+
         if waternetState == 0x01:
 
             if isUnderwater == 0x00 and swim_oxygenLevel != limited_OxygenLevel:
@@ -1591,7 +1616,7 @@ class ApeEscapeClient(BizHawkClient):
 
                 self.lowOxygenCounter += 1
                 # Should start at 1
-                print(self.lowOxygenCounter)
+                #print(self.lowOxygenCounter)
                 if self.lowOxygenCounter <= 2:
                     WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
                     WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
@@ -1603,7 +1628,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # On (Vanilla)
             else:
-                print("Vanilla")
+                #print("Vanilla")
                 WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
                 WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
         else:
@@ -1618,7 +1643,7 @@ class ApeEscapeClient(BizHawkClient):
         """
         cookies = DL_Reads[0]
         gameRunning = DL_Reads[1]
-        gamestate = DL_Reads[2]
+        gameState = DL_Reads[2]
         menuState2 = DL_Reads[3]
         spikestate2 = DL_Reads[4]
 
@@ -1631,7 +1656,7 @@ class ApeEscapeClient(BizHawkClient):
                 await ctx.update_death_link(True)
                 self.previous_death_link = ctx.last_death_link
             if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
-                if cookies == 0x00 and not self.sending_death_link and gamestate in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
+                if cookies == 0x00 and not self.sending_death_link and gameState in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
                     await self.send_deathlink(ctx)
                 elif cookies != 0x00:
                     self.sending_death_link = False

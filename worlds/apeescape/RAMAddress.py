@@ -1394,6 +1394,7 @@ class RAM:
     energyChipsAddress = 0x0F44B8
     cookieAddress = 0x0EC2C8
     instakillAddress = 0x0EC2C9
+    tankLife = 0x0BF826
     livesAddress = 0x0F448C
     flashAddress = 0x0F51C1
     rocketAddress = 0x0F51C2
