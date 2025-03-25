@@ -79,6 +79,7 @@ def set_entrances(self):
     # The "vanilla" condition should probably be done with event items on EVERY monkey...
     if self.options.goal == "second":
         connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
+    self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
