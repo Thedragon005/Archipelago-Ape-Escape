@@ -1042,10 +1042,10 @@ def get_array(array):
                 res[key] = val
     return res
 
-
+# TODO: remove this function if it's not needed here
 # Creates an event item in a specified region. Thanks Aquaria for having a good template!
 # Example call: self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
-def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
-    location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
-    region.locations.append(location)
-    location.place_locked_item(ApeEscapeItem(event_name, ItemClassification.progression, None, self.player))
+# def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
+#    location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
+#    region.locations.append(location)
+#    location.place_locked_item(ApeEscapeItem(event_name, ItemClassification.progression, None, self.player))

@@ -1,11 +1,22 @@
 from typing import TYPE_CHECKING
 
+from BaseClasses import Region
+from .Items import ApeEscapeItem
+from .Locations import ApeEscapeLocation
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AEDoor, AELocation
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
 
+
+# Creates an event item in a specified region. Thanks Aquaria for having a good template!
+# Example call: self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
+def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
+    location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
+    region.locations.append(location)
+    location.place_locked_item(ApeEscapeItem(event_name, ItemClassification.progression, None, self.player))
+	
 
 def set_rules(world: "ApeEscapeWorld"):
     world.levellist = initialize_level_list()
@@ -21,10 +32,22 @@ def set_rules(world: "ApeEscapeWorld"):
     if (world.options.entrance != 0x00):
         world.levellist.sort()
 
+    create_event_items(world)
     set_entrances(world)
     set_doors(world)
     set_transitions(world)
     set_locations(world)
+
+
+# Create all needed event items for checking access.
+def create_event_items(self):
+    # Buttons and state changes.
+    self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block")
+    self.__add_event_location(self.L43R3T41, "Dexter's Island - Button Reached", "DI-Button")
+    self.__add_event_location(self.L73R6T51, "Crumbling Castle - Button Reached", "CC-Button")
+    self.__add_event_location(self.L91R12T11, "Monkey Madness - Spawn UFOs", "MM-UFOs")
+    self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button")
+    self.__add_event_location(self.L91R16T13E, "Monkey Madness - Specter 1 Open", "MM-Painting")
 
 
 # Entrances are specifically connections between the Time Station (level select) and a level.
@@ -519,7 +542,6 @@ def set_transitions(self):
                         lambda state: True)
     connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, 
                         lambda state: HasFlyer(state, self) or IJ(state, self))
-    self.__add_event_location(self.L22R1T32, "Dark Ruins - Floor Broken", "DR-Block") # Event Item
     connect_regions(self, AEDoor.DR_ENTRY.value, AEDoor.DR_OUTSIDE_WATER_BUTTON.value, 
                         lambda state: CanHitOnce(state, self))
     if self.options.logic == "normal":
@@ -629,7 +651,6 @@ def set_transitions(self):
                         lambda state: IJ(state, self))
     connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY.value, AEDoor.DI_SLIDE_ROOM_STOMACH.value, 
                         lambda state: CanHitOnce(state, self))
-    self.__add_event_location(self.L43R3T41, "Dexter's Island - Button Reached", "DI-Button") # Event Item
     # Gallery
     connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, 
                         lambda state: CanDive(state, self))
@@ -835,7 +856,6 @@ def set_transitions(self):
                         lambda state: True)
     connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value, AEDoor.CC_BUTTON_BASEMENT_WATER.value,
                         lambda state: True)
-    self.__add_event_location(self.L73R6T51, "Crumbling Castle - Button Reached", "CC-Button") # Event Item
     
     # City Park
     # Outside
@@ -1061,7 +1081,6 @@ def set_transitions(self):
                         lambda state: True)
     connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
                         lambda state: True)
-    self.__add_event_location(self.L91R12T11, "Monkey Madness - Spawn UFOs", "MM-UFOs") # Event Item
     # Castle Foyer
     if self.options.logic == "normal" or self.options.logic == "hard":
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, 
@@ -1094,8 +1113,6 @@ def set_transitions(self):
     else:
         connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, 
                         lambda state: (HasFlyer(state, self) and HasRC(state, self) and HasSling(state, self)) or IJ(state, self))
-    self.__add_event_location(self.L91R14T13, "Monkey Madness - Monkey Head Room", "MM-Button") # Event Item
-    self.__add_event_location(self.L91R16T13E, "Monkey Madness - Specter 1 Open", "MM-Painting") # Event Item
 
 
 # A location is always accessed from a transition. The level entrance is a special case of a transition.
