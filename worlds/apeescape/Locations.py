@@ -369,7 +369,7 @@ location_table = {
     AELocation.Boss73.value: 500,
     AELocation.Boss83.value: 501,
     AELocation.W9L1Professor.value: 502,
-    AELocation.W9L1Jake.value: 503,
+    AELocation.W9L1Jake.value: 503
 }
 
 #Where RAM.levels[address] : Total monkeys count
@@ -594,7 +594,7 @@ doorTransitions = {
 
 def createLocationGroups():
     # Iterate through all locations
-    for x in range (0, len(location_table) - 1):
+    for x in range (0, len(location_table)):
         locname = list(location_table.keys())[x]
         # Add to location group for each level
         if "1-1" in locname:
@@ -639,23 +639,18 @@ def createLocationGroups():
             GROUPED_LOCATIONS.setdefault("Specters Factory", []).append(locname)
         elif "8-3" in locname:
             GROUPED_LOCATIONS.setdefault("TV Tower", []).append(locname)
+        elif "9-1" in locname:
+            GROUPED_LOCATIONS.setdefault("Monkey Madness", []).append(locname)
         elif "Time Station" in locname:
             GROUPED_LOCATIONS.setdefault("Time Station", []).append(locname)
-        # Special Case for Monkey Madness due to containing Monkey in the name - can't naively add all locations with Monkey to the Monkeys group
-        if "9-1" in locname:
-            GROUPED_LOCATIONS.setdefault("Monkey Madness", []).append(locname)
-            if "Madness Monkey" in locname:
-                GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
-        elif "Monkey" in locname and "Mailbox" not in locname:
-            GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
-
-        if "Coin" in locname and "Mailbox" not in locname:
-            GROUPED_LOCATIONS.setdefault("Specter Coins", []).append(locname)
-
-        if ("Specter" in locname and "Factory" not in locname) or "Boss" in locname or "Rescue" in locname or "Defeat" in locname:
-            GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
 
         if "Mailbox" in locname:
-                GROUPED_LOCATIONS.setdefault("Mailboxes", []).append(locname)
+            GROUPED_LOCATIONS.setdefault("Mailboxes", []).append(locname)
+        elif "Coin" in locname:
+            GROUPED_LOCATIONS.setdefault("Specter Coins", []).append(locname)
+        elif ("Specter" in locname and "Factory" not in locname) or "Boss" in locname or "Jake" in locname or "Professor" in locname):
+            GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
+        elif "Monkey" in locname and "Madness" not in locname:
+            GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
 
 createLocationGroups()

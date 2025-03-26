@@ -64,6 +64,18 @@ event_table = {
 }
 
 def createItemGroups():
+    #Alliases for items
+    GROUPED_ITEMS.setdefault("Club", []).append("Stun Club")
+    GROUPED_ITEMS.setdefault("Net", []).append("Time Net")
+    GROUPED_ITEMS.setdefault("Radar", []).append("Monkey Radar")
+    GROUPED_ITEMS.setdefault("Slingshot", []).append("Slingback Shooter")
+    GROUPED_ITEMS.setdefault("Sling", []).append("Slingback Shooter")
+    GROUPED_ITEMS.setdefault("Hoop", []).append("Super Hoop")
+    GROUPED_ITEMS.setdefault("Punch", []).append("Magic Punch")
+    GROUPED_ITEMS.setdefault("Flyer", []).append("Sky Flyer")
+    GROUPED_ITEMS.setdefault("Car", []).append("R.C. Car")
+    GROUPED_ITEMS.setdefault("Water Net", []).append("Progressive Water Net")
+
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Stun Club")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Time Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Monkey Radar")

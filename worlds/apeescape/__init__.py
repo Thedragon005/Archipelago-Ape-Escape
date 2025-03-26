@@ -74,11 +74,12 @@ class ApeEscapeWorld(World):
         self.entrance: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.coin: Optional[int] = 0
+        self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
-        self.itempool: List[ApeEscapeItem] = [] # TODO - add the new options (lamp, tokens, etc.)
+        self.itempool: List[ApeEscapeItem] = [] # TODO - add the new options (tokens, etc.)
 
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
@@ -91,6 +92,7 @@ class ApeEscapeWorld(World):
         self.entrance = self.options.entrance.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.coin = self.options.coin.value
+        self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
@@ -195,8 +197,7 @@ class ApeEscapeWorld(World):
                 # All locations require net with these options, so throw a warning about incompatible options and just give the net anyway.
                 # if instead we want to error out and prevent generation, uncomment this line:
                 # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
-                warning(
-                    f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
+                warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
                 self.multiworld.push_precollected(net)
 
         if self.options.gadget == "club":
@@ -236,8 +237,7 @@ class ApeEscapeWorld(World):
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
 
-        for _ in range(
-                len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
+        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
                 self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
@@ -267,15 +267,14 @@ class ApeEscapeWorld(World):
     def fill_slot_data(self):
         bytestowrite = []
         entranceids = []
-        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
-                        0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
         orderedfirstroomids = []
         for x in range(0, 22):
             entranceids.append(self.entranceorder[x].entrance)
             orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
             bytestowrite += self.entranceorder[x].bytes
-            bytestowrite.append(0)  # We need a separator byte after each level name.
-
+            bytestowrite.append(0) # We need a separator byte after each level name.
+            
         return {
             "goal": self.options.goal.value,
             "bossrequirement": self.options.bossrequirement.value,
@@ -294,9 +293,9 @@ class ApeEscapeWorld(World):
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
             "lowoxygensounds": self.options.lowoxygensounds.value,
-            "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
-            "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
-            "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
+            "levelnames": bytestowrite, # List of level names in entrance order. FF leads to the first.
+            "entranceids": entranceids, # Not used by the client. List of level ids in entrance order.
+            "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value),
             "death_link": self.options.death_link.value,
 
@@ -304,10 +303,9 @@ class ApeEscapeWorld(World):
 
     def write_spoiler(self, spoiler_handle: TextIO):
         if self.options.entrance.value != 0x00:
-            spoiler_handle.write(
-                f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
+            spoiler_handle.write(f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
             for x in range(0, 22):
-                spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
+                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
             spoiler_handle.write(f"\n")
 
     def generate_output(self, output_directory: str):
