@@ -2920,6 +2920,7 @@ def TVT_Tank_Lamp(state, world):
     return locs_accessible >= 6
 
 
+# TODO: Fix this (and possibly more?) lamp functions, this makes a lamp = false generation fail!
 def MM_Lamp(state, world):
     if state.has(AEItem.MM_Lamp.value, world.player, 1):
         return True
