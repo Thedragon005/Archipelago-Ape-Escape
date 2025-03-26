@@ -64,7 +64,7 @@ event_table = {
 }
 
 def createItemGroups():
-    #Alliases for items
+    # Alliases for items
     GROUPED_ITEMS.setdefault("Club", []).append("Stun Club")
     GROUPED_ITEMS.setdefault("Net", []).append("Time Net")
     GROUPED_ITEMS.setdefault("Radar", []).append("Monkey Radar")
@@ -76,6 +76,7 @@ def createItemGroups():
     GROUPED_ITEMS.setdefault("Car", []).append("R.C. Car")
     GROUPED_ITEMS.setdefault("Water Net", []).append("Progressive Water Net")
 
+    # Item Groups
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Stun Club")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Time Net")
     GROUPED_ITEMS.setdefault("Gadgets", []).append("Monkey Radar")
@@ -92,6 +93,7 @@ def createItemGroups():
     GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.DI_Lamp.value)
     GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CrC_Lamp.value)
     GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.CP_Lamp.value)
+    GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.SF_Lamp.value)
     GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.TVT_Lobby_Lamp.value)
     GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.TVT_Tank_Lamp.value)
     GROUPED_ITEMS.setdefault("Lamps", []).append(AEItem.MM_Lamp.value)
