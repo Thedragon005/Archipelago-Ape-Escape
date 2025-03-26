@@ -649,10 +649,10 @@ def createLocationGroups():
         elif "Monkey" in locname and "Mailbox" not in locname:
             GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
 
-        if "Coin" in locname:
+        if "Coin" in locname and "Mailbox" not in locname:
             GROUPED_LOCATIONS.setdefault("Specter Coins", []).append(locname)
 
-        if "Specter" in locname or "Boss" in locname or "Rescue" in locname or "Defeat" in locname:
+        if ("Specter" in locname and "Factory" not in locname) or "Boss" in locname or "Rescue" in locname or "Defeat" in locname:
             GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
 
         if "Mailbox" in locname:
