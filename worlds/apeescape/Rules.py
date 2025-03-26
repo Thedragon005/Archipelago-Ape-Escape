@@ -2851,8 +2851,8 @@ def MM_DoubleDoor(state, world):
 
 
 def CB_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.CB_Lamp.value, world.player, 1)
+    if state.has(AEItem.CB_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W4L1CoolBlue.value, AELocation.W4L1Sandy.value, AELocation.W4L1ShellE.value, AELocation.W4L1Gidget.value, AELocation.W4L1Shaka.value, AELocation.W4L1MaxMahalo.value, AELocation.W4L1Moko.value, AELocation.W4L1Puka.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2861,8 +2861,8 @@ def CB_Lamp(state, world):
 
 
 def DI_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.DI_Lamp.value, world.player, 1)
+    if state.has(AEItem.DI_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W4L3Stuw.value, AELocation.W4L3TonTon.value, AELocation.W4L3Murky.value, AELocation.W4L3Howeerd.value, AELocation.W4L3Robbin.value, AELocation.W4L3Jakkee.value, AELocation.W4L3Frederic.value, AELocation.W4L3Baba.value, AELocation.W4L3Mars.value, AELocation.W4L3Horke.value, AELocation.W4L3Quirck.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2871,8 +2871,8 @@ def DI_Lamp(state, world):
 
 
 def CRC_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.CrC_Lamp.value, world.player, 1)
+    if state.has(AEItem.CrC_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W7L3Naners.value, AELocation.W7L3Robart.value, AELocation.W7L3Neeners.value, AELocation.W7L3Gustav.value, AELocation.W7L3Wilhelm.value, AELocation.W7L3Emmanuel.value, AELocation.W7L3SirCutty.value, AELocation.W7L3Calligan.value, AELocation.W7L3Castalist.value, AELocation.W7L3Deveneom.value, AELocation.W7L3Igor.value, AELocation.W7L3Charles.value, AELocation.W7L3Astur.value, AELocation.W7L3Kilserack.value, AELocation.W7L3Ringo.value, AELocation.W7L3Densil.value, AELocation.W7L3Figero.value, AELocation.W7L3Fej.value, AELocation.W7L3Joey.value, AELocation.W7L3Donqui.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2881,8 +2881,8 @@ def CRC_Lamp(state, world):
 
 
 def CP_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.CP_Lamp.value, world.player, 1)
+    if state.has(AEItem.CP_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W8L1Kaine.value, AELocation.W8L1Jaxx.value, AELocation.W8L1Gehry.value, AELocation.W8L1Alcatraz.value, AELocation.W8L1Tino.value, AELocation.W8L1QBee.value, AELocation.W8L1McManic.value, AELocation.W8L1Dywan.value, AELocation.W8L1CKHutch.value, AELocation.W8L1Winky.value, AELocation.W8L1BLuv.value, AELocation.W8L1Camper.value, AELocation.W8L1Huener.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2891,8 +2891,8 @@ def CP_Lamp(state, world):
 
 
 def SF_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.SF_Lamp.value, world.player, 1)
+    if state.has(AEItem.SF_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W8L2BigShow.value, AELocation.W8L2Dreos.value, AELocation.W8L2Reznor.value, AELocation.W8L2Urkel.value, AELocation.W8L2VanillaS.value, AELocation.W8L2Radd.value, AELocation.W8L2Shimbo.value, AELocation.W8L2Hurt.value, AELocation.W8L2String.value, AELocation.W8L2Khamo.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2901,8 +2901,8 @@ def SF_Lamp(state, world):
 
 
 def TVT_Lobby_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1)
+    if state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W8L3Fredo.value, AELocation.W8L3Charlee.value, AELocation.W8L3Mach3.value, AELocation.W8L3Tortuss.value, AELocation.W8L3Manic.value, AELocation.W8L3Ruptdis.value, AELocation.W8L3Eighty7.value, AELocation.W8L3Danio.value, AELocation.W8L3Roosta.value, AELocation.W8L3Tellis.value, AELocation.W8L3Whack.value, AELocation.W8L3Frostee.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2911,8 +2911,8 @@ def TVT_Lobby_Lamp(state, world):
 
 
 def TVT_Tank_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1)
+    if state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1):
+        return True
 
     locs_to_check = [AELocation.W8L3Fredo.value, AELocation.W8L3Charlee.value, AELocation.W8L3Mach3.value, AELocation.W8L3Tortuss.value, AELocation.W8L3Manic.value, AELocation.W8L3Ruptdis.value, AELocation.W8L3Eighty7.value, AELocation.W8L3Danio.value, AELocation.W8L3Roosta.value, AELocation.W8L3Tellis.value, AELocation.W8L3Whack.value, AELocation.W8L3Frostee.value]
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
@@ -2921,8 +2921,8 @@ def TVT_Tank_Lamp(state, world):
 
 
 def MM_Lamp(state, world):
-    if world.options.lamp == "true":
-        return state.has(AEItem.MM_Lamp.value, world.player, 1)
+    if state.has(AEItem.MM_Lamp.value, world.player, 1):
+        return True
 
     # TODO: check exactly which monkeys apply to this lamp.
     locs_to_check = [AELocation.W9L1Donovan.value, AELocation.W9L1Laura.value]
