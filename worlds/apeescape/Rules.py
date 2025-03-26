@@ -1332,7 +1332,7 @@ def set_transitions(self):
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, 
                         lambda state: HasHoop(state, self) or HasRC(state, self))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, 
-                        lambda state: state.has("MM-Button", self.player, 1))
+                        lambda state: state.has("MM-Button", self.player, 1) and (CanHitWheel(state, self) or HasFlyer(state, self)))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value,
                         lambda state: True)
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value,
