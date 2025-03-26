@@ -1363,7 +1363,6 @@ class ApeEscapeClient(BizHawkClient):
         GlobalLamp_LocalUpdate = Lamps_Reads[7]
         transitionPhase = Lamps_Reads[8]
 
-
         # Deactivate Monkeys detection for lamps and switch to manual door opening if lamp shuffle is activated
         # Condition for some rooms that require the same addresses to function properly
         specialrooms = [41, 44, 67, 75, 76]
@@ -1371,17 +1370,17 @@ class ApeEscapeClient(BizHawkClient):
         Lamps_writes = []
 
         # Does not execute the function if you not in a level
-        if (gameState not in (RAM.gameState['InLevel'],RAM.gameState['InLevelTT'])):
+        if (gameState not in (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'])):
             return None
 
-        #print("lamps_unlocks_handling")
+        # print("lamps_unlocks_handling")
 
         lampDoors_toggles = RAM.lampDoors_toggles
         # Trigger Monkey Lamps depending on Lamp states
         boolOpenDoor = False
 
         # Update lamp doors depending on value
-        #print(lampDoors_toggles.keys())
+        # print(lampDoors_toggles.keys())
         GotLamp = False
         RoomHaveLamp = False
         if currentRoom in localLampsUpdate:
@@ -1403,11 +1402,12 @@ class ApeEscapeClient(BizHawkClient):
             NearbyRoomHaveLamp = True
 
         if ctx.slot_data["lamp"] == 0x00:
-            #print(NearbyRoom)
-            #print(NearbyRoomHaveLamp)
+            # print(NearbyRoom)
+            # print(NearbyRoomHaveLamp)
 
-            #If the room had a lamp, activate all values while going in the transition
-            if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (RoomHaveLamp == True and transitionPhase != 0x06):
+            # If the room had a lamp, activate all values while going in the transition
+            if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (
+                    RoomHaveLamp == True and transitionPhase != 0x06):
                 print("LampRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
@@ -1427,7 +1427,7 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
 
         else:
-            if NearbyRoom in specialrooms and transitionPhase == 0x06:
+            if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
                 print("SpecialRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
@@ -1444,20 +1444,20 @@ class ApeEscapeClient(BizHawkClient):
                 lamplist_keys = list(lampDoors_toggles[currentRoom].keys())
                 lamplist_values = list(lampDoors_toggles[currentRoom].values())
 
-                #print(lamplist_values)
+                # print(lamplist_values)
                 for x in range(len(lamplist_keys)):
-                    Lamps_writes = []
+                    Lamps_writes2 = []
                     Lamps_Guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
-                    #lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
+                    # lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
                     lamp_values = list(lamplist_values[x])
                     lamp_bytes = lamp_values[0]
                     lamp_openvalue = lamp_values[1].to_bytes(lamp_bytes, "little")
                     lamp_closedvalue = lamp_values[2].to_bytes(lamp_bytes, "little")
                     lamp_address = (lamplist_keys[x])
-                    Lamps_writes += [(lamp_address, lamp_openvalue, "MainRAM")]
+                    Lamps_writes2 += [(lamp_address, lamp_openvalue, "MainRAM")]
                     Lamps_Guards += [(lamp_address, lamp_closedvalue, "MainRAM")]
 
-                    await bizhawk.guarded_write(ctx.bizhawk_ctx,Lamps_writes,Lamps_Guards)
+                    await bizhawk.guarded_write(ctx.bizhawk_ctx, Lamps_writes2, Lamps_Guards)
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 
     async def traps_handling(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
