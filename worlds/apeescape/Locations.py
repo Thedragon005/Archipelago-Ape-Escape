@@ -646,7 +646,7 @@ def createLocationGroups():
             GROUPED_LOCATIONS.setdefault("Monkey Madness", []).append(locname)
             if "Madness Monkey" in locname:
                 GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
-        elif "Monkey" in locname:
+        elif "Monkey" in locname and "Mailbox" not in locname:
             GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
 
         if "Coin" in locname:

@@ -163,17 +163,8 @@ class ApeEscapeWorld(World):
         elif self.options.unlocksperkey == 0x03:
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
 
-        # Monkey Lamps shuffle
-        if self.options.lamp == "false": # TODO / IHNN note - this is wrong and will pre-open ALL LAMP GATES rather than use the vanilla behavior!!!
-            self.multiworld.push_precollected(CB_Lamp)
-            self.multiworld.push_precollected(DI_Lamp)
-            self.multiworld.push_precollected(CrC_Lamp)
-            self.multiworld.push_precollected(CP_Lamp)
-            self.multiworld.push_precollected(SF_Lamp)
-            self.multiworld.push_precollected(TVT_Lobby_Lamp)
-            self.multiworld.push_precollected(TVT_Tank_Lamp)
-            self.multiworld.push_precollected(MM_Lamp)
-        else:
+        # Monkey Lamp shuffle - only add to the pool if the option is on (treat as vanilla otherwise)
+        if self.options.lamp == "true":
             self.itempool += [CB_Lamp]
             self.itempool += [DI_Lamp]
             self.itempool += [CrC_Lamp]
@@ -193,7 +184,7 @@ class ApeEscapeWorld(World):
         else:  # On
             self.itempool += [waternet]
 
-        # Net shuffle handling.
+        # Net shuffle handling
         if self.options.shufflenet == "false":
             self.multiworld.push_precollected(net)
         elif self.options.shufflenet == "true":
