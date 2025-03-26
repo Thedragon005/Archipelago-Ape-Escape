@@ -226,6 +226,21 @@ class LowOxygenSounds(Choice):
     option_on = 0x02
     default = option_half
 
+class Banana(Choice):
+    """Go Bananas.
+
+        off: No Bananas.
+        on: Bananas.
+
+
+        Supported values: off, on
+        Default value: off
+    """
+    display_name = "Bananas"
+    option_off = 0x00
+    option_on = 0x01
+    default = option_off
+
 
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
@@ -240,5 +255,6 @@ class ApeEscapeOptions(PerGameCommonOptions):
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
+    banana: Banana
     lowoxygensounds: LowOxygenSounds
     death_link: DeathLink

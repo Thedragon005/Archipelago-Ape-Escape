@@ -642,7 +642,7 @@ class AEItem(Enum):
     TVT_Lobby_Lamp = "TV Tower Monkey Lamp (Lobby)"
     TVT_Tank_Lamp = "TV Tower Monkey Lamp (Tank Room)"
     MM_Lamp = "Monkey Madness Monkey Lamp"
-    Nothing = "Banana Peel"
+    Nothing = "Banana"
     MMLobbyDoubleDoorKey = "Monkey Madness Double Door Key"
     Shirt = "Jacket"
     Triangle = "Energy Chip"
@@ -654,3 +654,4 @@ class AEItem(Enum):
     ThreeFlash = "3 Explosive Pellets"
     Rocket = "Guided Pellet"
     ThreeRocket = "3 Guided Pellets"
+    BananaPeel = "Banana Peel"

@@ -930,7 +930,8 @@ class RAM:
         "BiggerTriangle": 0x216,
         "FiveCookies": 0x217,
         "ThreeFlash": 0x218,
-        "ThreeRocket": 0x219
+        "ThreeRocket": 0x219,
+        "BananaPeel": 0x250
 
     }
 

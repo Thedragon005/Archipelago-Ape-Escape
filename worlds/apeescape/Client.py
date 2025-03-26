@@ -48,7 +48,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     #TODO Remove when doing official PR
-    client_version = "0.7.2"
+    client_version = "0.7.2-bananas"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -100,6 +100,7 @@ class ApeEscapeClient(BizHawkClient):
         self.TVT_Lobby_Button = 0
         self.bool_MMDoubleDoor = False
         self.bool_LampGlobal = False
+        self.gotBanana = False
         self.lowOxygenCounter = 1
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
@@ -443,6 +444,7 @@ class ApeEscapeClient(BizHawkClient):
 
             #Write tables
             itemsWrites = []
+            TrapWrites = []
             Menuwrites = []
 
             # Handle death link
@@ -505,6 +507,8 @@ class ApeEscapeClient(BizHawkClient):
             if TVTLobbyLampStateFromServer != 0x00 and TVTLobbyLampStateFromServer != 0xFF: TVTLobbyLampState = TVTLobbyLampStateFromServer
             if TVTTankLampStateFromServer != 0x00 and TVTTankLampStateFromServer != 0xFF: TVTTankLampState = TVTTankLampStateFromServer
             if MMLampStateFromServer != 0x00 and MMLampStateFromServer != 0xFF: MMLampState = MMLampStateFromServer
+
+
 
             START_recv_index = recv_index
 
@@ -591,10 +595,12 @@ class ApeEscapeClient(BizHawkClient):
                                 rocketAmmo += 3
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
+                        elif (item.item - self.offset) == RAM.items["BananaPeel"]:
+                            self.gotBanana = True
 
 
                 # Writes to memory if there is a new item, after the loop
-                itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM"),]
+                itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.energyChipsAddress, energyChips.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.cookieAddress, cookies.to_bytes(1, "little"), "MainRAM")]
@@ -840,8 +846,14 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in coins)
                 }])
 
+            # ===== Trap Handling    ========
+            # For Traps. Will need to rework to make it a queue instead of instant
+            # ===============================
+            Trap_Reads = [gameState,gotMail,spikeState2,menuState,menuState2,self.gotBanana]
+            await self.traps_handling(ctx,Trap_Reads)
+
             # ===== MM Optimizations =========
-            # Execute the code segment for MM Double Door and related optimizations
+            # Credits skipping function for S1 and S2
             Credits_Reads = [currentRoom,gameState,S1_Cutscene_Redirection,S2_Cutscene_Redirection]
             await self.Credits_handling(ctx, Credits_Reads)
             # ================================
@@ -1427,7 +1439,7 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
 
         else:
-            if NearbyRoom in specialrooms and transitionPhase == 0x06:
+            if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
                 print("SpecialRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
@@ -1446,7 +1458,7 @@ class ApeEscapeClient(BizHawkClient):
 
                 #print(lamplist_values)
                 for x in range(len(lamplist_keys)):
-                    Lamps_writes = []
+                    Lamps_writes2 = []
                     Lamps_Guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
                     #lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
                     lamp_values = list(lamplist_values[x])
@@ -1454,16 +1466,43 @@ class ApeEscapeClient(BizHawkClient):
                     lamp_openvalue = lamp_values[1].to_bytes(lamp_bytes, "little")
                     lamp_closedvalue = lamp_values[2].to_bytes(lamp_bytes, "little")
                     lamp_address = (lamplist_keys[x])
-                    Lamps_writes += [(lamp_address, lamp_openvalue, "MainRAM")]
+                    Lamps_writes2 += [(lamp_address, lamp_openvalue, "MainRAM")]
                     Lamps_Guards += [(lamp_address, lamp_closedvalue, "MainRAM")]
 
-                    await bizhawk.guarded_write(ctx.bizhawk_ctx,Lamps_writes,Lamps_Guards)
+                    await bizhawk.guarded_write(ctx.bizhawk_ctx,Lamps_writes2,Lamps_Guards)
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 
-    async def traps_handling(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
-        print("a")
+    async def traps_handling(self, ctx: "BizHawkClientContext",Trap_Reads) -> None:
+
         # Notes for traps for now :
         # Banana Peel = Slip by setting SpikeState2 to 0x2F
+        gameState = Trap_Reads[0]
+        gotMail = Trap_Reads[1]
+        spikeState2 = Trap_Reads[2]
+        menuState = Trap_Reads[3]
+        menuState2 = Trap_Reads[4]
+        gotBanana = Trap_Reads[5]
+
+        Trap_Writes = []
+        Trap_Guards = []
+        invalid_gameStates = (RAM.gameState['InLevel'],RAM.gameState['InLevelTT'],RAM.gameState['TimeStation'],RAM.gameState['Jake'])
+        # Does not send the traps in these states
+        if (gameState not in invalid_gameStates or (menuState == 0 and menuState2 == 1) or (gotMail != 0x00)):
+            if gotBanana == True:
+                print("Waiting on valid state")
+                print(gameState)
+                print(menuState)
+                print(menuState2)
+                print(gotMail)
+
+            #Exit without sending trap,keeping it active for the next pass
+            return None
+
+        if gotBanana == True:
+            print("Banana!")
+            self.gotBanana = False
+            Trap_Writes += [(RAM.spikeState2Address, 0x2F.to_bytes(1, "little"), "MainRAM")]
+            await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
 
     async def level_select_optimization(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
         # For coin display to be ignored while in Level Select

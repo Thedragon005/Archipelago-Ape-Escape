@@ -79,6 +79,7 @@ class ApeEscapeWorld(World):
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
+        self.banana: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
@@ -96,6 +97,7 @@ class ApeEscapeWorld(World):
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
         self.shufflewaternet = self.options.shufflewaternet.value
+        self.banana = self.options.banana.value
         self.itempool = []
 
     def create_regions(self):
@@ -121,6 +123,13 @@ class ApeEscapeWorld(World):
     def create_item_filler(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
         classification = ItemClassification.filler
+
+        item = ApeEscapeItem(name, classification, item_id, self.player)
+        return item
+
+    def create_item_trap(self, name: str) -> ApeEscapeItem:
+        item_id = item_table[name]
+        classification = ItemClassification.trap
 
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
@@ -231,8 +240,13 @@ class ApeEscapeWorld(World):
         # This is where creating items for increasing special pellet maximums would go.
 
         # Junk item fill: randomly pick items according to a set of weights.
-        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets, and Nothing, respectively.
-        weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 1]
+        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets,Nothing and Banana Peel, respectively.
+        if self.options == False:
+            # Normal chances
+            weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 1,0]
+        else:
+            # Replace 1 Chip to 6% chance and Banana Peel to 25%
+            weights = [7, 16, 3, 1, 1, 1, 9, 3, 9, 3, 1,46]
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
 
@@ -258,8 +272,10 @@ class ApeEscapeWorld(World):
                 self.itempool += [self.create_item_useful(AEItem.Rocket.value)]
             elif weights[8] < randomFiller <= weights[9]:
                 self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
-            else:
+            elif weights[9] < randomFiller <= weights[10]:
                 self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
+            else:
+                self.itempool += [self.create_item_trap(AEItem.BananaPeel.value)]
 
         self.multiworld.itempool += self.itempool
 

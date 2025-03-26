@@ -56,7 +56,11 @@ item_table = {
     AEItem.Flash.value: RAM.items["Flash"],
     AEItem.ThreeFlash.value: RAM.items["ThreeFlash"],
     AEItem.Rocket.value: RAM.items["Rocket"],
-    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"]
+    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"],
+
+    # Traps
+    AEItem.BananaPeel.value: RAM.items["BananaPeel"],
+
 }
 
 event_table = {
