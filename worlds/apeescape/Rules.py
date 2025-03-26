@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 # Creates an event item in a specified region. Thanks Aquaria for having a good template!
-# Example call: self.__add_event_location(self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken", "DR-Block")
+# Example call: __add_event_location(self, self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken", "DR-Block")
 def __add_event_location(self, region: Region, name: str, event_name: str) -> None:
     location: ApeEscapeLocation = ApeEscapeLocation(self.player, name, None, region)
     region.locations.append(location)
@@ -48,8 +48,11 @@ def create_event_items(self):
     __add_event_location(self, self.get_region(AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value), "Monkey Madness - Spawn UFOs", "MM-UFOs")
     __add_event_location(self, self.get_region(AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value), "Monkey Madness - Monkey Head Room", "MM-Button")
     __add_event_location(self, self.get_region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value), "Monkey Madness - Specter 1 Open", "MM-Painting")
+    # Monkey Madness UFO monkeys - specifically for the door.
+    __add_event_location(self, self.get_region(AELocation.W9L1Donovan.value), "Monkey Madness UFO Monkey 1", "MM UFO Monkey")
+    __add_event_location(self, self.get_region(AELocation.W9L1Laura.value), "Monkey Madness UFO Monkey 2", "MM UFO Monkey")
 
-''' Event items for monkeys - mostly useful for debugging. NOTE: Add "# "to the beginning to add these here.
+# ''' Event items for monkeys - mostly useful for debugging. NOTE: Add "# " to the beginning to uncomment.
     # Monkeys by level, for lamps and Specter 2 vanilla condition.
     # Fossil Field
     __add_event_location(self, self.get_region(AELocation.W1L1Noonan.value), "Fossil Field Monkey 1", "FF Monkey")
@@ -274,9 +277,6 @@ def create_event_items(self):
     __add_event_location(self, self.get_region(AELocation.W9L1Carro.value), "Monkey Madness Monkey 22", "MM Monkey")
     __add_event_location(self, self.get_region(AELocation.W9L1Carlito.value), "Monkey Madness Monkey 23", "MM Monkey")
     __add_event_location(self, self.get_region(AELocation.W9L1BG.value), "Monkey Madness Monkey 24", "MM Monkey")
-    # Monkey Madness UFO monkeys - specifically for the door.
-    __add_event_location(self, self.get_region(AELocation.W9L1Donovan.value), "Monkey Madness UFO Monkey 1", "MM UFO Monkey")
-    __add_event_location(self, self.get_region(AELocation.W9L1Laura.value), "Monkey Madness UFO Monkey 2", "MM UFO Monkey")
 '''
 # I love this trick :) '''
 
@@ -2635,7 +2635,6 @@ def set_locations(self):
         connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
                         lambda state: (HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self)) and HasNet(state, self))
     # Castle Outside
-    # we need state.has on "MM-UFOs"
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AELocation.W9L1Donovan.value, 
                         lambda state: state.has("MM-UFOs", self.player, 1) and HasSling(state, self) and HasNet(state, self))
@@ -2854,85 +2853,107 @@ def CB_Lamp(state, world):
     if state.has(AEItem.CB_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W4L1CoolBlue.value, AELocation.W4L1Sandy.value, AELocation.W4L1ShellE.value, AELocation.W4L1Gidget.value, AELocation.W4L1Shaka.value, AELocation.W4L1MaxMahalo.value, AELocation.W4L1Moko.value, AELocation.W4L1Puka.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("CB Monkey", world.player, 3) and world.options.lamp == "false"
 
-    return locs_accessible >= 3
+#    locs_to_check = [AELocation.W4L1CoolBlue.value, AELocation.W4L1Sandy.value, AELocation.W4L1ShellE.value, AELocation.W4L1Gidget.value, AELocation.W4L1Shaka.value, AELocation.W4L1MaxMahalo.value, AELocation.W4L1Moko.value, AELocation.W4L1Puka.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 3
 
 
 def DI_Lamp(state, world):
     if state.has(AEItem.DI_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W4L3Stuw.value, AELocation.W4L3TonTon.value, AELocation.W4L3Murky.value, AELocation.W4L3Howeerd.value, AELocation.W4L3Robbin.value, AELocation.W4L3Jakkee.value, AELocation.W4L3Frederic.value, AELocation.W4L3Baba.value, AELocation.W4L3Mars.value, AELocation.W4L3Horke.value, AELocation.W4L3Quirck.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("DI Monkey", world.player, 5) and world.options.lamp == "false"
 
-    return locs_accessible >= 5
+#    locs_to_check = [AELocation.W4L3Stuw.value, AELocation.W4L3TonTon.value, AELocation.W4L3Murky.value, AELocation.W4L3Howeerd.value, AELocation.W4L3Robbin.value, AELocation.W4L3Jakkee.value, AELocation.W4L3Frederic.value, AELocation.W4L3Baba.value, AELocation.W4L3Mars.value, AELocation.W4L3Horke.value, AELocation.W4L3Quirck.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 5
 
 
 def CRC_Lamp(state, world):
     if state.has(AEItem.CrC_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W7L3Naners.value, AELocation.W7L3Robart.value, AELocation.W7L3Neeners.value, AELocation.W7L3Gustav.value, AELocation.W7L3Wilhelm.value, AELocation.W7L3Emmanuel.value, AELocation.W7L3SirCutty.value, AELocation.W7L3Calligan.value, AELocation.W7L3Castalist.value, AELocation.W7L3Deveneom.value, AELocation.W7L3Igor.value, AELocation.W7L3Charles.value, AELocation.W7L3Astur.value, AELocation.W7L3Kilserack.value, AELocation.W7L3Ringo.value, AELocation.W7L3Densil.value, AELocation.W7L3Figero.value, AELocation.W7L3Fej.value, AELocation.W7L3Joey.value, AELocation.W7L3Donqui.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("CrC Monkey", world.player, 5) and world.options.lamp == "false"
 
-    return locs_accessible >= 5
+#    locs_to_check = [AELocation.W7L3Naners.value, AELocation.W7L3Robart.value, AELocation.W7L3Neeners.value, AELocation.W7L3Gustav.value, AELocation.W7L3Wilhelm.value, AELocation.W7L3Emmanuel.value, AELocation.W7L3SirCutty.value, AELocation.W7L3Calligan.value, AELocation.W7L3Castalist.value, AELocation.W7L3Deveneom.value, AELocation.W7L3Igor.value, AELocation.W7L3Charles.value, AELocation.W7L3Astur.value, AELocation.W7L3Kilserack.value, AELocation.W7L3Ringo.value, AELocation.W7L3Densil.value, AELocation.W7L3Figero.value, AELocation.W7L3Fej.value, AELocation.W7L3Joey.value, AELocation.W7L3Donqui.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 5
 
 
 def CP_Lamp(state, world):
     if state.has(AEItem.CP_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W8L1Kaine.value, AELocation.W8L1Jaxx.value, AELocation.W8L1Gehry.value, AELocation.W8L1Alcatraz.value, AELocation.W8L1Tino.value, AELocation.W8L1QBee.value, AELocation.W8L1McManic.value, AELocation.W8L1Dywan.value, AELocation.W8L1CKHutch.value, AELocation.W8L1Winky.value, AELocation.W8L1BLuv.value, AELocation.W8L1Camper.value, AELocation.W8L1Huener.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("CP Monkey", world.player, 3) and world.options.lamp == "false"
 
-    return locs_accessible >= 3
+#    locs_to_check = [AELocation.W8L1Kaine.value, AELocation.W8L1Jaxx.value, AELocation.W8L1Gehry.value, AELocation.W8L1Alcatraz.value, AELocation.W8L1Tino.value, AELocation.W8L1QBee.value, AELocation.W8L1McManic.value, AELocation.W8L1Dywan.value, AELocation.W8L1CKHutch.value, AELocation.W8L1Winky.value, AELocation.W8L1BLuv.value, AELocation.W8L1Camper.value, AELocation.W8L1Huener.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 3
 
 
 def SF_Lamp(state, world):
     if state.has(AEItem.SF_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W8L2BigShow.value, AELocation.W8L2Dreos.value, AELocation.W8L2Reznor.value, AELocation.W8L2Urkel.value, AELocation.W8L2VanillaS.value, AELocation.W8L2Radd.value, AELocation.W8L2Shimbo.value, AELocation.W8L2Hurt.value, AELocation.W8L2String.value, AELocation.W8L2Khamo.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("SF Monkey", world.player, 3) and world.options.lamp == "false"
 
-    return locs_accessible >= 3
+#    locs_to_check = [AELocation.W8L2BigShow.value, AELocation.W8L2Dreos.value, AELocation.W8L2Reznor.value, AELocation.W8L2Urkel.value, AELocation.W8L2VanillaS.value, AELocation.W8L2Radd.value, AELocation.W8L2Shimbo.value, AELocation.W8L2Hurt.value, AELocation.W8L2String.value, AELocation.W8L2Khamo.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 3
 
 
 def TVT_Lobby_Lamp(state, world):
     if state.has(AEItem.TVT_Lobby_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W8L3Fredo.value, AELocation.W8L3Charlee.value, AELocation.W8L3Mach3.value, AELocation.W8L3Tortuss.value, AELocation.W8L3Manic.value, AELocation.W8L3Ruptdis.value, AELocation.W8L3Eighty7.value, AELocation.W8L3Danio.value, AELocation.W8L3Roosta.value, AELocation.W8L3Tellis.value, AELocation.W8L3Whack.value, AELocation.W8L3Frostee.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("TVT Monkey", world.player, 3) and world.options.lamp == "false"
 
-    return locs_accessible >= 3
+#    locs_to_check = [AELocation.W8L3Fredo.value, AELocation.W8L3Charlee.value, AELocation.W8L3Mach3.value, AELocation.W8L3Tortuss.value, AELocation.W8L3Manic.value, AELocation.W8L3Ruptdis.value, AELocation.W8L3Eighty7.value, AELocation.W8L3Danio.value, AELocation.W8L3Roosta.value, AELocation.W8L3Tellis.value, AELocation.W8L3Whack.value, AELocation.W8L3Frostee.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 3
 
 
 def TVT_Tank_Lamp(state, world):
     if state.has(AEItem.TVT_Tank_Lamp.value, world.player, 1):
         return True
 
-    locs_to_check = [AELocation.W8L3Fredo.value, AELocation.W8L3Charlee.value, AELocation.W8L3Mach3.value, AELocation.W8L3Tortuss.value, AELocation.W8L3Manic.value, AELocation.W8L3Ruptdis.value, AELocation.W8L3Eighty7.value, AELocation.W8L3Danio.value, AELocation.W8L3Roosta.value, AELocation.W8L3Tellis.value, AELocation.W8L3Whack.value, AELocation.W8L3Frostee.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("TVT Monkey", world.player, 6) and world.options.lamp == "false"
 
-    return locs_accessible >= 6
+#    locs_to_check = [AELocation.W8L3Fredo.value, AELocation.W8L3Charlee.value, AELocation.W8L3Mach3.value, AELocation.W8L3Tortuss.value, AELocation.W8L3Manic.value, AELocation.W8L3Ruptdis.value, AELocation.W8L3Eighty7.value, AELocation.W8L3Danio.value, AELocation.W8L3Roosta.value, AELocation.W8L3Tellis.value, AELocation.W8L3Whack.value, AELocation.W8L3Frostee.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 6
 
 
-# TODO: Fix this (and possibly more?) lamp functions, this makes a lamp = false generation fail!
 def MM_Lamp(state, world):
     if state.has(AEItem.MM_Lamp.value, world.player, 1):
         return True
 
     # TODO: check exactly which monkeys apply to this lamp.
-    locs_to_check = [AELocation.W9L1Donovan.value, AELocation.W9L1Laura.value]
-    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+    return state.has("MM UFO Monkey", world.player, 2) and world.options.lamp == "false"
 
-    return locs_accessible >= 2
+#    locs_to_check = [AELocation.W9L1Donovan.value, AELocation.W9L1Laura.value]
+#    locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
+#    return locs_accessible >= 2
 
 
 def HasAllMonkeys(state, world):
+# ''' Event item checking - floods spoiler logs. NOTE: Add "# " to the beginning to uncomment.
+    return (state.has("FF Monkey", world.player, 4) and state.has("PO Monkey", world.player, 4)
+        and state.has("ML Monkey", world.player, 7) and state.has("TJ Monkey", world.player, 14)
+        and state.has("DR Monkey", world.player, 13) and state.has("CR Monkey", world.player, 8)
+        and state.has("CB Monkey", world.player, 8) and state.has("CoC Monkey", world.player, 8)
+        and state.has("DI Monkey", world.player, 11) and state.has("SM Monkey", world.player, 6)
+        and state.has("FR Monkey", world.player, 9) and state.has("HS Monkey", world.player, 9)
+        and state.has("ST Monkey", world.player, 12) and state.has("WSW Monkey", world.player, 10)
+        and state.has("CrC Monkey", world.player, 20) and state.has("CP Monkey", world.player, 13)
+        and state.has("SF Monkey", world.player, 10) and state.has("TVT Monkey", world.player, 12)
+        and state.has("MM Monkey", world.player, 24))
+'''
+# '''
+
+''' can_reach checking - seems to error out sometimes. NOTE: Add "# " to the beginning to uncomment.
     locs_to_check = [
     AELocation.W1L1Noonan.value, AELocation.W1L1Jorjy.value, AELocation.W1L1Nati.value,
     AELocation.W1L1TrayC.value, AELocation.W1L2Shay.value, AELocation.W1L2DrMonk.value,
@@ -3006,21 +3027,11 @@ def HasAllMonkeys(state, world):
     locs_accessible = CountAccessibleLocations(state, world, locs_to_check)
 
     return locs_accessible >= 204
-
-''' Event item checking - floods spoiler logs. NOTE: Add "# "to the beginning to add these here.
-    return (state.has("FF Monkey", world.player, 4) and state.has("PO Monkey", world.player, 4)
-        and state.has("ML Monkey", world.player, 7) and state.has("TJ Monkey", world.player, 14)
-        and state.has("DR Monkey", world.player, 13) and state.has("CR Monkey", world.player, 8)
-        and state.has("CB Monkey", world.player, 8) and state.has("CoC Monkey", world.player, 8)
-        and state.has("DI Monkey", world.player, 11) and state.has("SM Monkey", world.player, 6)
-        and state.has("FR Monkey", world.player, 9) and state.has("HS Monkey", world.player, 9)
-        and state.has("ST Monkey", world.player, 12) and state.has("WSW Monkey", world.player, 10)
-        and state.has("CrC Monkey", world.player, 20) and state.has("CP Monkey", world.player, 13)
-        and state.has("SF Monkey", world.player, 10) and state.has("TVT Monkey", world.player, 12)
-        and state.has("MM Monkey", world.player, 24))
 '''
 # '''
 
+
+# Using this method seems to cause race condition errors in playthrough calculation?
 def CountAccessibleLocations(state, world, locs_to_check):
     locs_accessible = 0
     for x in range(len(locs_to_check)):
