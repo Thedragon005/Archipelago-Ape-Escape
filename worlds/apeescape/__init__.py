@@ -241,11 +241,11 @@ class ApeEscapeWorld(World):
 
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets,Nothing and Banana Peel, respectively.
-        if self.options == False:
+        if self.options.banana == False:
             # Normal chances
             weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 1,0]
         else:
-            # Replace 1 Chip to 6% chance and Banana Peel to 25%
+            # Replace some of the percentages and set Banana Peel to 46%
             weights = [7, 16, 3, 1, 1, 1, 9, 3, 9, 3, 1,46]
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
