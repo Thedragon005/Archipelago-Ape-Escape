@@ -654,4 +654,5 @@ class AEItem(Enum):
     ThreeFlash = "3 Explosive Pellets"
     Rocket = "Guided Pellet"
     ThreeRocket = "3 Guided Pellets"
-    BananaPeel = "Banana Peel"
+    BananaPeelTrap = "Banana Peel"
+    GadgetShuffleTrap = "Gadget Shuffle"

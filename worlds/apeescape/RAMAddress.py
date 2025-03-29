@@ -637,7 +637,7 @@ class RAM:
         },
         12: {  # fan basement
             426 : 80,
-            427 : 70
+            427 : {70,97}
         },
         13: {  # obelisk inside
             428 : 97
@@ -931,7 +931,8 @@ class RAM:
         "FiveCookies": 0x217,
         "ThreeFlash": 0x218,
         "ThreeRocket": 0x219,
-        "BananaPeel": 0x250
+        "BananaPeelTrap": 0x250,
+        "GadgetShuffleTrap": 0x251
 
     }
 

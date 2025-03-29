@@ -79,7 +79,7 @@ class ApeEscapeWorld(World):
         self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
-        self.banana: Optional[int] = 0
+        self.trapfillpercentage: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
@@ -97,7 +97,7 @@ class ApeEscapeWorld(World):
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
         self.shufflewaternet = self.options.shufflewaternet.value
-        self.banana = self.options.banana.value
+        self.trapfillpercentage = self.options.trapfillpercentage.value
         self.itempool = []
 
     def create_regions(self):
@@ -205,7 +205,8 @@ class ApeEscapeWorld(World):
                 # All locations require net with these options, so throw a warning about incompatible options and just give the net anyway.
                 # if instead we want to error out and prevent generation, uncomment this line:
                 # raise OptionError(f"{self.player_name} has no sphere 1 locations!")
-                warning(f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
+                warning(
+                    f"Warning: selected options for {self.player_name} have no sphere 1 locations. Giving Time Net.")
                 self.multiworld.push_precollected(net)
 
         if self.options.gadget == "club":
@@ -239,18 +240,34 @@ class ApeEscapeWorld(World):
 
         # This is where creating items for increasing special pellet maximums would go.
 
+        # Trap item fill: randomly pick items according to a set of weights.
+        # Trap weights : Banana Peel, Gadget Shuffle
+
+        if self.options.trapfillpercentage != 0:
+            traps_weights = [75, 25]
+            traps_percentage = self.options.trapfillpercentage / 100
+            traps_numbers = round((len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations) * traps_percentage, None)
+
+            for x in range(1, len(traps_weights)):
+                traps_weights[x] = traps_weights[x] + traps_weights[x - 1]
+
+            for _ in range(traps_numbers):
+                randomTrap = self.random.randint(1, traps_weights[len(traps_weights) - 1])
+                if 0 < randomTrap <= traps_weights[0]:
+                    self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
+                else:
+                    self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
+            print("Created : " + str(traps_numbers) + " traps")
         # Junk item fill: randomly pick items according to a set of weights.
-        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets,Nothing and Banana Peel, respectively.
-        if self.options.banana == False:
-            # Normal chances
-            weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 1,0]
-        else:
-            # Replace some of the percentages and set Banana Peel to 46%
-            weights = [7, 16, 3, 1, 1, 1, 9, 3, 9, 3, 1,46]
+        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets and Nothing, respectively.
+
+        weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 1]
+
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
-
-        for _ in range(len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations):
+        filler_number = len(self.multiworld.get_unfilled_locations(self.player)) - len(
+            self.itempool) - reservedlocations
+        for _ in range(filler_number):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
                 self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
@@ -272,24 +289,24 @@ class ApeEscapeWorld(World):
                 self.itempool += [self.create_item_useful(AEItem.Rocket.value)]
             elif weights[8] < randomFiller <= weights[9]:
                 self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
-            elif weights[9] < randomFiller <= weights[10]:
-                self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
             else:
-                self.itempool += [self.create_item_trap(AEItem.BananaPeel.value)]
+                self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
+        print("Created : " + str(filler_number) + " fillers")
 
         self.multiworld.itempool += self.itempool
 
     def fill_slot_data(self):
         bytestowrite = []
         entranceids = []
-        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
+                        0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
         orderedfirstroomids = []
         for x in range(0, 22):
             entranceids.append(self.entranceorder[x].entrance)
             orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
             bytestowrite += self.entranceorder[x].bytes
-            bytestowrite.append(0) # We need a separator byte after each level name.
-            
+            bytestowrite.append(0)  # We need a separator byte after each level name.
+
         return {
             "goal": self.options.goal.value,
             "logic": self.options.logic.value,
@@ -303,9 +320,9 @@ class ApeEscapeWorld(World):
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
             "lowoxygensounds": self.options.lowoxygensounds.value,
-            "levelnames": bytestowrite, # List of level names in entrance order. FF leads to the first.
-            "entranceids": entranceids, # Not used by the client. List of level ids in entrance order.
-            "firstrooms": orderedfirstroomids, # List of first rooms in entrance order.
+            "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
+            "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
+            "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value),
             "death_link": self.options.death_link.value,
 
@@ -313,9 +330,10 @@ class ApeEscapeWorld(World):
 
     def write_spoiler(self, spoiler_handle: TextIO):
         if self.options.entrance.value != 0x00:
-            spoiler_handle.write(f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
+            spoiler_handle.write(
+                f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
             for x in range(0, 22):
-                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
+                spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
             spoiler_handle.write(f"\n")
 
     def generate_output(self, output_directory: str):

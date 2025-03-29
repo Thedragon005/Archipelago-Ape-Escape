@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from Options import Choice, DeathLink, PerGameCommonOptions
+from Options import Choice,Range, DeathLink, PerGameCommonOptions
 
 
 class GoalOption(Choice):
@@ -226,20 +226,14 @@ class LowOxygenSounds(Choice):
     option_on = 0x02
     default = option_half
 
-class Banana(Choice):
-    """Go Bananas.
-
-        off: No Bananas.
-        on: Bananas.
-
-
-        Supported values: off, on
-        Default value: off
+class TrapFillPercentage(Range):
     """
-    display_name = "Bananas"
-    option_off = 0x00
-    option_on = 0x01
-    default = option_off
+    Replace a percentage of junk items in the item pool with random traps
+    """
+    display_name = "Trap Fill Percentage"
+    range_start = 0
+    range_end = 100
+    default = 0
 
 
 @dataclass
@@ -255,6 +249,6 @@ class ApeEscapeOptions(PerGameCommonOptions):
     gadget: GadgetOption
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
-    banana: Banana
     lowoxygensounds: LowOxygenSounds
+    trapfillpercentage: TrapFillPercentage
     death_link: DeathLink
