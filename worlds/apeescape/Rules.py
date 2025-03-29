@@ -309,10 +309,18 @@ def set_entrances(self):
     # TODO: Make the condition for entering Peak Point Matrix reflect the YAML settings.
     # This is currently just checking the vanilla condition.
     if self.options.goal == "second":
-        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
+        if self.options.bossrequirement == "vanilla":
+            connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
+        elif self.options.bossrequirement == "tokens":
+            connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, self.options.requiredtokens))
+    if self.options.goal == "tokenhunt":
+        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
-    # TODO: Make the victory condition reflect the YAML settings - if it's pure token, just check that.
-    self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
+    # TODO: Test the token condition.
+    if self.options.goal == "first" or self.options.goal == "second":
+        self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
+    elif self.options.goal == "tokenhunt":
+        self.multiworld.completion_condition[self.player] = lambda state: Tokens(state, self, self.options.requiredtokens)
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
@@ -2702,10 +2710,10 @@ def set_locations(self):
     # Specter 1
     if self.options.logic == "normal" or self.options.logic == "hard":
         connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
-                        lambda state: HasClub(state, self) or HasPunch(state, self))
+                        lambda state: (HasClub(state, self) or HasPunch(state, self)) and ((self.options.bossrequirement == "vanilla") or Tokens(state, self, self.options.requiredtokens)))
     else:
         connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
-                        lambda state: HasClub(state, self) or HasSling(state, self) or HasPunch(state, self))
+                        lambda state: (HasClub(state, self) or HasSling(state, self) or HasPunch(state, self)) and ((self.options.bossrequirement == "vanilla") or Tokens(state, self, self.options.requiredtokens)))
 
     if self.options.coin == "true":
         connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Coin73.value, 
@@ -2756,6 +2764,14 @@ def set_locations(self):
 # Item Checking Helper Functions
 def Keys(state, world, count):
     return state.has(AEItem.Key.value, world.player, count)
+
+
+def Tokens(state, world, count):
+    # Check to see if the settings would create tokens at all.
+    if world.options.bossrequirement == "vanilla" and world.options.goal != "tokenhunt":
+        return True
+
+    return state.has(AEItem.Token.value, world.player, count)
 
 
 def HasClub(state, world):

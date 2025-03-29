@@ -737,7 +737,8 @@ def create_regions(world: "ApeEscapeWorld"):
                goopo, porto, slam, junk, crib, nak, cloy, shaw, flea, schafette, donovan, laura, uribe, gordo, raeski, poopie, teacup, shine, wrench, bronson, bungee, carro, carlito, bg]
     
 
-    if options.goal == "second":
+    # Don't create Specter 2 location if it would be guaranteed to be post-goal.
+    if options.goal != "first":
         # 9-2
         L92 = Region(AEDoor.PPM_ENTRY.value, player, multiworld)
 

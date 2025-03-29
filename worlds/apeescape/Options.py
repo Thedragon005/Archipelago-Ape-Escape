@@ -26,15 +26,15 @@ class BossRequirementOption(Choice):
     """Choose the requirement to start the goal boss, if any.
 
         vanilla: The vanilla condition for reaching the boss. For Specter 1, this is just reaching the room, and for Specter 2, this is catching all monkeys.
-        coins: Collecting enough Specter Token items throughout the mutliworld will allow reaching the boss. Note: you will still require enough World Keys to enter the level containing this boss.
+        tokens: Collecting enough Specter Token items throughout the mutliworld will allow reaching the boss. Note: you will still require enough World Keys to enter the level containing this boss.
 
-        Supported values: vanilla, coins
+        Supported values: vanilla, tokens
         Default value: vanilla
     """
 
     display_name = "Boss Requirement"
     option_vanilla = 0x00
-    option_coins = 0x01
+    option_tokens = 0x01
     default = option_vanilla
 
 

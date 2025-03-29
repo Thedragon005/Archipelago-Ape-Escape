@@ -112,6 +112,13 @@ class ApeEscapeWorld(World):
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
 
+    def create_item_skipbalancing(self, name: str) -> ApeEscapeItem:
+        item_id = item_table[name]
+        classification = ItemClassification.progression_skip_balancing
+
+        item = ApeEscapeItem(name, classification, item_id, self.player)
+        return item
+
     def create_item_useful(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
         classification = ItemClassification.useful
@@ -155,6 +162,11 @@ class ApeEscapeWorld(World):
 
         self.itempool += [MM_DoubleDoorKey]
 
+        # Create the desired amount of Specter Tokens if the settings require them.
+        if self.options.goal == "tokenhunt" or self.options.bossrequirement == "tokens":
+            self.itempool += [self.create_item_skipbalancing(AEItem.Token.value) for _ in range(0, self.options.totaltokens)]
+
+        # TODO: update this section to figure out the right amount of keys. Needs to check unlocksperkey, add 1 if tokenhunt and not none, add or subtract 2 depending on coin and baseline.
         # Create enough keys to access every level, depending on the key option
         if self.options.unlocksperkey == 0x00:
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
@@ -224,9 +236,10 @@ class ApeEscapeWorld(World):
         elif self.options.gadget == "none":
             self.itempool += [club, radar, shooter, hoop, flyer, car, punch]
 
+        # Create "Victory" item for goals where the goal is at a location.
         if self.options.goal == "first":
             self.get_location(AELocation.Specter.value).place_locked_item(victory)
-        else:
+        elif self.options.goal == "second":
             self.get_location(AELocation.Specter2.value).place_locked_item(victory)
 
         # This is where creating items for increasing special pellet maximums would go.
