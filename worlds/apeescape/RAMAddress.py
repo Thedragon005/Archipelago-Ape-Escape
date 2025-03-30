@@ -1391,6 +1391,7 @@ class RAM:
     gadgetUseStateAddress = 0x0B0CC2
     spikeStateAddress = 0x0EC250
     spikeState2Address = 0x0EC23E
+    spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
     # HUGE for ER since when transition it is 98 or 204 ?
