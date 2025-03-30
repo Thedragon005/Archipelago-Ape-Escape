@@ -256,7 +256,10 @@ class ApeEscapeWorld(World):
                 if 0 < randomTrap <= traps_weights[0]:
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                 else:
-                    self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
+                    self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
+                    #Deactivated for now
+                    #self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
+
             print("Created : " + str(traps_numbers) + " traps")
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets and Nothing, respectively.
