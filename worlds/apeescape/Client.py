@@ -1015,11 +1015,10 @@ class ApeEscapeClient(BizHawkClient):
         S2_Cutscene_Redirection = hex(Credits_Reads[3])
         Credits_Writes = []
 
-        # Does not execute the function if you not in a level
-        if (gameState not in (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'])):
+        # Does not execute the function if you not in a level (Or custscene of S1)
+        if (gameState not in (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'],RAM.gameState['Cutscene2'])):
             return None
 
-        #print("Credit_handling")
         if gameState == RAM.gameState['Cutscene2']:
             if S1_Cutscene_Redirection != 0x2403000D:
                 Credits_Writes += [(RAM.S1_Cutscene_Redirection, 0x2403000D.to_bytes(4, "little"), "MainRAM")]
