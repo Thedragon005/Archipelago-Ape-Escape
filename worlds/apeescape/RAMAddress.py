@@ -1050,6 +1050,17 @@ class RAM:
     globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
     globalLamp_globalUpdate = 0x097568 # 0x097568 Default : 1444000F. Set this to 0 to disable
 
+    lampDoors_update = {
+        'LocalLamp_local_ON': 0x9062007A,
+        'LocalLamp_local_OFF': 0x90620000,
+
+        'GlobalLamp_local_ON': 0x9082007A,
+        'GlobalLamp_local_OFF': 0x90820000,
+
+        'GlobalLamp_global_ON': 0x1444000F,
+        'GlobalLamp_global_OFF': 0x14440000,
+
+    }
     lampDoors_toggles = {
         #CBLamp
         #Array order : bytesToWrite,OpenValue,ClosedValue
