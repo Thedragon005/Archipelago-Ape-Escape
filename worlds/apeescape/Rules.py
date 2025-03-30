@@ -306,13 +306,14 @@ def set_entrances(self):
     connect_regions(self, "Menu", AEDoor.SF_ENTRY.value, lambda state: Keys(state, self, self.levellist[18].keys))
     connect_regions(self, "Menu", AEDoor.TVT_ENTRY.value, lambda state: Keys(state, self, self.levellist[19].keys))
     connect_regions(self, "Menu", AEDoor.MM_SL_HUB.value, lambda state: Keys(state, self, self.levellist[20].keys))
-    # TODO: Make the condition for entering Peak Point Matrix reflect the YAML settings.
-    # This is currently just checking the vanilla condition.
+
+    # If Specter 2 is the goal: check the desired condition.
     if self.options.goal == "second":
         if self.options.bossrequirement == "vanilla":
             connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
         elif self.options.bossrequirement == "tokens":
             connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, self.options.requiredtokens))
+    # If Token Hunt is the goal: Specter 2 only requires enough keys.
     if self.options.goal == "tokenhunt":
         connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
