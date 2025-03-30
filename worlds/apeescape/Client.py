@@ -1455,36 +1455,36 @@ class ApeEscapeClient(BizHawkClient):
             #If the room had a lamp, activate all values while going in the transition
             if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (RoomHaveLamp == True and transitionPhase != 0x06):
                 print("LampRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_ON'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoom in specialrooms and transitionPhase == 0x06) or (currentRoom in specialrooms):
                 print("SpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x90820000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x14440000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoomHaveLamp == False and transitionPhase == 0x06) or ((currentRoom not in specialrooms) and (RoomHaveLamp == False)):
                 print("NoLampsRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x90620000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x90820000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x14440000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
 
         else:
             if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
                 print("SpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x90820000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x14440000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (currentRoom not in specialrooms) or transitionPhase == 0x06:
                 print("NotSpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x90620000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x90820000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x14440000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
 
         # You can now have the Lamp Item and bypass the door
         if currentRoom in lampDoors_toggles.keys() and GotLamp:
