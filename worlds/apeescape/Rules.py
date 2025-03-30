@@ -730,7 +730,7 @@ def set_transitions(self):
                         lambda state: CanHitWheel(state, self) and CanSwim(state, self))
     else:
         connect_regions(self, AEDoor.TJ_FISH_TENT.value, AEDoor.TJ_FISHBOAT.value, 
-                        lambda state: (CanHitWheel(state, self) or SuperFlyer(state, self)) and CanSwim(state, self))
+                        lambda state: (CanHitWheel(state, self) or SuperFlyer(state, self, AEDoor.TJ_FISH_TENT.value)) and CanSwim(state, self))
     connect_regions(self, AEDoor.TJ_FISHBOAT.value, AEDoor.TJ_FISH_ENTRY.value,
                         lambda state: True)
     if self.options.logic == "normal":
@@ -738,7 +738,7 @@ def set_transitions(self):
                         lambda state: HasSling(state, self) or HasPunch(state, self) or (CanSwim(state, self) and CanHitMultiple(state, self)))
     else:
         connect_regions(self, AEDoor.TJ_FISHBOAT.value, AEDoor.TJ_FISH_TENT.value, 
-                        lambda state: HasSling(state, self) or HasPunch(state, self) or (CanSwim(state, self) and CanHitMultiple(state, self)) or SuperFlyer(state, self))
+                        lambda state: HasSling(state, self) or HasPunch(state, self) or (CanSwim(state, self) and CanHitMultiple(state, self)) or SuperFlyer(state, self, AEDoor.TJ_FISHBOAT.value))
     # Tent/Vine Room
     connect_regions(self, AEDoor.TJ_TENT_FISH.value, AEDoor.TJ_TENT_BOULDER.value,
                         lambda state: True)
@@ -858,7 +858,7 @@ def set_transitions(self):
                         lambda state: CanSwim(state, self))
     else:
         connect_regions(self, AEDoor.CCAVE_ENTRY.value, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, 
-                        lambda state: CanSwim(state, self) or IJ(state, self) or (HasHoop(state, self) and SuperFlyer(state, self)))
+                        lambda state: CanSwim(state, self) or IJ(state, self) or (HasHoop(state, self) and SuperFlyer(state, self, AEDoor.CCAVE_ENTRY.value)))
     connect_regions(self, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, AEDoor.CCAVE_ENTRY.value, 
                         lambda state: CanSwim(state, self))
 
@@ -1022,7 +1022,7 @@ def set_transitions(self):
                         lambda state: CRC_Lamp(state, self))
     else:
         connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, 
-                        lambda state: CRC_Lamp(state, self) or SuperFlyer(state, self) or IJ(state, self))
+                        lambda state: CRC_Lamp(state, self) or SuperFlyer(state, self, AEDoor.CC_CASTLEMAIN_ENTRY.value) or IJ(state, self))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_CASTLEMAIN_ENTRY.value, 
                         lambda state: HasFlyer(state, self))
@@ -1040,7 +1040,7 @@ def set_transitions(self):
                         lambda state: HasFlyer(state, self) and CRC_Lamp(state, self))
     else:
         connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_CASTLEMAINTHRONEROOM.value, 
-                        lambda state: (HasFlyer(state, self) and CRC_Lamp(state, self)) or IJ(state, self) or SuperFlyer(state, self))
+                        lambda state: (HasFlyer(state, self) and CRC_Lamp(state, self)) or IJ(state, self) or SuperFlyer(state, self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value))
     # Bell Tower
     connect_regions(self, AEDoor.CC_BELL_CASTLE.value, AEDoor.CC_BELL_ENTRY.value, 
                         lambda state: CanHitWheel(state, self) or HasFlyer(state, self))
@@ -1067,10 +1067,10 @@ def set_transitions(self):
                         lambda state: CanSwim(state, self))
     elif self.options.logic == "hard":
         connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
-                        lambda state: CanSwim(state, self) or SuperFlyer(state, self))
+                        lambda state: CanSwim(state, self) or SuperFlyer(state, self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value))
     else:
         connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BASEMENT_ELEVATOR.value, 
-                        lambda state: CanSwim(state, self) or SuperFlyer(state, self) or IJ(state, self))
+                        lambda state: CanSwim(state, self) or SuperFlyer(state, self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value) or IJ(state, self))
     connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_UP.value, AEDoor.CC_BASEMENT_ELEVATOR.value,
                         lambda state: True)
     if self.options.logic == "normal":
@@ -1123,7 +1123,7 @@ def set_transitions(self):
                         lambda state: (HasRC(state, self) or IJ(state, self)) and (CanSwim(state, self) or HasFlyer(state, self) or HasHoop(state, self)))
     else:
         connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AEDoor.CP_SEWERSFRONT_BARREL.value, 
-                        lambda state: (HasRC(state, self) or IJ(state, self) or SuperFlyer(state, self)) and (CanSwim(state, self) or HasFlyer(state, self) or HasHoop(state, self)))
+                        lambda state: (HasRC(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value)) and (CanSwim(state, self) or HasFlyer(state, self) or HasHoop(state, self)))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, 
                         lambda state: HasRC(state, self) and (CanSwim(state, self) or HasFlyer(state, self)))
@@ -1167,7 +1167,7 @@ def set_transitions(self):
                         lambda state: IJ(state, self))
     elif self.options.logic == "hard":
         connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
-                        lambda state: (HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self) or IJ(state, self))
+                        lambda state: (HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self, AEDoor.SF_FACTORY_RC_CAR.value) or IJ(state, self))
     else:
         connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
                         lambda state: HasFlyer(state, self) or IJ(state, self))
@@ -1178,7 +1178,7 @@ def set_transitions(self):
                         lambda state: CanHitWheel(state, self))
     else: # This is correct as CanHitWheel includes Flyer only on expert, making hard the unique.
         connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_FACTORY_MECH.value, 
-                        lambda state: CanHitWheel(state, self) or SuperFlyer(state, self))
+                        lambda state: CanHitWheel(state, self) or SuperFlyer(state, self, AEDoor.SF_FACTORY_WHEEL_TOP.value))
     connect_regions(self, AEDoor.SF_FACTORY_MECH.value, AEDoor.SF_FACTORY_WHEEL_TOP.value, 
                         lambda state: CanHitWheel(state, self))
     # Triple Wheel
@@ -1187,7 +1187,7 @@ def set_transitions(self):
                         lambda state: HasClub(state, self) or ((HasSling(state, self) or HasPunch(state, self)) and HasFlyer(state, self)))
     elif self.options.logic == "hard":
         connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_TOP.value, 
-                        lambda state: HasClub(state, self) or ((HasSling(state, self) or HasPunch(state, self) or HasHoop(state, self)) and HasFlyer(state, self)) or SuperFlyer(state, self))
+                        lambda state: HasClub(state, self) or ((HasSling(state, self) or HasPunch(state, self) or HasHoop(state, self)) and HasFlyer(state, self)) or SuperFlyer(state, self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value))
     else:
         connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_TOP.value, 
                         lambda state: HasClub(state, self) or HasHoop(state, self) or HasFlyer(state, self) or IJ(state, self) or (HasPunch(state, self) and (HasRadar(state, self) or HasSling(state, self) or HasRC(state, self) or HasNet(state, self))))
@@ -1262,7 +1262,7 @@ def set_transitions(self):
                         lambda state: HasPunch(state, self))
     else:
         connect_regions(self, AEDoor.TVT_TANK_FAN.value, AEDoor.TVT_TANK_LOBBY.value, 
-                        lambda state: HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self))
+                        lambda state: HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.TVT_TANK_FAN.value))
     connect_regions(self, AEDoor.TVT_TANK_BOSS.value, AEDoor.TVT_TANK_LOBBY.value,
                         lambda state: True)
 
@@ -1336,7 +1336,7 @@ def set_transitions(self):
                         lambda state: state.has("MM-Painting", self.player, 1))
     else:
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, 
-                        lambda state: state.has("MM-Painting", self.player, 1) or IJ(state, self) or SuperFlyer(state, self))
+                        lambda state: state.has("MM-Painting", self.player, 1) or IJ(state, self) or SuperFlyer(state, self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, 
                         lambda state: HasHoop(state, self) or HasRC(state, self))
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, 
@@ -1506,7 +1506,7 @@ def set_locations(self):
                         lambda state: (IJ(state, self) or HasHoop(state, self) or (HasFlyer(state, self) and CanHitWheel(state, self))) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AELocation.W2L1Alphonse.value, 
-                        lambda state: (IJ(state, self) or HasHoop(state, self) or (HasFlyer(state, self) and (CanHitMultiple(state, self) or HasRC(state, self))) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (IJ(state, self) or HasHoop(state, self) or (HasFlyer(state, self) and (CanHitMultiple(state, self) or HasRC(state, self))) or SuperFlyer(state, self, AEDoor.TJ_MUSHROOM_ENTRY.value)) and HasNet(state, self))
     # Fish
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.TJ_FISHBOAT.value, AELocation.W2L1Maki.value, 
@@ -1740,7 +1740,7 @@ def set_locations(self):
                         lambda state: HasRC(state, self) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value, AELocation.W2L3Crash.value, 
-                        lambda state: (HasRC(state, self) or HasSling(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (HasRC(state, self) or HasSling(state, self) or SuperFlyer(state, self, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value)) and HasNet(state, self))
     
     if self.options.coin == "true":
         if self.options.logic == "normal" or self.options.logic == "hard":
@@ -1820,10 +1820,10 @@ def set_locations(self):
                         lambda state: CanDive(state, self) and HasNet(state, self))
     elif self.options.logic == "hard":
         connect_regions(self, AEDoor.CCAVE_ENTRY.value, AELocation.W4L2Puddles.value, 
-                        lambda state: (CanDive(state, self) or (CanSwim(state, self) and IJ(state, self)) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (CanDive(state, self) or (CanSwim(state, self) and IJ(state, self)) or SuperFlyer(state, self, AEDoor.CCAVE_ENTRY.value)) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.CCAVE_ENTRY.value, AELocation.W4L2Puddles.value, 
-                        lambda state: (CanDive(state, self) or IJ(state, self) or SuperFlyer(state, self) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(state, self))
+                        lambda state: (CanDive(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.CCAVE_ENTRY.value) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(state, self))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.CCAVE_ENTRY.value, AELocation.W4L2Kalama.value, 
                         lambda state: (((((HasHoop(state, self) and CanHitMultiple(state, self)) or HasSling(state, self)) and CanSwim(state, self)) or HasFlyer(state, self)) and HasNet(state, self)) or HasWaterNet(state, self))
@@ -1933,7 +1933,7 @@ def set_locations(self):
                             lambda state: (HasClub(state, self) or HasPunch(state, self) or IJ(state, self)) and (HasPunch(state, self) or HasNet(state, self)))
         elif self.options.logic == "expert":
             connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AELocation.Coin28.value, 
-                            lambda state: (HasClub(state, self) or HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self)) and (HasPunch(state, self) or HasNet(state, self)))
+                            lambda state: (HasClub(state, self) or HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value)) and (HasPunch(state, self) or HasNet(state, self)))
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.DI_ENTRY.value, AELocation.Mailbox39.value, 
                         lambda state: CanHitOnce(state, self))
@@ -2088,13 +2088,13 @@ def set_locations(self):
                         lambda state: CanHitMultiple(state, self) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.W5L3Roti.value, 
-                        lambda state: (CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.HS_POLAR_BEAR_CAVE.value)) and HasNet(state, self))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.W5L3Dissa.value, 
                         lambda state: CanHitMultiple(state, self) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.W5L3Dissa.value, 
-                        lambda state: (CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.HS_POLAR_BEAR_CAVE.value)) and HasNet(state, self))
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.HS_HOT_SPRING.value, AELocation.Coin34.value, 
@@ -2104,7 +2104,7 @@ def set_locations(self):
                             lambda state: CanHitMultiple(state, self))
         else:
             connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Coin35.value, 
-                            lambda state: CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self))
+                            lambda state: CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.HS_POLAR_BEAR_CAVE.value))
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.HS_ENTRY.value, AELocation.Mailbox47.value, 
                         lambda state: (HasFlyer(state, self) or IJ(state, self)) and CanHitOnce(state, self))
@@ -2157,7 +2157,7 @@ def set_locations(self):
                         lambda state: HasSling(state, self) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1Voti.value, 
-                        lambda state: (HasSling(state, self) or (HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (HasSling(state, self) or (HasHoop(state, self) and HasFlyer(state, self)) or SuperFlyer(state, self, AEDoor.ST_WELL.value)) and HasNet(state, self))
     connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1QuelTin.value, 
                         lambda state: HasNet(state, self))
     connect_regions(self, AEDoor.ST_WELL.value, AELocation.W7L1Phaldo.value, 
@@ -2354,7 +2354,7 @@ def set_locations(self):
                         lambda state: HasRC(state, self) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.W8L1QBee.value, 
-                        lambda state: (HasRC(state, self) or IJ(state, self) or SuperFlyer(state, self)) and HasNet(state, self))
+                        lambda state: (HasRC(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value)) and HasNet(state, self))
     connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.W8L1McManic.value, 
                         lambda state: (HasRC(state, self) or HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     if self.options.logic == "normal":
@@ -2390,7 +2390,7 @@ def set_locations(self):
                         lambda state: CanDive(state, self) and (HasWaterNet(state, self) or HasNet(state, self)))
     else:
         connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Camper.value, 
-                        lambda state: (CanDive(state, self) and (HasWaterNet(state, self) or HasNet(state, self))) or ((IJ(state, self) or SuperFlyer(state, self)) and HasRC(state, self) and HasNet(state, self)))
+                        lambda state: (CanDive(state, self) and (HasWaterNet(state, self) or HasNet(state, self))) or ((IJ(state, self) or SuperFlyer(state, self, AEDoor.CP_BARRELSEWERMIDDLE.value)) and HasRC(state, self) and HasNet(state, self)))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.W8L1Huener.value, 
                         lambda state: CanSwim(state, self) and HasFlyer(state, self) and HasNet(state, self))
@@ -2418,7 +2418,7 @@ def set_locations(self):
                             lambda state: HasRC(state, self) or IJ(state, self))
         else:
             connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AELocation.Coin54.value, 
-                            lambda state: HasRC(state, self) or IJ(state, self) or (SuperFlyer(state, self)))
+                            lambda state: HasRC(state, self) or IJ(state, self) or (SuperFlyer(state, self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value)))
         if self.options.logic == "normal" or self.options.logic == "hard":
             connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AELocation.Coin54.value, 
                             lambda state: HasRC(state, self))
@@ -2449,7 +2449,7 @@ def set_locations(self):
                         lambda state: (HasRC(state, self) or HasPunch(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.W8L2Urkel.value, 
-                        lambda state: (HasRC(state, self) or HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(state, self))
+                        lambda state: (HasRC(state, self) or HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.SF_RC_CAR_FACTORY.value) or (HasHoop(state, self) and HasFlyer(state, self))) and HasNet(state, self))
     # Lava Room
     connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.W8L2VanillaS.value, 
                         lambda state: HasPunch(state, self) and HasNet(state, self))
@@ -2497,7 +2497,7 @@ def set_locations(self):
                             lambda state: HasRC(state, self) or HasPunch(state, self) or IJ(state, self))
         else:
             connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AELocation.Coin58.value, 
-                            lambda state: HasRC(state, self) or HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self) or (HasHoop(state, self) and HasFlyer(state, self)))
+                            lambda state: HasRC(state, self) or HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self, AEDoor.SF_RC_CAR_FACTORY.value) or (HasHoop(state, self) and HasFlyer(state, self)))
         if self.options.logic == "normal" or self.options.logic == "expert": # CanHitWheel includes Flyer on expert.
             connect_regions(self, AEDoor.SF_LAVA_MECH.value, AELocation.Coin59.value, 
                             lambda state: CanHitWheel(state, self))
@@ -2837,8 +2837,7 @@ def CanHitWheel(state, world):
         return CanHitMultiple(state, world) or HasFlyer(state, world) or HasRC(state, world)
 
 
-# TODO: Pass in a specific region here
-def SuperFlyer(state, world):
+def SuperFlyer(state, world, region):
     # If the option is off, Super Flyer is not in logic.
     if world.options.superflyer == "false":
         return False
@@ -2848,12 +2847,14 @@ def SuperFlyer(state, world):
         return False
 
     # If the player does not have the required gadgets, Super Flyer is unavailable.
-    if (HasFlyer(state, world) and (HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state,world))) == False:
+    if (HasFlyer(state, world) and (HasNet(state, world) or HasClub(state, world) or HasSling(state, world) or HasPunch(state, world))) == False:
         return False
 
     # If the player can reach this location without activating the Flyer, Super Flyer is available. To check for this, we check for the ability to access this region on a modified CollectionState. The Radar conveniently has the same ground pound properties as the Flyer while introducing no new access, and so replacing the Flyer with the Radar in this state serves as a valid check.
-    # TODO: actually implement the above description LOL (right now placement could expect two Super Flyers)
-    return True
+    teststate = CollectionState(world.multiworld)
+    teststate.remove(world, AEItem.Flyer.value)
+    teststate.collect(world, AEItem.Radar.value)
+    return teststate.can_reach(world.get_region(region, "Region", world.player))
 
 
 def IJ(state, world):
