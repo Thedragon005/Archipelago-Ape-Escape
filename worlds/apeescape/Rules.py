@@ -2852,9 +2852,9 @@ def SuperFlyer(state, world, region):
 
     # If the player can reach this location without activating the Flyer, Super Flyer is available. To check for this, we check for the ability to access this region on a modified CollectionState. The Radar conveniently has the same ground pound properties as the Flyer while introducing no new access, and so replacing the Flyer with the Radar in this state serves as a valid check.
     teststate = CollectionState(world.multiworld)
-    teststate.remove(world, AEItem.Flyer.value)
-    teststate.collect(world, AEItem.Radar.value)
-    return teststate.can_reach(world.get_region(region, "Region", world.player))
+    teststate.remove(world.create_item(AEItem.Flyer.value))
+    teststate.collect(world.create_item(AEItem.Radar.value), prevent_sweep = True)
+    return world.get_region(region).can_reach(teststate)
 
 
 def IJ(state, world):
