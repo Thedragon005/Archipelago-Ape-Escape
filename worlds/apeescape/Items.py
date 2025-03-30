@@ -56,7 +56,22 @@ item_table = {
     AEItem.Flash.value: RAM.items["Flash"],
     AEItem.ThreeFlash.value: RAM.items["ThreeFlash"],
     AEItem.Rocket.value: RAM.items["Rocket"],
-    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"]
+    AEItem.ThreeRocket.value: RAM.items["ThreeRocket"],
+
+    # Traps
+    AEItem.BananaPeelTrap.value: RAM.items["BananaPeelTrap"],
+    AEItem.GadgetShuffleTrap.value: RAM.items["GadgetShuffleTrap"],
+}
+
+gadgetsValues = {
+    AEItem.Club.value: 0x00,
+    AEItem.Net.value: 0x01,
+    AEItem.Radar.value: 0x02,
+    AEItem.Sling.value: 0x03,
+    AEItem.Hoop.value: 0x04,
+    AEItem.Punch.value: 0x05,
+    AEItem.Flyer.value: 0x06,
+    AEItem.Car.value: 0x07,
 }
 
 event_table = {

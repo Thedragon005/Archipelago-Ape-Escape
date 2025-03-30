@@ -637,7 +637,7 @@ class RAM:
         },
         12: {  # fan basement
             426 : 80,
-            427 : 70
+            427 : {70,97}
         },
         13: {  # obelisk inside
             428 : 97
@@ -930,7 +930,9 @@ class RAM:
         "BiggerTriangle": 0x216,
         "FiveCookies": 0x217,
         "ThreeFlash": 0x218,
-        "ThreeRocket": 0x219
+        "ThreeRocket": 0x219,
+        "BananaPeelTrap": 0x250,
+        "GadgetShuffleTrap": 0x251
 
     }
 
@@ -1143,76 +1145,6 @@ class RAM:
         },
     }
 
-    CB_LampDoor_Visual1 = 0x0C01AB # Open = F4 | Closed = F8
-    CB_LampDoor_Visual2 = 0x0C01AF # Open = 00 | Closed = 80
-    CB_LampDoor_Hitbox = 0x177B77 # Open = F4 | Closed = F8
-
-    DI_LampDoor_Visual1 = 0x0BFDAB # Open = F2 | Closed = F6
-    DI_LampDoor_Visual2 = 0x0BFDAF # Open = 00 | Closed = 80
-    DI_LampDoor_Hitbox = 0x169653 # Open = F2 | Closed = F6
-
-    CrC_LampDoorL_Visual1 = 0x0E7981 #Open = 00
-    CrC_LampDoorL_Visual2 = 0x0E7985 #Open = F0
-    CrC_LampDoorL_Visual3 = 0x0E798D #Open = 10
-    CrC_LampDoorL_Visual4 = 0x0E7991 #Open = 00
-    CrC_LampDoorR_Visual1 = 0x0E79A1 #Open = 00
-    CrC_LampDoorR_Visual2 = 0x0E79A5 #Open = 10
-    CrC_LampDoorR_Visual3 = 0x0E79AD #Open = F0
-    CrC_LampDoorR_Visual4 = 0x0E79B1 #Open = 00
-    CrC_LampDoorL_Hitbox1 = 0x1710C0 #2b Open = 0040
-    CrC_LampDoorL_Hitbox2 = 0x1710C4 #4b Open = 00400400
-    CrC_LampDoorL_Hitbox3 = 0x1710CA #2b Open = 0100
-    CrC_LampDoorR_Hitbox1 = 0x1710F8 #2b Open = 03C0
-    CrC_LampDoorR_Hitbox2 = 0x1710FC #4b Open = 00400400
-    CrC_LampDoorR_Hitbox3 = 0x171102 #2b Open = 0100
-
-    CP_LampDoor_Visual1 = 0x0E7901 #Open = 00
-    CP_LampDoor_Visual2 = 0x0E7903 #Open = 10
-    CP_LampDoor_Visual3 = 0x0E7907 #Open = F0
-    CP_LampDoor_Visual4 = 0x0E7909 #Open = 00
-    CP_LampDoor_Hitbox1 = 0x17ABA0 #2b Open = E0C0
-    CP_LampDoor_Hitbox2 = 0x17ABA6 #2b Open = 0040
-    CP_LampDoor_Hitbox3 = 0x17ABA9 #2b Open = 8003
-
-    SF_LampDoor_Visual1 = 0x0C04AD # Open = 11
-    SF_LampDoor_Visual2 = 0x0C04AF # Open = 0
-    SF_LampDoor_Visual3 = 0x0C056D # Open = 17
-    SF_LampDoor_Visual4 = 0x0C056F # Open = 0
-    SF_LampDoor_Hitbox1 = 0x16A499 # Open = 11
-    SF_LampDoor_Hitbox2 = 0x16A461 # Open = 17
-
-    TvtL_LampDoorL_Visual1 = 0x0C042D # Open = FF
-    TvtL_LampDoorL_Visual2 = 0x0C042F # Open = 00
-    TvtL_LampDoorR_Visual1 = 0x0C046D # Open = F9
-    TvtL_LampDoorR_Visual2 = 0x0C046F # Open = 00
-    TvtL_LampDoorL_Hitbox1 = 0x170C51 # Open = FF
-    TvtL_LampDoorL_Hitbox2 = 0x170C65 # Open = 80
-    TvtL_LampDoorR_Hitbox1 = 0x170C89 # Open = F9
-    TvtL_LampDoorR_Hitbox2 = 0x170C9D # Open = 80
-
-    TvtTR_LampDoorL_Visual = 0x0C05AC  # 4b Open = 00000DC0
-    TvtTR_LampDoorR_Visual = 0x0C056C  # 4b Open = 00001240
-    TvtTR_LampDoorL_Hitbox1 = 0x16C294 # 2b Open = 0DC0
-    TvtTR_LampDoorL_Hitbox2 = 0x16C2A9 # Open = 80
-    TvtTR_LampDoorR_Hitbox1 = 0x16C2CC # 2b Open = 1240
-    TvtTR_LampDoorR_Hitbox2 = 0x16C2E1 # Open = 80
-
-    MM_LampDoorL_Visual1 = 0x0E79D1  # Open = 00
-    MM_LampDoorL_Visual2 = 0x0E79C1  # Open = 00
-    MM_LampDoorL_Visual3 = 0x0E79C5  # Open = F0
-    MM_LampDoorL_Visual4 = 0x0E79CD  # Open = 10
-    MM_LampDoorR_Visual1 = 0x0E79E1  # Open = 00
-    MM_LampDoorR_Visual2 = 0x0E79E5  # Open = 10
-    MM_LampDoorR_Visual3 = 0x0E79ED  # Open = F0
-    MM_LampDoorR_Visual4 = 0x0E79F1  # Open = 00
-
-    MM_LampDoorL_Hitbox1 = 0x173C08  # 2b Open = FD40
-    MM_LampDoorL_Hitbox2 = 0x173C0C  # 4b Open = 00400B80
-    MM_LampDoorL_Hitbox3 = 0x173C12  # 2b Open = 0180
-    MM_LampDoorR_Hitbox1 = 0x173CB0  # 2b Open = 02C0
-    MM_LampDoorR_Hitbox2 = 0x173CB4  # 4b Open = 00400B80
-    MM_LampDoorR_Hitbox3 = 0x173CBA  # 2b Open = 0180
-
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
@@ -1223,6 +1155,9 @@ class RAM:
     crossGadgetAddress = 0x0F51AB
     # which gadget is currently selected for use
     heldGadgetAddress = 0x0EC2D2
+    radarFixAddress = 0x0F5125
+    hoopFixAddress = 0x0F5124 # 2 bytes
+
 
     tempWaterNetAddress = 0x0DFBE2
     tempWaterCatchAddress = 0x0DFBE3
@@ -1457,6 +1392,7 @@ class RAM:
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
     spikeState2Address = 0x0EC23E
+    spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
     # HUGE for ER since when transition it is 98 or 204 ?
