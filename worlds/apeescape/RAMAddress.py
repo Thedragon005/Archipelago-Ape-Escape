@@ -640,7 +640,7 @@ class RAM:
             427 : {70,97}
         },
         13: {  # obelisk inside
-            428 : 97
+            428 : {52,97}
         },
         #14: {  # water basement
 
