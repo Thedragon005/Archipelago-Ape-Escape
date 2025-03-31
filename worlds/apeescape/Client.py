@@ -986,15 +986,16 @@ class ApeEscapeClient(BizHawkClient):
         punch_Writes = []
 
         if gameState == RAM.gameState['InLevel']:
-            # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
-            if ((currentLevel == 0x07)):
-                # Funny easter egg with Radar
-                if (gadgetStateFromServer & 4 != 0):
-                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+
+            #if ((currentLevel == 0x07)):
+                ## Funny easter egg with Radar
+                #if (gadgetStateFromServer & 4 != 0):
+                    #gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
             if ((currentLevel == 0x0E)):
                 # Funny easter egg with Radar
                 if (gadgetStateFromServer & 4 != 0):
                     gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
                 if (heldGadget == 6) and (gadgetStateFromServer & 64 == 0):
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
