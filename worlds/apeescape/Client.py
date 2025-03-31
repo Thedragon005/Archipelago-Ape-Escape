@@ -879,7 +879,7 @@ class ApeEscapeClient(BizHawkClient):
             Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets,currentRoom]
             await self.traps_handling(ctx, Trap_Reads)
 
-            # ===== MM Optimizations =========
+            # ===== Credits skipping =========
             # Credits skipping function for S1 and S2
             Credits_Reads = [currentRoom,gameState,S1_Cutscene_Redirection,S2_Cutscene_Redirection]
             await self.Credits_handling(ctx, Credits_Reads)
