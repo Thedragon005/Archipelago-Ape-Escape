@@ -306,6 +306,16 @@ class LowOxygenSounds(Choice):
     default = option_half
 
 
+class TrapFillPercentage(Range):
+    """
+    Replace a percentage of junk items in the item pool with random traps
+    """
+    display_name = "Trap Fill Percentage"
+    range_start = 0
+    range_end = 100
+    default = 0
+
+
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
     goal: GoalOption
@@ -325,4 +335,5 @@ class ApeEscapeOptions(PerGameCommonOptions):
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
     lowoxygensounds: LowOxygenSounds
+    trapfillpercentage: TrapFillPercentage
     death_link: DeathLink

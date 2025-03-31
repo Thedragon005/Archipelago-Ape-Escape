@@ -1,10 +1,14 @@
 import sys
 import logging
 import time
+from random import random
+
 import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
 from Options import Toggle
 from NetUtils import ClientStatus
+from .Strings import AEItem
+from .Items import gadgetsValues
 
 # TODO: REMOVE ASAP - Borrowed from MM2
 # This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
@@ -48,7 +52,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     #TODO Remove when doing official PR
-    client_version = "0.7.2"
+    client_version = "0.7.2-bananas"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -100,7 +104,9 @@ class ApeEscapeClient(BizHawkClient):
         self.TVT_Lobby_Button = 0
         self.bool_MMDoubleDoor = False
         self.bool_LampGlobal = False
+        self.gotBanana = False
         self.lowOxygenCounter = 1
+        self.trap_queue = []
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         from CommonClient import logger
@@ -151,6 +157,26 @@ class ApeEscapeClient(BizHawkClient):
             self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
             self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
             self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
+
+    async def check_gadgets(self, ctx: "BizHawkClientContext",gadgetStateFromServer) -> list[str]:
+        gadgets = []
+        if (gadgetStateFromServer & 1 != 0):
+            gadgets.append(AEItem.Club.value)
+        if (gadgetStateFromServer & 2 != 0):
+            gadgets.append(AEItem.Net.value)
+        if (gadgetStateFromServer & 4 != 0):
+            gadgets.append(AEItem.Radar.value)
+        if (gadgetStateFromServer & 8 != 0):
+            gadgets.append(AEItem.Sling.value)
+        if (gadgetStateFromServer & 16 != 0):
+            gadgets.append(AEItem.Hoop.value)
+        if (gadgetStateFromServer & 32 != 0):
+            gadgets.append(AEItem.Punch.value)
+        if (gadgetStateFromServer & 64 != 0):
+            gadgets.append(AEItem.Flyer.value)
+        if (gadgetStateFromServer & 128 != 0):
+            gadgets.append(AEItem.Car.value)
+        return gadgets
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
@@ -443,6 +469,7 @@ class ApeEscapeClient(BizHawkClient):
 
             #Write tables
             itemsWrites = []
+            TrapWrites = []
             Menuwrites = []
 
             # Handle death link
@@ -505,6 +532,8 @@ class ApeEscapeClient(BizHawkClient):
             if TVTLobbyLampStateFromServer != 0x00 and TVTLobbyLampStateFromServer != 0xFF: TVTLobbyLampState = TVTLobbyLampStateFromServer
             if TVTTankLampStateFromServer != 0x00 and TVTTankLampStateFromServer != 0xFF: TVTTankLampState = TVTTankLampStateFromServer
             if MMLampStateFromServer != 0x00 and MMLampStateFromServer != 0xFF: MMLampState = MMLampStateFromServer
+
+
 
             START_recv_index = recv_index
 
@@ -591,10 +620,13 @@ class ApeEscapeClient(BizHawkClient):
                                 rocketAmmo += 3
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
+                        #elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["GadgetShuffleTrap"]:
+                        elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
+                            self.trap_queue.append((item.item - self.offset))
 
 
                 # Writes to memory if there is a new item, after the loop
-                itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM"),]
+                itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.energyChipsAddress, energyChips.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.cookieAddress, cookies.to_bytes(1, "little"), "MainRAM")]
@@ -840,8 +872,15 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in coins)
                 }])
 
+            # ===== Trap Handling    ========
+            # For Traps.
+            # ===============================
+            currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
+            Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets,currentRoom]
+            await self.traps_handling(ctx, Trap_Reads)
+
             # ===== MM Optimizations =========
-            # Execute the code segment for MM Double Door and related optimizations
+            # Credits skipping function for S1 and S2
             Credits_Reads = [currentRoom,gameState,S1_Cutscene_Redirection,S2_Cutscene_Redirection]
             await self.Credits_handling(ctx, Credits_Reads)
             # ================================
@@ -946,12 +985,19 @@ class ApeEscapeClient(BizHawkClient):
         punch_Guards = []
         punch_Writes = []
 
-
-
-        # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
-        if ((currentLevel == 0x0E) and (heldGadget == 6) and (gadgetStateFromServer & 64 == 0)):
-            gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-            gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+        if gameState == RAM.gameState['InLevel']:
+            # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
+            if ((currentLevel == 0x07)):
+                # Funny easter egg with Radar
+                if (gadgetStateFromServer & 4 != 0):
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+            if ((currentLevel == 0x0E)):
+                # Funny easter egg with Radar
+                if (gadgetStateFromServer & 4 != 0):
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                if (heldGadget == 6) and (gadgetStateFromServer & 64 == 0):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
         # Unequip the Time Net if it was shuffled. Note that just checking the Net option is not sufficient to known if the net was actually shuffled - we need to ensure there are locations in this world that don't require net to be sure.
         if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true and (
@@ -1015,11 +1061,10 @@ class ApeEscapeClient(BizHawkClient):
         S2_Cutscene_Redirection = hex(Credits_Reads[3])
         Credits_Writes = []
 
-        # Does not execute the function if you not in a level
-        if (gameState not in (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'])):
+        # Does not execute the function if you not in a level (Or custscene of S1)
+        if (gameState not in (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'],RAM.gameState['Cutscene2'])):
             return None
 
-        #print("Credit_handling")
         if gameState == RAM.gameState['Cutscene2']:
             if S1_Cutscene_Redirection != 0x2403000D:
                 Credits_Writes += [(RAM.S1_Cutscene_Redirection, 0x2403000D.to_bytes(4, "little"), "MainRAM")]
@@ -1409,61 +1454,155 @@ class ApeEscapeClient(BizHawkClient):
             if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (
                     RoomHaveLamp == True and transitionPhase != 0x06):
                 print("LampRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_ON'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoom in specialrooms and transitionPhase == 0x06) or (currentRoom in specialrooms):
                 print("SpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoomHaveLamp == False and transitionPhase == 0x06) or ((currentRoom not in specialrooms) and (RoomHaveLamp == False)):
                 print("NoLampsRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
 
         else:
             if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
                 print("SpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x9062007A.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (currentRoom not in specialrooms) or transitionPhase == 0x06:
                 print("NotSpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
 
-            if currentRoom in lampDoors_toggles.keys() and GotLamp:
-                lamplist_keys = list(lampDoors_toggles[currentRoom].keys())
-                lamplist_values = list(lampDoors_toggles[currentRoom].values())
+        # You can now have the Lamp Item and bypass the door
+        if currentRoom in lampDoors_toggles.keys() and GotLamp:
+            lamplist_keys = list(lampDoors_toggles[currentRoom].keys())
+            lamplist_values = list(lampDoors_toggles[currentRoom].values())
 
-                # print(lamplist_values)
-                for x in range(len(lamplist_keys)):
-                    Lamps_writes2 = []
-                    Lamps_Guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
-                    # lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
-                    lamp_values = list(lamplist_values[x])
-                    lamp_bytes = lamp_values[0]
-                    lamp_openvalue = lamp_values[1].to_bytes(lamp_bytes, "little")
-                    lamp_closedvalue = lamp_values[2].to_bytes(lamp_bytes, "little")
-                    lamp_address = (lamplist_keys[x])
-                    Lamps_writes2 += [(lamp_address, lamp_openvalue, "MainRAM")]
-                    Lamps_Guards += [(lamp_address, lamp_closedvalue, "MainRAM")]
+            # print(lamplist_values)
+            for x in range(len(lamplist_keys)):
+                Lamps_writes2 = []
+                Lamps_Guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
+                # lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
+                lamp_values = list(lamplist_values[x])
+                lamp_bytes = lamp_values[0]
+                lamp_openvalue = lamp_values[1].to_bytes(lamp_bytes, "little")
+                lamp_closedvalue = lamp_values[2].to_bytes(lamp_bytes, "little")
+                lamp_address = (lamplist_keys[x])
+                Lamps_writes2 += [(lamp_address, lamp_openvalue, "MainRAM")]
+                Lamps_Guards += [(lamp_address, lamp_closedvalue, "MainRAM")]
 
-                    await bizhawk.guarded_write(ctx.bizhawk_ctx, Lamps_writes2, Lamps_Guards)
+                await bizhawk.guarded_write(ctx.bizhawk_ctx,Lamps_writes2,Lamps_Guards)
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 
-    async def traps_handling(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
-        print("a")
+    async def traps_handling(self, ctx: "BizHawkClientContext",Trap_Reads) -> None:
+        # TODO : GadgetShuffle Trap is very unstable right now, it had been deactivated
+
+
         # Notes for traps for now :
         # Banana Peel = Slip by setting SpikeState2 to 0x2F
+        gameState = Trap_Reads[0]
+        gotMail = Trap_Reads[1]
+        spikeState2 = Trap_Reads[2]
+        menuState = Trap_Reads[3]
+        menuState2 = Trap_Reads[4]
+        currentGadgets = Trap_Reads[5]
+        currentRoom = Trap_Reads[6]
+
+        Trap_Writes = []
+        Trap_Guards = []
+
+        # Gamestate
+        valid_gameStates = (RAM.gameState['InLevel'],RAM.gameState['InLevelTT'],RAM.gameState['TimeStation'],RAM.gameState['Jake'])
+        in_menu = (menuState == 0 and menuState2 == 1)
+        reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
+        is_sliding = (spikeState2 == 0x2F)
+        in_race = (currentRoom == 19 or currentRoom == 36)
+
+        if self.trap_queue == []:
+            #Exit if no traps
+            return None
+        else:
+            # Does not send the traps in these states
+            if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race):
+                print("Waiiiitttiinnng for...valid state")
+                return None
+                # Exit without sending trap,keeping it active for the next pass
+
+            if self.trap_queue[0] == RAM.items['BananaPeelTrap']:
+                self.trap_queue.pop(0)
+                Trap_Writes += [(RAM.spikeState2Address, 0x2F.to_bytes(1, "little"), "MainRAM")]
+            elif self.trap_queue[0] == RAM.items['GadgetShuffleTrap']:
+                self.trap_queue.pop(0)
+
+                #print(self.trap_queue)
+                chosen_gadgets = []
+                chosen_values = [0,0,0,0]
+                faces = [0,1,2,3]
+                # Exit if no gadgets has been unlocked yet
+                if currentGadgets == []:
+                    return None
+
+                # 1 pass for each face
+                for x in range(4):
+                    randomFace = int(round(random() * (len(faces) -1), None))
+                    face = faces[randomFace]
+                    # If there is no more gadgets,it means we put an "Empty" spot
+                    if currentGadgets == []:
+                        print("Face #" + str(randomFace + 1) + " : None | 255")
+                        chosen_values[face] = 0xFF
+                        faces.pop(randomFace)
+                    else:
+                        randomGadget = int(round(random() * (len(currentGadgets) - 1), None))
+                        gadget_value = gadgetsValues[currentGadgets[randomGadget]]
+                        chosen_values[face] = gadget_value
+                        print("Face #" + str(faces[randomFace]) + " : " + str(currentGadgets[randomGadget]) + " | " + str(gadgetsValues[currentGadgets[randomGadget]]))
+                        chosen_gadgets.append(str(currentGadgets[randomGadget]))
+                        currentGadgets.pop(randomGadget)
+                        faces.pop(randomFace)
+                print(chosen_gadgets)
+
+                Trap_Writes += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
+                Trap_Writes += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
+                Trap_Writes += [(RAM.circleGadgetAddress, chosen_values[2].to_bytes(1, "little"), "MainRAM")]
+                Trap_Writes += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
+
+                # Select a gadget slot
+                randomSelect = int(round(random() * (len(chosen_values) - 1),None))
+                print("random:" + str(randomSelect))
+                print(chosen_values)
+                # Attempt to correct the radar being weird on shuffle sometimes
+                if chosen_values[randomSelect] == 0x02:
+                    Trap_Writes1 = []
+                    Trap_Writes1 += [(RAM.radarFixAddress, 0x30.to_bytes(1, "little"), "MainRAM")]
+                    await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
+                elif chosen_values[randomSelect] == 0x04:
+                    Trap_Writes1 = []
+                    Trap_Writes1 += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    Trap_Writes1 += [(RAM.hoopFixAddress, 0x0000000000000000.to_bytes(14, "little"), "MainRAM")]
+                    await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
+                if spikeState2 in (128,129,131):
+                    Trap_Writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
+                Trap_Writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
+                #if chosen_values[randomSelect] != 0xFF:
+                    #print(chosen_values[randomSelect])
+                    #print("Selected gadget : " + chosen_gadgets[randomSelect])
+                #else:
+                    #print("Selected gadget : NONE")
+
+            await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
+
 
     async def level_select_optimization(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
         # For coin display to be ignored while in Level Select
