@@ -5,6 +5,8 @@ from random import random
 
 import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
+
+
 from Options import Toggle
 from NetUtils import ClientStatus
 from .Strings import AEItem
@@ -37,15 +39,67 @@ from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
 from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, CoinOption, MailboxOption, EntranceOption, KeyOption
 
+
 if TYPE_CHECKING:
-    from worlds._bizhawk.context import BizHawkClientContext
+    from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
 else:
     BizHawkClientContext = object
 
 EXPECTED_ROM_NAME = "ape escape / AP 2"
 
+logger = logging.getLogger("Client")
+
 # These flags are communicated to the tracker as a bitfield using this order.
 # Modifying the order will cause undetectable autotracking issues.
+
+def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
+    """Show what commands are available for Ape Escape Archipelago"""
+    from worlds._bizhawk.context import BizHawkClientContext
+    if self.ctx.game != "Ape Escape":
+        logger.warning("This command can only be used when playing Ape Escape.")
+        return
+    #if not self.ctx.server or not self.ctx.slot:
+        #logger.warning("You must be connected to a server to use this command.")
+        #return
+
+    logger.info(f"----------------------------------------------\n"
+                f"Commands for Ape Escape\n"
+                f"----------------------------------------------\n"
+                f"  /ae_commands\n"
+                f"      Description : Show this list\n"
+                f"  /bh_itemdisplay [On/Off]\n"
+                f"      Description : Display items directly in the Bizhawk client (Beta)\n"
+                f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n")
+
+def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status: str) -> None:
+    """Toggle the item display in Bizhawk"""
+    from worlds._bizhawk.context import BizHawkClientContext
+    if self.ctx.game != "Ape Escape":
+        logger.warning("This command can only be used when playing Ape Escape.")
+        return
+    if not self.ctx.server or not self.ctx.slot:
+        logger.warning("You must be connected to a server to use this command.")
+        return
+
+    ctx = self.ctx
+    assert isinstance(ctx, BizHawkClientContext)
+    client = ctx.client_handler
+    assert isinstance(client, ApeEscapeClient)
+    if status == "":
+        client.bizhawk_itemdisplay = not client.bizhawk_itemdisplay
+    elif status == "on":
+        client.bizhawk_itemdisplay = True
+    else:
+        client.bizhawk_itemdisplay = False
+
+    if client.bizhawk_itemdisplay:
+        item_display = "ON"
+        client.send_bizhawk_message(ctx, "Bizhawk Item Display Enabled","Custom","")
+    else:
+        item_display = "OFF"
+        client.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Custom", "")
+    logger.info(f"Bizhawk Item Display is {item_display}\n")
+
 
 class ApeEscapeClient(BizHawkClient):
     game = "Ape Escape"
@@ -74,6 +128,7 @@ class ApeEscapeClient(BizHawkClient):
     inWater = 0
     waternetState = 0
     watercatchState = 0
+    bizhawk_itemdisplay = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -107,9 +162,9 @@ class ApeEscapeClient(BizHawkClient):
         self.gotBanana = False
         self.lowOxygenCounter = 1
         self.trap_queue = []
+        self.bizhawk_itemdisplay = False
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
-        from CommonClient import logger
         ape_identifier_ram_address: int = 0xA37F0
         ape_identifier_ram_address_PAL: int = 0xA37F0
         # BASCUS-94423SYS in ASCII = Ape Escape I think??
@@ -120,21 +175,39 @@ class ApeEscapeClient(BizHawkClient):
                 ape_identifier_ram_address, len(bytes_expected), "MainRAM"
             )]))[0]
             if bytes_actual != bytes_expected:
+                if "ae_commands" in ctx.command_processor.commands:
+                    ctx.command_processor.commands.pop("ae_commands")
+                if "bh_itemdisplay" in ctx.command_processor.commands:
+                    ctx.command_processor.commands.pop("bh_itemdisplay")
                 return False
         except Exception:
+            if "ae_commands" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("ae_commands")
+            if "bh_itemdisplay" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("bh_itemdisplay")
             return False
 
         if not self.game == "Ape Escape":
+            if "ae_commands" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("ae_commands")
+            if "bh_itemdisplay" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("bh_itemdisplay")
             return False
         # TODO Remove when doing official PR
         logger.info("================================================")
         logger.info("Archipelago Ape Escape version "  + self.client_version)
         logger.info("================================================")
+        logger.info("Custom commands are available for this game")
+        logger.info("Type /ae_commands for the full list")
+        logger.info("================================================")
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
         ctx.watcher_timeout = 0.125
-
+        if "ae_commands" not in ctx.command_processor.commands:
+            ctx.command_processor.commands["ae_commands"] = cmd_ae_commands
+        if "bizhawk_itemdisplay" not in ctx.command_processor.commands:
+            ctx.command_processor.commands["bh_itemdisplay"] = cmd_bh_itemdisplay
         self.initialize_client()
 
         return True
@@ -180,6 +253,27 @@ class ApeEscapeClient(BizHawkClient):
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
+
+    async def send_bizhawk_message(self,ctx: BizHawkClientContext,message,msgtype,data) -> None:
+        if self.bizhawk_itemdisplay:
+            if msgtype == "Item":
+
+                sender = ctx.player_names[data.player]
+                #print(sender)
+                #print(str( item - self.offset]))
+                itemname = data.item - self.offset
+                itemname = ctx.item_names.lookup_in_game(data.item)
+
+
+                # Same player as the seed, different message
+                if sender == ctx.player_names[ctx.slot]:
+                    strMessage = "You just got '" + str(itemname) + "'"
+                else:
+                    strMessage = "You just received '" + str(itemname) + "' from " + str(sender)
+                await bizhawk.display_message(ctx.bizhawk_ctx,strMessage)
+            elif msgtype == "Custom":
+                strMessage = message
+                await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
@@ -550,39 +644,54 @@ class ApeEscapeClient(BizHawkClient):
                         if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
                             if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
                                 gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
+                                await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif item.item - self.offset == RAM.items["Key"]:
                             keyCountFromServer += 1
+                            await self.send_bizhawk_message(ctx,"","Item",item)
                         elif item.item - self.offset == RAM.items["Victory"]:
                             await ctx.send_msgs([{
                                 "cmd": "StatusUpdate",
                                 "status": ClientStatus.CLIENT_GOAL
                             }])
+                            await self.send_bizhawk_message(ctx,"Congrats on beating you goal","Custom","")
                         elif (item.item - self.offset) == RAM.items["WaterNet"]:
                             waternetState = 2
                             watercatchState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
                             if waternetState != 2:
                                 waternetState += 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["MMLobbyDoubleDoorKey"]:
                             MM_Lobby_DoubleDoor = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
                             watercatchState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["CB_Lamp"]:
                             CBLampState  = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["DI_Lamp"]:
                             DILampState  = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["CrC_Lamp"]:
                             CrCLampState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["CP_Lamp"]:
                             CPLampState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["SF_Lamp"]:
                             SFLampState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["TVT_Lobby_Lamp"]:
                             TVTLobbyLampState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["TVT_Tank_Lamp"]:
                             TVTTankLampState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["MM_Lamp"]:
                             MMLampState = 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["ThreeRocket"]:
                             if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"] or (item.item - self.offset) == RAM.items["BiggerTriangle"]:
                                 if (item.item - self.offset) == RAM.items["Triangle"]:
