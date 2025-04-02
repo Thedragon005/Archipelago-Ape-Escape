@@ -738,7 +738,7 @@ def create_regions(world: "ApeEscapeWorld"):
     
 
     # Don't create Specter 2 location if it would be guaranteed to be post-goal.
-    if options.goal != "first":
+    if options.goal != "mm":
         # 9-2
         L92 = Region(AEDoor.PPM_ENTRY.value, player, multiworld)
 

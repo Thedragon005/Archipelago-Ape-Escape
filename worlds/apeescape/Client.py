@@ -37,7 +37,7 @@ from worlds._bizhawk.client import BizHawkClient
 
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, CoinOption, MailboxOption, EntranceOption, KeyOption
+from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, GoalOption, CoinOption, MailboxOption, EntranceOption, KeyOption
 
 
 if TYPE_CHECKING:

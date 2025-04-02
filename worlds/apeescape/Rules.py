@@ -24,8 +24,8 @@ def set_rules(world: "ApeEscapeWorld"):
     if (world.options.entrance != 0x00):
         world.random.shuffle(world.levellist)
         # Some levels need to be kept at a specific entrance - put those back.
-        world.levellist = fixed_levels(world.levellist, world.options.entrance)
-    world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey)
+        world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin)
+    world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
     # Make a copy of the list for passing to the client for entrance shuffle purposes. We know this list has the levels sorted in the order they'd be presented in-game (so whatever is at the Fossil Field entrance first, etc.)
     world.entranceorder = list(world.levellist)
     # If entrances weren't shuffled, then this list is already sorted. We sort the list for ease of setting up access rules in the logic files.
@@ -307,20 +307,18 @@ def set_entrances(self):
     connect_regions(self, "Menu", AEDoor.TVT_ENTRY.value, lambda state: Keys(state, self, self.levellist[19].keys))
     connect_regions(self, "Menu", AEDoor.MM_SL_HUB.value, lambda state: Keys(state, self, self.levellist[20].keys))
 
-    # If Specter 2 is the goal: check the desired condition.
-    if self.options.goal == "second":
-        if self.options.bossrequirement == "vanilla":
-            connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
-        elif self.options.bossrequirement == "tokens":
-            connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, self.options.requiredtokens))
-    # If Token Hunt is the goal: Specter 2 only requires enough keys.
-    if self.options.goal == "tokenhunt":
+    if self.options.goal == "ppm": # If Specter 2 is the goal, require enough keys and all monkeys.
+        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
+    elif self.options.goal == "ppmtoken": # If Specter 2 token is the goal, require enough keys and tokens.
+        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, self.options.requiredtokens))
+    elif self.options.goal == "tokenhunt" or self.options.goal == "mmtoken": # If other token goal, just require keys.
         connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
     # TODO: Test the token condition.
-    if self.options.goal == "first" or self.options.goal == "second":
+    # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
+    if self.options.goal != "tokenhunt":
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
-    elif self.options.goal == "tokenhunt":
+    else:
         self.multiworld.completion_condition[self.player] = lambda state: Tokens(state, self, self.options.requiredtokens)
 
 
@@ -2708,6 +2706,7 @@ def set_locations(self):
     else:
         connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.W9L1BG.value, 
                         lambda state: (HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+    # TODO: adjust this part to handle requiring more tokens than exist!!!
     # Specter 1
     if self.options.logic == "normal" or self.options.logic == "hard":
         connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
@@ -2757,7 +2756,7 @@ def set_locations(self):
                         lambda state: True)
 
     # Peak Point Matrix
-    if self.options.goal == "second":
+    if self.options.goal != "mm":
         connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.Specter2.value, 
                         lambda state: HasSling(state, self) and (HasClub(state, self) or HasHoop(state, self) or HasPunch(state, self)) and HasNet(state, self))
 
@@ -3089,18 +3088,18 @@ def character_lookup(byte):
         return 187
 
 
-def fixed_levels(levellist, entoption):
+def fixed_levels(levellist, entoption, coinoption):
     # Always reset position of Peak Point Matrix
     for x in range (0, 22):
         if levellist[x].entrance == 0x1E:
             levellist[x], levellist[21] = levellist[21], levellist[x]
     # Reset position of Monkey Madness if the option requires it
-    if entoption == 0x01 or entoption == 0x02:
+    if entoption == 0x02:
         for x in range (0, 22):
             if levellist[x].entrance == 0x18:
                 levellist[x], levellist[20] = levellist[20], levellist[x]
-    # Reset position of races if the option requires it
-    if entoption == 0x01 or entoption == 0x03:
+    # Reset position of races if coin shuffle isn't on
+    if coinoption == 0x00:
         for x in range (0, 22):
             if levellist[x].entrance == 0x07: # Stadium Attack
                 levellist[x], levellist[6] = levellist[6], levellist[x]
@@ -3110,8 +3109,8 @@ def fixed_levels(levellist, entoption):
     return levellist
 
 
-def set_calculated_level_data(levellist, keyoption):
-    reqkeys = get_required_keys(keyoption)
+def set_calculated_level_data(levellist, keyoption, goaloption, coinoption):
+    reqkeys = get_required_keys(keyoption, goaloption, coinoption)
     for x in range (0, 22):
         levellist[x].bytes = level_to_bytes(levellist[x].name)
         levellist[x].keys = reqkeys[x]
@@ -3119,12 +3118,25 @@ def set_calculated_level_data(levellist, keyoption):
     return levellist
 
 
-def get_required_keys(option):
-    if option == 0x00:  # world
-        return [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6]
-    if option == 0x01:  # world and races
-        return [0, 0, 0, 1, 1, 1, 2, 3, 3, 3, 4, 4, 4, 5, 6, 6, 6, 7, 7, 7, 8, 8]
-    if option == 0x02:  # level
-        return [0, 0, 0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 16, 16]
-    if option == 0x03:  # level and races
-        return [0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18]
+def get_required_keys(key, goal, coin):
+    reqkeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    if key == 0x03:  # none
+        return reqkeys
+
+    if key == 0x00:  # world
+        reqkeys = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6]
+    if key == 0x01:  # level
+        reqkeys = [0, 0, 0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 16, 16]
+    if option == 0x02:  # two
+        reqkeys = [0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 8]
+
+    if goal == 0x02 or goal == 0x03 or goal == 0x04: # If PPM unlocks only by keys, make it unlock later than MM.
+        reqkeys[21] = reqkeys[21] + 1
+
+    if coin == 0x01: # If the races have locations, make everything after them require an extra key for each.
+        for x in range (7, 22):
+            reqkeys[x] = reqkeys[x] + 1
+        for x in range (15, 22):
+            reqkeys[x] = reqkeys[x] + 1
+
+    return reqkeys

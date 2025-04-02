@@ -73,6 +73,7 @@ class ApeEscapeWorld(World):
         self.logic: Optional[int] = 0
         self.entrance: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
+        self.extrakeys: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
@@ -91,12 +92,13 @@ class ApeEscapeWorld(World):
         self.logic = self.options.logic.value
         self.entrance = self.options.entrance.value
         self.unlocksperkey = self.options.unlocksperkey.value
+        self.extrakeys: self.options.extrakeys.value
         self.coin = self.options.coin.value
         self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
         self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
-        self.shufflewaternet = self.options.shufflewaternet.value
+        self.shufflewaternet = self.options.shufflewaternet.value # TODO - add the new options (tokens, etc.)
         self.trapfillpercentage = self.options.trapfillpercentage.value
         self.itempool = []
 
@@ -171,19 +173,14 @@ class ApeEscapeWorld(World):
         self.itempool += [MM_DoubleDoorKey]
 
         # Create the desired amount of Specter Tokens if the settings require them.
-        if self.options.goal == "tokenhunt" or self.options.bossrequirement == "tokens":
+        # TODO: update this section to handle requiring more tokens than are created.
+        if self.options.goal == "tokenhunt" or self.options.goal == "mmtoken" or self.options.goal == "ppmtoken":
             self.itempool += [self.create_item_skipbalancing(AEItem.Token.value) for _ in range(0, self.options.totaltokens)]
 
-        # TODO: update this section to figure out the right amount of keys. Needs to check unlocksperkey, add 1 if tokenhunt and not none, add or subtract 2 depending on coin and baseline.
-        # Create enough keys to access every level, depending on the key option
-        if self.options.unlocksperkey == 0x00:
-            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 6)]
-        elif self.options.unlocksperkey == 0x01:
-            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 8)]
-        elif self.options.unlocksperkey == 0x02:
-            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 16)]
-        elif self.options.unlocksperkey == 0x03:
-            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, 18)]
+        # Create enough keys to access every level, if keys are on, plus the desired amount of extra keys.
+        if self.options.unlocksperkey != 0x03:
+            numkeys = get_required_keys(self.options.unlocksperkey.value, self.options.goal.value, self.options.coin.value)
+            self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, numkeys[21] + self.options.extrakeys.value)]
 
         # Monkey Lamp shuffle - only add to the pool if the option is on (treat as vanilla otherwise)
         if self.options.lamp == "true":
@@ -246,9 +243,9 @@ class ApeEscapeWorld(World):
             self.itempool += [club, radar, shooter, hoop, flyer, car, punch]
 
         # Create "Victory" item for goals where the goal is at a location.
-        if self.options.goal == "first":
+        if self.options.goal == "mm" or self.options.goal == "mmtoken":
             self.get_location(AELocation.Specter.value).place_locked_item(victory)
-        elif self.options.goal == "second":
+        elif self.options.goal == "ppm" or self.options.goal == "ppmtoken":
             self.get_location(AELocation.Specter2.value).place_locked_item(victory)
 
         # This is where creating items for increasing special pellet maximums would go.
@@ -323,15 +320,15 @@ class ApeEscapeWorld(World):
             bytestowrite += self.entranceorder[x].bytes
             bytestowrite.append(0)  # We need a separator byte after each level name.
 
-        return {
+        return { # TODO: Make sure this list matches the options list
             "goal": self.options.goal.value,
-            "bossrequirement": self.options.bossrequirement.value,
             "requiredtokens": self.options.requiredtokens.value,
             "totaltokens": self.options.totaltokens.value,
             "tokenlocations": self.options.tokenlocations.value,
             "logic": self.options.logic.value,
             "entrance": self.options.entrance.value,
             "unlocksperkey": self.options.unlocksperkey.value,
+            "extrakeys": self.options.extrakeys.value
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
             "gadget": self.options.gadget.value,
@@ -344,9 +341,8 @@ class ApeEscapeWorld(World):
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
-            "reqkeys": get_required_keys(self.options.unlocksperkey.value),
-            "death_link": self.options.death_link.value,
-
+            "reqkeys": get_required_keys(self.options.unlocksperkey.value, self.options.goal.value, self.options.coin.value),
+            "death_link": self.options.death_link.value
         }
 
     def write_spoiler(self, spoiler_handle: TextIO):

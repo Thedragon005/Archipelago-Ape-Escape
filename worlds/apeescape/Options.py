@@ -7,35 +7,23 @@ from Options import Choice, Range, DeathLink, PerGameCommonOptions
 class GoalOption(Choice):
     """Choose the victory condition for this world.
 
-        first: First Specter fight in Monkey Madness.
-        second: Second Specter fight in Peak Point Matrix.
-        coinhunt: Collecting enough Specter Token items throughout the world.
+        mm: First Specter fight in Monkey Madness, with the vanilla condition (just get there).
+        ppm: Second Specter fight in Peak Point Matrix, with the vanilla condition (catch all monkeys). Peak Point Matrix will only have the vanilla entry condition for Specter 1 and Specter 2 goals.
+        tokenhunt: Collecting enough Specter Token items throughout the world.
+        mmtoken: First Specter fight in Monkey Madness, after collecting enough Specter Token items.
+        ppmtoken: Second Specter fight in Peak Point Matrix, after collecting enough Specter Token items.
 
-        Supported values: first, second, tokenhunt
+        Supported values: mm, ppm, tokenhunt, mmtoken, ppmtoken
         Default value: first
     """
 
     display_name = "Goal"
-    option_first = 0x00
-    option_second = 0x01
+    option_mm = 0x00
+    option_ppm = 0x01
     option_tokenhunt = 0x02
-    default = option_first
-
-
-class BossRequirementOption(Choice):
-    """Choose the requirement to start the goal boss, if any.
-
-        vanilla: The vanilla condition for reaching the boss. For Specter 1, this is just reaching the room, and for Specter 2, this is catching all monkeys.
-        tokens: Collecting enough Specter Token items throughout the mutliworld will allow reaching the boss. Note: you will still require enough World Keys to enter the level containing this boss.
-
-        Supported values: vanilla, tokens
-        Default value: vanilla
-    """
-
-    display_name = "Boss Requirement"
-    option_vanilla = 0x00
-    option_tokens = 0x01
-    default = option_vanilla
+    option_mmtoken = 0x03
+    option_ppmtoken = 0x04
+    default = option_mm
 
 
 class RequiredTokensOption(Range):
@@ -131,46 +119,55 @@ class SuperFlyerOption(Choice):
 
 
 class EntranceOption(Choice):
-    """Choose which level entrances should be randomized. Peak Point Matrix will always be the last level.
+    """Choose which level entrances should be randomized. Peak Point Matrix will always be the last level. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
 
-        none: Levels will be in the vanilla order.
-        eras: The 18 main levels (all except Monkey Madness) will be shuffled.
-        erasraces: The 18 main levels (all except Monkey Madness) and 2 Jake races will be shuffled.
-        levels: The 19 main levels will be shuffled.
-        levelsraces: The 19 main levels and 2 Jake races will be shuffled.
+        off: Levels will be in the vanilla order.
+        on: Levels will be in a random order.
+        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entranxe.
 
-        Supported values: none, eras, erasraces, levels, levelsraces
-        Default value: levels
+        Supported values: off, on, lockmm
+        Default value: on
     """
 
     display_name = "Entrance"
-    option_none = 0x00
-    option_eras = 0x01
-    option_erasraces = 0x02
-    option_levels = 0x03
-    option_levelsraces = 0x04
-    default = option_none
+    option_off = 0x00
+    option_on = 0x01
+    option_lockmm = 0x02
+    default = option_off
 
 
 class KeyOption(Choice):
     """Choose how many levels each World Key should unlock. The first three levels will always start unlocked.
-        Peak Point Matrix will always require the same number of World Keys as the Monkey Madness entrance.
+        Races will be skipped if coin shuffle is off. Peak Point Matrix will require the same number of keys as the Monkey Madness entrance on a boss goal, and one additional key on a token hunt or token boss goal.
 
-        world: Each World Key unlocks the 3 levels in a world. Races are unlocked with the world after them. Creates 6 World Keys.
-        worldandraces: Each World Key unlocks the 3 levels in a world. Races are counted as worlds. Creates 8 World Keys.
-        level: Each World Key unlocks the next level. Races are unlocked with the level after them. Creates 16 World Keys.
-        levelandraces: Each World Key unlocks the next level. Races are counted as levels. Creates 18 World Keys.
+        world: Each World Key unlocks the 1 or 3 levels in the next world. Creates between 6 and 9 World Keys.
+        level: Each World Key unlocks the next level. Creates between 16 and 19 World Keys.
+        twolevels: Each World Key unlocks the next two levels. Creates between 8 and 10 World Keys.
+        none: All levels are open from the beginning of the game.
 
-        Supported values: world, worldandraces, level, levelandraces
+        Supported values: world, level, twolevels, none
         Default value: world
     """
 
     display_name = "Unlocks per Key"
     option_world = 0x00
-    option_worldandraces = 0x01
-    option_level = 0x02
-    option_levelandraces = 0x03
+    option_level = 0x01
+    option_twolevels = 0x02
+    option_none = 0x03
     default = option_world
+
+
+class ExtraKeysOption(Range):
+    """Choose the number of extra World Keys that should be created.
+
+        Supported values: 0 - 10
+        Default value: 0
+    """
+
+    display_name = "Extra Keys"
+    range_start = 0
+    range_end = 10
+    default = 0
 
 
 class CoinOption(Choice):
@@ -319,7 +316,6 @@ class TrapFillPercentage(Range):
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
     goal: GoalOption
-    bossrequirement: BossRequirementOption
     requiredtokens: RequiredTokensOption
     totaltokens: TotalTokensOption
     tokenlocations: TokenLocationsOption
@@ -328,6 +324,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     superflyer: SuperFlyerOption
     entrance: EntranceOption
     unlocksperkey: KeyOption
+    extrakeys: ExtraKeysOption
     coin: CoinOption
     mailbox: MailboxOption
     lamp: LampOption
