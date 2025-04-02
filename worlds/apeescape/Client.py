@@ -117,6 +117,7 @@ class ApeEscapeClient(BizHawkClient):
     levelglobal = 0
     roomglobal = 0
     worldkeycount = 0
+    tokencount = 0
     boss1flag = 0
     boss2flag = 0
     boss3flag = 0
@@ -287,9 +288,9 @@ class ApeEscapeClient(BizHawkClient):
             self.initialize_client()
         try:
 
-            # Game state,locations and items read
+            # Game state, locations and items read
             readTuples = [
-                #GameStates
+                # GameStates
                 (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
                 (RAM.gameStateAddress, 1, "MainRAM"),
                 (RAM.currentRoomIdAddress, 1, "MainRAM"),  # Current Room
@@ -298,7 +299,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
                 (RAM.transitionPhase, 1, "MainRAM"),  # Jake Races Victory state
-                #Locations (Coins,Monkeys, Mailboxes)
+                # Locations (Coins,Monkeys, Mailboxes)
                 (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
                 (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
                 (RAM.totalCoinsAddress, 1, "MainRAM"),  # Coin Count
@@ -307,14 +308,15 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.currentApesAddress, 1, "MainRAM"),
                 (RAM.gotMailAddress, 1, "MainRAM"),
                 (RAM.mailboxIDAddress, 1, "MainRAM"),
-                #Items
+                # Items
                 (RAM.energyChipsAddress, 1, "MainRAM"),
                 (RAM.cookieAddress, 1, "MainRAM"),
                 (RAM.livesAddress, 1, "MainRAM"),
                 (RAM.flashAddress, 1, "MainRAM"),
                 (RAM.rocketAddress, 1, "MainRAM"),
                 (RAM.keyCountFromServer, 1, "MainRAM"),
-                #Misc
+                (RAM.tokenCountFromServer, 1, "MainRAM"),
+                # Misc
                 (RAM.spikeStateAddress, 1, "MainRAM"),
                 (RAM.spikeState2Address, 1, "MainRAM"),
                 (RAM.kickoutofLevelAddress, 4, "MainRAM"),
@@ -331,42 +333,43 @@ class ApeEscapeClient(BizHawkClient):
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
 
             # GameStates
-            recv_index = int.from_bytes(reads[0], byteorder="little")
-            gameState = int.from_bytes(reads[1], byteorder="little")
-            currentRoom = int.from_bytes(reads[2], byteorder="little")
-            NearbyRoom = int.from_bytes(reads[3], byteorder="little")
-            currentLevel = int.from_bytes(reads[4], byteorder="little")
-            gameRunning = int.from_bytes(reads[5], byteorder="little")
-            jakeVictory = int.from_bytes(reads[6], byteorder="little")
-            transitionPhase = int.from_bytes(reads[7], byteorder="little")
+            recv_index = int.from_bytes(reads[0], byteorder = "little")
+            gameState = int.from_bytes(reads[1], byteorder = "little")
+            currentRoom = int.from_bytes(reads[2], byteorder = "little")
+            NearbyRoom = int.from_bytes(reads[3], byteorder = "little")
+            currentLevel = int.from_bytes(reads[4], byteorder = "little")
+            gameRunning = int.from_bytes(reads[5], byteorder = "little")
+            jakeVictory = int.from_bytes(reads[6], byteorder = "little")
+            transitionPhase = int.from_bytes(reads[7], byteorder = "little")
             # Locations
-            previousCoinStateRoom = int.from_bytes(reads[8], byteorder="little")
-            currentCoinStateRoom = int.from_bytes(reads[9], byteorder="little")
-            coinCount = int.from_bytes(reads[10], byteorder="little")
-            localhundoCount = int.from_bytes(reads[11], byteorder="little")
-            requiredApes = int.from_bytes(reads[12], byteorder="little")
-            currentApes = int.from_bytes(reads[13], byteorder="little")
-            gotMail = int.from_bytes(reads[14], byteorder="little")
-            mailboxID = int.from_bytes(reads[15], byteorder="little")
+            previousCoinStateRoom = int.from_bytes(reads[8], byteorder = "little")
+            currentCoinStateRoom = int.from_bytes(reads[9], byteorder = "little")
+            coinCount = int.from_bytes(reads[10], byteorder = "little")
+            localhundoCount = int.from_bytes(reads[11], byteorder = "little")
+            requiredApes = int.from_bytes(reads[12], byteorder = "little")
+            currentApes = int.from_bytes(reads[13], byteorder = "little")
+            gotMail = int.from_bytes(reads[14], byteorder = "little")
+            mailboxID = int.from_bytes(reads[15], byteorder = "little")
             # Items
-            energyChips = int.from_bytes(reads[16], byteorder="little")
-            cookies = int.from_bytes(reads[17], byteorder="little")
-            totalLives = int.from_bytes(reads[18], byteorder="little")
-            flashAmmo = int.from_bytes(reads[19], byteorder="little")
-            rocketAmmo = int.from_bytes(reads[20], byteorder="little")
-            keyCountFromServer = int.from_bytes(reads[21], byteorder="little")
+            energyChips = int.from_bytes(reads[16], byteorder = "little")
+            cookies = int.from_bytes(reads[17], byteorder = "little")
+            totalLives = int.from_bytes(reads[18], byteorder = "little")
+            flashAmmo = int.from_bytes(reads[19], byteorder = "little")
+            rocketAmmo = int.from_bytes(reads[20], byteorder = "little")
+            keyCountFromServer = int.from_bytes(reads[21], byteorder = "little")
+            tokenCountFromServer = int.from_bytes(reads[22], byteorder = "little")
             # Misc
-            spikeState = int.from_bytes(reads[22], byteorder="little")
-            spikeState2 = int.from_bytes(reads[23], byteorder="little")
-            kickoutofLevel = int.from_bytes(reads[24], byteorder="little")
-            CrC_kickoutofLevel = int.from_bytes(reads[25], byteorder="little")
-            TVT_kickoutofLevel = int.from_bytes(reads[26], byteorder="little")
-            roomStatus = int.from_bytes(reads[27], byteorder="little")
-            S1_P2_State = int.from_bytes(reads[28], byteorder="little")
-            S1_P2_Life = int.from_bytes(reads[29], byteorder="little")
-            S2_isCaptured = int.from_bytes(reads[30], byteorder="little")
-            S1_Cutscene_Redirection = int.from_bytes(reads[31], byteorder="little")
-            S2_Cutscene_Redirection = int.from_bytes(reads[32], byteorder="little")
+            spikeState = int.from_bytes(reads[23], byteorder = "little")
+            spikeState2 = int.from_bytes(reads[24], byteorder = "little")
+            kickoutofLevel = int.from_bytes(reads[25], byteorder = "little")
+            CrC_kickoutofLevel = int.from_bytes(reads[26], byteorder = "little")
+            TVT_kickoutofLevel = int.from_bytes(reads[27], byteorder = "little")
+            roomStatus = int.from_bytes(reads[28], byteorder = "little")
+            S1_P2_State = int.from_bytes(reads[29], byteorder = "little")
+            S1_P2_Life = int.from_bytes(reads[30], byteorder = "little")
+            S2_isCaptured = int.from_bytes(reads[31], byteorder = "little")
+            S1_Cutscene_Redirection = int.from_bytes(reads[32], byteorder = "little")
+            S2_Cutscene_Redirection = int.from_bytes(reads[33], byteorder = "little")
 
             #Related to Gadgets
             gadgetTuples = [
@@ -383,15 +386,15 @@ class ApeEscapeClient(BizHawkClient):
 
             gadgetReads = await bizhawk.read(ctx.bizhawk_ctx, gadgetTuples)
 
-            gadgets = int.from_bytes(gadgetReads[0], byteorder="little")
-            gadgetStateFromServer = int.from_bytes(gadgetReads[1], byteorder="little")
-            heldGadget = int.from_bytes(gadgetReads[2], byteorder="little")
-            triangleGadget = int.from_bytes(gadgetReads[3], byteorder="little")
-            squareGadget = int.from_bytes(gadgetReads[4], byteorder="little")
-            circleGadget = int.from_bytes(gadgetReads[5], byteorder="little")
-            crossGadget = int.from_bytes(gadgetReads[6], byteorder="little")
-            gadgetUseState = int.from_bytes(gadgetReads[7], byteorder="little")
-            punchVisualAddress = int.from_bytes(gadgetReads[8], byteorder="little")
+            gadgets = int.from_bytes(gadgetReads[0], byteorder = "little")
+            gadgetStateFromServer = int.from_bytes(gadgetReads[1], byteorder = "little")
+            heldGadget = int.from_bytes(gadgetReads[2], byteorder = "little")
+            triangleGadget = int.from_bytes(gadgetReads[3], byteorder = "little")
+            squareGadget = int.from_bytes(gadgetReads[4], byteorder = "little")
+            circleGadget = int.from_bytes(gadgetReads[5], byteorder = "little")
+            crossGadget = int.from_bytes(gadgetReads[6], byteorder = "little")
+            gadgetUseState = int.from_bytes(gadgetReads[7], byteorder = "little")
+            punchVisualAddress = int.from_bytes(gadgetReads[8], byteorder = "little")
 
             # Menu and level select reads
             menuTuples = [
@@ -415,21 +418,21 @@ class ApeEscapeClient(BizHawkClient):
             menuReads = await bizhawk.read(ctx.bizhawk_ctx, menuTuples)
 
             # Level Select/Menu data
-            LS_currentWorld = int.from_bytes(menuReads[0], byteorder="little")
-            LS_currentLevel = int.from_bytes(menuReads[1], byteorder="little")
-            status_currentWorld = int.from_bytes(menuReads[2], byteorder="little")
-            status_currentLevel = int.from_bytes(menuReads[3], byteorder="little")
-            menuState = int.from_bytes(menuReads[4], byteorder="little")
-            menuState2 = int.from_bytes(menuReads[5], byteorder="little")
-            newGameAddress = int.from_bytes(menuReads[6], byteorder="little")
+            LS_currentWorld = int.from_bytes(menuReads[0], byteorder = "little")
+            LS_currentLevel = int.from_bytes(menuReads[1], byteorder = "little")
+            status_currentWorld = int.from_bytes(menuReads[2], byteorder = "little")
+            status_currentLevel = int.from_bytes(menuReads[3], byteorder = "little")
+            menuState = int.from_bytes(menuReads[4], byteorder = "little")
+            menuState2 = int.from_bytes(menuReads[5], byteorder = "little")
+            newGameAddress = int.from_bytes(menuReads[6], byteorder = "little")
             # Level Select Coin hiding
-            CoinTable = int.from_bytes(menuReads[7], byteorder="little")
-            TempCoinTable = int.from_bytes(menuReads[8], byteorder="little")
-            SA_Completed = int.from_bytes(menuReads[9], byteorder="little")
-            Temp_SA_Completed = int.from_bytes(menuReads[10], byteorder="little")
-            GA_Completed = int.from_bytes(menuReads[11], byteorder="little")
-            Temp_GA_Completed = int.from_bytes(menuReads[12], byteorder="little")
-            worldIsScrollingRight = int.from_bytes(menuReads[13], byteorder="little")
+            CoinTable = int.from_bytes(menuReads[7], byteorder = "little")
+            TempCoinTable = int.from_bytes(menuReads[8], byteorder = "little")
+            SA_Completed = int.from_bytes(menuReads[9], byteorder = "little")
+            Temp_SA_Completed = int.from_bytes(menuReads[10], byteorder = "little")
+            GA_Completed = int.from_bytes(menuReads[11], byteorder = "little")
+            Temp_GA_Completed = int.from_bytes(menuReads[12], byteorder = "little")
+            worldIsScrollingRight = int.from_bytes(menuReads[13], byteorder = "little")
 
             #Water net shuffle Reads
             swimTuples = [
@@ -443,12 +446,12 @@ class ApeEscapeClient(BizHawkClient):
 
             swimReads = await bizhawk.read(ctx.bizhawk_ctx, swimTuples)
 
-            canDive = int.from_bytes(swimReads[0], byteorder="little")
-            canWaterCatch = int.from_bytes(swimReads[1], byteorder="little")
-            WaterNetStateFromServer = int.from_bytes(swimReads[2], byteorder="little")
-            WaterCatchStateFromServer = int.from_bytes(swimReads[3], byteorder="little")
-            isUnderwater = int.from_bytes(swimReads[4], byteorder="little")
-            swim_oxygenLevel = int.from_bytes(swimReads[5], byteorder="little")
+            canDive = int.from_bytes(swimReads[0], byteorder = "little")
+            canWaterCatch = int.from_bytes(swimReads[1], byteorder = "little")
+            WaterNetStateFromServer = int.from_bytes(swimReads[2], byteorder = "little")
+            WaterCatchStateFromServer = int.from_bytes(swimReads[3], byteorder = "little")
+            isUnderwater = int.from_bytes(swimReads[4], byteorder = "little")
+            swim_oxygenLevel = int.from_bytes(swimReads[5], byteorder = "little")
 
             lampTuples = [
                 (RAM.tempCB_LampAddress, 1, "MainRAM"),
@@ -466,17 +469,17 @@ class ApeEscapeClient(BizHawkClient):
 
             lampReads = await bizhawk.read(ctx.bizhawk_ctx, lampTuples)
 
-            CBLampStateFromServer = int.from_bytes(lampReads[0], byteorder="little")
-            DILampStateFromServer = int.from_bytes(lampReads[1], byteorder="little")
-            CrCLampStateFromServer = int.from_bytes(lampReads[2], byteorder="little")
-            CPLampStateFromServer = int.from_bytes(lampReads[3], byteorder="little")
-            SFLampStateFromServer = int.from_bytes(lampReads[4], byteorder="little")
-            TVTLobbyLampStateFromServer = int.from_bytes(lampReads[5], byteorder="little")
-            TVTTankLampStateFromServer = int.from_bytes(lampReads[6], byteorder="little")
-            MMLampStateFromServer = int.from_bytes(lampReads[7], byteorder="little")
-            LocalLamp_LocalUpdate = int.from_bytes(lampReads[8], byteorder="little")
-            GlobalLamp_LocalUpdate = int.from_bytes(lampReads[9], byteorder="little")
-            GlobalLamp_GlobalUpdate = int.from_bytes(lampReads[10], byteorder="little")
+            CBLampStateFromServer = int.from_bytes(lampReads[0], byteorder = "little")
+            DILampStateFromServer = int.from_bytes(lampReads[1], byteorder = "little")
+            CrCLampStateFromServer = int.from_bytes(lampReads[2], byteorder = "little")
+            CPLampStateFromServer = int.from_bytes(lampReads[3], byteorder = "little")
+            SFLampStateFromServer = int.from_bytes(lampReads[4], byteorder = "little")
+            TVTLobbyLampStateFromServer = int.from_bytes(lampReads[5], byteorder = "little")
+            TVTTankLampStateFromServer = int.from_bytes(lampReads[6], byteorder = "little")
+            MMLampStateFromServer = int.from_bytes(lampReads[7], byteorder = "little")
+            LocalLamp_LocalUpdate = int.from_bytes(lampReads[8], byteorder = "little")
+            GlobalLamp_LocalUpdate = int.from_bytes(lampReads[9], byteorder = "little")
+            GlobalLamp_GlobalUpdate = int.from_bytes(lampReads[10], byteorder = "little")
 
             locksTuples = [
                 # Doors
@@ -510,31 +513,31 @@ class ApeEscapeClient(BizHawkClient):
 
             locksReads = await bizhawk.read(ctx.bizhawk_ctx, locksTuples)
             # Doors
-            MM_Lobby_DoubleDoor = int.from_bytes(locksReads[0], byteorder="little")
-            MM_Lobby_DoubleDoor_Open = int.from_bytes(locksReads[1], byteorder="little")
-            MM_Jake_DefeatedAddress = int.from_bytes(locksReads[2], byteorder="little")
-            MM_Professor_RescuedAddress = int.from_bytes(locksReads[3], byteorder="little")
-            MM_Clown_State = int.from_bytes(locksReads[4], byteorder="little")
-            MM_Natalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder="little")
-            MM_Jake_Defeated = int.from_bytes(locksReads[6], byteorder="little")
-            MM_Professor_Rescued = int.from_bytes(locksReads[7], byteorder="little")
-            MM_Natalie_Rescued = int.from_bytes(locksReads[8], byteorder="little")
-            MM_Natalie_Rescued_Local = int.from_bytes(locksReads[9], byteorder="little")
-            MM_Lobby_DoorDetection = int.from_bytes(locksReads[10], byteorder="little")
+            MM_Lobby_DoubleDoor = int.from_bytes(locksReads[0], byteorder = "little")
+            MM_Lobby_DoubleDoor_Open = int.from_bytes(locksReads[1], byteorder = "little")
+            MM_Jake_DefeatedAddress = int.from_bytes(locksReads[2], byteorder = "little")
+            MM_Professor_RescuedAddress = int.from_bytes(locksReads[3], byteorder = "little")
+            MM_Clown_State = int.from_bytes(locksReads[4], byteorder = "little")
+            MM_Natalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder = "little")
+            MM_Jake_Defeated = int.from_bytes(locksReads[6], byteorder = "little")
+            MM_Professor_Rescued = int.from_bytes(locksReads[7], byteorder = "little")
+            MM_Natalie_Rescued = int.from_bytes(locksReads[8], byteorder = "little")
+            MM_Natalie_Rescued_Local = int.from_bytes(locksReads[9], byteorder = "little")
+            MM_Lobby_DoorDetection = int.from_bytes(locksReads[10], byteorder = "little")
 
             # Buttons
-            DI_Button_Pressed = int.from_bytes(locksReads[11], byteorder="little")
-            DI_Button_DoorVisual = int.from_bytes(locksReads[12], byteorder="little")
-            CrC_Water_ButtonPressed = int.from_bytes(locksReads[13], byteorder="little")
-            CrC_Water_Door_Visual = int.from_bytes(locksReads[14], byteorder="little")
-            CrC_Basement_ButtonPressed = int.from_bytes(locksReads[15], byteorder="little")
-            CrC_Basement_DoorVisual1 = int.from_bytes(locksReads[16], byteorder="little")
-            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[17], byteorder="little")
-            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[18], byteorder="little")
-            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[19], byteorder="little")
-            MM_MonkeyHead_Door = int.from_bytes(locksReads[20], byteorder="little")
-            MM_Painting_ButtonPressed = int.from_bytes(locksReads[21], byteorder="little")
-            MM_Painting_Visual = int.from_bytes(locksReads[22], byteorder="little")
+            DI_Button_Pressed = int.from_bytes(locksReads[11], byteorder = "little")
+            DI_Button_DoorVisual = int.from_bytes(locksReads[12], byteorder = "little")
+            CrC_Water_ButtonPressed = int.from_bytes(locksReads[13], byteorder = "little")
+            CrC_Water_Door_Visual = int.from_bytes(locksReads[14], byteorder = "little")
+            CrC_Basement_ButtonPressed = int.from_bytes(locksReads[15], byteorder = "little")
+            CrC_Basement_DoorVisual1 = int.from_bytes(locksReads[16], byteorder = "little")
+            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[17], byteorder = "little")
+            TVT_Lobby_Water_Hitbox = int.from_bytes(locksReads[18], byteorder = "little")
+            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[19], byteorder = "little")
+            MM_MonkeyHead_Door = int.from_bytes(locksReads[20], byteorder = "little")
+            MM_Painting_ButtonPressed = int.from_bytes(locksReads[21], byteorder = "little")
+            MM_Painting_Visual = int.from_bytes(locksReads[22], byteorder = "little")
 
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
@@ -585,6 +588,10 @@ class ApeEscapeClient(BizHawkClient):
             if keyCountFromServer == 0xFF:
                 # Get items from server
                 keyCountFromServer = 0
+
+            if tokenCountFromServer == 0xFF:
+                # Get items from server
+                tokenCountFromServer = 0
 
             if MM_Lobby_DoubleDoor == 0xFF:
                 MM_Lobby_DoubleDoor = 0
@@ -647,13 +654,16 @@ class ApeEscapeClient(BizHawkClient):
                                 await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif item.item - self.offset == RAM.items["Key"]:
                             keyCountFromServer += 1
-                            await self.send_bizhawk_message(ctx,"","Item",item)
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
+                        elif item.item - self.offset == RAM.items["Token"]:
+                            tokenCountFromServer += 1
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif item.item - self.offset == RAM.items["Victory"]:
                             await ctx.send_msgs([{
                                 "cmd": "StatusUpdate",
                                 "status": ClientStatus.CLIENT_GOAL
                             }])
-                            await self.send_bizhawk_message(ctx,"Congrats on beating you goal","Custom","")
+                            await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Custom", "")
                         elif (item.item - self.offset) == RAM.items["WaterNet"]:
                             waternetState = 2
                             watercatchState = 1
@@ -733,7 +743,6 @@ class ApeEscapeClient(BizHawkClient):
                         elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
                             self.trap_queue.append((item.item - self.offset))
 
-
                 # Writes to memory if there is a new item, after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
@@ -744,6 +753,8 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.rocketAddress, rocketAmmo.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.keyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempKeyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tokenCountFromServer, tokenCountFromServer.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.tempTokenCountFromServer, tokenCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterNetAddress, waternetState.to_bytes(1, "little"), "MainRAM")]
@@ -759,6 +770,7 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.temp_MMLobbyDoorAddress, MM_Lobby_DoubleDoor.to_bytes(1, "little"), "MainRAM")]
 
             self.worldkeycount = keyCountFromServer
+            self.tokencount = tokenCountFromServer
 
             # Local update conditions
             # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -1761,7 +1773,7 @@ class ApeEscapeClient(BizHawkClient):
                 # If you have less World Keys that the required keys for the next ERA, disable R1, Right Stick and Right DPAD detection
 
                 if (LS_currentWorld < 8) and (worldIsScrollingRight == 0xFFFF):
-                    if (self.worldkeycount < WorldUnlocks[LS_currentWorld+1]):
+                    if (self.worldkeycount < WorldUnlocks[LS_currentWorld + 1]):
                         LS_Writes += [(RAM.worldScrollToRightDPAD, 0x0000.to_bytes(2, "little"), "MainRAM")]
                         LS_Writes += [(RAM.worldScrollToRightR1, 0x0000.to_bytes(2, "little"), "MainRAM")]
                 elif (self.worldkeycount < WorldUnlocks[LS_currentWorld]):
@@ -1933,12 +1945,13 @@ class ApeEscapeClient(BizHawkClient):
     def unlockLevels(self, monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys):
 
         key = self.worldkeycount
+        token = self.tokencount
         curApesWrite = ""
         reqApesWrite = ""
         hundoWrite = ""
-        levellocked = RAM.levelStatus["Locked"].to_bytes(1, byteorder="little")
-        levelopen = RAM.levelStatus["Open"].to_bytes(1, byteorder="little")
-        levelhundo = RAM.levelStatus["Hundo"].to_bytes(1, byteorder="little")
+        levellocked = RAM.levelStatus["Locked"].to_bytes(1, byteorder = "little")
+        levelopen = RAM.levelStatus["Open"].to_bytes(1, byteorder = "little")
+        levelhundo = RAM.levelStatus["Hundo"].to_bytes(1, byteorder = "little")
         allCompleted = True
 
         debug = False
@@ -1947,13 +1960,18 @@ class ApeEscapeClient(BizHawkClient):
         levels_list = list(levels_keys)
         if gameState == RAM.gameState["LevelSelect"] or debug:
             for x in range(len(levels_list)):
-                if int.from_bytes(monkeylevelCounts[x], byteorder="little") < hundoMonkeysCount[levels_list[x]]:
+                if int.from_bytes(monkeylevelCounts[x], byteorder = "little") < hundoMonkeysCount[levels_list[x]]:
                     print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed
 
-        PPMUnlock = (key >= reqkeys[21] and allCompleted)
+        if ctx.slot_data["goal"] == GoalOption.option_ppmtoken.value:
+            PPMUnlock = (key >= reqkeys[21] and token >= min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]))
+        elif ctx.slot_data["goal"] == GoalOption.option_mmmtoken.value or ctx.slot_data["goal"] == GoalOption.option_tokenhunt.value:
+            PPMUnlock = (key >= reqkeys[21])
+        else:
+            PPMUnlock = (key >= reqkeys[21] and allCompleted)
 
         # Set unlocked/locked state of levels
         # This does not handle assignment of Specter Coin icons.
@@ -1970,7 +1988,7 @@ class ApeEscapeClient(BizHawkClient):
                     if index == 6 or index == 13:
                         levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
                     # Is every monkey in this level caught? If no, open. If yes, hundo.
-                    elif int.from_bytes(monkeylevelCounts[index], byteorder="little") >= hundoMonkeysCount[levels_list[index]]:
+                    elif int.from_bytes(monkeylevelCounts[index], byteorder = "little") >= hundoMonkeysCount[levels_list[index]]:
                         levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelhundo, "MainRAM"))
                     else:
                         levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
