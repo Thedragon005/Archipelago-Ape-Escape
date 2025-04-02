@@ -310,16 +310,16 @@ def set_entrances(self):
     if self.options.goal == "ppm": # If Specter 2 is the goal, require enough keys and all monkeys.
         connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
     elif self.options.goal == "ppmtoken": # If Specter 2 token is the goal, require enough keys and tokens.
-        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, self.options.requiredtokens))
+        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens)))
     elif self.options.goal == "tokenhunt" or self.options.goal == "mmtoken": # If other token goal, just require keys.
         connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
-    # TODO: Test this, and also adjust this part to handle requiring more tokens than exist!!!
+    # TODO: Test this.
     # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
     if self.options.goal != "tokenhunt":
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
     else:
-        self.multiworld.completion_condition[self.player] = lambda state: Tokens(state, self, self.options.requiredtokens)
+        self.multiworld.completion_condition[self.player] = lambda state: Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens))
 
 
 # A door is defined as a connection between rooms, typically bi-directional.
@@ -2706,14 +2706,13 @@ def set_locations(self):
     else:
         connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.W9L1BG.value, 
                         lambda state: (HasSling(state, self) or HasFlyer(state, self)) and HasNet(state, self))
-    # TODO: adjust this part to handle requiring more tokens than exist!!!
     # Specter 1
     if self.options.logic == "normal" or self.options.logic == "hard":
         connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
-                        lambda state: (HasClub(state, self) or HasPunch(state, self)) and ((self.options.bossrequirement == "vanilla") or Tokens(state, self, self.options.requiredtokens)))
+                        lambda state: (HasClub(state, self) or HasPunch(state, self)) and ((self.options.goal != "mmtoken") or Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens))))
     else:
         connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Specter.value, 
-                        lambda state: (HasClub(state, self) or HasSling(state, self) or HasPunch(state, self)) and ((self.options.bossrequirement == "vanilla") or Tokens(state, self, self.options.requiredtokens)))
+                        lambda state: (HasClub(state, self) or HasSling(state, self) or HasPunch(state, self)) and ((self.options.goal != "mmtoken") or Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens))))
 
     if self.options.coin == "true":
         connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Coin73.value, 
@@ -2768,7 +2767,7 @@ def Keys(state, world, count):
 
 def Tokens(state, world, count):
     # Check to see if the settings would create tokens at all.
-    if world.options.bossrequirement == "vanilla" and world.options.goal != "tokenhunt":
+    if world.options.goal == "mm" or world.options.goal == "ppm":
         return True
 
     return state.has(AEItem.Token.value, world.player, count)
@@ -3127,7 +3126,7 @@ def get_required_keys(key, goal, coin):
         reqkeys = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6]
     if key == 0x01:  # level
         reqkeys = [0, 0, 0, 1, 2, 3, 4, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 14, 15, 16, 16]
-    if option == 0x02:  # two
+    if key == 0x02:  # two
         reqkeys = [0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 8]
 
     if goal == 0x02 or goal == 0x03 or goal == 0x04: # If PPM unlocks only by keys, make it unlock later than MM.

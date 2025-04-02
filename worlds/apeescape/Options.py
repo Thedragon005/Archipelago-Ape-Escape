@@ -41,6 +41,7 @@ class RequiredTokensOption(Range):
 
 class TotalTokensOption(Range):
     """Choose the total number of Specter Tokens in the item pool.
+        If a world requests a token requirement greater than the number of tokens created, then the total and required values will be swapped.
 
         Supported values: 5 - 60
         Default value: 30

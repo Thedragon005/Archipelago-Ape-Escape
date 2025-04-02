@@ -68,45 +68,62 @@ class ApeEscapeWorld(World):
     item_name_groups = GROUPED_ITEMS
     location_name_groups = GROUPED_LOCATIONS
 
+
     def __init__(self, multiworld: MultiWorld, player: int):
         self.goal: Optional[int] = 0
+        self.requiredtokens: Optional[int] = 0
+        self.totaltokens: Optional[int] = 0
+        self.tokenlocations: Optional[int] = 0
         self.logic: Optional[int] = 0
+        self.infinitejump: Optional[int] = 0
+        self.superflyer: Optional[int] = 0
         self.entrance: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.extrakeys: Optional[int] = 0
         self.coin: Optional[int] = 0
+        self.mailbox: Optional[int] = 0
         self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
-        self.superflyer: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
         self.shufflewaternet: Optional[int] = 0
+        self.lowoxygensounds: Optional[int] = 0
         self.trapfillpercentage: Optional[int] = 0
-        self.itempool: List[ApeEscapeItem] = [] # TODO - add the new options (tokens, etc.)
+        self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
 
         super(ApeEscapeWorld, self).__init__(multiworld, player)
 
+
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
+        self.requiredtokens = self.options.requiredtokens.value
+        self.totaltokens = self.options.totaltokens.value
+        self.tokenlocations = self.options.tokenlocations.value
         self.logic = self.options.logic.value
+        self.infinitejump = self.options.infinitejump.value
+        self.superflyer = self.options.superflyer.value
         self.entrance = self.options.entrance.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.extrakeys: self.options.extrakeys.value
         self.coin = self.options.coin.value
+        self.mailbox = self.options.mailbox.value
         self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
-        self.superflyer = self.options.superflyer.value
         self.shufflenet = self.options.shufflenet.value
-        self.shufflewaternet = self.options.shufflewaternet.value # TODO - add the new options (tokens, etc.)
+        self.shufflewaternet = self.options.shufflewaternet.value
+        self.lowoxygensounds = self.options.lowoxygensounds.value
         self.trapfillpercentage = self.options.trapfillpercentage.value
         self.itempool = []
+
 
     def create_regions(self):
         create_regions(self)
 
+
     def set_rules(self):
         set_rules(self)
+
 
     def create_item(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
@@ -115,12 +132,14 @@ class ApeEscapeWorld(World):
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
 
+
     def create_item_skipbalancing(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
         classification = ItemClassification.progression_skip_balancing
 
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
+
 
     def create_item_useful(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
@@ -129,6 +148,7 @@ class ApeEscapeWorld(World):
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
 
+
     def create_item_filler(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
         classification = ItemClassification.filler
@@ -136,12 +156,14 @@ class ApeEscapeWorld(World):
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
 
+
     def create_item_trap(self, name: str) -> ApeEscapeItem:
         item_id = item_table[name]
         classification = ItemClassification.trap
 
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
+
 
     def create_items(self):
         reservedlocations = 0
@@ -173,12 +195,19 @@ class ApeEscapeWorld(World):
         self.itempool += [MM_DoubleDoorKey]
 
         # Create the desired amount of Specter Tokens if the settings require them.
-        # TODO: update this section to handle requiring more tokens than are created.
         if self.options.goal == "tokenhunt" or self.options.goal == "mmtoken" or self.options.goal == "ppmtoken":
-            self.itempool += [self.create_item_skipbalancing(AEItem.Token.value) for _ in range(0, self.options.totaltokens)]
+            self.itempool += [self.create_item_skipbalancing(AEItem.Token.value) for _ in range(0, max(self.options.requiredtokens, self.options.totaltokens))]
+            if self.options.tokenlocations == "ownworld":
+                self.multiworld.local_items[self.player].value.add("Specter Token")
+            if self.options.tokenlocations.value == "anywhere":
+                # TODO: make the placement of these tokens respect the option for monkey only
+                self.multiworld.local_items[self.player].value.add("Specter Token")
+                # make a list of all "Monkey" locations (use "Monkeys" location group)
+                # make a list of max(self.options.requiredtokens, self.options.totaltokens) of those locations
+                # place_locked_item for Specter Token into each of those locations
 
         # Create enough keys to access every level, if keys are on, plus the desired amount of extra keys.
-        if self.options.unlocksperkey != 0x03:
+        if self.options.unlocksperkey != "none":
             numkeys = get_required_keys(self.options.unlocksperkey.value, self.options.goal.value, self.options.coin.value)
             self.itempool += [self.create_item(AEItem.Key.value) for _ in range(0, numkeys[21] + self.options.extrakeys.value)]
 
@@ -308,6 +337,7 @@ class ApeEscapeWorld(World):
 
         self.multiworld.itempool += self.itempool
 
+
     def fill_slot_data(self):
         bytestowrite = []
         entranceids = []
@@ -320,30 +350,32 @@ class ApeEscapeWorld(World):
             bytestowrite += self.entranceorder[x].bytes
             bytestowrite.append(0)  # We need a separator byte after each level name.
 
-        return { # TODO: Make sure this list matches the options list
+        return {
             "goal": self.options.goal.value,
             "requiredtokens": self.options.requiredtokens.value,
             "totaltokens": self.options.totaltokens.value,
             "tokenlocations": self.options.tokenlocations.value,
             "logic": self.options.logic.value,
-            "entrance": self.options.entrance.value,
-            "unlocksperkey": self.options.unlocksperkey.value,
-            "extrakeys": self.options.extrakeys.value
-            "coin": self.options.coin.value,
-            "mailbox": self.options.mailbox.value,
-            "gadget": self.options.gadget.value,
-            "lamp": self.options.lamp.value,
             "infinitejump": self.options.infinitejump.value,
             "superflyer": self.options.superflyer.value,
+            "entrance": self.options.entrance.value,
+            "unlocksperkey": self.options.unlocksperkey.value,
+            "extrakeys": self.options.extrakeys.value,
+            "coin": self.options.coin.value,
+            "mailbox": self.options.mailbox.value,
+            "lamp": self.options.lamp.value,
+            "gadget": self.options.gadget.value,
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
             "lowoxygensounds": self.options.lowoxygensounds.value,
+            "trapfillpercentage": self.options.trapfillpercentage.value,
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value, self.options.goal.value, self.options.coin.value),
             "death_link": self.options.death_link.value
         }
+
 
     def write_spoiler(self, spoiler_handle: TextIO):
         if self.options.entrance.value != 0x00:
@@ -352,6 +384,7 @@ class ApeEscapeWorld(World):
             for x in range(0, 22):
                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
             spoiler_handle.write(f"\n")
+
 
     def generate_output(self, output_directory: str):
         data = {
