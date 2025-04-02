@@ -314,7 +314,7 @@ def set_entrances(self):
     elif self.options.goal == "tokenhunt" or self.options.goal == "mmtoken": # If other token goal, just require keys.
         connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
 
-    # TODO: Test the token condition.
+    # TODO: Test this, and also adjust this part to handle requiring more tokens than exist!!!
     # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
     if self.options.goal != "tokenhunt":
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
