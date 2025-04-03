@@ -3085,6 +3085,12 @@ def character_lookup(byte):
             return ord(byte) + 68  # 6-9
     if ord(byte) == 39:  # Single apostrophe
         return 187
+    if ord(byte) == 46:  # Period
+        return 172
+    if ord(byte) == 47:  # Slash
+        return 141
+    if ord(byte) == 58:  # Colon
+        return 174
 
 
 def fixed_levels(levellist, entoption, coinoption):
