@@ -1059,7 +1059,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
             if gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
-                print("In level intro state.")
+                # print("In level intro state.")
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
                 firstroomids = ctx.slot_data["firstrooms"]
                 # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
@@ -1280,7 +1280,7 @@ class ApeEscapeClient(BizHawkClient):
                 doorlist_keys = list(door_addresses[currentRoom].keys())
                 doorlist_values = list(door_addresses[currentRoom].values())
 
-                #print(doorlist_values)
+                # print(doorlist_values)
                 for x in range(len(doorlist_keys)):
                     Door_writes = []
                     Door_guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
@@ -1303,16 +1303,17 @@ class ApeEscapeClient(BizHawkClient):
 
                     await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes, Door_guards)
 
-        # Prevent starting Specter 1 for Specter 1 token goal when not having enough tokens.
+        # Prevent damaging Specter 1 for Specter 1 token goal when not having enough tokens.
         token = self.tokencount
         if (NearbyRoom == 83 and transitionPhase == 0x06) or (currentRoom == 83 and transitionPhase != 0x06):
-            print("Current/Next Room is Specter 1 room")
+            # print("Current/Next Room is Specter 1 room")
             if ctx.slot_data["goal"] == GoalOption.option_mmtoken:
-                print("with the correct goal")
+                # print("with the correct goal")
                 if token < min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
-                    print("and insufficient tokens")
-                    if MM_Lobby_DoorDetection != 0x8C800000:
-                        MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+                    # print("and insufficient tokens")
+                    MM_Writes += [(RAM.S1_P1_Life, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    # if MM_Lobby_DoorDetection != 0x8C800000:
+                    #     MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
 
         await bizhawk.write(ctx.bizhawk_ctx, MM_Writes)
 
@@ -1581,19 +1582,19 @@ class ApeEscapeClient(BizHawkClient):
             # If the room had a lamp, activate all values while going in the transition
             if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (
                     RoomHaveLamp == True and transitionPhase != 0x06):
-                print("LampRoom")
+                # print("LampRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_ON'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoom in specialrooms and transitionPhase == 0x06) or (currentRoom in specialrooms):
-                print("SpecialRoom")
+                # print("SpecialRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoomHaveLamp == False and transitionPhase == 0x06) or ((currentRoom not in specialrooms) and (RoomHaveLamp == False)):
-                print("NoLampsRoom")
+                # print("NoLampsRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
@@ -1601,14 +1602,14 @@ class ApeEscapeClient(BizHawkClient):
 
         else:
             if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
-                print("SpecialRoom")
+                # print("SpecialRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
                 # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (currentRoom not in specialrooms) or transitionPhase == 0x06:
-                print("NotSpecialRoom")
+                # print("NotSpecialRoom")
                 Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
@@ -1664,7 +1665,7 @@ class ApeEscapeClient(BizHawkClient):
         else:
             # Does not send the traps in these states
             if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race):
-                print("Waiiiitttiinnng for...valid state")
+                # print("Waiiiitttiinnng for...valid state")
                 return None
                 # Exit without sending trap, keeping it active for the next pass
 
@@ -1688,18 +1689,18 @@ class ApeEscapeClient(BizHawkClient):
                     face = faces[randomFace]
                     # If there is no more gadgets,it means we put an "Empty" spot
                     if currentGadgets == []:
-                        print("Face #" + str(randomFace + 1) + " : None | 255")
+                        # print("Face #" + str(randomFace + 1) + " : None | 255")
                         chosen_values[face] = 0xFF
                         faces.pop(randomFace)
                     else:
                         randomGadget = int(round(random() * (len(currentGadgets) - 1), None))
                         gadget_value = gadgetsValues[currentGadgets[randomGadget]]
                         chosen_values[face] = gadget_value
-                        print("Face #" + str(faces[randomFace]) + " : " + str(currentGadgets[randomGadget]) + " | " + str(gadgetsValues[currentGadgets[randomGadget]]))
+                        # print("Face #" + str(faces[randomFace]) + " : " + str(currentGadgets[randomGadget]) + " | " + str(gadgetsValues[currentGadgets[randomGadget]]))
                         chosen_gadgets.append(str(currentGadgets[randomGadget]))
                         currentGadgets.pop(randomGadget)
                         faces.pop(randomFace)
-                print(chosen_gadgets)
+                # print(chosen_gadgets)
 
                 Trap_Writes += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
                 Trap_Writes += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
@@ -1708,8 +1709,8 @@ class ApeEscapeClient(BizHawkClient):
 
                 # Select a gadget slot
                 randomSelect = int(round(random() * (len(chosen_values) - 1),None))
-                print("random:" + str(randomSelect))
-                print(chosen_values)
+                # print("random:" + str(randomSelect))
+                # print(chosen_values)
                 # Attempt to correct the radar being weird on shuffle sometimes
                 if chosen_values[randomSelect] == 0x02:
                     Trap_Writes1 = []
@@ -1724,10 +1725,10 @@ class ApeEscapeClient(BizHawkClient):
                     Trap_Writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
                 Trap_Writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
                 # if chosen_values[randomSelect] != 0xFF:
-                    #print(chosen_values[randomSelect])
-                    #print("Selected gadget : " + chosen_gadgets[randomSelect])
+                    # print(chosen_values[randomSelect])
+                    # print("Selected gadget : " + chosen_gadgets[randomSelect])
                 # else:
-                    #print("Selected gadget : NONE")
+                    # print("Selected gadget : NONE")
 
             await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
 
@@ -1883,7 +1884,7 @@ class ApeEscapeClient(BizHawkClient):
 
                 self.lowOxygenCounter += 1
                 # Should start at 1
-                #print(self.lowOxygenCounter)
+                # print(self.lowOxygenCounter)
                 if self.lowOxygenCounter <= 2:
                     WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
                     WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
@@ -1971,7 +1972,7 @@ class ApeEscapeClient(BizHawkClient):
         if gameState == RAM.gameState["LevelSelect"] or debug:
             for x in range(len(levels_list)):
                 if int.from_bytes(monkeylevelCounts[x], byteorder = "little") < hundoMonkeysCount[levels_list[x]]:
-                    print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
+                    # print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed

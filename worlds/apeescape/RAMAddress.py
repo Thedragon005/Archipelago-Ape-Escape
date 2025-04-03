@@ -1407,6 +1407,7 @@ class RAM:
 
 
     # Specter bosses values
+    S1_P1_Life = 0x1408FB
     S1_P2_State = 0x144A04
     S1_P2_Life = 0x144A06
     S1_Cutscene_Redirection = 0x137C28  # 4 bytes. When GameState is 0A, change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
