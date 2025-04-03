@@ -34,7 +34,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, GoalOption, CoinOption, MailboxOption, EntranceOption, KeyOption
+from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapFillPercentage, DeathLink
 
 
 if TYPE_CHECKING:
@@ -1035,10 +1035,10 @@ class ApeEscapeClient(BizHawkClient):
             # Also apply Magic Punch visual correction
             Gadgets_Reads = [currentLevel, heldGadget, gadgetStateFromServer, crossGadget, menuState, menuState2, punchVisualAddress, gameState]
             await self.gadgets_handler(ctx, Gadgets_Reads)
-            # ======================================
+            # ==============================
 
-            # ===== Level Select Optimisation=======
-            # Execute the Level Select optimisation code segment
+            # ===== Level Select Optimization ======
+            # Execute the Level Select optimization code segment
             LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, Temp_SA_Completed, GA_Completed, Temp_GA_Completed, LS_currentWorld, worldIsScrollingRight]
             await self.level_select_optimization(ctx, LSO_Reads)
             # ======================================
@@ -1075,6 +1075,256 @@ class ApeEscapeClient(BizHawkClient):
 
             # Unlock levels
             writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"])
+
+            # ===== Text Replacements ======
+            # Replace text Time Station mailbox here.
+            # ==============================
+            if currentRoom == 88 and gotMail == 0x02 and mailboxID == 0x71:
+                mailboxtext = ""
+                mailboxbytes = []
+
+                mailboxbytes += text_to_bytes("World settings")
+                mailboxbytes += [13] # New line
+
+                # Add goal to mailbox text
+                if ctx.slot_data["goal"] == GoalOption.option_mm or ctx.slot_data["goal"] == GoalOption.option_mmtoken:
+                    mailboxtext = "Goal: Specter 1"
+                elif ctx.slot_data["goal"] == GoalOption.option_ppm or ctx.slot_data["goal"] == GoalOption.option_ppmtoken:
+                    mailboxtext = "Goal: Specter 2"
+                else:
+                    mailboxtext = "Goal: Token Hunt"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                # Add token information to mailbox text
+                if ctx.slot_data["goal"] == GoalOption.option_mmtoken or ctx.slot_data["goal"] == GoalOption.option_ppmtoken or ctx.slot_data["goal"] == GoalOption.option_tokenhunt:
+                    mailboxbytes += text_to_bytes("You need")
+                    mailboxbytes += [13]
+                    reqtokens = min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"])
+                    tottokens = max(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"])
+                    mailboxbytes += text_to_bytes(str(reqtokens) + "/" + str(tottokens) + " tokens.")
+                    mailboxbytes += [13]
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("You now have")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes(str(self.tokencount) + " tokens.")
+                else:
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("There are no token")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("requirements for")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("this world.")
+
+                # Pad the text with zeroes to account for the fixed length first page
+                while len(mailboxbytes) < 79:
+                    mailboxbytes += [0]
+
+                # Next page
+                mailboxbytes += [13]
+                mailboxbytes += [13]
+                mailboxbytes += [15]
+
+                # Add difficulty and trick information to mailbox text
+                if ctx.slot_data["logic"] == LogicOption.option_normal:
+                    mailboxtext = "Difficulty: Normal"
+                elif ctx.slot_data["logic"] == LogicOption.option_hard:
+                    mailboxtext = "Difficulty: Hard"
+                else:
+                    mailboxtext = "Difficulty: Expert"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                if ctx.slot_data["infinitejump"] == InfiniteJumpOption.option_false:
+                    mailboxtext = "Infinite Jump: Off"
+                else:
+                    mailboxtext = "Infinite Jump: On"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                if ctx.slot_data["superflyer"] == SuperFlyerOption.option_false:
+                    mailboxtext = "Super Flyer: Off"
+                else:
+                    mailboxtext = "Super Flyer: On"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                # Add lamp shuffle information to mailbox text
+                if ctx.slot_data["lamp"] == LampOption.option_false:
+                    mailboxtext = "Lamp Shuffle: Off"
+                else:
+                    mailboxtext = "Lamp Shuffle: On"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                # Add Water Net information to mailbox text
+                mailboxbytes += text_to_bytes("Water Net Status:")
+                mailboxbytes += [13]
+                mailboxbytes += text_to_bytes("Swim ")
+                if waternetState == 0: # Can't swim
+                    mailboxbytes += [10] # X button icon
+                    mailboxbytes += [4]
+                else:
+                    mailboxbytes += [10] # O button icon
+                    mailboxbytes += [1]
+                mailboxbytes += text_to_bytes(" Dive ")
+                if waternetState == 2: # Can dive
+                    mailboxbytes += [10]
+                    mailboxbytes += [1]
+                else:
+                    mailboxbytes += [10]
+                    mailboxbytes += [4]
+                mailboxbytes += [13]
+                mailboxbytes += text_to_bytes("Catch ")
+                if watercatchState == 0: # Can't water catch
+                    mailboxbytes += [10]
+                    mailboxbytes += [4]
+                else:
+                    mailboxbytes += [10]
+                    mailboxbytes += [1]
+
+                # Next page
+                mailboxbytes += [13]
+                mailboxbytes += [13]
+                mailboxbytes += [15]
+
+                # Add coin and mailbox shuffle information to mailbox text
+                if ctx.slot_data["coin"] == CoinOption.option_false:
+                    mailboxtext = "Coins: Off"
+                else:
+                    mailboxtext = "Coins: On"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                if ctx.slot_data["mailbox"] == MailboxOption.option_false:
+                    mailboxtext = "Mailboxes: Off"
+                else:
+                    mailboxtext = "Mailboxes: On"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+
+                # Add world key information to mailbox text
+                if ctx.slot_data["unlocksperkey"] == KeyOption.option_none:
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("There are no")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("World Keys in")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("this world.")
+                    mailboxbytes += [13]
+                else:
+                    mailboxbytes += text_to_bytes("Keys unlock")
+                    mailboxbytes += [13]
+                    if ctx.slot_data["unlocksperkey"] == KeyOption.option_world:
+                        mailboxtext = "one world each."
+                    elif ctx.slot_data["unlocksperkey"] == KeyOption.option_level:
+                        mailboxtext = "one level each."
+                    else:
+                        mailboxtext = "two levels each."
+                    mailboxbytes += text_to_bytes(mailboxtext)
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("There are " + str(ctx.slot_data["extrakeys"]))
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("extra World Keys.")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("You have " + str(self.worldkeycount) + " keys.")
+
+                # Next page
+                mailboxbytes += [13]
+                mailboxbytes += [13]
+                mailboxbytes += [15]
+
+                # Add entrance shuffle information to mailbox text
+                if ctx.slot_data["entrance"] == EntranceOption.option_off:
+                    mailboxtext = "Entrance: Off"
+                elif ctx.slot_data["entrance"] == EntranceOption.option_on:
+                    mailboxtext = "Entrance: On"
+                else:
+                    mailboxtext = "Entrance: Lock MM"
+                mailboxbytes += text_to_bytes(mailboxtext)
+                mailboxbytes += [13]
+                # TODO: Door shuffle status goes here
+                mailboxbytes += [13]
+                
+                # Add door and lamp statuses to mailbox text
+                mailboxbytes += text_to_bytes("MM Double Door: ")
+                if MM_Lobby_DoubleDoor == 0: # Don't have item
+                    mailboxbytes += [10] # X button icon
+                    mailboxbytes += [4]
+                else:
+                    mailboxbytes += [10] # O button icon
+                    mailboxbytes += [1]
+                mailboxbytes += [13]
+                if ctx.slot_data["lamp"] == LampOption.option_true:
+                    mailboxbytes += text_to_bytes("          Lamps")
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("CB: ")
+                    if CBLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += text_to_bytes(" DI: ")
+                    if DILampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += text_to_bytes(" CC: ")
+                    if CrCLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("CP: ")
+                    if CPLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += text_to_bytes(" SF: ")
+                    if SFLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += text_to_bytes(" TV: ")
+                    if TVTLobbyLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += [13]
+                    mailboxbytes += text_to_bytes("TV: ")
+                    if TVTTankLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+                    mailboxbytes += text_to_bytes(" MM: ")
+                    if MMLampState == 0: # Don't have item
+                        mailboxbytes += [10] # X button icon
+                        mailboxbytes += [4]
+                    else:
+                        mailboxbytes += [10] # O button icon
+                        mailboxbytes += [1]
+            
+                # End mailbox text
+                mailboxbytes += [13]
+                # Pad the text with zeroes to overwrite all pre-existing text
+                while len(mailboxbytes) < 600:
+                    mailboxbytes += [0]
+
+                for x in range(0, 600):
+                    writes += [(RAM.timeStationMailboxStart + x, mailboxbytes[x].to_bytes(1, "little"), "MainRAM")]
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -1170,6 +1420,7 @@ class ApeEscapeClient(BizHawkClient):
                 await bizhawk.guarded_write(ctx.bizhawk_ctx, punch_Writes,punch_Guards)
 
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
+
 
     async def Credits_handling(self, ctx: "BizHawkClientContext", Credits_Reads) -> None:
         currentRoom = Credits_Reads[0]
@@ -1793,7 +2044,7 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx, LS_Writes)
 
 
-    async def water_net_handling(self, ctx: "BizHawkClientContext",WN_Reads) -> None:
+    async def water_net_handling(self, ctx: "BizHawkClientContext", WN_Reads) -> None:
         # Water Net client handling
         # If Progressive WaterNet is 0 no Swim and no Dive, if it's 1 No Dive (Swim only)
         # 8-9 Jumping/falling, 35-36 D-Jump, 83-84 Flyer => don't reset the counter
@@ -1906,7 +2157,7 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx,WN_writes)
 
 
-    async def handle_death_link(self, ctx: "BizHawkClientContext",DL_Reads) -> None:
+    async def handle_death_link(self, ctx: "BizHawkClientContext", DL_Reads) -> None:
         """
         Checks whether the player has died while connected and sends a death link if so.
         """
@@ -2020,3 +2271,31 @@ class ApeEscapeClient(BizHawkClient):
         if hundoWrite != "":
             returns.append(hundoWrite)
         return returns
+
+
+# Mailbox text helper functions
+def text_to_bytes(name):
+    bytelist = []
+    for x in name:
+        bytelist.append(character_lookup(x))
+    return bytelist
+
+
+def character_lookup(byte):
+    if byte.isspace():  # Space
+        return 255
+    if byte.isalpha():
+        return ord(byte) - 49  # Both uppercase and lowercase letters
+    if byte.isdecimal():
+        if int(byte) < 6:
+            return ord(byte) + 58  # 0-5
+        else:
+            return ord(byte) + 70  # 6-9
+    if ord(byte) == 39:  # Single apostrophe
+        return 187
+    if ord(byte) == 46:  # Period
+        return 172
+    if ord(byte) == 47:  # Slash
+        return 141
+    if ord(byte) == 58:  # Colon
+        return 174

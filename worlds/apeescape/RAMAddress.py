@@ -1416,6 +1416,7 @@ class RAM:
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
 
+    timeStationMailboxStart = 0x0C1798
     gotMailAddress = 0x0BBD99
     gotMailAddress_PAL = 0x0BBE59
     # DIFF = NTSC + C0
