@@ -194,17 +194,11 @@ class ApeEscapeWorld(World):
 
         self.itempool += [MM_DoubleDoorKey]
 
-        # Create the desired amount of Specter Tokens if the settings require them.
+        # Create the desired amount of Specter Tokens if the settings require them, and make them local if requested.
         if self.options.goal == "tokenhunt" or self.options.goal == "mmtoken" or self.options.goal == "ppmtoken":
             self.itempool += [self.create_item_skipbalancing(AEItem.Token.value) for _ in range(0, max(self.options.requiredtokens, self.options.totaltokens))]
             if self.options.tokenlocations == "ownworld":
                 self.multiworld.local_items[self.player].value.add("Specter Token")
-            if self.options.tokenlocations.value == "anywhere":
-                # TODO: make the placement of these tokens respect the option for monkey only
-                self.multiworld.local_items[self.player].value.add("Specter Token")
-                # make a list of all "Monkey" locations (use "Monkeys" location group)
-                # make a list of max(self.options.requiredtokens, self.options.totaltokens) of those locations
-                # place_locked_item for Specter Token into each of those locations
 
         # Create enough keys to access every level, if keys are on, plus the desired amount of extra keys.
         if self.options.unlocksperkey != "none":

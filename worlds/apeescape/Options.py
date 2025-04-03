@@ -56,18 +56,16 @@ class TotalTokensOption(Range):
 class TokenLocationsOption(Choice):
     """Choose where Specter Tokens can be placed in the multiworld.
 
-        monkeys: Specter Tokens can only be placed on monkeys in your world.
-        ownworld: Specter Tokens can be placed anywhere in your world.
         anywhere: Specter Tokens can be placed anywhere in the multiworld.
+        ownworld: Specter Tokens can only be placed in your world.
 
-        Supported values: monkeys, ownworld, anywhere
+        Supported values: anywhere, ownworld
         Default value: ownworld
     """
 
     display_name = "Token Locations"
-    option_monkeys = 0x00
+    option_anywhere = 0x00
     option_ownworld = 0x01
-    option_anywhere = 0x02
     default = option_ownworld
 
 

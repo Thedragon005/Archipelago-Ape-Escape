@@ -885,7 +885,7 @@ class RAM:
         71: {  # Circus (Professor)
             502: 0x0E6BA9
         },
-        #Victory conditions calculated separately, no values there
+        # Victory conditions calculated separately, no values there
         83: {  # Specter 1 Phase 1
 
         },
@@ -1170,18 +1170,18 @@ class RAM:
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
     swim_oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
-    swim_oxygenReplenishSoundAddress = 0x06140C # Default : 0C021DFE, disable : 00000000 4 bytes
-    swim_ReplenishOxygenUWAddress = 0x06141C # Default : A4500018, Disable : 00000000 4 bytes
-    swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default : A4434DC8, Disable : 00000000 4 bytes
-    swim_surfaceDetectionAddress = 0x061420 # Default : 0801853A, disable : 0
-    swim_oxygenLowLevelSoundAddress = 0x061458  # Default : 3C02800F, disable : 3C028004 4 bytes
-    swim_oxygenMidLevelSoundAddress = 0x061490  # Default : 3C02800F, disable : 3C028004 4 bytes
+    swim_oxygenReplenishSoundAddress = 0x06140C # Default: 0C021DFE, disable: 00000000 4 bytes
+    swim_ReplenishOxygenUWAddress = 0x06141C # Default: A4500018, Disable: 00000000 4 bytes
+    swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default: A4434DC8, Disable: 00000000 4 bytes
+    swim_surfaceDetectionAddress = 0x061420 # Default: 0801853A, disable: 0
+    swim_oxygenLowLevelSoundAddress = 0x061458  # Default: 3C02800F, disable: 3C028004 4 bytes
+    swim_oxygenMidLevelSoundAddress = 0x061490  # Default: 3C02800F, disable: 3C028004 4 bytes
     
     MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
     MM_Clown_State = 0x174072
     MM_Natalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
     MM_Natalie_CutsceneState = 0x0DFDDE #play cutscene = 0x00, cutscene played = 0x0D
-    MM_Natalie_Rescued_Local = 0x16F34E # When in Room 76 : Natalie rescued = 0x01
+    MM_Natalie_Rescued_Local = 0x16F34E # When in Room 76: Natalie rescued = 0x01
     MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
 
 
@@ -1190,10 +1190,10 @@ class RAM:
     temp_MM_Natalie_RescuedAddress = 0x0DFC5E
     temp_MM_Jake_DefeatedAddress = 0x0DFC5A
 
-    MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence.If JakeDefeated = 5 it will open the door
+    MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence. If JakeDefeated = 5 it will open the door
     MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
-    MM_Lobby_JakeDoorFenceAddress = 0x174FA6 #Maybe not used
-    MM_Lobby_DoorDetection = 0x0963C8 # 4b : Default to 8C820000.8C800000 Prevent the door detection code from kicking in
+    MM_Lobby_JakeDoorFenceAddress = 0x174FA6 # Maybe not used
+    MM_Lobby_DoorDetection = 0x0963C8 # 4b: Default to 8C820000. 8C800000 Prevent the door detection code from kicking in
 
     MM_NatalieDoor_Visual1 = 0x0BFCEF # Open 0x00
     MM_NatalieDoor_Visual2 = 0x0BFE0F # Open 0x00
@@ -1339,8 +1339,6 @@ class RAM:
     # 0x19 = Spawning in air
 
 
-
-
     # Junk addresses
     energyChipsAddress = 0x0F44B8
     cookieAddress = 0x0EC2C8
@@ -1387,10 +1385,10 @@ class RAM:
     TargetRoomID8Address = 0x15437C
     TR8_DoorIDAddress = 0x154380
 
-    kickoutofLevelAddress = 0x097B98  # 4 bytes : Default 84830188, Disable kickout = 00000000 (050E67EC)
-    CrC_kickoutofLevelAddress = 0x097B20  # 4 bytes : Default 86020166, Disable kickout = 00000000
-    CrC_kickoutofLevelAddress2 = 0x097B24 # 4 bytes : Default 84830188, Disable kickout = 00000000
-    TVT_kickoutofLevelAddress = 0x097B00  # 4 bytes : Default 84830188, Disable kickout = 00000000
+    kickoutofLevelAddress = 0x097B98  # 4 bytes: Default 84830188, Disable kickout = 00000000 (050E67EC)
+    CrC_kickoutofLevelAddress = 0x097B20  # 4 bytes: Default 86020166, Disable kickout = 00000000
+    CrC_kickoutofLevelAddress2 = 0x097B24 # 4 bytes: Default 84830188, Disable kickout = 00000000
+    TVT_kickoutofLevelAddress = 0x097B00  # 4 bytes: Default 84830188, Disable kickout = 00000000
 
     # 1 = "Net down"
     # 8 = "Net down + can catch"
@@ -1405,7 +1403,7 @@ class RAM:
     # 2 Boss in waiting
     # 3 Boss in progress
     roomStatus = 0x17C5A2
-    #Find better name please...
+    # Find better name please...
 
 
     # Specter bosses values
