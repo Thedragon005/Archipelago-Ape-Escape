@@ -1074,7 +1074,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
-            writes += self.unlockLevels(monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"])
+            writes += self.unlockLevels(ctx,monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"])
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -1305,14 +1305,15 @@ class ApeEscapeClient(BizHawkClient):
 
         # Prevent starting Specter 1 for Specter 1 token goal when not having enough tokens.
         token = self.tokencount
-        # In the boss room and not transitioning
-        if currentRoom == 83 and transitionPhase != 0x06:
-            print("In Specter 1 room")
+        # Going into the boss room or is in the boss room
+        if (NearbyRoom == 83 and transitionPhase == 0x06) or (currentRoom == 83 and transitionPhase != 0x06):
+            print("Current/Next Room is Specter 1 room")
             if ctx.slot_data["goal"] == GoalOption.option_mmtoken.value:
                 print("with the correct goal")
                 if token < min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
                     print("and insufficient tokens")
-                    # the write that blocks the fight goes here
+                    if MM_Lobby_DoorDetection != 0x8C800000:
+                        MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
 
         await bizhawk.write(ctx.bizhawk_ctx, MM_Writes)
 
@@ -1912,7 +1913,7 @@ class ApeEscapeClient(BizHawkClient):
         """
         cookies = DL_Reads[0]
         gameRunning = DL_Reads[1]
-        gamestate = DL_Reads[2]
+        gameState = DL_Reads[2]
         menuState2 = DL_Reads[3]
         spikestate2 = DL_Reads[4]
 
@@ -1953,7 +1954,7 @@ class ApeEscapeClient(BizHawkClient):
         self.pending_death_link = True
 
 
-    def unlockLevels(self, monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys):
+    def unlockLevels(self, ctx: "BizHawkClientContext", monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys):
 
         key = self.worldkeycount
         token = self.tokencount
