@@ -3135,7 +3135,7 @@ def get_required_keys(key, goal, coin):
     if coin == 0x01: # If the races have locations, make everything after them require an extra key for each.
         for x in range (7, 22):
             reqkeys[x] = reqkeys[x] + 1
-        for x in range (15, 22):
+        for x in range (14, 22):
             reqkeys[x] = reqkeys[x] + 1
 
     return reqkeys

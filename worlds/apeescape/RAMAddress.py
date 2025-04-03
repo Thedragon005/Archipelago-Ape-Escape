@@ -1240,8 +1240,8 @@ class RAM:
     tempKeyCountFromServer = 0x0DFBDE
     keyCountFromServer = 0x0E00EE
 
-    tempTokenCountFromServer = 0x0DFBE2
-    tokenCountFromServer = 0x0E00F2
+    tempTokenCountFromServer = 0x0DFBEC
+    tokenCountFromServer = 0x0E00FC
 
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0

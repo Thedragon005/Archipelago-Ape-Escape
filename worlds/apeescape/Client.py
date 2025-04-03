@@ -1047,12 +1047,12 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
                 # ** Not required anymore
-                #if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
-                    #writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
+                # if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
+                    # writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
 
                 # Update level (and potentially era) names.
                 bytestowrite = ctx.slot_data["levelnames"]
-                # This is a bit of a "magic number" right now. trying to get the length didn't work.
+                # This is a bit of a "magic number" right now. Trying to get the length didn't work.
                 # Trying to write all the bytes at once also didn't work.
                 for x in range(0, 308):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
@@ -1074,7 +1074,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
-            writes += self.unlockLevels(ctx,monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"])
+            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"])
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
@@ -1305,10 +1305,9 @@ class ApeEscapeClient(BizHawkClient):
 
         # Prevent starting Specter 1 for Specter 1 token goal when not having enough tokens.
         token = self.tokencount
-        # Going into the boss room or is in the boss room
         if (NearbyRoom == 83 and transitionPhase == 0x06) or (currentRoom == 83 and transitionPhase != 0x06):
             print("Current/Next Room is Specter 1 room")
-            if ctx.slot_data["goal"] == GoalOption.option_mmtoken.value:
+            if ctx.slot_data["goal"] == GoalOption.option_mmtoken:
                 print("with the correct goal")
                 if token < min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
                     print("and insufficient tokens")
@@ -1786,7 +1785,6 @@ class ApeEscapeClient(BizHawkClient):
                 elif (self.worldkeycount < WorldUnlocks[LS_currentWorld]):
                     LS_Writes += [(RAM.worldScrollToRightDPAD, 0x0000.to_bytes(2, "little"), "MainRAM")]
                     LS_Writes += [(RAM.worldScrollToRightR1, 0x0000.to_bytes(2, "little"), "MainRAM")]
-
                 else:
                     LS_Writes += [(RAM.worldScrollToRightDPAD, 0x0009.to_bytes(2, "little"), "MainRAM")]
                     LS_Writes += [(RAM.worldScrollToRightR1, 0x0009.to_bytes(2, "little"), "MainRAM")]
@@ -1897,7 +1895,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # On (Vanilla)
             else:
-                #print("Vanilla")
+                # print("Vanilla")
                 WN_writes += [(RAM.swim_oxygenLowLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
                 WN_writes += [(RAM.swim_oxygenMidLevelSoundAddress, 0x3C02800F.to_bytes(4, "little"), "MainRAM")]
         else:
@@ -1917,7 +1915,7 @@ class ApeEscapeClient(BizHawkClient):
         menuState2 = DL_Reads[3]
         spikestate2 = DL_Reads[4]
 
-        OnTree = {56,57,58,59,60}
+        OnTree = {56, 57, 58, 59, 60}
 
         DL_writes = []
         DL_writes2 = []
@@ -1938,14 +1936,14 @@ class ApeEscapeClient(BizHawkClient):
                     DL_writes2 += [(RAM.Controls_TriggersShapes, 0xFD.to_bytes(1, "little"), "MainRAM")]
                 self.pending_death_link = False
                 self.sending_death_link = True
-                await bizhawk.write(ctx.bizhawk_ctx,DL_writes)
+                await bizhawk.write(ctx.bizhawk_ctx, DL_writes)
                 await bizhawk.write(ctx.bizhawk_ctx, DL_writes2)
 
 
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
         ctx.last_death_link = time.time()
-        DeathText = ctx.player_names[ctx.slot] + " says: `Oooh noooo!`(Died)"
+        DeathText = ctx.player_names[ctx.slot] + " says: " + random.choice(["`Ohhh noooo!`", "`This bites.`"]) + " (Died)"
         await ctx.send_death(DeathText)
 
 
@@ -1978,9 +1976,9 @@ class ApeEscapeClient(BizHawkClient):
                     break
                     # Does not need to check the rest of the levels, at least 1 is not completed
 
-        if ctx.slot_data["goal"] == GoalOption.option_ppmtoken.value:
+        if ctx.slot_data["goal"] == GoalOption.option_ppmtoken:
             PPMUnlock = (key >= reqkeys[21] and token >= min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]))
-        elif ctx.slot_data["goal"] == GoalOption.option_mmtoken.value or ctx.slot_data["goal"] == GoalOption.option_tokenhunt.value:
+        elif ctx.slot_data["goal"] == GoalOption.option_mmtoken or ctx.slot_data["goal"] == GoalOption.option_tokenhunt:
             PPMUnlock = (key >= reqkeys[21])
         else:
             PPMUnlock = (key >= reqkeys[21] and allCompleted)

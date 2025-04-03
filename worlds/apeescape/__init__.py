@@ -276,23 +276,23 @@ class ApeEscapeWorld(World):
         # Trap item fill: randomly pick items according to a set of weights.
         # Trap weights: Banana Peel, Gadget Shuffle
         if self.options.trapfillpercentage != 0:
-            traps_weights = [75, 25]
-            traps_percentage = self.options.trapfillpercentage / 100
-            traps_numbers = round((len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations) * traps_percentage, None)
+            trap_weights = [75, 25]
+            trap_percentage = self.options.trapfillpercentage / 100
+            trap_count = round((len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations) * trap_percentage, None)
 
-            for x in range(1, len(traps_weights)):
-                traps_weights[x] = traps_weights[x] + traps_weights[x - 1]
+            for x in range(1, len(trap_weights)):
+                trap_weights[x] = trap_weights[x] + trap_weights[x - 1]
 
-            for _ in range(traps_numbers):
-                randomTrap = self.random.randint(1, traps_weights[len(traps_weights) - 1])
-                if 0 < randomTrap <= traps_weights[0]:
+            for _ in range(trap_count):
+                randomTrap = self.random.randint(1, trap_weights[len(trap_weights) - 1])
+                if 0 < randomTrap <= trap_weights[0]:
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                 else:
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
-                    #Deactivated for now
-                    #self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
+                    # Deactivated for now
+                    # self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
 
-            print("Created " + str(traps_numbers) + " traps.")
+            # print("Created " + str(trap_count) + " traps.")
 
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets and Nothing, respectively.
@@ -301,9 +301,8 @@ class ApeEscapeWorld(World):
 
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
-        filler_number = len(self.multiworld.get_unfilled_locations(self.player)) - len(
-            self.itempool) - reservedlocations
-        for _ in range(filler_number):
+        filler_count = len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations
+        for _ in range(filler_count):
             randomFiller = self.random.randint(1, weights[len(weights) - 1])
             if 0 < randomFiller <= weights[0]:
                 self.itempool += [self.create_item_useful(AEItem.Shirt.value)]
@@ -327,7 +326,7 @@ class ApeEscapeWorld(World):
                 self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
             else:
                 self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
-        print("Created " + str(filler_number) + " filler items.")
+        # print("Created " + str(filler_count) + " filler items.")
 
         self.multiworld.itempool += self.itempool
 
