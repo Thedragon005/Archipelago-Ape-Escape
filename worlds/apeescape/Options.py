@@ -273,7 +273,6 @@ class ShuffleWaterNetOption(Choice):
         - Water Catch: Allows shooting the Water Net.
         on: Water Net is shuffled, adding it to the pool as a single item.
 
-
         Supported values: off, progressive, on
         Default value: off
     """
@@ -291,7 +290,6 @@ class LowOxygenSounds(Choice):
         half: Low Oxygen sounds will play less frequently.
         on: Low Oxygen Sounds will play normally.
 
-
         Supported values: off, half, on
         Default value: half
     """
@@ -304,12 +302,27 @@ class LowOxygenSounds(Choice):
 
 class TrapFillPercentage(Range):
     """
-    Replace a percentage of junk items in the item pool with random traps
+    Replace a percentage of filler items in the item pool with random traps.
     """
     display_name = "Trap Fill Percentage"
     range_start = 0
     range_end = 100
     default = 0
+
+
+class ItemDisplayOption(Choice):
+    """Set the default for the Bizhawk item display command. This can be changed in the client at any time. The position and duration of these messages can be changed in Bizhawk config at any time.
+
+        off: Receiving an item will not show a message in Bizhawk.
+        on: Receiving an item will show a message in Bizhawk.
+
+        Supported values: off, true
+        Default value: on
+    """
+    display_name = "Item Display"
+    option_off = 0x00
+    option_on = 0x01
+    default = option_on
 
 
 @dataclass
@@ -332,4 +345,5 @@ class ApeEscapeOptions(PerGameCommonOptions):
     shufflewaternet: ShuffleWaterNetOption
     lowoxygensounds: LowOxygenSounds
     trapfillpercentage: TrapFillPercentage
+    itemdisplay: ItemDisplayOption
     death_link: DeathLink

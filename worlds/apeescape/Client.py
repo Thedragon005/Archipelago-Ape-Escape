@@ -34,7 +34,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapFillPercentage, DeathLink
+from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapFillPercentage, ItemDisplayOption, DeathLink
 
 
 if TYPE_CHECKING:
@@ -125,6 +125,7 @@ class ApeEscapeClient(BizHawkClient):
     waternetState = 0
     watercatchState = 0
     bizhawk_itemdisplay = False
+    bizhawk_display_set = False
 
 
     def __init__(self) -> None:
@@ -161,6 +162,7 @@ class ApeEscapeClient(BizHawkClient):
         self.lowOxygenCounter = 1
         self.trap_queue = []
         self.bizhawk_itemdisplay = False
+        self.bizhawk_display_set = False
 
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
@@ -258,6 +260,11 @@ class ApeEscapeClient(BizHawkClient):
 
 
     async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
+        # Set the default state of the command based on the YAML option if it hasn't been set yet.
+        if self.bizhawk_display_set == False:
+            self.bizhawk_itemdisplay = (ctx.slot_data["itemdisplay"] == ItemDisplayOption.option_on)
+            self.bizhawk_display_set = True
+
         if self.bizhawk_itemdisplay:
             if msgtype == "Item":
                 sender = ctx.player_names[data.player]
@@ -576,7 +583,7 @@ class ApeEscapeClient(BizHawkClient):
             DL_Reads = [cookies,gameRunning,gameState,menuState2,spikeState2]
             await self.handle_death_link(ctx,DL_Reads)
 
-            # When in Menu,change the behavior of "NewGame" to warp you to time station instead
+            # When in Menu, change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
                 Menuwrites += [(RAM.cookieAddress, 0x05.to_bytes(1, "little"), "MainRAM")]

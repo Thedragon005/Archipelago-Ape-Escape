@@ -88,6 +88,7 @@ class ApeEscapeWorld(World):
         self.shufflewaternet: Optional[int] = 0
         self.lowoxygensounds: Optional[int] = 0
         self.trapfillpercentage: Optional[int] = 0
+        self.itemdisplay: Optional[int] = 0
         self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
@@ -114,6 +115,7 @@ class ApeEscapeWorld(World):
         self.shufflewaternet = self.options.shufflewaternet.value
         self.lowoxygensounds = self.options.lowoxygensounds.value
         self.trapfillpercentage = self.options.trapfillpercentage.value
+        self.itemdisplay = self.options.itemdisplay.value
         self.itempool = []
 
 
@@ -362,6 +364,7 @@ class ApeEscapeWorld(World):
             "shufflewaternet": self.options.shufflewaternet.value,
             "lowoxygensounds": self.options.lowoxygensounds.value,
             "trapfillpercentage": self.options.trapfillpercentage.value,
+            "itemdisplay": self.options.itemdisplay.value,
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
