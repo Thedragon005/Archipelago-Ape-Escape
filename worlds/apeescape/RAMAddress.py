@@ -1188,7 +1188,6 @@ class RAM:
     temp_MM_Jake_DefeatedAddress = 0x0DFC5A
     temp_MM_Professor_RescuedAddress = 0x0DFC5C
     temp_MM_Natalie_RescuedAddress = 0x0DFC5E
-    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
 
     MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence. If JakeDefeated = 5 it will open the door
     MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
@@ -1410,9 +1409,11 @@ class RAM:
     S1_P1_Life = 0x1408FB
     S1_P2_State = 0x144A04
     S1_P2_Life = 0x144A06
+    S1_P1_FightTrigger = 0x16A5B2 # 1 byte. Put to 0x0D to prevent the fight, 0x00 to allow the fight
     S1_Cutscene_Redirection = 0x137C28  # 4 bytes. When GameState is 0A, change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
     S2_isCaptured = 0x142328
     S2_Cutscene_Redirection = 0x05C5F0  # 4 bytes. Change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
+
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
 

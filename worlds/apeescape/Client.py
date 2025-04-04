@@ -325,6 +325,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S2_isCaptured, 1, "MainRAM"),
                 (RAM.S1_Cutscene_Redirection, 4, "MainRAM"),
                 (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
+                (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -367,6 +368,7 @@ class ApeEscapeClient(BizHawkClient):
             S2_isCaptured = int.from_bytes(reads[31], byteorder = "little")
             S1_Cutscene_Redirection = int.from_bytes(reads[32], byteorder = "little")
             S2_Cutscene_Redirection = int.from_bytes(reads[33], byteorder = "little")
+            S1_P1_FightTrigger = int.from_bytes(reads[34], byteorder = "little")
 
             # Related to Gadgets
             gadgetTuples = [
@@ -1003,7 +1005,7 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued]
+            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued,S1_P1_FightTrigger]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -1458,6 +1460,7 @@ class ApeEscapeClient(BizHawkClient):
         MM_Natalie_Rescued = MM_Reads[11]
         MM_Natalie_Rescued_Local = MM_Reads[12]
         MM_Professor_Rescued = MM_Reads[13]
+        S1_P1_FightTrigger = MM_Reads[14]
 
 
         MM_Writes = []
@@ -1503,7 +1506,7 @@ class ApeEscapeClient(BizHawkClient):
         if NearbyRoom == 75 and MM_Natalie_Rescued != 0x01 and transitionPhase == 0x06:
             MM_Writes += [(RAM.MM_Natalie_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
-        # When going into the MM_Lobby, disable the Door Detection if you don't have the Door Item
+        # When going into the MM_Lobby, disable the Door Detection
         if (NearbyRoom == 69 and transitionPhase == 0x06) or (currentRoom == 69 and transitionPhase != 0x06):
             # print("Next room == Lobby")
             if MM_Lobby_DoorDetection != 0x8C800000:
@@ -1554,7 +1557,7 @@ class ApeEscapeClient(BizHawkClient):
 
                     await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes, Door_guards)
 
-        # Prevent damaging Specter 1 for Specter 1 token goal when not having enough tokens.
+        # Prevent Specter 1 fight for Specter 1 token goal when not having enough tokens.
         token = self.tokencount
         if (NearbyRoom == 83 and transitionPhase == 0x06) or (currentRoom == 83 and transitionPhase != 0x06):
             # print("Current/Next Room is Specter 1 room")
@@ -1562,9 +1565,13 @@ class ApeEscapeClient(BizHawkClient):
                 # print("with the correct goal")
                 if token < min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
                     # print("and insufficient tokens")
-                    MM_Writes += [(RAM.S1_P1_Life, 0x06.to_bytes(1, "little"), "MainRAM")]
-                    # if MM_Lobby_DoorDetection != 0x8C800000:
-                    #     MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C800000.to_bytes(4, "little"), "MainRAM")]
+                    # MM_Writes += [(RAM.S1_P1_Life, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    # Prevent the fight
+                    MM_Writes += [(RAM.S1_P1_FightTrigger, 0x0D.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    # Allow the fight
+                    if S1_P1_FightTrigger == 0x0D:
+                        MM_Writes += [(RAM.S1_P1_FightTrigger, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         await bizhawk.write(ctx.bizhawk_ctx, MM_Writes)
 
@@ -2195,7 +2202,10 @@ class ApeEscapeClient(BizHawkClient):
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
         self.sending_death_link = True
         ctx.last_death_link = time.time()
-        DeathText = ctx.player_names[ctx.slot] + " says: " + random.choice(["`Ohhh noooo!`", "`This bites.`"]) + " (Died)"
+        DeathMessageList = ["`Ohhh noooo!`", "`This bites.`"]
+        randomNumber = (round(random() * (len(DeathMessageList) - 1),None))
+        DeathMessage = DeathMessageList[randomNumber]
+        DeathText = ctx.player_names[ctx.slot] + " says: " + DeathMessage + " (Died)"
         await ctx.send_death(DeathText)
 
 

@@ -2276,7 +2276,9 @@ def set_locations(self):
     else:
         connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Deveneom.value, 
                         lambda state: HasWaterNet(state, self) or (HasNet(state, self) and (HasFlyer(state, self) or IJ(state, self) or CanSwim(state, self))))
-    connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AELocation.W7L3Deveneom.value, 
+    ##### Changed this connection from CC_BASEMENT_ELEVATOR to CC_BASEMENT_BUTTON_DOWN following logic sheet
+    # It generates now because of this..so it's good I guess ? Double check please
+    connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AELocation.W7L3Deveneom.value,
                         lambda state: (HasNet(state, self) or HasWaterNet(state, self)))
     # Button Room
     connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_WATER.value, AELocation.W7L3Astur.value, 
