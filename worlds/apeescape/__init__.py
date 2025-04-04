@@ -262,7 +262,7 @@ class ApeEscapeWorld(World):
         elif self.options.gadget == "punch":
             self.multiworld.push_precollected(punch)
             self.itempool += [club, radar, shooter, hoop, flyer, car]
-        elif self.options.gadget == "none":
+        elif self.options.gadget == "none" or self.options.gadget == "waternet":
             self.itempool += [club, radar, shooter, hoop, flyer, car, punch]
 
         # Create "Victory" item for goals where the goal is at a location.
