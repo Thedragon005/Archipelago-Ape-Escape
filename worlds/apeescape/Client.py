@@ -46,9 +46,6 @@ EXPECTED_ROM_NAME = "ape escape / AP 2"
 
 logger = logging.getLogger("Client")
 
-# These flags are communicated to the tracker as a bitfield using this order.
-# Modifying the order will cause undetectable autotracking issues.
-
 def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
     """Show what commands are available for Ape Escape Archipelago"""
     from worlds._bizhawk.context import BizHawkClientContext
@@ -85,14 +82,14 @@ def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status: str) -> No
     assert isinstance(client, ApeEscapeClient)
     if status == "":
         client.bizhawk_itemdisplay = not client.bizhawk_itemdisplay
-    elif status == "on":
+    elif status == "on" or status == "On" or status == "ON":
         client.bizhawk_itemdisplay = True
     else:
         client.bizhawk_itemdisplay = False
 
     if client.bizhawk_itemdisplay:
         item_display = "ON"
-        client.send_bizhawk_message(ctx, "Bizhawk Item Display Enabled","Custom","")
+        client.send_bizhawk_message(ctx, "Bizhawk Item Display Enabled", "Custom", "")
     else:
         item_display = "OFF"
         client.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Custom", "")
@@ -129,12 +126,14 @@ class ApeEscapeClient(BizHawkClient):
     watercatchState = 0
     bizhawk_itemdisplay = False
 
+
     def __init__(self) -> None:
         super().__init__()
 
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
+
 
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
@@ -162,6 +161,7 @@ class ApeEscapeClient(BizHawkClient):
         self.lowOxygenCounter = 1
         self.trap_queue = []
         self.bizhawk_itemdisplay = False
+
 
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         ape_identifier_ram_address: int = 0xA37F0
@@ -211,6 +211,7 @@ class ApeEscapeClient(BizHawkClient):
 
         return True
 
+
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
         if cmd == "Bounced":
             if "tags" in args:
@@ -229,6 +230,7 @@ class ApeEscapeClient(BizHawkClient):
             self.MM_Painting_Button = keys.get(str(ctx.auth) + "_MM_Painting_Button", None)
             self.MM_MonkeyHead_Button = keys.get(str(ctx.auth) + "_MM_MonkeyHead_Button", None)
             self.TVT_Lobby_Button = keys.get(str(ctx.auth) + "_TVT_Lobby_Button", None)
+
 
     async def check_gadgets(self, ctx: "BizHawkClientContext",gadgetStateFromServer) -> list[str]:
         gadgets = []
@@ -250,8 +252,10 @@ class ApeEscapeClient(BizHawkClient):
             gadgets.append(AEItem.Car.value)
         return gadgets
 
+
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
+
 
     async def send_bizhawk_message(self,ctx: BizHawkClientContext,message,msgtype,data) -> None:
         if self.bizhawk_itemdisplay:
@@ -265,13 +269,14 @@ class ApeEscapeClient(BizHawkClient):
 
                 # Same player as the seed, different message
                 if sender == ctx.player_names[ctx.slot]:
-                    strMessage = "You just got '" + str(itemname) + "'"
+                    strMessage = "You found your own '" + str(itemname) + "'"
                 else:
-                    strMessage = "You just received '" + str(itemname) + "' from " + str(sender)
+                    strMessage = "You received '" + str(itemname) + "' from " + str(sender)
                 await bizhawk.display_message(ctx.bizhawk_ctx,strMessage)
             elif msgtype == "Custom":
                 strMessage = message
                 await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
+
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
@@ -1005,7 +1010,7 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
             # ===== MM Optimizations =========
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued,S1_P1_FightTrigger]
+            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -1109,7 +1114,11 @@ class ApeEscapeClient(BizHawkClient):
                     mailboxbytes += [13]
                     mailboxbytes += text_to_bytes("You now have")
                     mailboxbytes += [13]
-                    mailboxbytes += text_to_bytes(str(self.tokencount) + " tokens.")
+                    # Grammar handling
+                    if self.tokencount != 1:
+                        mailboxbytes += text_to_bytes(str(self.tokencount) + " tokens.")
+                    else:
+                        mailboxbytes += text_to_bytes(str(self.tokencount) + " token.")
                 else:
                     mailboxbytes += [13]
                     mailboxbytes += text_to_bytes("There are no token")
@@ -1225,11 +1234,20 @@ class ApeEscapeClient(BizHawkClient):
                         mailboxtext = "two levels each."
                     mailboxbytes += text_to_bytes(mailboxtext)
                     mailboxbytes += [13]
-                    mailboxbytes += text_to_bytes("There are " + str(ctx.slot_data["extrakeys"]))
+                    # Grammar handling
+                    if ctx.slot_data["extrakeys"] != 1:
+                        mailboxbytes += text_to_bytes("There are " + str(ctx.slot_data["extrakeys"]))
+                        mailboxbytes += [13]
+                        mailboxbytes += text_to_bytes("extra World Keys.")
+                    else:
+                        mailboxbytes += text_to_bytes("There is " + str(ctx.slot_data["extrakeys"]))
+                        mailboxbytes += [13]
+                        mailboxbytes += text_to_bytes("extra World Key.")
                     mailboxbytes += [13]
-                    mailboxbytes += text_to_bytes("extra World Keys.")
-                    mailboxbytes += [13]
-                    mailboxbytes += text_to_bytes("You have " + str(self.worldkeycount) + " keys.")
+                    if self.worldkeycount != 1:
+                        mailboxbytes += text_to_bytes("You have " + str(self.worldkeycount) + " keys.")
+                    else:
+                        mailboxbytes += text_to_bytes("You have " + str(self.worldkeycount) + " key.")
 
                 # Next page
                 mailboxbytes += [13]
