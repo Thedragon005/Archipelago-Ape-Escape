@@ -257,10 +257,9 @@ class ApeEscapeClient(BizHawkClient):
         x = 3
 
 
-    async def send_bizhawk_message(self,ctx: BizHawkClientContext,message,msgtype,data) -> None:
+    async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
         if self.bizhawk_itemdisplay:
             if msgtype == "Item":
-
                 sender = ctx.player_names[data.player]
                 # print(sender)
                 # print(str( item - self.offset]))
@@ -272,7 +271,7 @@ class ApeEscapeClient(BizHawkClient):
                     strMessage = "You found your own '" + str(itemname) + "'"
                 else:
                     strMessage = "You received '" + str(itemname) + "' from " + str(sender)
-                await bizhawk.display_message(ctx.bizhawk_ctx,strMessage)
+                await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
             elif msgtype == "Custom":
                 strMessage = message
                 await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
@@ -280,7 +279,7 @@ class ApeEscapeClient(BizHawkClient):
 
     async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
-        # If not,"return" immediately to not send anything while not connected
+        # If not, "return" immediately to not send anything while not connected
         if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None or ctx.auth is None:
             self.initClient = False
             return
@@ -654,14 +653,11 @@ class ApeEscapeClient(BizHawkClient):
                         if RAM.items["Club"] <= (item.item - self.offset) <= RAM.items["Car"]:
                             if gadgetStateFromServer | (item.item - self.offset) != gadgetStateFromServer:
                                 gadgetStateFromServer = gadgetStateFromServer | (item.item - self.offset)
-                                await self.send_bizhawk_message(ctx, "", "Item", item)
-                        elif item.item - self.offset == RAM.items["Key"]:
+                        elif (item.item - self.offset) == RAM.items["Key"]:
                             keyCountFromServer += 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
-                        elif item.item - self.offset == RAM.items["Token"]:
+                        elif (item.item - self.offset) == RAM.items["Token"]:
                             tokenCountFromServer += 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
-                        elif item.item - self.offset == RAM.items["Victory"]:
+                        elif (item.item - self.offset) == RAM.items["Victory"]:
                             await ctx.send_msgs([{
                                 "cmd": "StatusUpdate",
                                 "status": ClientStatus.CLIENT_GOAL
@@ -670,41 +666,29 @@ class ApeEscapeClient(BizHawkClient):
                         elif (item.item - self.offset) == RAM.items["WaterNet"]:
                             waternetState = 2
                             watercatchState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["ProgWaterNet"]:
                             if waternetState != 2:
                                 waternetState += 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["MM_DoubleDoorKey"]:
                             MM_Lobby_DoubleDoor = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["WaterCatch"]:
                             watercatchState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["CB_Lamp"]:
                             CBLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["DI_Lamp"]:
                             DILampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["CrC_Lamp"]:
                             CrCLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["CP_Lamp"]:
                             CPLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["SF_Lamp"]:
                             SFLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["TVT_Lobby_Lamp"]:
                             TVTLobbyLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["TVT_Tank_Lamp"]:
                             TVTTankLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif (item.item - self.offset) == RAM.items["MM_Lamp"]:
                             MMLampState = 1
-                            await self.send_bizhawk_message(ctx, "", "Item", item)
                         elif RAM.items["Shirt"] <= (item.item - self.offset) <= RAM.items["ThreeRocket"]:
                             if (item.item - self.offset) == RAM.items["Triangle"] or (item.item - self.offset) == RAM.items["BigTriangle"] or (item.item - self.offset) == RAM.items["BiggerTriangle"]:
                                 if (item.item - self.offset) == RAM.items["Triangle"]:
@@ -745,6 +729,10 @@ class ApeEscapeClient(BizHawkClient):
                         # elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["GadgetShuffleTrap"]:
                         elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
                             self.trap_queue.append((item.item - self.offset))
+
+                        # Send message of received item - Victory has a special message above
+                        if item.item - self.offset != RAM.items["Victory"]:
+                            await self.send_bizhawk_message(ctx, "", "Item", item)
 
                 # Writes to memory if there is a new item, after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
