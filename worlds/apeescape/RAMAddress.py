@@ -1027,7 +1027,7 @@ class RAM:
         91: 0xdfcb0
     }
 
-    # Array order : bytesToWrite,OpenValue,ClosedValue
+    # Array order : bytesToWrite, OpenValue, ClosedValue
     doors_addresses = {
         69: { # MM_DoubleDoor
             0x0E7901: [1,0x00,0x10],  # MM_DoubleDoorVisualL1
@@ -1049,9 +1049,9 @@ class RAM:
         }
     }
 
-    localLamp_localUpdate = 0x097474 # Default : 9062007A. Set this to 0 to disable
-    globalLamp_localUpdate = 0x097574 # Default : 9082007A. Set this to 0 to disable
-    globalLamp_globalUpdate = 0x097568 # 0x097568 Default : 1444000F. Set this to 0 to disable
+    localLamp_localUpdate = 0x097474 # Default: 9062007A. Set this to 0 to disable
+    globalLamp_localUpdate = 0x097574 # Default: 9082007A. Set this to 0 to disable
+    globalLamp_globalUpdate = 0x097568 # 0x097568 Default: 1444000F. Set this to 0 to disable
 
     lampDoors_update = {
         'LocalLamp_local_ON': 0x9062007A,
@@ -1065,8 +1065,8 @@ class RAM:
 
     }
     lampDoors_toggles = {
-        #CBLamp
-        #Array order : bytesToWrite,OpenValue,ClosedValue
+        # CBLamp
+        # Array order : bytesToWrite, OpenValue, ClosedValue
         20: {  # CB_LampDoor
             0x0C01AB: [1,0xF4,0xF8],  #CB_LampDoor_Visual1 Open = F4
             0x0C01AF: [1,0x00,0x80],  #CB_LampDoor_Visual2 Open = 00
@@ -1177,12 +1177,12 @@ class RAM:
     swim_oxygenLowLevelSoundAddress = 0x061458  # Default: 3C02800F, disable: 3C028004 4 bytes
     swim_oxygenMidLevelSoundAddress = 0x061490  # Default: 3C02800F, disable: 3C028004 4 bytes
     
-    MM_Professor_RescuedAddress = 0x0DFDDC #Not Rescued = 0, Rescued = 5
+    MM_Professor_RescuedAddress = 0x0DFDDC # Not Rescued = 0, Rescued = 5
     MM_Clown_State = 0x174072
-    MM_Natalie_RescuedAddress = 0x0DFDDD #Not Rescued = 0, Rescued = 5
-    MM_Natalie_CutsceneState = 0x0DFDDE #play cutscene = 0x00, cutscene played = 0x0D
+    MM_Natalie_RescuedAddress = 0x0DFDDD # Not Rescued = 0, Rescued = 5
+    MM_Natalie_CutsceneState = 0x0DFDDE # play cutscene = 0x00, cutscene played = 0x0D
     MM_Natalie_Rescued_Local = 0x16F34E # When in Room 76: Natalie rescued = 0x01
-    MM_Jake_DefeatedAddress = 0x0DFDE0 #Not defeated = 0, Defeated = 5
+    MM_Jake_DefeatedAddress = 0x0DFDE0 # Not defeated = 0, Defeated = 5
 
 
     temp_MM_Jake_DefeatedAddress = 0x0DFC5A
@@ -1248,10 +1248,10 @@ class RAM:
     DI_Button_Pressed = 0x1693A6 # Activated = 0x01
     DI_Button_DoorVisual = 0x0BFC8F # Activated = 0x00
     DI_Button_DoorHitBox = 0x1676F7 # Activated = 0xDC
-    DI_Button_Visual1 = 0x0BFCB8 #4 bytes : Activated = 80162250
-    DI_Button_Visual2 = 0x0BFCBC  # 4 bytes : Activated = 80162268
-    DI_Button_Visual3 = 0x0BFCC0  # 4 bytes : Activated = 80162390
-    DI_Button_Visual4 = 0x0BFCC4  # 4 bytes : Activated = 80162288
+    DI_Button_Visual1 = 0x0BFCB8 # 4 bytes : Activated = 80162250
+    DI_Button_Visual2 = 0x0BFCBC # 4 bytes : Activated = 80162268
+    DI_Button_Visual3 = 0x0BFCC0 # 4 bytes : Activated = 80162390
+    DI_Button_Visual4 = 0x0BFCC4 # 4 bytes : Activated = 80162288
 
     CrC_Basement_ButtonPressed = 0x184D46 # Pressed = 0x01
     CrC_Basement_DoorHitBox1 = 0x1810A8 #[4b] Activated = F200F808
@@ -1260,18 +1260,18 @@ class RAM:
     CrC_Basement_DoorVisual1 = 0x0E7AC1 # Activated = 0x00
     CrC_Basement_DoorVisual2 = 0x0E7ACD # Activated = 0xF0
     CrC_Basement_ButtonVisual1 = 0x0C1518 # [4b] Activated = 80178ADC
-    CrC_Basement_ButtonVisual2 = 0x0C151C  # [4b] Activated = 80178AF4
-    CrC_Basement_ButtonVisual3 = 0x0C1520  # [4b] Activated = 80178C14
-    CrC_Basement_ButtonVisual4 = 0x0C1524  # [4b] Activated = 80178B0C
+    CrC_Basement_ButtonVisual2 = 0x0C151C # [4b] Activated = 80178AF4
+    CrC_Basement_ButtonVisual3 = 0x0C1520 # [4b] Activated = 80178C14
+    CrC_Basement_ButtonVisual4 = 0x0C1524 # [4b] Activated = 80178B0C
 
 
     CrC_Water_ButtonPressed = 0x173242 # 1 byte : While in room 49 -> Pressed = 0x01, Unpressed = 0x00 -> Send event object
     CrC_Water_DoorVisual = 0x0C05AE  # 1 byte : Open = 0x00 , Closed = 0x16
-    #CrC_Button_Visual1 = 0x0C0778 # 4 bytes : Activated =
-    #CrC_Button_Visual2 = 0x0C077C  # 4 bytes : Activated =
-    #CrC_Button_Visual3 = 0x0C0780  # 4 bytes : Activated =
-    #CrC_Button_Visual4 = 0x0C0784  # 4 bytes : Activated =
-    #Set TR4_TransitionEnabled to 0x00 to permit access to the transition, 0x03 to deny transition
+    # CrC_Button_Visual1 = 0x0C0778 # 4 bytes : Activated =
+    # CrC_Button_Visual2 = 0x0C077C  # 4 bytes : Activated =
+    # CrC_Button_Visual3 = 0x0C0780  # 4 bytes : Activated =
+    # CrC_Button_Visual4 = 0x0C0784  # 4 bytes : Activated =
+    # Set TR4_TransitionEnabled to 0x00 to permit access to the transition, 0x03 to deny transition
 
     MM_Painting_Button = 0x17EACE # Active 0x01 ROOM = 82
     MM_Painting_Visual = 0x0C1569 # Active Value = 0x06
@@ -1322,14 +1322,14 @@ class RAM:
     tempTVT_Tank_LampAddress = 0x0DFBEA
     tempMM_LampAddress = 0x0DFBEB
 
-    currentLoadedSave = 0x0E0034 # Not used for now,but could be used somehow
+    currentLoadedSave = 0x0E0034 # Not used for now, but could be used somehow
     menuStateAddress = 0x0A9A1B
     menuState2Address = 0x0A9A23
     Controls_DPAD_STARTSELECT_L3R3 = 0x0B87A2
     Controls_TriggersShapes = 0x0B87A3
 
     punchVisualAddress = 0x0E78C0
-    transitionPhase = 0x0F447C # Default : 8C63FDCC
+    transitionPhase = 0x0F447C # Default: 8C63FDCC
     # 0x01 = ?? Maybe spawning
     # 0x02 = Black screen fading out
     # 0x03 = in level, not near a transition
@@ -1350,9 +1350,9 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
-    worldIsScrollingRight = 0x139BD9 # 2 bytes : 0xFFFF = you are changing to the next world
-    worldScrollToRightDPAD = 0x1381D4 # 2 bytes : Enabled = 0009, Disabled = 0000
-    worldScrollToRightR1 = 0x138270  # 2 bytes : Enabled = 0009, Disabled = 0000
+    worldIsScrollingRight = 0x139BD9 # 2 bytes: 0xFFFF = you are changing to the next world
+    worldScrollToRightDPAD = 0x1381D4 # 2 bytes: Enabled = 0009, Disabled = 0000
+    worldScrollToRightR1 = 0x138270  # 2 bytes: Enabled = 0009, Disabled = 0000
 
     enteredWorldAddress = 0x0F461C
     enteredLevelAddress = 0x0F461D

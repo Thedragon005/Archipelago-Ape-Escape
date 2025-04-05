@@ -336,10 +336,12 @@ class ApeEscapeWorld(World):
     def fill_slot_data(self):
         bytestowrite = []
         entranceids = []
+        newpositions = []
         firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
                         0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
         orderedfirstroomids = []
         for x in range(0, 22):
+            newpositions.append(self.levellist[x].newpos)
             entranceids.append(self.entranceorder[x].entrance)
             orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
             bytestowrite += self.entranceorder[x].bytes
@@ -367,6 +369,7 @@ class ApeEscapeWorld(World):
             "itemdisplay": self.options.itemdisplay.value,
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
+            "newpositions": newpositions,  # List of positions a level is moved to. The position of FF is first.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
             "reqkeys": get_required_keys(self.options.unlocksperkey.value, self.options.goal.value, self.options.coin.value),
             "death_link": self.options.death_link.value

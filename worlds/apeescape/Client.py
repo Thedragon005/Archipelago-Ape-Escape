@@ -1076,7 +1076,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
-            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"])
+            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], Temp_SA_Completed, Temp_GA_Completed)
 
             # ===== Text Replacements ======
             # Replace text Time Station mailbox here.
@@ -1992,7 +1992,7 @@ class ApeEscapeClient(BizHawkClient):
                     Trap_Writes1 += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     Trap_Writes1 += [(RAM.hoopFixAddress, 0x0000000000000000.to_bytes(14, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
-                if spikeState2 in (128,129,131):
+                if spikeState2 in (128, 129, 131):
                     Trap_Writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
                 Trap_Writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
                 # if chosen_values[randomSelect] != 0xFF:
@@ -2227,7 +2227,7 @@ class ApeEscapeClient(BizHawkClient):
         self.pending_death_link = True
 
 
-    def unlockLevels(self, ctx: "BizHawkClientContext", monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys):
+    def unlockLevels(self, ctx: "BizHawkClientContext", monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys, newpositions, SAcomplete, GAcomplete):
 
         key = self.worldkeycount
         token = self.tokencount
@@ -2267,21 +2267,39 @@ class ApeEscapeClient(BizHawkClient):
         for index in range(0, 21):
             # Do we have enough keys for this level? If no, lock. If yes, continue.
             if key >= reqkeys[index]:
-                # Do we have enough keys for the next level? If no, lock. If yes, continue.
+                # Do we have enough keys for the next level? If no, lock. If yes, open.
                 if key >= reqkeys[index + 1]:
-                    # Is this level a race level? If no, continue. If yes, open.
-                    if index == 6 or index == 13:
-                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
-                    # Is every monkey in this level caught? If no, open. If yes, hundo.
-                    elif int.from_bytes(monkeylevelCounts[index], byteorder = "little") >= hundoMonkeysCount[levels_list[index]]:
-                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelhundo, "MainRAM"))
-                    else:
-                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
+                    levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
                 else:
                     levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
             else:
                 levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
-        # Monkey Madness must be set to locked if Peak Point Matrix should be locked
+
+        # Set hundo status on entrances that are open and have all monkeys in them caught.
+        # Starts by checking Fossil Field (the level)
+        for index in range(0, 21):
+            # Is this level a race level?
+            if index == 6:
+                # Is Stadium Attack completed?
+                if SAcomplete == 19:
+                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
+            elif index == 13:
+                # Is Gladiator Attack completed?
+                if GAcomplete == 19:
+                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
+            else:
+                # Standard level
+                # Check if the entrance of the indexed level is open.
+                # If yes, continue. If no, do nothing, the state is correct.
+                # (Index 0) If Fossil Field is at Dark Ruins, this checks the Dark Ruins entrance (index 4).
+                if levelstates[newpositions[index]] == (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelopen, "MainRAM"):
+                    # Check if all monkeys of the indexed level are caught.
+                    # If yes, set the state to hundo. If no, do nothing, the state is correct.
+                    # (Index 0) If Fossil Field is at Dark Ruins, set the Dark Ruins entrance (index 4) to hundo.
+                    if int.from_bytes(monkeylevelCounts[index], byteorder = "little") >= hundoMonkeysCount[levels_list[index]]:
+                        levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
+
+        # Monkey Madness entrance must be set to locked if Peak Point Matrix should be locked
         if PPMUnlock == False:
             levelstates[20] = ((RAM.levelAddresses[list(RAM.levelAddresses.keys())[20]], levellocked, "MainRAM"))
 
