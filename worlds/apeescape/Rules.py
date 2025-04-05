@@ -2212,7 +2212,7 @@ def set_locations(self):
                         lambda state: (HasFlyer(state, self) or HasSling(state, self) or (HasHoop(state, self) and (HasClub(state, self) or HasPunch(state, self)))) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Kong.value, 
-                        lambda state: HasNet(state, self))
+                        lambda state: (HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
                         lambda state: HasSling(state, self) and HasNet(state, self))
@@ -2595,12 +2595,9 @@ def set_locations(self):
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AELocation.W9L1Jake.value, 
                         lambda state: HasClub(state, self) or HasPunch(state, self))
-    elif self.options.logic == "hard":
-        connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AELocation.W9L1Jake.value, 
-                        lambda state: CanHitMultiple(state, self))
     else:
         connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AELocation.W9L1Jake.value, 
-                        lambda state: CanHitOnce(state, self))
+                        lambda state: CanHitMultiple(state, self))
     # Western Land
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AELocation.W9L1Nak.value, 
@@ -3080,7 +3077,7 @@ def character_lookup(byte):
         return ord(byte) - 49  # Both uppercase and lowercase letters
     if byte.isdecimal():
         if int(byte) < 6:
-            return ord(byte) + 56  # 0-5
+            return ord(byte) + 58  # 0-5
         else:
             return ord(byte) + 68  # 6-9
     if ord(byte) == 39:  # Single apostrophe

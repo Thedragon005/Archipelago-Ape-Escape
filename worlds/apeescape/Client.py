@@ -2313,7 +2313,7 @@ def character_lookup(byte):
         if int(byte) < 6:
             return ord(byte) + 58  # 0-5
         else:
-            return ord(byte) + 70  # 6-9
+            return ord(byte) + 68  # 6-9
     if ord(byte) == 39:  # Single apostrophe
         return 187
     if ord(byte) == 46:  # Period
