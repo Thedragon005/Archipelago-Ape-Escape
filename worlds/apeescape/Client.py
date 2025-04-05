@@ -2281,11 +2281,11 @@ class ApeEscapeClient(BizHawkClient):
             # Is this level a race level?
             if index == 6:
                 # Is Stadium Attack completed?
-                if SAcomplete == 19:
+                if SAcomplete == 25:
                     levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
             elif index == 13:
                 # Is Gladiator Attack completed?
-                if GAcomplete == 19:
+                if GAcomplete == 25:
                     levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
             else:
                 # Standard level
