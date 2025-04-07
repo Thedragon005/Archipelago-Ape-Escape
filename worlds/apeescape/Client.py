@@ -1036,7 +1036,7 @@ class ApeEscapeClient(BizHawkClient):
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
             Gadgets_Reads = [currentLevel, heldGadget, gadgetStateFromServer, crossGadget, menuState, menuState2, punchVisualAddress, gameState]
-            await self.gadgets_handler(ctx, Gadgets_Reads)
+            await self.gadgets_handler(ctx, Gadgets_Reads, Temp_SA_Completed, Temp_GA_Completed)
             # ==============================
 
             # ===== Level Select Optimization ======
@@ -1352,7 +1352,7 @@ class ApeEscapeClient(BizHawkClient):
             pass
 
 
-    async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads):
+    async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads, SAcomplete, GAcomplete):
         currentLevel = Gadgets_Reads[0]
         heldGadget = Gadgets_Reads[1]
         gadgetStateFromServer = Gadgets_Reads[2]
@@ -1368,14 +1368,13 @@ class ApeEscapeClient(BizHawkClient):
 
         if gameState == RAM.gameState['InLevel']:
 
-            # if ((currentLevel == 0x07)):
-                # Funny easter egg with Radar
-                # if (gadgetStateFromServer & 4 != 0):
-                    #gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-            if ((currentLevel == 0x0E)):
-                # Funny easter egg with Radar
-                # if (gadgetStateFromServer & 4 != 0):
-                #     gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+            # Add radar to races if the level has been cleared and the player has radar, to allow radaring Jake
+            if (currentLevel == 0x07):
+                if (gadgetStateFromServer & 4 != 0) and (SAcomplete == 25):
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+            if (currentLevel == 0x0E):
+                if (gadgetStateFromServer & 4 != 0) and (GAcomplete == 25):
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                 # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
                 if (heldGadget == 6) and (gadgetStateFromServer & 64 == 0):
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
