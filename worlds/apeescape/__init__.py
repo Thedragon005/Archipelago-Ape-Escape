@@ -200,7 +200,7 @@ class ApeEscapeWorld(World):
         if self.options.goal == "tokenhunt" or self.options.goal == "mmtoken" or self.options.goal == "ppmtoken":
             self.itempool += [self.create_item_skipbalancing(AEItem.Token.value) for _ in range(0, max(self.options.requiredtokens, self.options.totaltokens))]
             if self.options.tokenlocations == "ownworld":
-                self.multiworld.local_items[self.player].value.add("Specter Token")
+                self.options.local_items.value.add("Specter Token")
 
         # Create enough keys to access every level, if keys are on, plus the desired amount of extra keys.
         if self.options.unlocksperkey != "none":
