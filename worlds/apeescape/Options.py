@@ -122,7 +122,7 @@ class EntranceOption(Choice):
 
         off: Levels will be in the vanilla order.
         on: Levels will be in a random order.
-        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entranxe.
+        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entrance.
 
         Supported values: off, on, lockmm
         Default value: on
