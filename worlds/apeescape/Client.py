@@ -1797,7 +1797,7 @@ class ApeEscapeClient(BizHawkClient):
         NearbyRoom = Lamps_Reads[2]
         localLampsUpdate = Lamps_Reads[3]
         globalLampsUpdate = Lamps_Reads[4]
-        transitionPhase = Lamps_Reads[7]
+        transitionPhase = Lamps_Reads[5]
 
         # Deactivate Monkeys detection for lamps and switch to manual door opening if lamp shuffle is activated
         # Condition for some rooms that require the same addresses to function properly
@@ -1902,6 +1902,7 @@ class ApeEscapeClient(BizHawkClient):
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
         is_sliding = (spikeState2 == 0x2F)
+        is_idle = (spikeState2 in {0x80,0x81,0x82,0x83,0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
 
         if self.trap_queue == []:
@@ -1909,8 +1910,12 @@ class ApeEscapeClient(BizHawkClient):
             return None
         else:
             # Does not send the traps in these states
-            if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race):
+            if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race or is_idle):
                 # print("Waiiiitttiinnng for...valid state")
+                if is_idle:
+                    # Trigger a Wake Up for spike. Banana Peel is deadly while Idle
+                    Trap_Writes += [(RAM.spikeIdleTimer, 0x0000.to_bytes(2, "little"), "MainRAM")]
+                    await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
                 return None
                 # Exit without sending trap, keeping it active for the next pass
 

@@ -1397,6 +1397,7 @@ class RAM:
     gadgetUseStateAddress = 0x0B20CC
     spikeStateAddress = 0x0EC250
     spikeState2Address = 0x0EC23E
+    spikeIdleTimer = 0x0EC328 # Put this to 0x0000 to wake up
     spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
