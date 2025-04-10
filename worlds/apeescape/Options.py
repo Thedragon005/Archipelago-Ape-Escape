@@ -132,7 +132,7 @@ class EntranceOption(Choice):
     option_off = 0x00
     option_on = 0x01
     option_lockmm = 0x02
-    default = option_off
+    default = option_on
 
 
 class KeyOption(Choice):
