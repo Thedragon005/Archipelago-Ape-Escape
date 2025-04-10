@@ -2257,15 +2257,15 @@ class ApeEscapeClient(BizHawkClient):
         # Set hundo status on entrances that are open and have all monkeys in them caught.
         # Starts by checking Fossil Field (the level)
         for index in range(0, 21):
-            # Is this level a race level?
+            # Is this level a race level? If so, set to open instead of hundo to avoid a bug.
             if index == 6:
                 # Is Stadium Attack completed?
                 if SAcomplete == 25:
-                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
+                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelopen, "MainRAM")
             elif index == 13:
                 # Is Gladiator Attack completed?
                 if GAcomplete == 25:
-                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
+                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelopen, "MainRAM")
             else:
                 # Standard level
                 # Check if the entrance of the indexed level is open.
