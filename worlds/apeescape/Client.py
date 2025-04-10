@@ -472,9 +472,6 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.tempTVT_Lobby_LampAddress, 1, "MainRAM"),
                 (RAM.tempTVT_Tank_LampAddress, 1, "MainRAM"),
                 (RAM.tempMM_LampAddress, 1, "MainRAM"),
-                (RAM.localLamp_localUpdate, 4, "MainRAM"),
-                (RAM.globalLamp_localUpdate, 4, "MainRAM"),
-                (RAM.globalLamp_globalUpdate, 4, "MainRAM"),
             ]
 
             lampReads = await bizhawk.read(ctx.bizhawk_ctx, lampTuples)
@@ -487,9 +484,6 @@ class ApeEscapeClient(BizHawkClient):
             TVTLobbyLampStateFromServer = int.from_bytes(lampReads[5], byteorder = "little")
             TVTTankLampStateFromServer = int.from_bytes(lampReads[6], byteorder = "little")
             MMLampStateFromServer = int.from_bytes(lampReads[7], byteorder = "little")
-            LocalLamp_LocalUpdate = int.from_bytes(lampReads[8], byteorder = "little")
-            GlobalLamp_LocalUpdate = int.from_bytes(lampReads[9], byteorder = "little")
-            GlobalLamp_GlobalUpdate = int.from_bytes(lampReads[10], byteorder = "little")
 
             locksTuples = [
                 # Doors
@@ -953,19 +947,21 @@ class ApeEscapeClient(BizHawkClient):
             if gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"]):
                 if kickoutofLevel != 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                if CrC_kickoutofLevel != 0:
-                    writes += [(RAM.CrC_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                    writes += [(RAM.CrC_kickoutofLevelAddress2, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                if TVT_kickoutofLevel != 0:
-                    writes += [(RAM.TVT_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                # Maybe not needed anymore
+                #if CrC_kickoutofLevel != 0:
+                    #writes += [(RAM.CrC_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    #writes += [(RAM.CrC_kickoutofLevelAddress2, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                #if TVT_kickoutofLevel != 0:
+                    #writes += [(RAM.TVT_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             else:
                 if kickoutofLevel == 0:
-                    writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
-                if CrC_kickoutofLevel == 0:
-                    writes += [(RAM.CrC_kickoutofLevelAddress, 0x86020166.to_bytes(4, "little"), "MainRAM")]
-                    writes += [(RAM.CrC_kickoutofLevelAddress2, 0x84830188.to_bytes(4, "little"), "MainRAM")]
-                if TVT_kickoutofLevel == 0:
-                    writes += [(RAM.TVT_kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.kickoutofLevelAddress, 0x24020001.to_bytes(4, "little"), "MainRAM")]
+                # Since the new kickout is better, may not need other addresses.
+                #if CrC_kickoutofLevel == 0:
+                    #writes += [(RAM.CrC_kickoutofLevelAddress, 0x86020166.to_bytes(4, "little"), "MainRAM")]
+                    #writes += [(RAM.CrC_kickoutofLevelAddress2, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+                #if TVT_kickoutofLevel == 0:
+                    #writes += [(RAM.TVT_kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
 
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
@@ -1016,13 +1012,12 @@ class ApeEscapeClient(BizHawkClient):
             # =======================
 
             localLampsUpdate = {20: CBLampState, 53: CPLampState, 79: MMLampState}
-            globalLampsUpdate = {26: DILampState, 46: CrCLampState, 57: SFLampState, 66: TVTTankLampState}
-            bothLampsUpdate = {65: TVTLobbyLampState}
+            globalLampsUpdate = {26: DILampState, 46: CrCLampState, 57: SFLampState, 65: TVTLobbyLampState,66: TVTTankLampState}
 
             # ===== Lamp Unlocks =======
             # Tables for Lamp updates
             # Execute the Lamp unlocking code segment
-            Lamps_Reads = [gameState, currentRoom, NearbyRoom, localLampsUpdate, globalLampsUpdate, bothLampsUpdate, LocalLamp_LocalUpdate, GlobalLamp_LocalUpdate, transitionPhase]
+            Lamps_Reads = [gameState, currentRoom, NearbyRoom, localLampsUpdate, globalLampsUpdate, transitionPhase]
             await self.lamps_unlocks_handling(ctx, Lamps_Reads)
             # =======================
 
@@ -1802,10 +1797,7 @@ class ApeEscapeClient(BizHawkClient):
         NearbyRoom = Lamps_Reads[2]
         localLampsUpdate = Lamps_Reads[3]
         globalLampsUpdate = Lamps_Reads[4]
-        bothLampsUpdate = Lamps_Reads[5]
-        LocalLamp_LocalUpdate = Lamps_Reads[6]
-        GlobalLamp_LocalUpdate = Lamps_Reads[7]
-        transitionPhase = Lamps_Reads[8]
+        transitionPhase = Lamps_Reads[7]
 
         # Deactivate Monkeys detection for lamps and switch to manual door opening if lamp shuffle is activated
         # Condition for some rooms that require the same addresses to function properly
@@ -1833,56 +1825,39 @@ class ApeEscapeClient(BizHawkClient):
         elif currentRoom in globalLampsUpdate:
             GotLamp = globalLampsUpdate[currentRoom] == 0x01
             RoomHaveLamp = True
-        elif currentRoom in bothLampsUpdate:
-            GotLamp = bothLampsUpdate[currentRoom] == 0x01
-            RoomHaveLamp = True
 
         NearbyRoomHaveLamp = False
         if NearbyRoom in localLampsUpdate:
             NearbyRoomHaveLamp = True
         elif NearbyRoom in globalLampsUpdate:
             NearbyRoomHaveLamp = True
-        elif NearbyRoom in bothLampsUpdate:
-            NearbyRoomHaveLamp = True
 
         if ctx.slot_data["lamp"] == 0x00:
-            # print(NearbyRoom)
-            # print(NearbyRoomHaveLamp)
 
             # If the room had a lamp, activate all values while going in the transition
             if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (
                     RoomHaveLamp == True and transitionPhase != 0x06):
                 # print("LampRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
-                # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_MonkeyDetect, RAM.lampDoors_update['globalLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoom in specialrooms and transitionPhase == 0x06) or (currentRoom in specialrooms):
                 # print("SpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
-                # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_MonkeyDetect, RAM.lampDoors_update['globalLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoomHaveLamp == False and transitionPhase == 0x06) or ((currentRoom not in specialrooms) and (RoomHaveLamp == False)):
                 # print("NoLampsRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
-                # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_MonkeyDetect, RAM.lampDoors_update['globalLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
 
         else:
             if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
-                # print("SpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_ON'].to_bytes(4, "little"), "MainRAM")]
-                # writes += [(RAM.globalLamp_localUpdate, 0x9082007A.to_bytes(4, "little"), "MainRAM")]
-                # writes += [(RAM.globalLamp_globalUpdate, 0x1444000F.to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
+                #print("SpecialRoom")
+                Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_MonkeyDetect, RAM.lampDoors_update['globalLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (currentRoom not in specialrooms) or transitionPhase == 0x06:
-                # print("NotSpecialRoom")
-                Lamps_writes += [(RAM.localLamp_localUpdate, RAM.lampDoors_update['LocalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_localUpdate, RAM.lampDoors_update['GlobalLamp_local_OFF'].to_bytes(4, "little"), "MainRAM")]
-                Lamps_writes += [(RAM.globalLamp_globalUpdate, RAM.lampDoors_update['GlobalLamp_global_OFF'].to_bytes(4, "little"), "MainRAM")]
+                #print("NotSpecialRoom")
+                Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
+                Lamps_writes += [(RAM.globalLamp_MonkeyDetect, RAM.lampDoors_update['globalLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
 
         # You can now have the Lamp Item and bypass the door
         if currentRoom in lampDoors_toggles.keys() and GotLamp:

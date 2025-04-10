@@ -1049,20 +1049,21 @@ class RAM:
         }
     }
 
-    localLamp_localUpdate = 0x097474 # Default: 9062007A. Set this to 0 to disable
-    globalLamp_localUpdate = 0x097574 # Default: 9082007A. Set this to 0 to disable
-    globalLamp_globalUpdate = 0x097568 # 0x097568 Default: 1444000F. Set this to 0 to disable
+    #Old values, not used but let them here just in case
+    #localLamp_localUpdate = 0x097474 # Default: 9062007A. Set this to 0 to disable
+    #globalLamp_localUpdate = 0x097574 # Default: 9082007A. Set this to 0 to disable
+    #globalLamp_globalUpdate = 0x097568  # 0x097568 Default: 1444000F. Set this to 0 to disable
+
+    # More precise addresses for local monkeys/events
+    localLamp_MonkeyDetect = 0x097464
+    globalLamp_MonkeyDetect = 0x097564
 
     lampDoors_update = {
-        'LocalLamp_local_ON': 0x9062007A,
-        'LocalLamp_local_OFF': 0x90620000,
+        'localLamp_MonkeyDetect_ON':0x3C02800E,
+        'localLamp_MonkeyDetect_OFF': 0x00000000,
 
-        'GlobalLamp_local_ON': 0x9082007A,
-        'GlobalLamp_local_OFF': 0x90820000,
-
-        'GlobalLamp_global_ON': 0x1444000F,
-        'GlobalLamp_global_OFF': 0x14440000,
-
+        'globalLamp_MonkeyDetect_ON': 0x02712021,
+        'globalLamp_MonkeyDetect_OFF': 0x00000000,
     }
     lampDoors_toggles = {
         # CBLamp
@@ -1384,7 +1385,9 @@ class RAM:
     TargetRoomID8Address = 0x15437C
     TR8_DoorIDAddress = 0x154380
 
-    kickoutofLevelAddress = 0x097B98  # 4 bytes: Default 84830188, Disable kickout = 00000000 (050E67EC)
+    #kickoutofLevelAddress = 0x097B98  # 4 bytes: Default 84830188, Disable kickout = 00000000 (050E67EC)
+    kickoutofLevelAddress = 0x097B70  # BETTER 4 bytes: Default 24020001, Disable kickout = 00000000
+
     CrC_kickoutofLevelAddress = 0x097B20  # 4 bytes: Default 86020166, Disable kickout = 00000000
     CrC_kickoutofLevelAddress2 = 0x097B24 # 4 bytes: Default 84830188, Disable kickout = 00000000
     TVT_kickoutofLevelAddress = 0x097B00  # 4 bytes: Default 84830188, Disable kickout = 00000000
