@@ -1036,17 +1036,12 @@ class ApeEscapeClient(BizHawkClient):
 
             # ===== Level Select Optimization ======
             # Execute the Level Select optimization code segment
-            LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, Temp_SA_Completed, GA_Completed, Temp_GA_Completed, LS_currentWorld, worldIsScrollingRight]
+            LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, Temp_SA_Completed, GA_Completed, Temp_GA_Completed,LS_currentLevel, LS_currentWorld, worldIsScrollingRight]
             await self.level_select_optimization(ctx, LSO_Reads)
             # ======================================
 
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
-                # Setting a race to Locked still unlocks the next level, so instead, reselect the race.
-                # ** Not required anymore
-                # if LS_currentWorld == 3 and self.worldkeycount < reqkeys[7] or LS_currentWorld == 6 and self.worldkeycount < reqkeys[14]:
-                    # writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
-
                 # Update level (and potentially era) names.
                 bytestowrite = ctx.slot_data["levelnames"]
                 # This is a bit of a "magic number" right now. Trying to get the length didn't work.
@@ -1992,8 +1987,10 @@ class ApeEscapeClient(BizHawkClient):
         Temp_SA_Completed = LSO_Reads[4]
         GA_Completed = LSO_Reads[5]
         Temp_GA_Completed = LSO_Reads[6]
-        LS_currentWorld = LSO_Reads[7]
-        worldIsScrollingRight = LSO_Reads[8]
+        LS_currentLevel = LSO_Reads[7]
+        LS_currentWorld = LSO_Reads[8]
+        worldIsScrollingRight = LSO_Reads[9]
+
         LS_Writes = []
 
         if RAM.gameState["LevelSelect"] == gameState:
@@ -2024,9 +2021,23 @@ class ApeEscapeClient(BizHawkClient):
             # Get all keys required for the next world, based on first level of ERAS
             WorldUnlocks = [reqkeys[3], reqkeys[6], reqkeys[7], reqkeys[10], reqkeys[13], reqkeys[14], reqkeys[17],
                             reqkeys[20], reqkeys[21]]
+            # Format current selected level to compare against reqkeys table
+            currentLevel = (3 * LS_currentWorld) + LS_currentLevel
+            if LS_currentWorld >= 3:
+                currentLevel -= 2
+            if LS_currentWorld >= 6:
+                currentLevel -= 2
 
             # Check if the selected world is the last (To stay within bound of the list)
             if 0 <= LS_currentWorld < 9:
+                # Modified old fix to detect current level requirement and scroll back to the last unlocked world/level
+                if self.worldkeycount < reqkeys[currentLevel]:
+                    # Kinda strange condition but just to be sure ;)
+                    if LS_currentLevel == 0 and LS_currentWorld != 0:
+                        LS_Writes += [(RAM.selectedWorldAddress, (LS_currentWorld - 1).to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        LS_Writes += [(RAM.selectedLevelAddress, (LS_currentLevel - 1).to_bytes(1, "little"), "MainRAM")]
+
                 # If you have less World Keys that the required keys for the next ERA, disable R1, Right Stick and Right DPAD detection
 
                 if (LS_currentWorld < 8) and (worldIsScrollingRight == 0xFFFF):
