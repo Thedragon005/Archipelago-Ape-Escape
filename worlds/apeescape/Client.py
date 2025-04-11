@@ -658,6 +658,12 @@ class ApeEscapeClient(BizHawkClient):
                             keyCountFromServer += 1
                         elif (item.item - self.offset) == RAM.items["Token"]:
                             tokenCountFromServer += 1
+                            if ctx.slot_data["goal"] == GoalOption.option_tokenhunt and tokenCountFromServer == min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
+                                await ctx.send_msgs([{
+                                    "cmd": "StatusUpdate",
+                                    "status": ClientStatus.CLIENT_GOAL
+                                }])
+                                await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Custom", "")
                         elif (item.item - self.offset) == RAM.items["Victory"]:
                             await ctx.send_msgs([{
                                 "cmd": "StatusUpdate",
