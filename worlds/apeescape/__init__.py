@@ -106,7 +106,7 @@ class ApeEscapeWorld(World):
         self.superflyer = self.options.superflyer.value
         self.entrance = self.options.entrance.value
         self.unlocksperkey = self.options.unlocksperkey.value
-        self.extrakeys: self.options.extrakeys.value
+        self.extrakeys= self.options.extrakeys.value
         self.coin = self.options.coin.value
         self.mailbox = self.options.mailbox.value
         self.lamp = self.options.lamp.value
