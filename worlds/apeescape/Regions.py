@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from BaseClasses import Region, Entrance,ItemClassification
+from BaseClasses import Region, Entrance, ItemClassification
 from .Locations import location_table, ApeEscapeLocation
 from .Strings import AEDoor, AELocation
 from .Items import ApeEscapeItem

@@ -2266,7 +2266,7 @@ def set_locations(self):
         connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.W8L3Charlee.value, 
                         lambda state: CanHitOnce(state, self) and HasNet(state, self))
     connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.W8L3Mach3.value, 
-                        lambda state: HasNet(state, self))
+                        lambda state: HasNet(state, self) or HasWaterNet(state, self))
     # Lobby
     connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Tortuss.value, 
                         lambda state: HasNet(state, self))
