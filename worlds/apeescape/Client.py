@@ -328,6 +328,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.spikeStateAddress, 1, "MainRAM"),
                 (RAM.spikeState2Address, 1, "MainRAM"),
                 (RAM.kickoutofLevelAddress, 4, "MainRAM"),
+                (RAM.kickoutofLevelAddress2, 4, "MainRAM"),
                 (RAM.CrC_kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.TVT_kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.roomStatus, 1, "MainRAM"),
@@ -371,15 +372,16 @@ class ApeEscapeClient(BizHawkClient):
             spikeState = int.from_bytes(reads[23], byteorder = "little")
             spikeState2 = int.from_bytes(reads[24], byteorder = "little")
             kickoutofLevel = int.from_bytes(reads[25], byteorder = "little")
-            CrC_kickoutofLevel = int.from_bytes(reads[26], byteorder = "little")
-            TVT_kickoutofLevel = int.from_bytes(reads[27], byteorder = "little")
-            roomStatus = int.from_bytes(reads[28], byteorder = "little")
-            S1_P2_State = int.from_bytes(reads[29], byteorder = "little")
-            S1_P2_Life = int.from_bytes(reads[30], byteorder = "little")
-            S2_isCaptured = int.from_bytes(reads[31], byteorder = "little")
-            S1_Cutscene_Redirection = int.from_bytes(reads[32], byteorder = "little")
-            S2_Cutscene_Redirection = int.from_bytes(reads[33], byteorder = "little")
-            S1_P1_FightTrigger = int.from_bytes(reads[34], byteorder = "little")
+            kickoutofLevel2 = int.from_bytes(reads[26], byteorder="little")
+            CrC_kickoutofLevel = int.from_bytes(reads[27], byteorder = "little")
+            TVT_kickoutofLevel = int.from_bytes(reads[28], byteorder = "little")
+            roomStatus = int.from_bytes(reads[29], byteorder = "little")
+            S1_P2_State = int.from_bytes(reads[30], byteorder = "little")
+            S1_P2_Life = int.from_bytes(reads[31], byteorder = "little")
+            S2_isCaptured = int.from_bytes(reads[32], byteorder = "little")
+            S1_Cutscene_Redirection = int.from_bytes(reads[33], byteorder = "little")
+            S2_Cutscene_Redirection = int.from_bytes(reads[34], byteorder = "little")
+            S1_P1_FightTrigger = int.from_bytes(reads[35], byteorder = "little")
 
             # Related to Gadgets
             gadgetTuples = [
@@ -953,6 +955,7 @@ class ApeEscapeClient(BizHawkClient):
             if gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"]):
                 if kickoutofLevel != 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.kickoutofLevelAddress2, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 # Maybe not needed anymore
                 #if CrC_kickoutofLevel != 0:
                     #writes += [(RAM.CrC_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
@@ -961,7 +964,9 @@ class ApeEscapeClient(BizHawkClient):
                     #writes += [(RAM.TVT_kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             else:
                 if kickoutofLevel == 0:
-                    writes += [(RAM.kickoutofLevelAddress, 0x24020001.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
+                    writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
+
                 # Since the new kickout is better, may not need other addresses.
                 #if CrC_kickoutofLevel == 0:
                     #writes += [(RAM.CrC_kickoutofLevelAddress, 0x86020166.to_bytes(4, "little"), "MainRAM")]

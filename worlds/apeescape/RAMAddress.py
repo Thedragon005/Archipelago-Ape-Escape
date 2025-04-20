@@ -1385,8 +1385,8 @@ class RAM:
     TargetRoomID8Address = 0x15437C
     TR8_DoorIDAddress = 0x154380
 
-    #kickoutofLevelAddress = 0x097B98  # 4 bytes: Default 84830188, Disable kickout = 00000000 (050E67EC)
-    kickoutofLevelAddress = 0x097B70  # BETTER 4 bytes: Default 24020001, Disable kickout = 00000000
+    kickoutofLevelAddress = 0x097B98  # 4 bytes: Default 84830188, Disable kickout = 00000000 (050E67EC)
+    kickoutofLevelAddress2 = 0x097B70  # BETTER 4 bytes: Default 24020001, Disable kickout = 00000000
 
     CrC_kickoutofLevelAddress = 0x097B20  # 4 bytes: Default 86020166, Disable kickout = 00000000
     CrC_kickoutofLevelAddress2 = 0x097B24 # 4 bytes: Default 84830188, Disable kickout = 00000000
