@@ -294,6 +294,8 @@ class ApeEscapeClient(BizHawkClient):
         if self.initClient == False:
             self.initClient = True
             self.initialize_client()
+            strMessage = "Connected to Bizhawk Client - Ape Escape Archipelago v " + str(self.client_version)
+            await self.send_bizhawk_message(ctx,strMessage , "Custom", "")
         try:
 
             # Game state, locations and items read
@@ -644,7 +646,9 @@ class ApeEscapeClient(BizHawkClient):
             START_recv_index = recv_index
 
             # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
-            boolIsFirstBoot = gameState == RAM.gameState["Sony"] or gameState == RAM.gameState["Menu"] or gameState == RAM.gameState["Cutscene2"]
+            firstBootStates = {RAM.gameState["Sony"],RAM.gameState["Menu"],RAM.gameState["Cutscene2"],RAM.gameState["Demo"],RAM.gameState["Save/Load"]}
+            boolIsFirstBoot = gameState in firstBootStates
+            print(boolIsFirstBoot)
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
                 increment = 0
                 for item in ctx.items_received :

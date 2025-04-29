@@ -267,6 +267,7 @@ def set_doors(self):
                         lambda state: True)
     connect_regions(self, AEDoor.CC_BOSS_ROOM.value, AEDoor.CC_ENTRY_BOSS.value,
                         lambda state: True)
+    # City Park
     connect_regions(self, AEDoor.CP_OUTSIDE_SEWERS_FRONT.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value,
                         lambda state: True)
     connect_regions(self, AEDoor.CP_OUTSIDE_BARREL.value, AEDoor.CP_BARREL_OUTSIDE.value,

@@ -975,7 +975,8 @@ class RAM:
         "Book": 0x1C,
         "Credits1": 0x1D,
         "Credits2": 0x1E,
-        "PostCredits": 0x23
+        "PostCredits": 0x23,
+        "Demo": 0x24
     }
 
     levelAddresses = {
