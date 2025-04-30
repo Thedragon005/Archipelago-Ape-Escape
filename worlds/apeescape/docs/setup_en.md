@@ -4,7 +4,7 @@
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases). Please use version 0.4.4 or later for integrated
 BizHawk support.
 - Ape Escape (USA) ISO or BIN/CUE.
-- [BizHawk](https://tasvideos.org/BizHawk/ReleaseHistory) 2.7 or later. Other emulators are not supported.
+- [BizHawk](https://tasvideos.org/BizHawk/ReleaseHistory) 2.7 to 2.9.1. Other emulators are not supported.
 - The latest `apeescape.apworld` file. You can find this on the [Releases page](https://github.com/Thedragon005/Archipelago-Ape-Escape/releases/latest). Put this in your `Archipelago/custom_worlds` folder.
 
 ### Configuring BizHawk
@@ -40,8 +40,7 @@ connected and recognized Ape Escape.
 7. To connect the client to the server, enter your room's address and port (e.g. `archipelago.gg:38281`) into the
 top text field of the client and click Connect.
 
-You should now be able to receive and send items. You'll need to do these steps every time you want to reconnect. It is
-perfectly safe to make progress offline; everything will re-sync when you reconnect.
+You should now be able to receive and send items. You'll need to do these steps every time you want to reconnect.
 
 ## Tips on joystick configuration for Ape Escape on Bizhawk
 
