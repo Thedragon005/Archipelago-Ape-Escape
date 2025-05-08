@@ -1057,14 +1057,17 @@ class RAM:
 
     # More precise addresses for local monkeys/events
     localLamp_MonkeyDetect = 0x097464
-    globalLamp_MonkeyDetect = 0x097564
+    globalLamp_MonkeyDetect1 = 0x097564
+    globalLamp_MonkeyDetect2 = 0x097560
 
     lampDoors_update = {
         'localLamp_MonkeyDetect_ON':0x3C02800E,
         'localLamp_MonkeyDetect_OFF': 0x00000000,
 
-        'globalLamp_MonkeyDetect_ON': 0x02712021,
-        'globalLamp_MonkeyDetect_OFF': 0x00000000,
+        'globalLamp_MonkeyDetect1_ON': 0x02712021,
+        'globalLamp_MonkeyDetect1_OFF': 0x00000000,
+        'globalLamp_MonkeyDetect2_ON': 0x96420126,
+        'globalLamp_MonkeyDetect2_OFF': 0x00000000,
     }
     lampDoors_toggles = {
         # CBLamp
@@ -1246,6 +1249,8 @@ class RAM:
 
     tempGadgetStateFromServer = 0x0DFBE0
     gadgetStateFromServer = 0x0E00F0
+
+    DR_Block_Pushed = 0x18459A # Address is more of "Entry is open", but same result at the end
 
     DI_Button_Pressed = 0x1693A6 # Activated = 0x01
     DI_Button_DoorVisual = 0x0BFC8F # Activated = 0x00

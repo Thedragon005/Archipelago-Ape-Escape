@@ -316,10 +316,38 @@ class ItemDisplayOption(Choice):
         off: Receiving an item will not show a message in Bizhawk.
         on: Receiving an item will show a message in Bizhawk.
 
-        Supported values: off, true
+        Supported values: off, on
         Default value: on
     """
     display_name = "Item Display"
+    option_off = 0x00
+    option_on = 0x01
+    default = option_on
+
+class KickoutPreventionOption(Choice):
+    """Set the default for Kickout Prevention behavior. This can be changed in the client at any time.
+
+        off: Vanilla behavior, will kick you out after catching the level's last monkey.
+        on: Prevents kickout you out of the level when catching the last monkey.
+
+        Supported values: off, on
+        Default value: on
+    """
+    display_name = "Kickout Prevention"
+    option_off = 0x00
+    option_on = 0x01
+    default = option_on
+
+class AutoEquipOption(Choice):
+    """Set the default for Auto Equipping new gadgets. This can be changed in the client at any time.
+
+        off: When received gadgets, you will need to equip them manually.
+        on: When a Gadget is received, it will equip it to the first available face button (If there is an available one)
+
+        Supported values: off, on
+        Default value: on
+    """
+    display_name = "Auto Equip"
     option_off = 0x00
     option_on = 0x01
     default = option_on
@@ -346,4 +374,6 @@ class ApeEscapeOptions(PerGameCommonOptions):
     lowoxygensounds: LowOxygenSounds
     trapfillpercentage: TrapFillPercentage
     itemdisplay: ItemDisplayOption
+    kickoutprevention: KickoutPreventionOption
+    autoequip: AutoEquipOption
     death_link: DeathLink

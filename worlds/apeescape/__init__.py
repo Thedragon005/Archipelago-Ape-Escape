@@ -367,6 +367,8 @@ class ApeEscapeWorld(World):
             "lowoxygensounds": self.options.lowoxygensounds.value,
             "trapfillpercentage": self.options.trapfillpercentage.value,
             "itemdisplay": self.options.itemdisplay.value,
+            "kickoutprevention": self.options.kickoutprevention.value,
+            "autoequip": self.options.autoequip.value,
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "newpositions": newpositions,  # List of positions a level is moved to. The position of FF is first.
