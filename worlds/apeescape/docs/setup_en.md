@@ -1,4 +1,4 @@
-# Ape Escape Setup Guide
+# Ape Escape - Setup Guide
 
 ## Required Software
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases). Please use version 0.6.1 or later for integrated
