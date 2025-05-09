@@ -1402,8 +1402,7 @@ class ApeEscapeClient(BizHawkClient):
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
-                #(RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
-                (RAM.requiredApesAddress, 0x02.to_bytes(1, "little"), "MainRAM"),
+                (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
 
             # Training Room Unlock state:
