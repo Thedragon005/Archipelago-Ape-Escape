@@ -324,11 +324,12 @@ class ItemDisplayOption(Choice):
     option_on = 0x01
     default = option_on
 
+
 class KickoutPreventionOption(Choice):
     """Set the default for Kickout Prevention behavior. This can be changed in the client at any time.
 
         off: Will always kick you out after catching the level's last monkey or defeating a boss.
-        on: Prevents kickout you out of the level when catching the last monkey or defeating a boss.
+        on: Prevents the kickout when catching the last monkey or defeating a boss.
 
         Supported values: off, on
         Default value: on
@@ -338,11 +339,12 @@ class KickoutPreventionOption(Choice):
     option_on = 0x01
     default = option_on
 
+
 class AutoEquipOption(Choice):
     """Set the default for Auto Equipping new gadgets. This can be changed in the client at any time.
 
-        off: When received gadgets, you will need to equip them manually.
-        on: When a Gadget is received, it will equip it to the first available face button (If there is an available one)
+        off: Received gadgets need to be manually equipped.
+        on: Received gadgets will automatically be equipped to an open face button, if one exists.
 
         Supported values: off, on
         Default value: on

@@ -39,7 +39,7 @@ import worlds._bizhawk as bizhawk
 from worlds._bizhawk.client import BizHawkClient
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
-from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapFillPercentage, ItemDisplayOption,KickoutPreventionOption, DeathLink
+from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapFillPercentage, ItemDisplayOption, KickoutPreventionOption, DeathLink
 
 
 if TYPE_CHECKING:
@@ -80,6 +80,7 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
                 f"      Description : When on, will equip gadgets if there is a free face button\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n")
 
+
 def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Toggle the item display in Bizhawk"""
     from worlds._bizhawk.context import BizHawkClientContext
@@ -100,7 +101,7 @@ def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> No
         else:
             msg = "OFF"
         logger.info(f"Bizhawk Item Display: {msg}\n"
-                    f"    To change the status,use the command like so : /bh_itemdisplay [on/off]")
+                    f"    To change the status, use the command like so: /bh_itemdisplay [on/off]")
         return
     elif status.lower() == "on":
         client.bhdisplay = 1
@@ -115,6 +116,7 @@ def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> No
         #client.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Passthrough", "")
     client.BHDisplayOption = client.bhdisplay
     logger.info(f"Bizhawk Item Display is now {item_display}\n")
+
 
 def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Toggle Kickout Prevention on and off"""
@@ -136,7 +138,7 @@ def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status = "") -> N
         else:
             msg = "OFF"
         logger.info(f"Kickout Prevention: {msg}\n"
-                    f"    To change the status,use the command like so : /prevent_kickout [on/off]")
+                    f"    To change the status, use the command like so: /prevent_kickout [on/off]")
         return
     elif status.lower() == "on":
         client.preventKickOut = 1
@@ -156,6 +158,7 @@ def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status = "") -> N
         #client.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
     client.KickoutPrevention = client.preventKickOut
     logger.info(f"Kickout Prevention is now {kickout}\n")
+
 
 def cmd_deathlink(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Toggle Deathlink on and off"""
@@ -177,7 +180,7 @@ def cmd_deathlink(self: "BizHawkClientCommandProcessor", status = "") -> None:
         else:
             msg = "OFF"
         logger.info(f"Deathlink: {msg}\n"
-                    f"    To change the status,use the command like so : /deathlink [on/off]")
+                    f"    To change the status, use the command like so: /deathlink [on/off]")
         return
     elif status.lower() == "on":
         client.deathlink = 1
@@ -192,12 +195,13 @@ def cmd_deathlink(self: "BizHawkClientCommandProcessor", status = "") -> None:
     client.changeDeathlink = True
     if client.deathlink == 1:
         msg = "ON"
-        #client.send_bizhawk_message(ctx, "Kickout Prevention Enabled", "Custom", "")
+        #client.send_bizhawk_message(ctx, "Deathlink Enabled", "Custom", "")
     else:
         msg = "OFF"
-        #client.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
+        #client.send_bizhawk_message(ctx, "Deathlink Disabled", "Custom", "")
     client.DeathLinkOption = client.deathlink
     logger.info(f"Deathlink is now {msg}\n")
+
 
 def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Toggle Auto-Equip on and off"""
@@ -219,7 +223,7 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
         else:
             msg = "OFF"
         logger.info(f"Auto-Equip: {msg}\n"
-                    f"    To change the status,use the command like so : /autoequip [on/off]")
+                    f"    To change the status, use the command like so: /autoequip [on/off]")
         return
     elif status.lower() == "on":
         client.autoequip = 1
@@ -234,10 +238,10 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
     client.changeAutoEquip = True
     if client.autoequip == 1:
         msg = "ON"
-        #client.send_bizhawk_message(ctx, "Kickout Prevention Enabled", "Custom", "")
+        #client.send_bizhawk_message(ctx, "Automatic Gadget Equipping Enabled", "Custom", "")
     else:
         msg = "OFF"
-        #client.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
+        #client.send_bizhawk_message(ctx, "Automatic Gadget Equipping Disabled", "Custom", "")
     client.AutoEquipOption = client.autoequip
     logger.info(f"Auto Equip is now {msg}\n")
 
@@ -333,6 +337,7 @@ class ApeEscapeClient(BizHawkClient):
         self.bizhawk_itemdisplay = False
         self.bizhawk_display_set = False
 
+
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         ape_identifier_ram_address: int = 0xA37F0
         ape_identifier_ram_address_PAL: int = 0xA37F0
@@ -407,11 +412,11 @@ class ApeEscapeClient(BizHawkClient):
 
 
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
-        #if cmd == "Connected":
-            #self.kickout_prevention_handling(ctx, "init")
-            #self.deathlink_option_handling(ctx, "init")
-            #self.autoequip_option_handling(ctx, "init")
-            #self.bh_display_option_handling(ctx, "init")
+        # if cmd == "Connected":
+            # self.kickout_prevention_handling(ctx, "init")
+            # self.deathlink_option_handling(ctx, "init")
+            # self.autoequip_option_handling(ctx, "init")
+            # self.bh_display_option_handling(ctx, "init")
 
         if cmd == "Bounced":
             if "tags" in args:
@@ -435,7 +440,7 @@ class ApeEscapeClient(BizHawkClient):
                 self.DIButton = keys.get(f"AE_DIButton_{ctx.team}_{ctx.slot}", None)
             if f"AE_CrCWaterButton_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.CrCWaterButton = keys.get(f"AE_CrCWaterButton_{ctx.team}_{ctx.slot}", None)
-            #if f"AE_CrCBasementButton_{ctx.team}_{ctx.slot}" in args["keys"]:
+            # if f"AE_CrCBasementButton_{ctx.team}_{ctx.slot}" in args["keys"]:
                 # self.CrCBasementButton = keys.get(f"AE_CrCBasementButton_{ctx.team}_{ctx.slot}", None)
             if f"AE_MM_Painting_Button_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.MM_Painting_Button = keys.get(f"AE_MM_Painting_Button_{ctx.team}_{ctx.slot}", None)
@@ -445,6 +450,7 @@ class ApeEscapeClient(BizHawkClient):
                 self.TVT_Lobby_Button = keys.get(f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}", None)
             if f"AE_DR_Block_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DR_Block_Pushed = keys.get(f"AE_DR_Block_{ctx.team}_{ctx.slot}", None),
+
 
     async def check_gadgets(self, ctx: "BizHawkClientContext",gadgetStateFromServer) -> list[str]:
         gadgets = []
@@ -469,10 +475,12 @@ class ApeEscapeClient(BizHawkClient):
 
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
+
+
     async def kickout_prevention_handling(self, ctx: BizHawkClientContext,context):
         if context == "init":
             if ctx.team is None:
-                #print("skip")
+                # print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -482,18 +490,18 @@ class ApeEscapeClient(BizHawkClient):
             if self.KickoutPrevention == 2:
                 print("Still Waiting")
                 return
-            #print(self.KickoutPrevention)
-            #print(f"{ctx.team}_{ctx.slot}_{context}")
+            # print(self.KickoutPrevention)
+            # print(f"{ctx.team}_{ctx.slot}_{context}")
             if self.KickoutPrevention is None:
                 print("Used slotdata")
                 print(ctx.slot_data["kickoutprevention"])
                 self.preventKickOut = int(ctx.slot_data["kickoutprevention"])
-                #self.changeKickout = True
-                #self.KickoutPrevention = self.preventKickOut
+                # self.changeKickout = True
+                # self.KickoutPrevention = self.preventKickOut
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                #print("Got valid datastorage")
-                #print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
+                # print("Got valid datastorage")
+                # print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.preventKickOut = self.KickoutPrevention
             if self.preventKickOut == 1:
                 msg = "ON"
@@ -517,8 +525,9 @@ class ApeEscapeClient(BizHawkClient):
                 await self.send_bizhawk_message(ctx, "Kickout Prevention Enabled", "Custom", "")
             else:
                 await self.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
-            #self.preventKickOut = self.KickoutPrevention
+            # self.preventKickOut = self.KickoutPrevention
             print(f"set AE_kickoutprevention_{ctx.team}_{ctx.slot} to {self.preventKickOut}")
+
 
     async def deathlink_option_handling(self, ctx: BizHawkClientContext,context):
         if context == "init":
@@ -534,15 +543,15 @@ class ApeEscapeClient(BizHawkClient):
                # print("Still Waiting")
                 return
             if self.DeathLinkOption is None:
-                #print("Used slotdata")
-               # print(ctx.slot_data["kickoutprevention"])
+                # print("Used slotdata")
+                # print(ctx.slot_data["kickoutprevention"])
                 self.deathlink = int(ctx.slot_data["death_link"])
-                #self.KickoutPrevention = self.preventKickOut
-                #self.changeKickout = True
+                # self.KickoutPrevention = self.preventKickOut
+                # self.changeKickout = True
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                #print("Got valid datastorage")
-                #print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
+                # print("Got valid datastorage")
+                # print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.deathlink = self.DeathLinkOption
             if self.deathlink == 1:
                 msg = "ON"
@@ -565,13 +574,14 @@ class ApeEscapeClient(BizHawkClient):
                 await self.send_bizhawk_message(ctx, "Deathlink Enabled", "Custom", "")
             else:
                 await self.send_bizhawk_message(ctx, "Deathlink Prevention Disabled", "Custom", "")
-            #self.deathlink = self.DeathLinkOption
+            # self.deathlink = self.DeathLinkOption
             print(f"set AE_deathlink_{ctx.team}_{ctx.slot} to {self.deathlink}")
+
 
     async def autoequip_option_handling(self, ctx: BizHawkClientContext,context):
         if context == "init":
             if ctx.team is None:
-                #print("skip")
+                # print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -579,18 +589,18 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.AutoEquipOption == 2:
-                #print("Still Waiting")
+                # print("Still Waiting")
                 return
-            #print(self.AutoEquipOption)
+            # print(self.AutoEquipOption)
             if self.AutoEquipOption is None:
-                #print("Used slotdata")
-                #print(ctx.slot_data["autoequip"])
+                # print("Used slotdata")
+                # print(ctx.slot_data["autoequip"])
                 self.autoequip = int(ctx.slot_data["autoequip"])
                 self.AutoEquipOption = self.autoequip
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                #print("Got valid datastorage")
-                #print(f"DATASTORAGE_{self.autoequip}_KP{self.AutoEquipOption}_{context}")
+                # print("Got valid datastorage")
+                # print(f"DATASTORAGE_{self.autoequip}_KP{self.AutoEquipOption}_{context}")
                 self.autoequip = self.AutoEquipOption
             if self.autoequip == 1:
                 msg = "ON"
@@ -613,13 +623,14 @@ class ApeEscapeClient(BizHawkClient):
                 await self.send_bizhawk_message(ctx, "Auto-Equip Enabled", "Custom", "")
             else:
                 await self.send_bizhawk_message(ctx, "Auto-Equip Disabled", "Custom", "")
-            #self.autoequip = self.AutoEquipOption
+            # self.autoequip = self.AutoEquipOption
             print(f"set AE_autoequip_{ctx.team}_{ctx.slot} to {self.autoequip}")
+
 
     async def bh_display_option_handling(self, ctx: BizHawkClientContext,context):
         if context == "init":
             if ctx.team is None:
-                #print("skip")
+                # print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -627,18 +638,18 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.BHDisplayOption == 2:
-                #print("Still Waiting")
+                # print("Still Waiting")
                 return
             if self.BHDisplayOption is None:
-                #print("Used slotdata")
-               # print(ctx.slot_data["kickoutprevention"])
+                # print("Used slotdata")
+                # print(ctx.slot_data["kickoutprevention"])
                 self.bhdisplay = int(ctx.slot_data["itemdisplay"])
                 self.BHDisplayOption = self.bhdisplay
-                #self.changeBHDisplay = True
+                # self.changeBHDisplay = True
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                #print("Got valid datastorage")
-                #print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
+                # print("Got valid datastorage")
+                # print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.bhdisplay = self.BHDisplayOption
             if self.bhdisplay == 1:
                 msg = "ON"
@@ -662,14 +673,15 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 await self.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Passthrough", "")
 
-            #self.bhdisplay = self.BHDisplayOption
+            # self.bhdisplay = self.BHDisplayOption
             print(f"set AE_bhdisplay_{ctx.team}_{ctx.slot} to {self.bhdisplay}")
+
 
     async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
         # Set the default state of the command based on the YAML option if it hasn't been set yet.
-        #if self.bizhawk_display_set == False:
-        #    self.bizhawk_itemdisplay = (ctx.slot_data["itemdisplay"] == ItemDisplayOption.option_on)
-        #    self.bizhawk_display_set = True
+        # if self.bizhawk_display_set == False:
+        #     self.bizhawk_itemdisplay = (ctx.slot_data["itemdisplay"] == ItemDisplayOption.option_on)
+        #     self.bizhawk_display_set = True
 
         if self.bhdisplay == 1:
             if msgtype == "Item":
@@ -702,20 +714,20 @@ class ApeEscapeClient(BizHawkClient):
         if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None or ctx.auth is None:
             self.initClient = False
             return
-        # Detection for triggering "initialise_client()" when Disconnecting/Reconnecting to AP (only once per connection)
+        # Detection for triggering "initialize_client()" when Disconnecting/Reconnecting to AP (only once per connection)
         if self.initClient == False:
             self.initClient = True
             self.initialize_client()
-            #print("========================")
-            #print("INIT")
-            #print("========================")
-            #await self.kickout_prevention_handling(ctx,"init")
-            #await self.deathlink_option_handling(ctx, "init")
-            #await self.autoequip_option_handling(ctx, "init")
-            #await self.bh_display_option_handling(ctx, "init")
+            # print("========================")
+            # print("INIT")
+            # print("========================")
+            # await self.kickout_prevention_handling(ctx,"init")
+            # await self.deathlink_option_handling(ctx, "init")
+            # await self.autoequip_option_handling(ctx, "init")
+            # await self.bh_display_option_handling(ctx, "init")
 
             strMessage = "Connected to Bizhawk Client - Ape Escape Archipelago v " + str(self.client_version)
-            await self.send_bizhawk_message(ctx,strMessage , "Passthrough", "")
+            await self.send_bizhawk_message(ctx, strMessage, "Passthrough", "")
         try:
 
             if self.KickoutPrevention == 2 or self.preventKickOut == 2:
@@ -742,7 +754,7 @@ class ApeEscapeClient(BizHawkClient):
                 self.changeBHDisplay = False
                 await self.bh_display_option_handling(ctx,"change")
 
-            #await self.change_kickout_prevention(ctx)
+            # await self.change_kickout_prevention(ctx)
 
 
             # Game state, locations and items read
@@ -757,7 +769,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
                 (RAM.transitionPhase, 1, "MainRAM"),  # Jake Races Victory state
                 (RAM.localLevelState, 1, "MainRAM"),  # Jake Races Victory state
-                # Locations (Coins,Monkeys, Mailboxes)
+                # Locations (Coins, Monkeys, Mailboxes)
                 (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
                 (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
                 (RAM.totalCoinsAddress, 1, "MainRAM"),  # Coin Count
@@ -1104,12 +1116,12 @@ class ApeEscapeClient(BizHawkClient):
             START_recv_index = recv_index
 
             # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
-            firstBootStates = {RAM.gameState["Sony"],RAM.gameState["Menu"],RAM.gameState["Cutscene2"],RAM.gameState["Demo"],RAM.gameState["Save/Load"]}
+            firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"]}
             boolIsFirstBoot = gameState in firstBootStates
             #print(boolIsFirstBoot)
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
                 increment = 0
-                for item in ctx.items_received :
+                for item in ctx.items_received:
                     # Increment to already received address first before sending
                     if increment < START_recv_index:
                         increment += 1
@@ -1473,61 +1485,59 @@ class ApeEscapeClient(BizHawkClient):
                     "locations": list(x for x in coins)
                 }])
 
-            # ===== Trap Handling    ========
+            # ======== Trap Handling =========
             # For Traps.
-            # ===============================
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
             Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets,currentRoom]
             await self.traps_handling(ctx, Trap_Reads)
+            # ================================
 
-            # ===== Credits skipping =========
+            # ======= Credits skipping =======
             # Credits skipping function for S1 and S2
             Credits_Reads = [currentRoom, gameState, S1_Cutscene_Redirection, S2_Cutscene_Redirection]
             await self.Credits_handling(ctx, Credits_Reads)
             # ================================
-            # ===== MM Optimizations =========
+
+            # ======= MM Optimizations =======
             # Execute the code segment for MM Double Door and related optimizations
             MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
-            # ===== Permanent Buttons =======
+            # ====== Permanent Buttons =======
             # Execute the Buttons handling code segment
-            Button_Reads = [currentRoom, gameState, DI_Button_Pressed, CrC_Water_ButtonPressed, CrC_Basement_ButtonPressed, TVT_Lobby_ButtonPressed, MM_MonkeyHead_ButtonPressed, MM_Painting_ButtonPressed, DI_Button_DoorVisual, CrC_Water_Door_Visual, CrC_Basement_DoorVisual1, TVT_Lobby_Water_Hitbox, MM_MonkeyHead_Door, MM_Painting_Visual,DR_Block_Pushed,transitionPhase]
+            Button_Reads = [currentRoom, gameState, DI_Button_Pressed, CrC_Water_ButtonPressed, CrC_Basement_ButtonPressed, TVT_Lobby_ButtonPressed, MM_MonkeyHead_ButtonPressed, MM_Painting_ButtonPressed, DI_Button_DoorVisual, CrC_Water_Door_Visual, CrC_Basement_DoorVisual1, TVT_Lobby_Water_Hitbox, MM_MonkeyHead_Door, MM_Painting_Visual, DR_Block_Pushed, transitionPhase]
             await self.permanent_buttons_handling(ctx, Button_Reads)
-            # =======================
+            # ================================
 
             localLampsUpdate = {20: CBLampState, 53: CPLampState, 79: MMLampState}
             globalLampsUpdate = {26: DILampState, 46: CrCLampState, 57: SFLampState, 65: TVTLobbyLampState,66: TVTTankLampState}
 
-            # ===== Lamp Unlocks =======
+            # ========= Lamp Unlocks =========
             # Tables for Lamp updates
             # Execute the Lamp unlocking code segment
             Lamps_Reads = [gameState, currentRoom, NearbyRoom, localLampsUpdate, globalLampsUpdate, transitionPhase]
             await self.lamps_unlocks_handling(ctx, Lamps_Reads)
-            # =======================
+            # ================================
 
-            # ===== Water Net =======
+            # ========== Water Net ===========
             # Swim/Dive Prevention code
             WN_Reads = [gameState, waternetState, gameRunning, spikeState2, swim_oxygenLevel, cookies, isUnderwater, watercatchState]
             await self.water_net_handling(ctx, WN_Reads)
-            # =======================
+            # ================================
 
-            # ===== Gadgets handling =======
+            # ====== Gadgets handling ========
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
-
-            Gadgets_Reads = [currentLevel,currentRoom,heldGadget, gadgetStateFromServer, crossGadget,squareGadget,circleGadget,triangleGadget, menuState, menuState2, punchVisualAddress, gameState,currentGadgets]
+            Gadgets_Reads = [currentLevel, currentRoom, heldGadget, gadgetStateFromServer, crossGadget, squareGadget, circleGadget, triangleGadget, menuState, menuState2, punchVisualAddress, gameState, currentGadgets]
             await self.gadgets_handler(ctx, Gadgets_Reads, Temp_SA_Completed, Temp_GA_Completed)
-            # ==============================
+            # ================================
 
-
-
-            # ===== Level Select Optimization ======
+            # == Level Select Optimization ===
             # Execute the Level Select optimization code segment
             LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, Temp_SA_Completed, GA_Completed, Temp_GA_Completed, LS_currentLevel, LS_currentWorld, worldIsScrollingRight]
             await self.level_select_optimization(ctx, LSO_Reads)
-            # ======================================
+            # ================================
 
             if gameState == RAM.gameState["LevelSelect"]:
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
@@ -1843,6 +1853,7 @@ class ApeEscapeClient(BizHawkClient):
             # Exit handler and return to main loop to reconnect
             pass
 
+
     async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads, SAcomplete, GAcomplete):
         currentLevel = Gadgets_Reads[0]
         currentRoom = Gadgets_Reads[1]
@@ -1857,7 +1868,7 @@ class ApeEscapeClient(BizHawkClient):
         punchVisualAddress = Gadgets_Reads[10]
         gameState = Gadgets_Reads[11]
         currentGadgets = Gadgets_Reads[12]
-        #print(currentGadgets)
+        # print(currentGadgets)
         gadgets_Writes = []
         punch_Guards = []
         punch_Writes = []
@@ -1950,7 +1961,6 @@ class ApeEscapeClient(BizHawkClient):
                                 triangleGadget = gadget
                                 gadgets_Writes += [(RAM.triangleGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
 
-
         # Punch Visual glitch in menu fix
         # Replace all values from 0x0E78C0 to 0x0E78DF to this:
         # 0010000000000000E00B00000000000000100000000000000000000000000000
@@ -1959,7 +1969,6 @@ class ApeEscapeClient(BizHawkClient):
 
         if menuState == 0x00 and menuState2 == 0x01 and gameState != RAM.gameState['LevelSelect']:
             if ((gadgetStateFromServer & 32) == 32) and punchVisualAddress.to_bytes(32,"little") != bytes_ToWrite: # and self.replacePunch == True:
-
                 # print(punchVisualAddress)
                 # print(int.from_bytes(bytes_ToWrite))
                 punch_Writes += [(RAM.punchVisualAddress, bytes_ToWrite, "MainRAM")]
@@ -1967,9 +1976,7 @@ class ApeEscapeClient(BizHawkClient):
                 punch_Guards += [(RAM.menuState2Address, 0x01.to_bytes(1,"little"), "MainRAM")]
                 # print("Replaced Punch visuals")
                 # gadgets_Writes += [(RAM.unlockedGadgetsAddress, 0x24.to_bytes(1, "little"), "MainRAM")]
-
-                await bizhawk.guarded_write(ctx.bizhawk_ctx, punch_Writes,punch_Guards)
-
+                await bizhawk.guarded_write(ctx.bizhawk_ctx, punch_Writes, punch_Guards)
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
 
 
@@ -2010,7 +2017,6 @@ class ApeEscapeClient(BizHawkClient):
         MM_Natalie_Rescued_Local = MM_Reads[12]
         MM_Professor_Rescued = MM_Reads[13]
         S1_P1_FightTrigger = MM_Reads[14]
-
 
         MM_Writes = []
         SpecterLevels = (RAM.levels['Specter'], RAM.levels['S_Jake'], RAM.levels['S_Circus'], RAM.levels['S_Coaster'], RAM.levels['S_Western Land'], RAM.levels['S_Castle'])
@@ -2161,54 +2167,53 @@ class ApeEscapeClient(BizHawkClient):
                     "default": 0,
                     "want_reply": False,
                     "operations": [{"operation": "replace", "value": 1}]
-
                 }])
+
         if currentRoom == 28 and transitionPhase != 6:
             if DI_Button_Pressed == 0x01:
                 if self.DIButton != 1:
                     await ctx.send_msgs([{
                         "cmd": "Set",
-                        #"key": str(ctx.player_names[ctx.slot]) + "_DIButton",
+                        # "key": str(ctx.player_names[ctx.slot]) + "_DIButton",
                         "key": f"AE_DIButton_{ctx.team}_{ctx.slot}",
                         "default": 0,
                         "want_reply": False,
                         "operations": [{"operation": "replace", "value": 1}]
-
                     }])
+
         if currentRoom == 49 and transitionPhase != 6:
             if CrC_Water_ButtonPressed == 0x01:
                 if self.CrCWaterButton != 1:
                     await ctx.send_msgs([{
                         "cmd": "Set",
-                        #"key": str(ctx.player_names[ctx.slot]) + "_CrCWaterButton",
+                        # "key": str(ctx.player_names[ctx.slot]) + "_CrCWaterButton",
                         "key": f"AE_CrCWaterButton_{ctx.team}_{ctx.slot}",
                         "default": 0,
                         "want_reply": False,
                         "operations": [{"operation": "replace", "value": 1}]
-
                     }])
-        #if currentRoom == 47:
-        #    if CrC_Basement_ButtonPressed == 0x01:
-        #        if self.CrCBasementButton != 1:
-        #            await ctx.send_msgs([{
-        #                "cmd": "Set",
-        #                "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
-        #                "default": 0,
-        #                "want_reply": False,
-        #                "operations": [{"operation": "replace", "value": 1}]
-        #
-        #            }])
+
+        # if currentRoom == 47:
+        #     if CrC_Basement_ButtonPressed == 0x01:
+        #         if self.CrCBasementButton != 1:
+        #             await ctx.send_msgs([{
+        #                 "cmd": "Set",
+        #                 "key": str(ctx.player_names[ctx.slot]) + "_CrCBasementButton",
+        #                 "default": 0,
+        #                 "want_reply": False,
+        #                 "operations": [{"operation": "replace", "value": 1}]
+        #             }])
+
         if currentRoom == 65 and transitionPhase != 6:
             if TVT_Lobby_ButtonPressed == 0x01:
                 if self.TVT_Lobby_Button != 1:
                     await ctx.send_msgs([{
                         "cmd": "Set",
-                        #"key": str(ctx.player_names[ctx.slot]) + "_TVT_Lobby_Button",
+                        # "key": str(ctx.player_names[ctx.slot]) + "_TVT_Lobby_Button",
                         "key": f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}",
                         "default": 0,
                         "want_reply": False,
                         "operations": [{"operation": "replace", "value": 1}]
-
                     }])
 
         # Detection of Interior Climb button press (MonkeyHead Room)
@@ -2222,8 +2227,8 @@ class ApeEscapeClient(BizHawkClient):
                         "default": 0,
                         "want_reply": False,
                         "operations": [{"operation": "replace", "value": 1}]
-
                     }])
+
         # Detection of Painting button press (Outside Climb)
         if currentRoom == 82 and transitionPhase != 6:
             if MM_Painting_ButtonPressed == 0x01:
@@ -2235,7 +2240,6 @@ class ApeEscapeClient(BizHawkClient):
                         "default": 0,
                         "want_reply": False,
                         "operations": [{"operation": "replace", "value": 1}]
-
                     }])
 
         # Dexter's Island Slide Room button unlock
@@ -2255,7 +2259,6 @@ class ApeEscapeClient(BizHawkClient):
                     Button_Writes += [(RAM.DI_Button_Visual3, 0x80162390.to_bytes(4, "little"), "MainRAM")]
                     Button_Writes += [(RAM.DI_Button_Visual4, 0x80162288.to_bytes(4, "little"), "MainRAM")]
 
-
         # Crumbling Castle Water Room door unlock check
         if currentRoom == 45 and transitionPhase != 6:
             if CrC_Water_DoorVisual != 0x00:
@@ -2269,24 +2272,23 @@ class ApeEscapeClient(BizHawkClient):
                     Button_Writes += [(RAM.TR4_TransitionEnabled, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # Crumbling Castle Basement Room door unlock check
-        #if currentRoom == 47:
-        #    if CrC_Basement_DoorVisual1 != 0x00:
-        #        if self.CrCBasementButton != 1:
-        #            await ctx.send_msgs([{
-        #                "cmd": "Get",
-        #                "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
-        #            }])
-        #        if self.CrCBasementButton == 1:
-        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
-        #            Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
-
+        # if currentRoom == 47:
+        #     if CrC_Basement_DoorVisual1 != 0x00:
+        #         if self.CrCBasementButton != 1:
+        #             await ctx.send_msgs([{
+        #                 "cmd": "Get",
+        #                 "keys": [str(ctx.player_names[ctx.slot]) + "_CrCBasementButton"]
+        #             }])
+        #         if self.CrCBasementButton == 1:
+        #             Button_Writes += [(RAM.CrC_Basement_DoorHitBox1, 0xF200F808.to_bytes(4, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_DoorHitBox2, 0x0008FB00.to_bytes(4, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_DoorHitBox3, 0x01000400.to_bytes(4, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_DoorVisual1, 0x00.to_bytes(1, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_DoorVisual2, 0xF0.to_bytes(1, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_ButtonVisual1, 0x80178ADC.to_bytes(4, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_ButtonVisual2, 0x80178AF4.to_bytes(4, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_ButtonVisual3, 0x80178C14.to_bytes(4, "little"), "MainRAM")]
+        #             Button_Writes += [(RAM.CrC_Basement_ButtonVisual4, 0x80178B0C.to_bytes(4, "little"), "MainRAM")]
 
         # TV Tower water draining check
         if currentRoom == 65 and transitionPhase != 6:
@@ -2318,8 +2320,10 @@ class ApeEscapeClient(BizHawkClient):
                     Button_Writes += [(RAM.TVT_Lobby_WaterVisual2, 0x00.to_bytes(1, "little"), "MainRAM")]
                     Button_Writes += [(RAM.TVT_Lobby_WaterVisual3, 0xF70C.to_bytes(2, "little"), "MainRAM")]
                     Button_Writes += [(RAM.TVT_Lobby_WaterVisual4, 0x00.to_bytes(1, "little"), "MainRAM")]
-        # Monkey Madness Monkey Head door unlock check
+
+        # Monkey Madness Castle Lobby checks
         if currentRoom == 80 and transitionPhase != 6:
+            # Monkey Madness Monkey Head door unlock check
             if MM_MonkeyHead_Door != 0x01:
                 if self.MM_MonkeyHead_Button != 1:
                     await ctx.send_msgs([{
@@ -2394,7 +2398,6 @@ class ApeEscapeClient(BizHawkClient):
             NearbyRoomHaveLamp = True
 
         if ctx.slot_data["lamp"] == 0x00:
-
             # If the room had a lamp, activate all values while going in the transition
             if (NearbyRoomHaveLamp == True and transitionPhase == 0x06 and (NearbyRoom not in specialrooms)) or (
                     RoomHaveLamp == True and transitionPhase != 0x06):
@@ -2412,15 +2415,14 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
-
         else:
             if (NearbyRoom in specialrooms and transitionPhase == 0x06) or currentRoom in specialrooms:
-                #print("SpecialRoom")
+                # print("SpecialRoom")
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
             elif (currentRoom not in specialrooms) or transitionPhase == 0x06:
-                #print("NotSpecialRoom")
+                # print("NotSpecialRoom")
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
@@ -2429,7 +2431,6 @@ class ApeEscapeClient(BizHawkClient):
         if currentRoom in lampDoors_toggles.keys() and GotLamp:
             lamplist_keys = list(lampDoors_toggles[currentRoom].keys())
             lamplist_values = list(lampDoors_toggles[currentRoom].values())
-
             # print(lamplist_values)
             for x in range(len(lamplist_keys)):
                 Lamps_writes2 = []
@@ -2442,8 +2443,7 @@ class ApeEscapeClient(BizHawkClient):
                 lamp_address = (lamplist_keys[x])
                 Lamps_writes2 += [(lamp_address, lamp_openvalue, "MainRAM")]
                 Lamps_Guards += [(lamp_address, lamp_closedvalue, "MainRAM")]
-
-                await bizhawk.guarded_write(ctx.bizhawk_ctx,Lamps_writes2,Lamps_Guards)
+                await bizhawk.guarded_write(ctx.bizhawk_ctx, Lamps_writes2, Lamps_Guards)
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 
 
@@ -2493,8 +2493,8 @@ class ApeEscapeClient(BizHawkClient):
 
                 # print(self.trap_queue)
                 chosen_gadgets = []
-                chosen_values = [0,0,0,0]
-                faces = [0,1,2,3]
+                chosen_values = [0, 0, 0, 0]
+                faces = [0, 1, 2, 3]
                 # Exit if no gadgets has been unlocked yet
                 if currentGadgets == []:
                     return None
@@ -2503,7 +2503,7 @@ class ApeEscapeClient(BizHawkClient):
                 for x in range(4):
                     randomFace = int(round(random() * (len(faces) -1), None))
                     face = faces[randomFace]
-                    # If there is no more gadgets,it means we put an "Empty" spot
+                    # If there is no more gadgets, it means we put an "Empty" spot
                     if currentGadgets == []:
                         # print("Face #" + str(randomFace + 1) + " : None | 255")
                         chosen_values[face] = 0xFF
