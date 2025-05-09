@@ -327,8 +327,8 @@ class ItemDisplayOption(Choice):
 class KickoutPreventionOption(Choice):
     """Set the default for Kickout Prevention behavior. This can be changed in the client at any time.
 
-        off: Will always kick you out after catching the level's last monkey.
-        on: Prevents kickout you out of the level when catching the last monkey.
+        off: Will always kick you out after catching the level's last monkey or defeating a boss.
+        on: Prevents kickout you out of the level when catching the last monkey or defeating a boss.
 
         Supported values: off, on
         Default value: on
