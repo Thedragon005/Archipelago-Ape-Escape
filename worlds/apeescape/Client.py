@@ -2,19 +2,14 @@ import sys
 import logging
 import time
 from random import random
-from tokenize import endpats
 
-from win32comext.shell.shell import BHID_DataObject
 
 import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
 
-from MultiServer import team_slot
-from Options import Toggle
 from NetUtils import ClientStatus
 from .Strings import AEItem
 from .Items import gadgetsValues
-from ..ladx.TrackerConsts import transition_state
 
 # TODO: REMOVE ASAP - Borrowed from MM2
 # This imports the bizhawk apworld if it's not already imported. This code block should be removed for a PR.
