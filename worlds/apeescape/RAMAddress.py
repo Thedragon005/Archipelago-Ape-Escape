@@ -1391,8 +1391,28 @@ class RAM:
     TargetRoomID8Address = 0x15437C
     TR8_DoorIDAddress = 0x154380
 
+    localLevelState = 0x0F447E # Same as level state, but can be changed to impact some behaviors (Like Kickout Prevention)
+
     kickoutofLevelAddress = 0x097B98  # 4 bytes: Default 84830188, Disable kickout = 00000000 (050E67EC)
     kickoutofLevelAddress2 = 0x097B70  # BETTER 4 bytes: Default 24020001, Disable kickout = 00000000
+
+    CrC_BossPhaseAddress = 0x17475E
+    CrC_BossLife = 0x0E69E1
+
+    # 0 :not started
+    # 1 and 2 : In cinematic
+    # 3 : In fight
+    # 4 : Opening door
+    # 5 : Victory
+
+    TVT_BossPhase = 0x17C5A2
+    TVT_BossLife = 0x143E1F
+    # 1 In cinematic for boss
+    # 2 Boss in waiting
+    # 3 Boss in progress
+
+    CrC_DoorVisual = 0x0C062B
+    CrC_DoorHitBox = 0x164FFB
 
     CrC_kickoutofLevelAddress = 0x097B20  # 4 bytes: Default 86020166, Disable kickout = 00000000
     CrC_kickoutofLevelAddress2 = 0x097B24 # 4 bytes: Default 84830188, Disable kickout = 00000000
@@ -1407,12 +1427,7 @@ class RAM:
     spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
-    # HUGE for ER since when transition it is 98 or 204 ?
-    # 1 In cinematic for boss
-    # 2 Boss in waiting
-    # 3 Boss in progress
-    roomStatus = 0x17C5A2
-    # Find better name please...
+
 
 
     # Specter bosses values

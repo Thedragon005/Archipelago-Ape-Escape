@@ -80,7 +80,7 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
                 f"      Description : When on, will equip gadgets if there is a free face button\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n")
 
-def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status: str) -> None:
+def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Toggle the item display in Bizhawk"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
@@ -94,7 +94,15 @@ def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status: str) -> No
     assert isinstance(ctx, BizHawkClientContext)
     client = ctx.client_handler
     assert isinstance(client, ApeEscapeClient)
-    if status.lower() == "on":
+    if status == "":
+        if client.bhdisplay == 0:
+            msg = "ON"
+        else:
+            msg = "OFF"
+        logger.info(f"Bizhawk Item Display: {msg}\n"
+                    f"    To change the status,use the command like so : /bh_itemdisplay [on/off]")
+        return
+    elif status.lower() == "on":
         client.bhdisplay = 1
     else:
         client.bhdisplay = 0
@@ -108,8 +116,8 @@ def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status: str) -> No
     client.BHDisplayOption = client.bhdisplay
     logger.info(f"Bizhawk Item Display is now {item_display}\n")
 
-def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status: str) -> None:
-    """Toggle Kickout Prevention"""
+def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status = "") -> None:
+    """Toggle Kickout Prevention on and off"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
         logger.warning("This command can only be used when playing Ape Escape.")
@@ -122,7 +130,15 @@ def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status: str) -> N
     assert isinstance(ctx, BizHawkClientContext)
     client = ctx.client_handler
     assert isinstance(client, ApeEscapeClient)
-    if status.lower() == "on":
+    if status == "":
+        if client.bhdisplay == 0:
+            msg = "ON"
+        else:
+            msg = "OFF"
+        logger.info(f"Kickout Prevention: {msg}\n"
+                    f"    To change the status,use the command like so : /prevent_kickout [on/off]")
+        return
+    elif status.lower() == "on":
         client.preventKickOut = 1
     elif status.lower() == "off":
         client.preventKickOut = 0
@@ -141,7 +157,7 @@ def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status: str) -> N
     client.KickoutPrevention = client.preventKickOut
     logger.info(f"Kickout Prevention is now {kickout}\n")
 
-def cmd_deathlink(self: "BizHawkClientCommandProcessor", status: str) -> None:
+def cmd_deathlink(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Toggle Deathlink on and off"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
@@ -155,7 +171,15 @@ def cmd_deathlink(self: "BizHawkClientCommandProcessor", status: str) -> None:
     assert isinstance(ctx, BizHawkClientContext)
     client = ctx.client_handler
     assert isinstance(client, ApeEscapeClient)
-    if status.lower() == "on":
+    if status == "":
+        if client.deathlink == 0:
+            msg = "ON"
+        else:
+            msg = "OFF"
+        logger.info(f"Deathlink: {msg}\n"
+                    f"    To change the status,use the command like so : /deathlink [on/off]")
+        return
+    elif status.lower() == "on":
         client.deathlink = 1
     elif status.lower() == "off":
         client.deathlink = 0
@@ -175,8 +199,8 @@ def cmd_deathlink(self: "BizHawkClientCommandProcessor", status: str) -> None:
     client.DeathLinkOption = client.deathlink
     logger.info(f"Deathlink is now {msg}\n")
 
-def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status: str) -> None:
-    """Toggle Deathlink on and off"""
+def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
+    """Toggle Auto-Equip on and off"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
         logger.warning("This command can only be used when playing Ape Escape.")
@@ -189,7 +213,15 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status: str) -> None:
     assert isinstance(ctx, BizHawkClientContext)
     client = ctx.client_handler
     assert isinstance(client, ApeEscapeClient)
-    if status.lower() == "on":
+    if status == "":
+        if client.autoequip == 0:
+            msg = "ON"
+        else:
+            msg = "OFF"
+        logger.info(f"Auto-Equip: {msg}\n"
+                    f"    To change the status,use the command like so : /autoequip [on/off]")
+        return
+    elif status.lower() == "on":
         client.autoequip = 1
     elif status.lower() == "off":
         client.autoequip = 0
@@ -375,6 +407,12 @@ class ApeEscapeClient(BizHawkClient):
 
 
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
+        #if cmd == "Connected":
+            #self.kickout_prevention_handling(ctx, "init")
+            #self.deathlink_option_handling(ctx, "init")
+            #self.autoequip_option_handling(ctx, "init")
+            #self.bh_display_option_handling(ctx, "init")
+
         if cmd == "Bounced":
             if "tags" in args:
                 assert ctx.slot is not None
@@ -454,10 +492,15 @@ class ApeEscapeClient(BizHawkClient):
                 #self.KickoutPrevention = self.preventKickOut
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                print("Got valid datastorage")
-                print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
+                #print("Got valid datastorage")
+                #print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.preventKickOut = self.KickoutPrevention
-
+            if self.preventKickOut == 1:
+                msg = "ON"
+            else:
+                msg = "OFF"
+            logger.info(f"\n--Options Status--")
+            logger.info(f"Kickout Prevention: {msg}")
         elif context == "change":
             await ctx.send_msgs(
                 [
@@ -501,7 +544,11 @@ class ApeEscapeClient(BizHawkClient):
                 #print("Got valid datastorage")
                 #print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.deathlink = self.DeathLinkOption
-
+            if self.deathlink == 1:
+                msg = "ON"
+            else:
+                msg = "OFF"
+            logger.info(f"DeathLink: {msg}")
         elif context == "change":
             await ctx.send_msgs(
                 [
@@ -545,7 +592,11 @@ class ApeEscapeClient(BizHawkClient):
                 #print("Got valid datastorage")
                 #print(f"DATASTORAGE_{self.autoequip}_KP{self.AutoEquipOption}_{context}")
                 self.autoequip = self.AutoEquipOption
-
+            if self.autoequip == 1:
+                msg = "ON"
+            else:
+                msg = "OFF"
+            logger.info(f"Auto-Equip: {msg}")
         elif context == "change":
             await ctx.send_msgs(
                 [
@@ -589,7 +640,11 @@ class ApeEscapeClient(BizHawkClient):
                 #print("Got valid datastorage")
                 #print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.bhdisplay = self.BHDisplayOption
-
+            if self.bhdisplay == 1:
+                msg = "ON"
+            else:
+                msg = "OFF"
+            logger.info(f"Bizhawk Item Display: {msg}")
         elif context == "change":
             await ctx.send_msgs(
                 [
@@ -654,13 +709,15 @@ class ApeEscapeClient(BizHawkClient):
             #print("========================")
             #print("INIT")
             #print("========================")
-            await self.kickout_prevention_handling(ctx,"init")
-            await self.deathlink_option_handling(ctx, "init")
-            await self.autoequip_option_handling(ctx, "init")
-            await self.bh_display_option_handling(ctx, "init")
+            #await self.kickout_prevention_handling(ctx,"init")
+            #await self.deathlink_option_handling(ctx, "init")
+            #await self.autoequip_option_handling(ctx, "init")
+            #await self.bh_display_option_handling(ctx, "init")
+
             strMessage = "Connected to Bizhawk Client - Ape Escape Archipelago v " + str(self.client_version)
             await self.send_bizhawk_message(ctx,strMessage , "Passthrough", "")
         try:
+
             if self.KickoutPrevention == 2 or self.preventKickOut == 2:
                 await self.kickout_prevention_handling(ctx, "init")
             if self.changeKickout == True:
@@ -699,6 +756,7 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.gameRunningAddress, 1, "MainRAM"),
                 (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
                 (RAM.transitionPhase, 1, "MainRAM"),  # Jake Races Victory state
+                (RAM.localLevelState, 1, "MainRAM"),  # Jake Races Victory state
                 # Locations (Coins,Monkeys, Mailboxes)
                 (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
                 (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
@@ -721,9 +779,13 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.spikeState2Address, 1, "MainRAM"),
                 (RAM.kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.kickoutofLevelAddress2, 4, "MainRAM"),
+                (RAM.CrC_BossPhaseAddress, 1, "MainRAM"),
+                (RAM.CrC_DoorVisual, 1, "MainRAM"),
+                (RAM.CrC_BossLife, 1, "MainRAM"),
                 (RAM.CrC_kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.TVT_kickoutofLevelAddress, 4, "MainRAM"),
-                (RAM.roomStatus, 1, "MainRAM"),
+                (RAM.TVT_BossPhase, 1, "MainRAM"),
+                (RAM.TVT_BossLife, 1, "MainRAM"),
                 (RAM.S1_P2_State, 1, "MainRAM"),
                 (RAM.S1_P2_Life, 1, "MainRAM"),
                 (RAM.S2_isCaptured, 1, "MainRAM"),
@@ -743,37 +805,42 @@ class ApeEscapeClient(BizHawkClient):
             gameRunning = int.from_bytes(reads[5], byteorder = "little")
             jakeVictory = int.from_bytes(reads[6], byteorder = "little")
             transitionPhase = int.from_bytes(reads[7], byteorder = "little")
+            localLevelState = int.from_bytes(reads[8], byteorder = "little")
             # Locations
-            previousCoinStateRoom = int.from_bytes(reads[8], byteorder = "little")
-            currentCoinStateRoom = int.from_bytes(reads[9], byteorder = "little")
-            coinCount = int.from_bytes(reads[10], byteorder = "little")
-            localhundoCount = int.from_bytes(reads[11], byteorder = "little")
-            requiredApes = int.from_bytes(reads[12], byteorder = "little")
-            currentApes = int.from_bytes(reads[13], byteorder = "little")
-            gotMail = int.from_bytes(reads[14], byteorder = "little")
-            mailboxID = int.from_bytes(reads[15], byteorder = "little")
+            previousCoinStateRoom = int.from_bytes(reads[9], byteorder = "little")
+            currentCoinStateRoom = int.from_bytes(reads[10], byteorder = "little")
+            coinCount = int.from_bytes(reads[11], byteorder = "little")
+            localhundoCount = int.from_bytes(reads[12], byteorder = "little")
+            requiredApes = int.from_bytes(reads[13], byteorder = "little")
+            currentApes = int.from_bytes(reads[14], byteorder = "little")
+            gotMail = int.from_bytes(reads[15], byteorder = "little")
+            mailboxID = int.from_bytes(reads[16], byteorder = "little")
             # Items
-            energyChips = int.from_bytes(reads[16], byteorder = "little")
-            cookies = int.from_bytes(reads[17], byteorder = "little")
-            totalLives = int.from_bytes(reads[18], byteorder = "little")
-            flashAmmo = int.from_bytes(reads[19], byteorder = "little")
-            rocketAmmo = int.from_bytes(reads[20], byteorder = "little")
-            keyCountFromServer = int.from_bytes(reads[21], byteorder = "little")
-            tokenCountFromServer = int.from_bytes(reads[22], byteorder = "little")
+            energyChips = int.from_bytes(reads[17], byteorder = "little")
+            cookies = int.from_bytes(reads[18], byteorder = "little")
+            totalLives = int.from_bytes(reads[19], byteorder = "little")
+            flashAmmo = int.from_bytes(reads[20], byteorder = "little")
+            rocketAmmo = int.from_bytes(reads[21], byteorder = "little")
+            keyCountFromServer = int.from_bytes(reads[22], byteorder = "little")
+            tokenCountFromServer = int.from_bytes(reads[23], byteorder = "little")
             # Misc
-            spikeState = int.from_bytes(reads[23], byteorder = "little")
-            spikeState2 = int.from_bytes(reads[24], byteorder = "little")
-            kickoutofLevel = int.from_bytes(reads[25], byteorder = "little")
-            kickoutofLevel2 = int.from_bytes(reads[26], byteorder="little")
-            CrC_kickoutofLevel = int.from_bytes(reads[27], byteorder = "little")
-            TVT_kickoutofLevel = int.from_bytes(reads[28], byteorder = "little")
-            roomStatus = int.from_bytes(reads[29], byteorder = "little")
-            S1_P2_State = int.from_bytes(reads[30], byteorder = "little")
-            S1_P2_Life = int.from_bytes(reads[31], byteorder = "little")
-            S2_isCaptured = int.from_bytes(reads[32], byteorder = "little")
-            S1_Cutscene_Redirection = int.from_bytes(reads[33], byteorder = "little")
-            S2_Cutscene_Redirection = int.from_bytes(reads[34], byteorder = "little")
-            S1_P1_FightTrigger = int.from_bytes(reads[35], byteorder = "little")
+            spikeState = int.from_bytes(reads[24], byteorder = "little")
+            spikeState2 = int.from_bytes(reads[25], byteorder = "little")
+            kickoutofLevel = int.from_bytes(reads[26], byteorder = "little")
+            kickoutofLevel2 = int.from_bytes(reads[27], byteorder="little")
+            CrC_BossPhase = int.from_bytes(reads[28], byteorder = "little")
+            CrC_DoorVisual = int.from_bytes(reads[29], byteorder = "little")
+            CrC_BossLife = int.from_bytes(reads[30], byteorder = "little")
+            CrC_kickoutofLevel = int.from_bytes(reads[31], byteorder = "little")
+            TVT_kickoutofLevel = int.from_bytes(reads[32], byteorder = "little")
+            TVT_BossPhase = int.from_bytes(reads[33], byteorder = "little")
+            TVT_BossLife = int.from_bytes(reads[34], byteorder = "little")
+            S1_P2_State = int.from_bytes(reads[35], byteorder = "little")
+            S1_P2_Life = int.from_bytes(reads[36], byteorder = "little")
+            S2_isCaptured = int.from_bytes(reads[37], byteorder = "little")
+            S1_Cutscene_Redirection = int.from_bytes(reads[38], byteorder = "little")
+            S2_Cutscene_Redirection = int.from_bytes(reads[39], byteorder = "little")
+            S1_P1_FightTrigger = int.from_bytes(reads[40], byteorder = "little")
 
             # Related to Gadgets
             gadgetTuples = [
@@ -1259,9 +1326,9 @@ class ApeEscapeClient(BizHawkClient):
                 bosses_to_send = set()
 
                 for i in range(len(bossesList)):
-                    # For TVT boss, check roomStatus, if it's 3 the fight is ongoing
+                    # For TVT boss, check TVT_BossPhase, if it's 3 the fight is ongoing
                     if (currentRoom == 68):
-                        if (roomStatus == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
+                        if (TVT_BossPhase == 3 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
                             bosses_to_send.add(key_list[i] + self.offset)
                     elif (currentRoom == 70):
                         if (gameRunning == 1 and int.from_bytes(bossesList[i], byteorder='little') == 0x00):
@@ -1335,7 +1402,8 @@ class ApeEscapeClient(BizHawkClient):
             writes = [
                 (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
-                (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
+                #(RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
+                (RAM.requiredApesAddress, 0x02.to_bytes(1, "little"), "MainRAM"),
             ]
 
             # Training Room Unlock state:
@@ -1348,19 +1416,39 @@ class ApeEscapeClient(BizHawkClient):
             # Kickout Prevention
             # Now prevents getting kicked out of a boss level by catching a monkey while the boss is defeated
             # Prevent kickout if option is on (Only in levels)
+
             if self.preventKickOut == 1:
+                #print(currentRoom)
+
+                #If in level, make the "localLevelState" as "
                 if gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"]):
+                    if currentRoom == 48:
+                        if CrC_BossPhase == 4 and CrC_BossLife == 0x00:
+                            writes += [(RAM.CrC_BossPhaseAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                            #writes += [(RAM.CrC_DoorVisual, 0xF8.to_bytes(1, "little"), "MainRAM")]
+                            #writes += [(RAM.CrC_DoorHitBox, 0xF8.to_bytes(1, "little"), "MainRAM")]
+                    if currentRoom == 68:
+                        if TVT_BossPhase == 4 and TVT_BossLife == 0x00:
+                            writes += [(RAM.TVT_BossPhase, 0x05.to_bytes(1, "little"), "MainRAM")]
+
+                    # Prevents Kickout if it is not already prevented
                     if kickoutofLevel != 0:
                         writes += [(RAM.kickoutofLevelAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                         writes += [(RAM.kickoutofLevelAddress2, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    if localLevelState != 0x03:
+                        writes += [(RAM.localLevelState, 0x03.to_bytes(1, "little"), "MainRAM")]
                 else:
+                    # Stops preventing Kickout outside of the Levels,since it could cause crashes
                     if kickoutofLevel == 0:
                         writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                         writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
             elif self.preventKickOut == 0:
+                # Ensure you always get kicked out when catching the last monkey,to be consistent
                 if kickoutofLevel == 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                     writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
+                if localLevelState != 0x00:
+                    writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
             # Check for Jake Victory
             if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
@@ -1430,7 +1518,7 @@ class ApeEscapeClient(BizHawkClient):
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
 
-            Gadgets_Reads = [currentLevel, heldGadget, gadgetStateFromServer, crossGadget,squareGadget,circleGadget,triangleGadget, menuState, menuState2, punchVisualAddress, gameState,currentGadgets]
+            Gadgets_Reads = [currentLevel,currentRoom,heldGadget, gadgetStateFromServer, crossGadget,squareGadget,circleGadget,triangleGadget, menuState, menuState2, punchVisualAddress, gameState,currentGadgets]
             await self.gadgets_handler(ctx, Gadgets_Reads, Temp_SA_Completed, Temp_GA_Completed)
             # ==============================
 
@@ -1758,17 +1846,18 @@ class ApeEscapeClient(BizHawkClient):
 
     async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads, SAcomplete, GAcomplete):
         currentLevel = Gadgets_Reads[0]
-        heldGadget = Gadgets_Reads[1]
-        gadgetStateFromServer = Gadgets_Reads[2]
-        crossGadget = Gadgets_Reads[3]
-        squareGadget = Gadgets_Reads[4]
-        circleGadget = Gadgets_Reads[5]
-        triangleGadget = Gadgets_Reads[6]
-        menuState = Gadgets_Reads[7]
-        menuState2 = Gadgets_Reads[8]
-        punchVisualAddress = Gadgets_Reads[9]
-        gameState = Gadgets_Reads[10]
-        currentGadgets = Gadgets_Reads[11]
+        currentRoom = Gadgets_Reads[1]
+        heldGadget = Gadgets_Reads[2]
+        gadgetStateFromServer = Gadgets_Reads[3]
+        crossGadget = Gadgets_Reads[4]
+        squareGadget = Gadgets_Reads[5]
+        circleGadget = Gadgets_Reads[6]
+        triangleGadget = Gadgets_Reads[7]
+        menuState = Gadgets_Reads[8]
+        menuState2 = Gadgets_Reads[9]
+        punchVisualAddress = Gadgets_Reads[10]
+        gameState = Gadgets_Reads[11]
+        currentGadgets = Gadgets_Reads[12]
         #print(currentGadgets)
         gadgets_Writes = []
         punch_Guards = []
@@ -1828,8 +1917,9 @@ class ApeEscapeClient(BizHawkClient):
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
 
-        if self.autoequip == 1:
-            if currentGadgets:
+        # If Auto-Equip is on, still checks to exclude races from it
+        if self.autoequip == 1 and (currentRoom != 19 and currentRoom != 36):
+            if currentGadgets :
                 boolCrossGadget = crossGadget  == 0xFF
                 boolSquareGadget = squareGadget == 0xFF
                 boolCircleGadget = circleGadget == 0xFF
