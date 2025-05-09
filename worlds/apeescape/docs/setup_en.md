@@ -1,10 +1,10 @@
 # Ape Escape Setup Guide
 
 ## Required Software
-- [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases). Please use version 0.4.4 or later for integrated
+- [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases). Please use version 0.6.1 or later for integrated
 BizHawk support.
 - Ape Escape (USA) ISO or BIN/CUE.
-- [BizHawk](https://tasvideos.org/BizHawk/ReleaseHistory) 2.7 to 2.9.1. Other emulators are not supported.
+- [BizHawk](https://tasvideos.org/BizHawk/ReleaseHistory) 2.7 to 2.9.1. Bizhawk version 2.10 or other emulators are **not** supported.
 - The latest `apeescape.apworld` file. You can find this on the [Releases page](https://github.com/Thedragon005/Archipelago-Ape-Escape/releases/latest). Put this in your `Archipelago/custom_worlds` folder.
 
 ### Configuring BizHawk
