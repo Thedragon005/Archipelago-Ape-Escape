@@ -2485,7 +2485,7 @@ def set_locations(self):
                             lambda state: HasSling(state, self) and HasFlyer(state, self))
         elif self.options.logic == "hard":
             connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Coin84.value, 
-                            lambda state: (HasClub(state, self) or HasSling(state, self) or HasPunch(state, self) or HasFlyer(state, self)) and HasNet(state, self))
+                            lambda state: HasClub(state, self) or HasSling(state, self) or HasPunch(state, self) or HasFlyer(state, self))
         else:
             connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Coin84.value, 
                             lambda state: CanHitWheel(state, self) or HasFlyer(state, self))
