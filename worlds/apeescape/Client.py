@@ -1090,7 +1090,7 @@ class ApeEscapeClient(BizHawkClient):
             START_recv_index = recv_index
 
             # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
-            firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"]}
+            firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"],RAM.gameState["Memory"]}
             boolIsFirstBoot = gameState in firstBootStates
             #print(boolIsFirstBoot)
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
@@ -1352,7 +1352,7 @@ class ApeEscapeClient(BizHawkClient):
                     }])
 
             # Check for Mailboxes
-            if (localcondition) and (currentRoom in mailboxesRooms):
+            if (localcondition) and (currentRoom in mailboxesRooms) and (gameState == RAM.gameState["InLevel"] or gameState == RAM.gameState["TimeStation"]):
                 mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
 
 
