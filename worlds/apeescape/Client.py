@@ -52,9 +52,6 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
     if self.ctx.game != "Ape Escape":
         logger.warning("This command can only be used when playing Ape Escape.")
         return
-    # if not self.ctx.server or not self.ctx.slot:
-        # logger.warning("You must be connected to a server to use this command.")
-        # return
 
     logger.info(f"----------------------------------------------\n"
                 f"Commands for Ape Escape\n"
@@ -336,7 +333,7 @@ class ApeEscapeClient(BizHawkClient):
     async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
         ape_identifier_ram_address: int = 0xA37F0
         ape_identifier_ram_address_PAL: int = 0xA37F0
-        # BASCUS-94423SYS in ASCII = Ape Escape I think??
+        # BASCUS-94423SYS in ASCII = Ape Escape
         bytes_expected: bytes = bytes.fromhex("4241534355532D3934343233535953")
         bytes_expected_PAL:bytes = bytes.fromhex("4245534345532D3031353634535953")
         try:
@@ -475,7 +472,6 @@ class ApeEscapeClient(BizHawkClient):
     async def kickout_prevention_handling(self, ctx: BizHawkClientContext,context):
         if context == "init":
             if ctx.team is None:
-                # print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -485,14 +481,10 @@ class ApeEscapeClient(BizHawkClient):
             if self.KickoutPrevention == 2:
                 print("Still Waiting")
                 return
-            # print(self.KickoutPrevention)
-            # print(f"{ctx.team}_{ctx.slot}_{context}")
             if self.KickoutPrevention is None:
                 print("Used slotdata")
                 print(ctx.slot_data["kickoutprevention"])
                 self.preventKickOut = int(ctx.slot_data["kickoutprevention"])
-                # self.changeKickout = True
-                # self.KickoutPrevention = self.preventKickOut
             else:
                 # Got valid Datastorage, take this instead of slot_data
                 # print("Got valid datastorage")
@@ -535,7 +527,6 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.DeathLinkOption == 2:
-               # print("Still Waiting")
                 return
             if self.DeathLinkOption is None:
                 # print("Used slotdata")
@@ -584,7 +575,6 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.AutoEquipOption == 2:
-                # print("Still Waiting")
                 return
             # print(self.AutoEquipOption)
             if self.AutoEquipOption is None:
@@ -625,7 +615,6 @@ class ApeEscapeClient(BizHawkClient):
     async def bh_display_option_handling(self, ctx: BizHawkClientContext,context):
         if context == "init":
             if ctx.team is None:
-                # print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -633,7 +622,6 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.BHDisplayOption == 2:
-                # print("Still Waiting")
                 return
             if self.BHDisplayOption is None:
                 # print("Used slotdata")
@@ -673,17 +661,10 @@ class ApeEscapeClient(BizHawkClient):
 
 
     async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
-        # Set the default state of the command based on the YAML option if it hasn't been set yet.
-        # if self.bizhawk_display_set == False:
-        #     self.bizhawk_itemdisplay = (ctx.slot_data["itemdisplay"] == ItemDisplayOption.option_on)
-        #     self.bizhawk_display_set = True
-
         if self.bhdisplay == 1:
             if msgtype == "Item":
                 sender = ctx.player_names[data.player]
-                # print(sender)
-                # print(str( item - self.offset]))
-                itemname = data.item - self.offset
+                #itemname = data.item - self.offset
                 itemname = ctx.item_names.lookup_in_game(data.item)
 
                 # Same player as the seed, different message
@@ -748,9 +729,6 @@ class ApeEscapeClient(BizHawkClient):
             if self.changeBHDisplay == True:
                 self.changeBHDisplay = False
                 await self.bh_display_option_handling(ctx,"change")
-
-            # await self.change_kickout_prevention(ctx)
-
 
             # Game state, locations and items read
             readTuples = [
@@ -886,9 +864,9 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.startingCoinAddress, 100, "MainRAM"),
                 (RAM.temp_startingCoinAddress, 100, "MainRAM"),
                 (RAM.SA_CompletedAddress, 1, "MainRAM"),
-                (RAM.Temp_SA_CompletedAddress, 1, "MainRAM"),
+                (RAM.temp_SA_CompletedAddress, 1, "MainRAM"),
                 (RAM.GA_CompletedAddress, 1, "MainRAM"),
-                (RAM.Temp_GA_CompletedAddress, 1, "MainRAM"),
+                (RAM.temp_GA_CompletedAddress, 1, "MainRAM"),
                 (RAM.worldIsScrollingRight, 2, "MainRAM")
 
             ]
@@ -907,9 +885,9 @@ class ApeEscapeClient(BizHawkClient):
             CoinTable = int.from_bytes(menuReads[7], byteorder = "little")
             TempCoinTable = int.from_bytes(menuReads[8], byteorder = "little")
             SA_Completed = int.from_bytes(menuReads[9], byteorder = "little")
-            Temp_SA_Completed = int.from_bytes(menuReads[10], byteorder = "little")
+            temp_SA_Completed = int.from_bytes(menuReads[10], byteorder = "little")
             GA_Completed = int.from_bytes(menuReads[11], byteorder = "little")
-            Temp_GA_Completed = int.from_bytes(menuReads[12], byteorder = "little")
+            temp_GA_Completed = int.from_bytes(menuReads[12], byteorder = "little")
             worldIsScrollingRight = int.from_bytes(menuReads[13], byteorder = "little")
 
             # Water net shuffle Reads
@@ -1012,6 +990,7 @@ class ApeEscapeClient(BizHawkClient):
             MM_Painting_ButtonPressed = int.from_bytes(locksReads[21], byteorder = "little")
             MM_Painting_Visual = int.from_bytes(locksReads[22], byteorder = "little")
             DR_Block_Pushed = int.from_bytes(locksReads[23], byteorder="little")
+
             levelCountTuples = [
                 (RAM.levelMonkeyCount[11], 1, "MainRAM"),
                 (RAM.levelMonkeyCount[12], 1, "MainRAM"),
@@ -1054,8 +1033,8 @@ class ApeEscapeClient(BizHawkClient):
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
-                # Set gadgetStateFromServer to default if you connect in first level/first time hub
-                if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
+            # Set gadgetStateFromServer if it is default
+            if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
                     gadgetStateFromServer = 0
 
             if keyCountFromServer == 0xFF:
@@ -1215,19 +1194,35 @@ class ApeEscapeClient(BizHawkClient):
                 # Writes to memory if there is a new item, after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
+
                 itemsWrites += [(RAM.energyChipsAddress, energyChips.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.cookieAddress, cookies.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.livesAddress, totalLives.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.flashAddress, flashAmmo.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.rocketAddress, rocketAmmo.to_bytes(1, "little"), "MainRAM")]
+
                 itemsWrites += [(RAM.keyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempKeyCountFromServer, keyCountFromServer.to_bytes(1, "little"), "MainRAM")]
+
                 itemsWrites += [(RAM.tokenCountFromServer, tokenCountFromServer.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempTokenCountFromServer, tokenCountFromServer.to_bytes(1, "little"), "MainRAM")]
+
                 itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
+
+                itemsWrites += [(RAM.WaterNetAddress, waternetState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.WaterCatchAddress, watercatchState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterNetAddress, waternetState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempWaterCatchAddress, watercatchState.to_bytes(1, "little"), "MainRAM")]
+
+                itemsWrites += [(RAM.CB_LampAddress, CBLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.DI_LampAddress, DILampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.CrC_LampAddress, CrCLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.CP_LampAddress, CPLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.SF_LampAddress, SFLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.TVT_Lobby_LampAddress, TVTLobbyLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.TVT_Tank_LampAddress, TVTTankLampState.to_bytes(1, "little"), "MainRAM")]
+                itemsWrites += [(RAM.MM_LampAddress, MMLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempCB_LampAddress, CBLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempDI_LampAddress, DILampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempCrC_LampAddress, CrCLampState.to_bytes(1, "little"), "MainRAM")]
@@ -1236,6 +1231,7 @@ class ApeEscapeClient(BizHawkClient):
                 itemsWrites += [(RAM.tempTVT_Lobby_LampAddress, TVTLobbyLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempTVT_Tank_LampAddress, TVTTankLampState.to_bytes(1, "little"), "MainRAM")]
                 itemsWrites += [(RAM.tempMM_LampAddress, MMLampState.to_bytes(1, "little"), "MainRAM")]
+
                 itemsWrites += [(RAM.temp_MMLobbyDoorAddress, MM_Lobby_DoubleDoor.to_bytes(1, "little"), "MainRAM")]
 
             self.worldkeycount = keyCountFromServer
@@ -1525,12 +1521,12 @@ class ApeEscapeClient(BizHawkClient):
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
             Gadgets_Reads = [currentLevel, currentRoom, heldGadget, gadgetStateFromServer, crossGadget, squareGadget, circleGadget, triangleGadget, menuState, menuState2, punchVisualAddress, gameState, currentGadgets]
-            await self.gadgets_handler(ctx, Gadgets_Reads, Temp_SA_Completed, Temp_GA_Completed)
+            await self.gadgets_handler(ctx, Gadgets_Reads, temp_SA_Completed, temp_GA_Completed)
             # ================================
 
             # == Level Select Optimization ===
             # Execute the Level Select optimization code segment
-            LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, Temp_SA_Completed, GA_Completed, Temp_GA_Completed, LS_currentLevel, LS_currentWorld, worldIsScrollingRight]
+            LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, temp_SA_Completed, GA_Completed, temp_GA_Completed, LS_currentLevel, LS_currentWorld, worldIsScrollingRight]
             await self.level_select_optimization(ctx, LSO_Reads)
             # ================================
 
@@ -1560,7 +1556,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
-            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], Temp_SA_Completed, Temp_GA_Completed)
+            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], temp_SA_Completed, temp_GA_Completed)
 
             # ===== Text Replacements ======
             # Replace text Time Station mailbox here.
@@ -2566,8 +2562,8 @@ class ApeEscapeClient(BizHawkClient):
             if SA_Completed != 0x00 and Temp_SA_Completed == 0xFF:
                 LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 LS_Writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                LS_Writes += [(RAM.Temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
-                LS_Writes += [(RAM.Temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
+                LS_Writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                LS_Writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
 
         else:
             if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
@@ -2577,8 +2573,8 @@ class ApeEscapeClient(BizHawkClient):
             if SA_Completed == 0x00 and Temp_SA_Completed != 0xFF:
                 LS_Writes += [(RAM.SA_CompletedAddress, Temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
                 LS_Writes += [(RAM.GA_CompletedAddress, Temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
-                LS_Writes += [(RAM.Temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                LS_Writes += [(RAM.Temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                LS_Writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                LS_Writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # Prevent scrolling past the unlocked ERA/level
         if gameState == RAM.gameState["LevelSelect"]:

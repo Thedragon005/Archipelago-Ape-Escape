@@ -587,277 +587,147 @@ class RAM:
         }
 
     }
+
+    redMailboxes = {
+        1: {  # 1-1 : Entry
+            65: 65,
+            66: 66,
+            19: 19
+        },
+    }
+
+
     mailboxListLocal = {
-        1: {  # 1-1
+        1: {  # 1-1 : Entry
             401 : 65,
             402 : 66,
             403 : 19
         },
-        2: {  # 1-2
+        2: {  # 1-2 : Entry
             404 : 68,
             405 : 69,
             406 : 70,
             407 : 67
         },
-        3: {  # 1-3
+        3: {  # 1-3 : Entry
             408 : 103,
             409 : 21
         },
-        4: {  # volcano
+        4: {  # 1-3 : volcano
             410 : 100
         },
-        5: {  # triceratops
+        5: {  # 1-3 : triceratops
             411: {101, 116},
             412 : 41
         },
-        6: {  # 2-1
+        6: {  # 2-1 : Entry
             413 : 72,
             414 : 71
         },
-        7: {  # mushroom area
+        7: {  # 2-1 : mushroom area
             415 : {38,99},
             416 : 24
         },
-        8: {  # fish room
+        8: {  # 2-1 : fish room
             417 : 73,
             418 : 71,
             419 : 104
         },
-        9: {  # tent/vine room
+        9: {  # 2-1 : tent/vine room
             420 : 48
         },
-        10: {  # boulder room
+        10: {  # 2-1 : boulder room
             421 : 23
         },
-        11: {  # 2-2
+        11: {  # 2-2 : Entry
             422 : 105,
             423 : {49,103},
             424 : 22,
             425 : 81,
         },
-        12: {  # fan basement
+        12: {  # 2-2 : fan basement
             426 : 80,
             427 : {70,97}
         },
-        13: {  # obelisk inside
+        13: {  # 2-2 : obelisk inside
             428 : {52,97}
         },
-        #14: {  # water basement
-
-        #},
-        15: {  # 2-3
+        15: {  # 2-3 : Entry
             429 : 50,
             430 : 112
         },
-        #16: {  # side room
-
-        #},
-        17: {  # main ruins
+        17: {  # 2-3 : main ruins
             431 : 33,
             432 : 37
         },
-        18: {  # pillar room
+        18: {  # 2-3 : pillar room
             433 : 67
         },
-        #19: {  # 3-1
-
-        #},
-        20: {  # 4-1
+        20: {  # 4-1 : Entry
             434 : 25,
             435 : {22,82}
         },
-        21: {  # second room
+        21: {  # 4-1 : second room
             436 : 72
         },
-        #22: {  # 4-2
-
-        #},
-        23: {  # second room
+        23: {  # 4-2 : second room
             437 : 53,
             438 : 54
         },
-        24: {  # 4-3
+        24: {  # 4-3 : Entry
             439 : 39,
             440 : 55
         },
-        #25: {  # stomach
-
-        #},
-        26: {  # gallery/boulder
+        26: {  # 4-3 : gallery/boulder
             442 : {32,72}
         },
-        #27: {  # tentacle room
-
-        #},
-        28: {  # slide room
+        28: {  # 4-3 : slide room
             441 : 40
         },
-        29: {  # 5-1
+        29: {  # 5-1 : Entry
             443 : 86,
             444 : 18,
             445 : 87
         },
-        #30: {  # 5-2
-
-        #},
-        #31: {  # water room
-
-        #},
-        32: {  # caverns
+        32: {  # 5-2 : caverns
             446 : 35
         },
-        33: {  # 5-3
+        33: {  # 5-3 : Entry
             447 : 20
         },
-        34: {  # hot spring
+        34: {  # 5-3 : hot spring
             448 : 51
         },
-        35: {  # polar bear cave
+        35: {  # 5-3 : polar bear cave
             449 : 85
         },
-        #36: {  # 6-1
-
-        #},
-        #37: {  # 7-1
-
-        #},
-        38: {  # temple
+        38: {  # 7-1 : temple
             450 : 57,
             451 : 65
         },
-        39: {  # well
+        39: {  # 7-1 : well
             452 : 68
         },
-        #40: {  # 7-2
-
-        #},
-        41: {  # gong room
+        41: {  # 7-2 : gong room
             453 : {25,56}
         },
-        42: {  # middle room
+        42: {  # 7-2 : middle room
             454 : 34,
             455 : 36
         },
-        43: {  # obstacle course
+        43: {  # 7-2 : obstacle course
             456 : 64
         },
-        #44: {  # barrel room
 
-        #},
-        45: {  # 7-3
+        45: {  # 7-3 : Entry
             457 : 69
         },
-        #46: {  # castle main
-
-        #},
-        #47: {  # flooded basement
-
-        #},
-        #49: {  # button room
-
-        #},
-        #50: {  # elevator room
-
-        #},
-        #51: {  # bell tower
-
-        #},
-        #52: {
-
-        #},
-        #53: {  # 8-1
-
-        #},
-        #54: {  # sewers front
-
-        #},
-        #55: {  # barrel room
-
-        #},
-        56: {  # 8-2
+        56: {  # 8-2 : Entry
             458 : 83
         },
-        #57: {  # main factory
-
-        #},
-        #58: {  # rc car room
-
-        #},
-        #59: {  # lava room
-
-        #},
-        #60: {
-
-        #},
-        #61: {  # conveyor room
-
-        #},
-        #62: {  # mech room
-
-        #},
-        #63: {  # 8-3
-
-        #},
-        #64: {  # water basement
-
-        #},
-        #65: {  # lobby
-
-        #},
-        #66: {  # tank room
-
-        #},
-        #67: {  # fan room
-
-        #},
-        #68: {
-
-        #},
-        #69: {  # MM Lobby
-
-        #},
-        #71: {
-
-        #},
-        72: {  # coaster entry
+        72: {  # MM - coaster entry
             459 : 84
         },
-        #73: {  # coaster 1
-
-        #},
-        #74: {  # coaster 2
-
-        #},
-        #75: {  # haunted house
-
-        #},
-        #76: {  # coffin room
-
-        #},
-        #77: {  # western land
-
-        #},
-        #78: {  # crater
-
-        #},
-        #79: {  # outside castle
-
-        #},
-        #80: {  # castle main
-
-        #},
-        #81: {  # inside climb
-
-        #},
-        #82: {  # outside climb
-
-        #},
-        #84: {  # Monkey head
-
-        #},
-        #85: {  # side entry
-
-        #},
         88: {  # Time station - Hub
             460 : 113,
             461 : 114
@@ -868,8 +738,6 @@ class RAM:
         90: {  # Time station - Training Space
             463 : 115
         }
-
-
 
     }
     bossListLocal = {
@@ -1165,12 +1033,6 @@ class RAM:
     hoopFixAddress = 0x0F5124 # 2 bytes
 
 
-    tempWaterNetAddress = 0x0DFBE2
-    tempWaterCatchAddress = 0x0DFBE3
-
-    temp_MMLobbyDoorAddress = 0x0DFC58
-
-
     isUnderwater = 0x0F4DCA
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
@@ -1188,11 +1050,6 @@ class RAM:
     MM_Natalie_CutsceneState = 0x0DFDDE # play cutscene = 0x00, cutscene played = 0x0D
     MM_Natalie_Rescued_Local = 0x16F34E # When in Room 76: Natalie rescued = 0x01
     MM_Jake_DefeatedAddress = 0x0DFDE0 # Not defeated = 0, Defeated = 5
-
-
-    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
-    temp_MM_Professor_RescuedAddress = 0x0DFC5C
-    temp_MM_Natalie_RescuedAddress = 0x0DFC5E
 
     MM_Lobby_DoubleDoor_OpenAddress = 0x174F5E # Set to 3 for electric fence. If JakeDefeated = 5 it will open the door
     MM_Lobby_JakeDoor_HitboxAddress = 0x1711DD # Set to 128 to remove the hitbox
@@ -1222,33 +1079,71 @@ class RAM:
     localApeStartAddress = 0x0DFE00
     startingCoinAddress = 0x0DFB70
     endingCoinAddress = 0x0DFBD2 # Not used,could be used for a loop if current coin system is buggy
-    temp_startingCoinAddress = 0x0DFBF0 # Copy all 64 bytes of coin here while entering Level Select
-    blank_coinTable = 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
-    blank_coinTable2 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
     totalCoinsAddress = 0x0F44BA
 
-
     SA_CompletedAddress = 0x0DFDD0 # Completed = 0x19, not completed = 00
-    Temp_SA_CompletedAddress = 0x0DFC56
     GA_CompletedAddress = 0x0DFDD1 # Completed = 0x19, not completed = 00
-    Temp_GA_CompletedAddress = 0x0DFC57
-
 
     levelselectFonts = 0x139CF6 # 0x36 = Classic One  0x26 = Current One
     time_attack_Times = 0x0DFD44
 
     # Custom write/read addresses
-    tempLastReceivedArchipelagoID = 0x0DFBD8
-    lastReceivedArchipelagoID = 0x0E00E8
 
-    tempKeyCountFromServer = 0x0DFBDE
-    keyCountFromServer = 0x0E00EE
+    # Current game values: 0DFBEC - On load, gets replaced by SAVED address
+
+    tempLastReceivedArchipelagoID = 0x0DFBD8 # 4 bytes
+    tempKeyCountFromServer = 0x0DFBDC
+    # Unused 0DFBDD to 0DFBDF
+    tempGadgetStateFromServer = 0x0DFBE0 # 2 bytes - 0DFBE1
+
+    tempWaterNetAddress = 0x0DFBE2
+    tempWaterCatchAddress = 0x0DFBE3
+
+    tempCB_LampAddress = 0x0DFBE4
+    tempDI_LampAddress = 0x0DFBE5
+    tempCrC_LampAddress = 0x0DFBE6
+    tempCP_LampAddress = 0x0DFBE7
+    tempSF_LampAddress = 0x0DFBE8
+    tempTVT_Lobby_LampAddress = 0x0DFBE9
+    tempTVT_Tank_LampAddress = 0x0DFBEA
+    tempMM_LampAddress = 0x0DFBEB
 
     tempTokenCountFromServer = 0x0DFBEC
+
+    temp_startingCoinAddress = 0x0DFBF0  # Copy all 64 bytes of coin here while entering Level Select
+    blank_coinTable = 0x00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF
+    blank_coinTable2 = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+    temp_SA_CompletedAddress = 0x0DFC56
+    temp_GA_CompletedAddress = 0x0DFC57
+    temp_MMLobbyDoorAddress = 0x0DFC58
+
+    temp_MM_Jake_DefeatedAddress = 0x0DFC5A
+    temp_MM_Professor_RescuedAddress = 0x0DFC5C
+    temp_MM_Natalie_RescuedAddress = 0x0DFC5E
+
+    # hex 510 <-> dec 1296 difference
+    # SAVED values: 0E00FC - Data that gets included when saving
+
+    lastReceivedArchipelagoID = 0x0E00E8 # 4 bytes - to 0E00EB
+    keyCountFromServer = 0x0E00EC
+    # Unused 0E00ED to 0E00EF
+    gadgetStateFromServer = 0x0E00F0 # 2 bytes - 0E00F1
+
+    WaterNetAddress = 0x0E00F2
+    WaterCatchAddress = 0x0E00F3
+    CB_LampAddress = 0x0E00F4
+    DI_LampAddress = 0x0E00F5
+    CrC_LampAddress = 0x0E00F6
+    CP_LampAddress = 0x0E00F7
+    SF_LampAddress = 0x0E00F8
+    TVT_Lobby_LampAddress = 0x0E00F9
+    TVT_Tank_LampAddress = 0x0E00FA
+    MM_LampAddress = 0x0E00FB
+
     tokenCountFromServer = 0x0E00FC
 
-    tempGadgetStateFromServer = 0x0DFBE0
-    gadgetStateFromServer = 0x0E00F0
 
     DR_Block_Pushed = 0x18459A # Address is more of "Entry is open", but same result at the end
 
@@ -1318,16 +1213,6 @@ class RAM:
     TVT_Lobby_WaterVisual2 = 0x0C07EF # Active Value = 0
     TVT_Lobby_WaterVisual3 = 0x0C080A # Active Value = F70C
     TVT_Lobby_WaterVisual4 = 0x0C080F # Active Value = 0
-
-
-    tempCB_LampAddress = 0x0DFBE4
-    tempDI_LampAddress = 0x0DFBE5
-    tempCrC_LampAddress = 0x0DFBE6
-    tempCP_LampAddress = 0x0DFBE7
-    tempSF_LampAddress = 0x0DFBE8
-    tempTVT_Lobby_LampAddress = 0x0DFBE9
-    tempTVT_Tank_LampAddress = 0x0DFBEA
-    tempMM_LampAddress = 0x0DFBEB
 
     currentLoadedSave = 0x0E0034 # Not used for now, but could be used somehow
     menuStateAddress = 0x0A9A1B
