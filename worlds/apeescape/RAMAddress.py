@@ -588,12 +588,71 @@ class RAM:
 
     }
 
+    # To check if red mailboxes are already checked in the current room
     redMailboxes = {
         1: {  # 1-1 : Entry
-            65: 65,
-            66: 66,
-            19: 19
+            401: 0x16076E,
+            402: 0x160786,
         },
+        2: {  # 1-2 : Entry
+            404 : 0x175BD6,
+            405 : 0x175BA6,
+            406 : 0x175BBE,
+            407 : 0x175B8E
+        },
+        3: {  # 1-3 : Entry
+            408 : 0x181592
+        },
+        4: {  # 1-3 : volcano
+            410 : 0x167D3A
+        },
+        5: {  # 1-3 : triceratops
+            411 : 0x165C5A
+        },
+        6: {  # 2-1 : Entry
+            413 : 0x17A65A,
+            414: 0x17A672
+        },
+        8: {  # 2-1 : fish room
+            417 : 0x18031E,
+            419: 0x180336
+        },
+        11: {  # 2-2 : Entry
+            422 : 0x184612,
+            425 : 0x1845FA
+        },
+        12: {  # 2-2 : fan basement
+            426 : 0x16A386,
+        },
+        15: {  # 2-3 : Entry
+            430 : 0x176092
+        },
+        20: {  # 4-1 : Entry
+            435: 0x1798EA
+        },
+        29: {  # 5-1 : Entry
+            443 : 0x17566A,
+            445 : 0x175682
+        },
+        35: {  # 5-3 : polar bear cave
+            449 : 0x176E22
+        },
+        56: {  # 8-2 : Entry
+            458 : 0x178E02
+        },
+        72: {  # MM - coaster entry
+            459 : 0x17389A
+        },
+        88: {  # Time station - Hub
+            460 : 0x1608BE,
+            461 : 0x1608A6
+        },
+        91: {  # Time station - Mini-game Corner
+            462 : 0x15FE3A
+        },
+        90: {  # Time station - Training Space
+            463 : 0x16721A
+        }
     }
 
 

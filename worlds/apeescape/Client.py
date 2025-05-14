@@ -1247,7 +1247,7 @@ class ApeEscapeClient(BizHawkClient):
             # Stock BossRooms in a variable (For excluding these rooms in local monkeys sending)
             bossRooms = RAM.bossListLocal.keys()
             mailboxesRooms = RAM.mailboxListLocal.keys()
-
+            redmailboxesRooms = RAM.redMailboxes.keys()
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
                 keyList = list(RAM.monkeyListGlobal.keys())
@@ -1354,9 +1354,12 @@ class ApeEscapeClient(BizHawkClient):
             # Check for Mailboxes
             if (localcondition) and (currentRoom in mailboxesRooms):
                 mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
+
+
                 boolGotMail = (gotMail == 0x02)
                 key_list = list(mailboxesaddrs.keys())
                 val_list = list(mailboxesaddrs.values())
+
 
                 mail_to_send = set()
                 # Rearange the array if there is 2 indexes for the same mailbox
@@ -1374,6 +1377,25 @@ class ApeEscapeClient(BizHawkClient):
                 for i in range(len(val_list)):
                     if val_list[i] == mailboxID and boolGotMail:
                         mail_to_send.add(key_list[i] + self.offset)
+
+                # Only triggers if there is a red mailbox in the room and you are NOT viewing mail
+                if (currentRoom in redmailboxesRooms) and (gotMail == 0x00):
+                    redMailboxaddrs = RAM.redMailboxes[currentRoom]
+
+                    redkey_list = list(redMailboxaddrs.keys())
+                    redval_list = list(redMailboxaddrs.values())
+
+                    addresses = []
+
+                    for val in redval_list:
+                        tuple1 = (val, 1, "MainRAM")
+                        addresses.append(tuple1)
+
+                    redMailboxesList = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+                    for i in range(len(redkey_list)):
+                        if int.from_bytes(redMailboxesList[i], byteorder='little') == 0x01:
+                            mail_to_send.add(redkey_list[i] + self.offset)
+
 
                 if mail_to_send is not None and mail_to_send != set():
                     await ctx.send_msgs([{
