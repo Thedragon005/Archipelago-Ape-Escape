@@ -5,8 +5,6 @@ from .Items import ApeEscapeItem
 from .Locations import ApeEscapeLocation
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AEDoor, AELocation
-from ..kdl3.names.location_name import level_names
-from ..oot.JSONDump import dump_list
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld

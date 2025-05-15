@@ -3,8 +3,6 @@ import os
 import json
 from typing import ClassVar, Dict, List, Tuple, Optional, TextIO, Any
 
-from numpy.distutils.mingw32ccompiler import dump_table
-
 from BaseClasses import ItemClassification, MultiWorld, Tutorial, CollectionState
 from logging import warning
 from Options import OptionError
@@ -18,7 +16,6 @@ from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
 from .Options import ApeEscapeOptions
-from ..oot.JSONDump import dump_dict
 
 
 class ApeEscapeWeb(WebWorld):
