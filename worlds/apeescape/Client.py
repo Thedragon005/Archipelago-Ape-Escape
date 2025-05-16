@@ -259,6 +259,8 @@ class ApeEscapeClient(BizHawkClient):
     boss2flag = 0
     boss3flag = 0
     boss4flag = 0
+    lastenteredLevel = 0
+    countMonkeys = False
     changeKickout = False
     changeDeathlink = False
     changeAutoEquip = False
@@ -291,6 +293,8 @@ class ApeEscapeClient(BizHawkClient):
 
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
+        self.countMonkeys = False
+        self.lastenteredLevel = 0
         self.changeKickout = False
         self.changeDeathlink = False
         self.changeAutoEquip = False
@@ -1539,6 +1543,13 @@ class ApeEscapeClient(BizHawkClient):
             await self.water_net_handling(ctx, WN_Reads)
             # ================================
 
+            # ====== Monkey count sync ========
+            # ** There is a vanilla bug that Monkey count RAM addresses can be wrong sometimes. **
+            # For checking if the Monkey count is correct. (Mainly for PPM unlock)
+            MonkeyCount_Reads = [currentLevel,gameState,monkeylevelcounts]
+            await self.syncMonkeycount(ctx,MonkeyCount_Reads)
+            # ================================
+
             # ====== Gadgets handling ========
             # For checking which gadgets should be equipped
             # Also apply Magic Punch visual correction
@@ -1865,6 +1876,55 @@ class ApeEscapeClient(BizHawkClient):
         except bizhawk.RequestFailedError:
             # Exit handler and return to main loop to reconnect
             pass
+
+    async def syncMonkeycount(self, ctx: "BizHawkClientContext", MonkeyCount_Reads) -> None:
+        # Recalculate Monkey count on level exit by validating catch status of each monkey within the level
+        # After recalculating, compare it to existing value and replace if needed
+
+        currentLevel = MonkeyCount_Reads[0]
+        gameState = MonkeyCount_Reads[1]
+        monkeylevelCounts = MonkeyCount_Reads[2]
+
+        MonkeyCountWrites = []
+
+        # If in level, store the current level
+        # Also triggers a boolean to check the count of monkeys on exit
+        if gameState == RAM.gameState['InLevel'] and self.countMonkeys == False:
+            self.countMonkeys = True
+            self.lastenteredLevel = currentLevel
+
+        # When exiting a level,it will recount monkeys and update the counter if needed
+        if (gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["TimeStation"]) and self.countMonkeys == True:
+            self.countMonkeys = False
+            # Get a list of all monkeys present in the lastenteredlevel :
+            levelmonkeys = RAM.monkeysperlevel[self.lastenteredLevel]
+
+            addresses = []
+
+            for val in levelmonkeys:
+                tuple1 = (RAM.monkeyListGlobal[val], 1, "MainRAM")
+                addresses.append(tuple1)
+            # Get global caught status of the monkeys
+            level_MonkeyStates = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+
+            levelindex  = list(RAM.levels.values())
+            monkeycountsAddresses = list(RAM.levelMonkeyCount.values())
+            localcount = 0
+            RAMMonkeycount = int.from_bytes(monkeylevelCounts[levelindex.index(self.lastenteredLevel)],"little")
+
+            #Check each values if monkeys are caught and increment a local counter
+            for x in range(len(level_MonkeyStates)):
+                MonkeyState = int.from_bytes(level_MonkeyStates[x],"little")
+                if MonkeyState == 0x02:
+                    localcount += 1
+
+            # If there is a missmatch, correct the value in the RAM for the level
+            if localcount != RAMMonkeycount:
+                MonkeyCountWrites += [(monkeycountsAddresses[levelindex.index(self.lastenteredLevel)], localcount.to_bytes(1, "little"), "MainRAM")]
+                #print(f"Count is off, corrected from {RAMMonkeycount} to {localcount}")
+            #else:
+                #print ("Count is OK")
+        await bizhawk.write(ctx.bizhawk_ctx, MonkeyCountWrites)
 
 
     async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads, SAcomplete, GAcomplete):
