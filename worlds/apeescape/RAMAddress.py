@@ -589,7 +589,7 @@ class RAM:
     }
 
     #Indexes all monkeys per levelID
-    monkeyperlevel = {
+    monkeysperlevel = {
         1: {
             1, 3, 2, 4
         },
