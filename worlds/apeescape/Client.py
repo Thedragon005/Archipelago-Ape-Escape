@@ -70,7 +70,10 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /auto_equip [On/Off]\n"
                 f"      Description : When on, will equip gadgets if there is a free face button\n"
-                f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n")
+                f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
+                f"  /syncprogress \n"
+                f"      Description : Fetch the server's state of Monkeys and sync it into the game\n"
+                f"      [Optional] \"cancel\" : If prompted, cancel the currently pending sync\n")
 
 
 def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> None:
@@ -237,13 +240,49 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
     client.AutoEquipOption = client.autoequip
     logger.info(f"Auto Equip is now {msg}\n")
 
+def cmd_syncprogress(self: "BizHawkClientCommandProcessor",status = "") -> None:
+    """Sync the game progress with the server (Monkeys ONLY)"""
+    from worlds._bizhawk.context import BizHawkClientContext
+    if self.ctx.game != "Ape Escape":
+        logger.warning("This command can only be used when playing Ape Escape.")
+        return
+    if not self.ctx.server or not self.ctx.slot:
+        logger.warning("You must be connected to a server to use this command.")
+        return
+    ctx = self.ctx
+    assert isinstance(ctx, BizHawkClientContext)
+    client = ctx.client_handler
+    assert isinstance(client, ApeEscapeClient)
+    if status.lower() == "cancel":
+        if client.syncWaitConfirm == True:
+            logger.info(f"[---] Progress Sync canceled [---] ")
+            client.syncWaitConfirm = False
+        else:
+            logger.info(f"[---] Use the command \"/syncprogress\" without an argument to start the sync [---] ")
+        return
+    elif status.lower() != "":
+        logger.info(f"Wrong argument provided for command ""syncprogress""")
+        return
+
+    if client.syncWaitConfirm == False:
+        logger.warning(f"\n[!!!] WARNING [!!!]\n"
+                       f"This command will set the game state to the server state for catched monkeys\n"
+                       f"It will go through the server's locations and set already checked monkeys status to \"Catched\"\n"
+                       "***Use \"/syncprogress\" again to confirm, or \"/syncprogress cancel\" to cancel***\n")
+        client.syncWaitConfirm = True
+    else:
+        client.syncWaitConfirm = False
+        # Turn on the flag, the client will do the work
+        client.boolsyncprogress = True
+
+
 
 class ApeEscapeClient(BizHawkClient):
     game = "Ape Escape"
     system = "PSX"
 
     # TODO Remove when doing official PR
-    client_version = "0.8.4"
+    client_version = "0.8.5"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -260,6 +299,8 @@ class ApeEscapeClient(BizHawkClient):
     boss3flag = 0
     boss4flag = 0
     lastenteredLevel = 0
+    boolsyncprogress = False
+    syncWaitConfirm = False
     countMonkeys = False
     changeKickout = False
     changeDeathlink = False
@@ -295,6 +336,8 @@ class ApeEscapeClient(BizHawkClient):
         self.currentCoinAddress = RAM.startingCoinAddress
         self.countMonkeys = False
         self.lastenteredLevel = 0
+        self.boolsyncprogress = False
+        self.syncWaitConfirm = False
         self.changeKickout = False
         self.changeDeathlink = False
         self.changeAutoEquip = False
@@ -355,6 +398,8 @@ class ApeEscapeClient(BizHawkClient):
                     ctx.command_processor.commands.pop("deathlink")
                 if "auto_equip" in ctx.command_processor.commands:
                     ctx.command_processor.commands.pop("auto_equip")
+                if "syncprogress" in ctx.command_processor.commands:
+                    ctx.command_processor.commands.pop("syncprogress")
                 return False
         except Exception:
             if "ae_commands" in ctx.command_processor.commands:
@@ -367,6 +412,8 @@ class ApeEscapeClient(BizHawkClient):
                 ctx.command_processor.commands.pop("deathlink")
             if "auto_equip" in ctx.command_processor.commands:
                 ctx.command_processor.commands.pop("auto_equip")
+            if "syncprogress" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("syncprogress")
             return False
 
         if not self.game == "Ape Escape":
@@ -380,6 +427,8 @@ class ApeEscapeClient(BizHawkClient):
                 ctx.command_processor.commands.pop("deathlink")
             if "auto_equip" in ctx.command_processor.commands:
                 ctx.command_processor.commands.pop("auto_equip")
+            if "syncprogress" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("syncprogress")
             return False
         # TODO Remove when doing official PR
         logger.info("================================================")
@@ -402,6 +451,8 @@ class ApeEscapeClient(BizHawkClient):
             ctx.command_processor.commands["deathlink"] = cmd_deathlink
         if "auto_equip" not in ctx.command_processor.commands:
             ctx.command_processor.commands["auto_equip"] = cmd_auto_equip
+        if "syncprogress" not in ctx.command_processor.commands:
+            ctx.command_processor.commands["syncprogress"] = cmd_syncprogress
         self.initialize_client()
 
         return True
@@ -663,6 +714,51 @@ class ApeEscapeClient(BizHawkClient):
             # self.bhdisplay = self.BHDisplayOption
             print(f"set AE_bhdisplay_{ctx.team}_{ctx.slot} to {self.bhdisplay}")
 
+    async def syncprogress(self, ctx: BizHawkClientContext) -> None:
+        Sync_Writes = []
+        logger.info(f"Getting Monkeys state from server...")
+        locations_list = ctx.checked_locations
+        GlobalMonkeys = RAM.monkeyListGlobal
+        keys_globalMonkeys = list(GlobalMonkeys.keys())
+        values_globalMonkeys = list(GlobalMonkeys.values())
+        Monkey_Reads = []
+        Monkey_IDs = []
+        Monkey_Addresses = []
+        for x in range(len(keys_globalMonkeys)):
+            monkeyID = self.offset + keys_globalMonkeys[x]
+            monkeyAddress = values_globalMonkeys[x]
+
+            Monkey_Reads += [(monkeyAddress, 1, "MainRAM")]
+            Monkey_IDs += [self.offset + keys_globalMonkeys[x]]
+            Monkey_Addresses += [monkeyAddress]
+
+        Monkey_Values = await bizhawk.read(ctx.bizhawk_ctx, Monkey_Reads)
+
+        for x in range(len(Monkey_Values)):
+            monkeyID = Monkey_IDs[x]
+            monkeyValue = int.from_bytes(Monkey_Values[x],"little")
+            monkeyAddress = Monkey_Addresses[x]
+            if (monkeyID) in locations_list and monkeyValue != 0x02:
+                Sync_Writes += [(monkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+
+
+        # Write to memory
+        if Sync_Writes:
+            await bizhawk.write(ctx.bizhawk_ctx, Sync_Writes)
+            # await syncprogress(ctx,Sync_Writes)
+        levelsIndexes = list(RAM.monkeysperlevel.keys())
+        print(levelsIndexes)
+        await self.syncAllMonkeycount(ctx,levelsIndexes)
+        UpdateCount = len(Sync_Writes)
+        if UpdateCount == 0:
+            msg = "No monkeys"
+        elif UpdateCount == 1:
+            msg = f"{len(Sync_Writes)} monkey"
+        else:
+            msg = f"{len(Sync_Writes)} monkeys"
+
+        logger.info(f"Synced server progress into the game!\n"
+                    f"({len(Sync_Writes)} {msg} updated)")
 
     async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
         if self.bhdisplay == 1:
@@ -707,9 +803,12 @@ class ApeEscapeClient(BizHawkClient):
             # await self.bh_display_option_handling(ctx, "init")
 
             strMessage = "Connected to Bizhawk Client - Ape Escape Archipelago v " + str(self.client_version)
+            logger.info(f"[INFO]{strMessage}")
             await self.send_bizhawk_message(ctx, strMessage, "Passthrough", "")
         try:
-
+            if self.boolsyncprogress:
+                self.boolsyncprogress = False
+                await self.syncprogress(ctx)
             if self.KickoutPrevention == 2 or self.preventKickOut == 2:
                 await self.kickout_prevention_handling(ctx, "init")
             if self.changeKickout == True:
@@ -1894,8 +1993,9 @@ class ApeEscapeClient(BizHawkClient):
             self.lastenteredLevel = currentLevel
 
         # When exiting a level,it will recount monkeys and update the counter if needed
-        if (gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["TimeStation"]) and self.countMonkeys == True:
+        if ((gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["TimeStation"]) and self.countMonkeys == True):
             self.countMonkeys = False
+
             # Get a list of all monkeys present in the lastenteredlevel :
             levelmonkeys = RAM.monkeysperlevel[self.lastenteredLevel]
 
@@ -1926,6 +2026,50 @@ class ApeEscapeClient(BizHawkClient):
                 #print ("Count is OK")
         await bizhawk.write(ctx.bizhawk_ctx, MonkeyCountWrites)
 
+    async def syncAllMonkeycount(self, ctx: "BizHawkClientContext",levelindexes) -> None:
+        # Recalculate Monkey count on level exit by validating catch status of each monkey within the level
+        # After recalculating, compare it to existing value and replace if needed
+
+        MonkeyCountWrites = []
+
+        # If in level, store the current level
+        # Also triggers a boolean to check the count of monkeys on exit
+
+        # When exiting a level,it will recount monkeys and update the counter if needed
+        # Get a list of all monkeys present in the lastenteredlevel :
+
+        for x in range(len(levelindexes)):
+            levelID = levelindexes[x]
+            levelmonkeys = RAM.monkeysperlevel[levelID]
+            #print(levelmonkeys)
+            addresses = []
+
+            for val in levelmonkeys:
+                tuple1 = (RAM.monkeyListGlobal[val], 1, "MainRAM")
+                addresses.append(tuple1)
+            # Get global caught status of the monkeys
+            level_MonkeyStates = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+
+            levelindex = list(RAM.levels.values())
+            monkeycountsAddresses = list(RAM.levelMonkeyCount.values())
+            localcount = 0
+
+            # Check each values if monkeys are caught and increment a local counter
+            for y in range(len(level_MonkeyStates)):
+                MonkeyState = int.from_bytes(level_MonkeyStates[y], "little")
+                print(MonkeyState)
+                if MonkeyState == 0x02:
+                    localcount += 1
+
+            # Correct the value in the RAM for the level
+            print("______________________")
+            print(hex(monkeycountsAddresses[x]))
+            print(localcount)
+            MonkeyCountWrites += [(monkeycountsAddresses[x],localcount.to_bytes(1, "little"), "MainRAM")]
+                # print(f"Count is off, corrected from {RAMMonkeycount} to {localcount}")
+            # else:
+            # print ("Count is OK")
+        await bizhawk.write(ctx.bizhawk_ctx, MonkeyCountWrites)
 
     async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads, SAcomplete, GAcomplete):
         currentLevel = Gadgets_Reads[0]
