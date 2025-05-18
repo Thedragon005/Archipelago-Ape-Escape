@@ -758,7 +758,7 @@ class ApeEscapeClient(BizHawkClient):
             msg = f"{len(Sync_Writes)} monkeys"
 
         logger.info(f"Synced server progress into the game!\n"
-                    f"({len(Sync_Writes)} {msg} updated)")
+                    f"({msg} updated)")
 
     async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
         if self.bhdisplay == 1:
@@ -803,7 +803,7 @@ class ApeEscapeClient(BizHawkClient):
             # await self.bh_display_option_handling(ctx, "init")
 
             strMessage = "Connected to Bizhawk Client - Ape Escape Archipelago v " + str(self.client_version)
-            logger.info(f"[INFO]{strMessage}")
+            #logger.info(f"[INFO]{strMessage}")
             await self.send_bizhawk_message(ctx, strMessage, "Passthrough", "")
         try:
             if self.boolsyncprogress:
