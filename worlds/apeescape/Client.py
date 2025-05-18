@@ -72,7 +72,7 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
                 f"      Description : When on, will equip gadgets if there is a free face button\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /syncprogress \n"
-                f"      Description : Fetch the server's state of Monkeys and sync it into the game\n"
+                f"      Description : Fetch the server's state of monkeys and sync it into the game\n"
                 f"      [Optional] \"cancel\" : If prompted, cancel the currently pending sync\n")
 
 
@@ -105,10 +105,10 @@ def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> No
     client.changeBHDisplay = True
     if client.bhdisplay == 1:
         item_display = "ON"
-        #client.send_bizhawk_message(ctx, "Bizhawk Item Display Enabled", "Passthrough", "")
+        # client.send_bizhawk_message(ctx, "Bizhawk Item Display Enabled", "Passthrough", "")
     else:
         item_display = "OFF"
-        #client.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Passthrough", "")
+        # client.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Passthrough", "")
     client.BHDisplayOption = client.bhdisplay
     logger.info(f"Bizhawk Item Display is now {item_display}\n")
 
@@ -143,14 +143,14 @@ def cmd_prevent_kickout(self: "BizHawkClientCommandProcessor", status = "") -> N
         logger.info(f"Invalid argument for function ""prevent_kickout""\n")
         return
     # Replace slot_data
-    #client.change_kickout_prevention(ctx)
+    # client.change_kickout_prevention(ctx)
     client.changeKickout = True
     if client.preventKickOut == 1:
         kickout = "ON"
-        #client.send_bizhawk_message(ctx, "Kickout Prevention Enabled", "Custom", "")
+        # client.send_bizhawk_message(ctx, "Kickout Prevention Enabled", "Custom", "")
     else:
         kickout = "OFF"
-        #client.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
+        # client.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
     client.KickoutPrevention = client.preventKickOut
     logger.info(f"Kickout Prevention is now {kickout}\n")
 
@@ -240,7 +240,8 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
     client.AutoEquipOption = client.autoequip
     logger.info(f"Auto Equip is now {msg}\n")
 
-def cmd_syncprogress(self: "BizHawkClientCommandProcessor",status = "") -> None:
+
+def cmd_syncprogress(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Sync the game progress with the server (Monkeys ONLY)"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
@@ -266,15 +267,14 @@ def cmd_syncprogress(self: "BizHawkClientCommandProcessor",status = "") -> None:
 
     if client.syncWaitConfirm == False:
         logger.warning(f"\n[!!!] WARNING [!!!]\n"
-                       f"This command will set the game state to the server state for catched monkeys\n"
-                       f"It will go through the server's locations and set already checked monkeys status to \"Catched\"\n"
+                       f"This command will set the game state to the server state for caught monkeys\n"
+                       f"It will go through the server's locations and set already checked monkeys status to \"Caught\"\n"
                        "***Use \"/syncprogress\" again to confirm, or \"/syncprogress cancel\" to cancel***\n")
         client.syncWaitConfirm = True
     else:
         client.syncWaitConfirm = False
         # Turn on the flag, the client will do the work
         client.boolsyncprogress = True
-
 
 
 class ApeEscapeClient(BizHawkClient):
@@ -1125,8 +1125,8 @@ class ApeEscapeClient(BizHawkClient):
             Menuwrites = []
 
             # Handle death link
-            DL_Reads = [cookies,gameRunning,gameState,menuState2,spikeState2]
-            await self.handle_death_link(ctx,DL_Reads)
+            DL_Reads = [cookies, gameRunning, gameState, menuState2, spikeState2]
+            await self.handle_death_link(ctx, DL_Reads)
 
             # When in Menu, change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
@@ -1193,9 +1193,9 @@ class ApeEscapeClient(BizHawkClient):
             START_recv_index = recv_index
 
             # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
-            firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"],RAM.gameState["Memory"]}
+            firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"], RAM.gameState["Memory"]}
             boolIsFirstBoot = gameState in firstBootStates
-            #print(boolIsFirstBoot)
+            # print(boolIsFirstBoot)
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
                 increment = 0
                 for item in ctx.items_received:
@@ -1645,8 +1645,8 @@ class ApeEscapeClient(BizHawkClient):
             # ====== Monkey count sync ========
             # ** There is a vanilla bug that Monkey count RAM addresses can be wrong sometimes. **
             # For checking if the Monkey count is correct. (Mainly for PPM unlock)
-            MonkeyCount_Reads = [currentLevel,gameState,monkeylevelcounts]
-            await self.syncMonkeycount(ctx,MonkeyCount_Reads)
+            MonkeyCount_Reads = [currentLevel, gameState, monkeylevelcounts]
+            await self.syncMonkeycount(ctx, MonkeyCount_Reads)
             # ================================
 
             # ====== Gadgets handling ========
@@ -2010,9 +2010,9 @@ class ApeEscapeClient(BizHawkClient):
             levelindex  = list(RAM.levels.values())
             monkeycountsAddresses = list(RAM.levelMonkeyCount.values())
             localcount = 0
-            RAMMonkeycount = int.from_bytes(monkeylevelCounts[levelindex.index(self.lastenteredLevel)],"little")
+            RAMMonkeycount = int.from_bytes(monkeylevelCounts[levelindex.index(self.lastenteredLevel)], "little")
 
-            #Check each values if monkeys are caught and increment a local counter
+            # Check each values if monkeys are caught and increment a local counter
             for x in range(len(level_MonkeyStates)):
                 MonkeyState = int.from_bytes(level_MonkeyStates[x],"little")
                 if MonkeyState == 0x02:
@@ -2022,7 +2022,7 @@ class ApeEscapeClient(BizHawkClient):
             if localcount != RAMMonkeycount:
                 MonkeyCountWrites += [(monkeycountsAddresses[levelindex.index(self.lastenteredLevel)], localcount.to_bytes(1, "little"), "MainRAM")]
                 #print(f"Count is off, corrected from {RAMMonkeycount} to {localcount}")
-            #else:
+            # else:
                 #print ("Count is OK")
         await bizhawk.write(ctx.bizhawk_ctx, MonkeyCountWrites)
 

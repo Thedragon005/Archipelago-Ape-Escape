@@ -2314,7 +2314,7 @@ def set_locations(self):
                             lambda state: HasFlyer(state, self) or IJ(state, self))
         else:
             connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AELocation.Coin64.value, 
-                            lambda state: HasFlyer(state, self) or HasHoop(state, self) or IJ(state, self))
+                            lambda state: True)
         connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AELocation.Coin66.value, 
                         lambda state: True)
 
