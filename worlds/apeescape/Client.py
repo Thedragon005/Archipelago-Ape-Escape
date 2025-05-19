@@ -1616,7 +1616,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ======= MM Optimizations =======
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger]
+            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger,MM_Clown_State]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -1990,8 +1990,9 @@ class ApeEscapeClient(BizHawkClient):
         # Also triggers a boolean to check the count of monkeys on exit
         if gameState == RAM.gameState['InLevel'] and self.countMonkeys == False:
             self.countMonkeys = True
+            #self.lastenteredLevel = currentLevel
+        if self.countMonkeys == True:
             self.lastenteredLevel = currentLevel
-
         # When exiting a level,it will recount monkeys and update the counter if needed
         if ((gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["TimeStation"]) and self.countMonkeys == True):
             self.countMonkeys = False
@@ -2234,6 +2235,7 @@ class ApeEscapeClient(BizHawkClient):
         MM_Natalie_Rescued_Local = MM_Reads[12]
         MM_Professor_Rescued = MM_Reads[13]
         S1_P1_FightTrigger = MM_Reads[14]
+        MM_Clown_State = MM_Reads[15]
 
         MM_Writes = []
         SpecterLevels = (RAM.levels['Specter'], RAM.levels['S_Jake'], RAM.levels['S_Circus'], RAM.levels['S_Coaster'], RAM.levels['S_Western Land'], RAM.levels['S_Castle'])
@@ -2277,6 +2279,11 @@ class ApeEscapeClient(BizHawkClient):
         # Natalie's Cutscene reset (When transitioning to Haunted Mansion)
         if NearbyRoom == 75 and MM_Natalie_Rescued != 0x01 and transitionPhase == 0x06:
             MM_Writes += [(RAM.MM_Natalie_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+        # Clown cutscene reset
+        if NearbyRoom == 71 and MM_Professor_Rescued != 0x01 and transitionPhase == 0x06:
+            if MM_Clown_State == 0x05:
+                MM_Writes += [(RAM.MM_Clown_State, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # When going into the MM_Lobby, disable the Door Detection
         if (NearbyRoom == 69 and transitionPhase == 0x06) or (currentRoom == 69 and transitionPhase != 0x06):
