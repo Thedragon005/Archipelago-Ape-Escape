@@ -1136,8 +1136,8 @@ class ApeEscapeClient(BizHawkClient):
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
-            # Set gadgetStateFromServer if it is default
-            if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
+                # Set gadgetStateFromServer if it is default
+                if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
                     gadgetStateFromServer = 0
 
             if keyCountFromServer == 0xFF:
@@ -1195,7 +1195,6 @@ class ApeEscapeClient(BizHawkClient):
             # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
             firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"], RAM.gameState["Memory"]}
             boolIsFirstBoot = gameState in firstBootStates
-            # print(boolIsFirstBoot)
             if recv_index < (len(ctx.items_received)) and not boolIsFirstBoot:
                 increment = 0
                 for item in ctx.items_received:
@@ -1995,8 +1994,11 @@ class ApeEscapeClient(BizHawkClient):
             self.lastenteredLevel = currentLevel
         # When exiting a level,it will recount monkeys and update the counter if needed
         if ((gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["TimeStation"]) and self.countMonkeys == True):
-            self.countMonkeys = False
 
+            self.countMonkeys = False
+            monkeysperlevel_Keys = RAM.monkeysperlevel.keys()
+            if self.lastenteredLevel not in monkeysperlevel_Keys:
+                return
             # Get a list of all monkeys present in the lastenteredlevel :
             levelmonkeys = RAM.monkeysperlevel[self.lastenteredLevel]
 
