@@ -321,6 +321,7 @@ class ApeEscapeWorld(World):
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                 else:
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
+                    #self.itempool += [self.create_item_trap(AEItem.ApeingAroundInputTrap.value)]
                     # Deactivated for now
                     # self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
 

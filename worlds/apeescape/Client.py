@@ -1,8 +1,7 @@
 import sys
 import logging
 import time
-from random import random
-
+import random
 
 import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
@@ -39,8 +38,8 @@ from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalToke
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
-else:
-    BizHawkClientContext = object
+#else:
+    #BizHawkClientContext = object
 
 EXPECTED_ROM_NAME = "ape escape / AP 2"
 
@@ -523,8 +522,7 @@ class ApeEscapeClient(BizHawkClient):
     async def set_auth(self, ctx: BizHawkClientContext) -> None:
         x = 3
 
-
-    async def kickout_prevention_handling(self, ctx: BizHawkClientContext,context):
+    async def kickout_prevention_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
                 return
@@ -570,8 +568,7 @@ class ApeEscapeClient(BizHawkClient):
             # self.preventKickOut = self.KickoutPrevention
             print(f"set AE_kickoutprevention_{ctx.team}_{ctx.slot} to {self.preventKickOut}")
 
-
-    async def deathlink_option_handling(self, ctx: BizHawkClientContext,context):
+    async def deathlink_option_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
                 #print("skip")
@@ -618,8 +615,7 @@ class ApeEscapeClient(BizHawkClient):
             # self.deathlink = self.DeathLinkOption
             print(f"set AE_deathlink_{ctx.team}_{ctx.slot} to {self.deathlink}")
 
-
-    async def autoequip_option_handling(self, ctx: BizHawkClientContext,context):
+    async def autoequip_option_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
                 # print("skip")
@@ -666,8 +662,7 @@ class ApeEscapeClient(BizHawkClient):
             # self.autoequip = self.AutoEquipOption
             print(f"set AE_autoequip_{ctx.team}_{ctx.slot} to {self.autoequip}")
 
-
-    async def bh_display_option_handling(self, ctx: BizHawkClientContext,context):
+    async def bh_display_option_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
                 return
@@ -714,7 +709,7 @@ class ApeEscapeClient(BizHawkClient):
             # self.bhdisplay = self.BHDisplayOption
             print(f"set AE_bhdisplay_{ctx.team}_{ctx.slot} to {self.bhdisplay}")
 
-    async def syncprogress(self, ctx: BizHawkClientContext) -> None:
+    async def syncprogress(self, ctx: "BizHawkClientContext") -> None:
         Sync_Writes = []
         logger.info(f"Getting Monkeys state from server...")
         locations_list = ctx.checked_locations
@@ -760,7 +755,7 @@ class ApeEscapeClient(BizHawkClient):
         logger.info(f"Synced server progress into the game!\n"
                     f"({msg} updated)")
 
-    async def send_bizhawk_message(self, ctx: BizHawkClientContext, message, msgtype, data) -> None:
+    async def send_bizhawk_message(self, ctx: "BizHawkClientContext", message, msgtype, data) -> None:
         if self.bhdisplay == 1:
             if msgtype == "Item":
                 sender = ctx.player_names[data.player]
@@ -783,8 +778,8 @@ class ApeEscapeClient(BizHawkClient):
             strMessage = message
             await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
 
+    async def game_watcher(self, ctx: "BizHawkClientContext") -> None:
 
-    async def game_watcher(self, ctx: BizHawkClientContext) -> None:
         # Detects if the AP connection is made.
         # If not, "return" immediately to not send anything while not connected
         if ctx.server is None or ctx.server.socket.closed or ctx.slot_data is None or ctx.auth is None:
@@ -1285,8 +1280,8 @@ class ApeEscapeClient(BizHawkClient):
                                 rocketAmmo += 3
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
-                        # elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["GadgetShuffleTrap"]:
-                        elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
+                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["MonkeyMashTrap"]:
+                        #elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
                             self.trap_queue.append((item.item - self.offset))
 
                         # Send message of received item - Victory has a special message above
@@ -2727,7 +2722,7 @@ class ApeEscapeClient(BizHawkClient):
 
                 # 1 pass for each face
                 for x in range(4):
-                    randomFace = int(round(random() * (len(faces) -1), None))
+                    randomFace = int(round(random.random() * (len(faces) - 1), None))
                     face = faces[randomFace]
                     # If there is no more gadgets, it means we put an "Empty" spot
                     if currentGadgets == []:
@@ -2735,7 +2730,7 @@ class ApeEscapeClient(BizHawkClient):
                         chosen_values[face] = 0xFF
                         faces.pop(randomFace)
                     else:
-                        randomGadget = int(round(random() * (len(currentGadgets) - 1), None))
+                        randomGadget = int(round(random.random() * (len(currentGadgets) - 1), None))
                         gadget_value = gadgetsValues[currentGadgets[randomGadget]]
                         chosen_values[face] = gadget_value
                         # print("Face #" + str(faces[randomFace]) + " : " + str(currentGadgets[randomGadget]) + " | " + str(gadgetsValues[currentGadgets[randomGadget]]))
@@ -2750,7 +2745,7 @@ class ApeEscapeClient(BizHawkClient):
                 Trap_Writes += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
 
                 # Select a gadget slot
-                randomSelect = int(round(random() * (len(chosen_values) - 1),None))
+                randomSelect = int(round(random.random() * (len(chosen_values) - 1), None))
                 # print("random:" + str(randomSelect))
                 # print(chosen_values)
                 # Attempt to correct the radar being weird on shuffle sometimes
