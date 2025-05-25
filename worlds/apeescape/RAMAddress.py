@@ -928,7 +928,7 @@ class RAM:
         "ThreeRocket": 0x219,
         "BananaPeelTrap": 0x250,
         "GadgetShuffleTrap": 0x251,
-        "ApeingAroundInputTrap": 0x252
+        "MonkeyMashTrap": 0x252
 
     }
 

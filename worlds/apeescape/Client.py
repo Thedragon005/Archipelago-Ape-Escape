@@ -376,7 +376,7 @@ class ApeEscapeClient(BizHawkClient):
         self.bizhawk_display_set = False
 
 
-    async def validate_rom(self, ctx: BizHawkClientContext) -> bool:
+    async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         ape_identifier_ram_address: int = 0xA37F0
         ape_identifier_ram_address_PAL: int = 0xA37F0
         # BASCUS-94423SYS in ASCII = Ape Escape
@@ -519,7 +519,7 @@ class ApeEscapeClient(BizHawkClient):
         return gadgets
 
 
-    async def set_auth(self, ctx: BizHawkClientContext) -> None:
+    async def set_auth(self, ctx: "BizHawkClientContext") -> None:
         x = 3
 
     async def kickout_prevention_handling(self, ctx: "BizHawkClientContext", context):
