@@ -4,9 +4,10 @@ import time
 import random
 
 import Utils
-from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple
+from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Union
 
 from NetUtils import ClientStatus
+from .Traps import *
 from .Strings import AEItem
 from .Items import gadgetsValues
 
@@ -30,6 +31,7 @@ if "worlds._bizhawk" not in sys.modules:
         logging.error("Did not find _bizhawk.apworld required to play Ape Escape.")
 
 import worlds._bizhawk as bizhawk
+
 from worlds._bizhawk.client import BizHawkClient
 from worlds.apeescape.RAMAddress import RAM
 from worlds.apeescape.Locations import hundoMonkeysCount
@@ -276,6 +278,7 @@ def cmd_syncprogress(self: "BizHawkClientCommandProcessor", status = "") -> None
         client.boolsyncprogress = True
 
 
+
 class ApeEscapeClient(BizHawkClient):
     game = "Ape Escape"
     system = "PSX"
@@ -325,7 +328,7 @@ class ApeEscapeClient(BizHawkClient):
 
     def __init__(self) -> None:
         super().__init__()
-
+        self.ape_handler = MonkeyMashHandler(None)
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
@@ -827,6 +830,13 @@ class ApeEscapeClient(BizHawkClient):
             if self.changeBHDisplay == True:
                 self.changeBHDisplay = False
                 await self.bh_display_option_handling(ctx,"change")
+            # Not send anything before having the options set
+            if self.preventKickOut == 2 or self.deathlink == 2 or self.autoequip == 2 or self.bhdisplay == 2:
+                return
+
+            if self.ape_handler.bizhawk_context is None:
+                self.ape_handler = MonkeyMashHandler(ctx)  # Pass the full BizHawkClientContext
+                #print("MonkeyMashHandler's BizHawkClientContext and internal BizHawkContext have been set and times initialized.")
 
             # Game state, locations and items read
             readTuples = [
@@ -1600,6 +1610,10 @@ class ApeEscapeClient(BizHawkClient):
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
             Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets,currentRoom]
             await self.traps_handling(ctx, Trap_Reads)
+            # ================================
+
+            # ======== Monkey Mashing =========
+            await self.ape_handler.send_monkey_inputs()  # Call the method to handle inputs
             # ================================
 
             # ======= Credits skipping =======
@@ -2692,6 +2706,11 @@ class ApeEscapeClient(BizHawkClient):
         is_idle = (spikeState2 in {0x80,0x81,0x82,0x83,0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
 
+        if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle):
+            self.ape_handler.pause = True
+        else:
+            self.ape_handler.pause = False
+
         if self.trap_queue == []:
             #Exit if no traps
             return None
@@ -2766,6 +2785,11 @@ class ApeEscapeClient(BizHawkClient):
                     # print("Selected gadget : " + chosen_gadgets[randomSelect])
                 # else:
                     # print("Selected gadget : NONE")
+            elif self.trap_queue[0] == RAM.items['MonkeyMashTrap']:
+                self.trap_queue.pop(0)
+                mash_duration = 15  # Example: 10 seconds per powerup item
+                self.ape_handler.activate_monkey(mash_duration)
+                print(f"Monkey Button Mash received! Activating/Extending ApeingAroundHandler for {mash_duration}s.")
 
             await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
 
@@ -3000,7 +3024,7 @@ class ApeEscapeClient(BizHawkClient):
         self.sending_death_link = True
         ctx.last_death_link = time.time()
         DeathMessageList = ["`Ohhh noooo!`", "`This bites.`"]
-        randomNumber = (round(random() * (len(DeathMessageList) - 1),None))
+        randomNumber = (round(random.random() * (len(DeathMessageList) - 1),None))
         DeathMessage = DeathMessageList[randomNumber]
         DeathText = ctx.player_names[ctx.slot] + " says: " + DeathMessage + " (Died)"
         await ctx.send_death(DeathText)

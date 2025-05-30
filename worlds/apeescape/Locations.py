@@ -398,6 +398,7 @@ hundoMonkeysCount = {
 }
 
 # These values are the room ID of the room, and the door ID the room is entered through. To get these, stand near the transition that leads to that entrance. As an example, {45, 5} will spawn Spike at the top of the Bell Tower, as though he entered from outside. 
+# Array order : {TargetRoom,TargetDoor,Transition ID}
 doorTransitions = {
     AEDoor.FF_ENTRY.value: {1, 0},
     AEDoor.PO_ENTRY.value: {2, 0},
