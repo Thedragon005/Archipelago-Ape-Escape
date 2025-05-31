@@ -725,9 +725,11 @@ class ApeEscapeClient(BizHawkClient):
         for x in range(len(keys_globalMonkeys)):
             monkeyID = self.offset + keys_globalMonkeys[x]
             monkeyAddress = values_globalMonkeys[x]
-
+            # Skip MM Monkey BG to ensure it does not softlock the MM Lamp Door when Lamps are not shuffled.
+            if keys_globalMonkeys[x] == 204:
+                continue
             Monkey_Reads += [(monkeyAddress, 1, "MainRAM")]
-            Monkey_IDs += [self.offset + keys_globalMonkeys[x]]
+            Monkey_IDs += [monkeyID]
             Monkey_Addresses += [monkeyAddress]
 
         Monkey_Values = await bizhawk.read(ctx.bizhawk_ctx, Monkey_Reads)
@@ -745,7 +747,6 @@ class ApeEscapeClient(BizHawkClient):
             await bizhawk.write(ctx.bizhawk_ctx, Sync_Writes)
             # await syncprogress(ctx,Sync_Writes)
         levelsIndexes = list(RAM.monkeysperlevel.keys())
-        print(levelsIndexes)
         await self.syncAllMonkeycount(ctx,levelsIndexes)
         UpdateCount = len(Sync_Writes)
         if UpdateCount == 0:
@@ -1998,7 +1999,7 @@ class ApeEscapeClient(BizHawkClient):
         # Also triggers a boolean to check the count of monkeys on exit
         if gameState == RAM.gameState['InLevel'] and self.countMonkeys == False:
             self.countMonkeys = True
-            #self.lastenteredLevel = currentLevel
+
         if self.countMonkeys == True:
             self.lastenteredLevel = currentLevel
         # When exiting a level,it will recount monkeys and update the counter if needed
@@ -2033,9 +2034,7 @@ class ApeEscapeClient(BizHawkClient):
             # If there is a missmatch, correct the value in the RAM for the level
             if localcount != RAMMonkeycount:
                 MonkeyCountWrites += [(monkeycountsAddresses[levelindex.index(self.lastenteredLevel)], localcount.to_bytes(1, "little"), "MainRAM")]
-                #print(f"Count is off, corrected from {RAMMonkeycount} to {localcount}")
-            # else:
-                #print ("Count is OK")
+
         await bizhawk.write(ctx.bizhawk_ctx, MonkeyCountWrites)
 
     async def syncAllMonkeycount(self, ctx: "BizHawkClientContext",levelindexes) -> None:
@@ -2053,7 +2052,6 @@ class ApeEscapeClient(BizHawkClient):
         for x in range(len(levelindexes)):
             levelID = levelindexes[x]
             levelmonkeys = RAM.monkeysperlevel[levelID]
-            #print(levelmonkeys)
             addresses = []
 
             for val in levelmonkeys:
@@ -2069,18 +2067,12 @@ class ApeEscapeClient(BizHawkClient):
             # Check each values if monkeys are caught and increment a local counter
             for y in range(len(level_MonkeyStates)):
                 MonkeyState = int.from_bytes(level_MonkeyStates[y], "little")
-                print(MonkeyState)
                 if MonkeyState == 0x02:
                     localcount += 1
 
             # Correct the value in the RAM for the level
-            print("______________________")
-            print(hex(monkeycountsAddresses[x]))
-            print(localcount)
             MonkeyCountWrites += [(monkeycountsAddresses[x],localcount.to_bytes(1, "little"), "MainRAM")]
-                # print(f"Count is off, corrected from {RAMMonkeycount} to {localcount}")
-            # else:
-            # print ("Count is OK")
+
         await bizhawk.write(ctx.bizhawk_ctx, MonkeyCountWrites)
 
     async def gadgets_handler(self, ctx: "BizHawkClientContext", Gadgets_Reads, SAcomplete, GAcomplete):

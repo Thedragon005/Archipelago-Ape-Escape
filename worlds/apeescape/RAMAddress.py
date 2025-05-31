@@ -652,7 +652,7 @@ class RAM:
         },
         24: {
             181, 182, 183, 184, 185, 187, 186, 188, 189, 190, 192, 191, 194, 195, 196, 193, 197, 198, 199, 200, 201,
-            202, 203, 204
+            202, 203 , 204
         }
     }
     # To check if red mailboxes are already checked in the current room
@@ -1472,7 +1472,28 @@ class RAM:
     spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
+    spikeColor1 = 0x0EC1E5
+    spikeColor2 = 0x0EC1E6
 
+    colortable = {
+        "Vanilla" : 0x3010,
+        "Saturated" : 0x0018,
+        "GreySaturated": 0x0018,
+        "Purple" : 0x001C,
+        "DarkBlue" : 0x0026,
+        "NeonPink" : 0xFF3B,
+        "Grey": 0xFF59,
+        "NeonGreen": 0xF62E,
+        "Red" : 0x002F,
+        "Alien" : 0x0033,
+        "Metal" : 0x003A,
+        "Orange" : 0x0700,
+        "PureWhite" : 0x011A,
+        "Cyan" : 0x1C33,
+        "ClotheChange" : 0x3933,
+        "DarkGreen": 0x3101,
+        "Rave" : 0x6F1A
+    }
 
 
     # Specter bosses values
