@@ -1418,23 +1418,37 @@ class RAM:
     Nearby_RoomIDAddress = 0x0E38B4
     Nearby_DoorIDAddress   = 0x0E38A4
 
-    TargetRoomID1Address = 0x154264
-    TR1_DoorIDAddress = 0x154268
-    TargetRoomID2Address = 0x15428C
-    TR2_DoorIDAddress = 0x154290
-    TargetRoomID3Address = 0x1542B4
-    TR3_DoorIDAddress = 0x1542B8
-    TargetRoomID4Address = 0x1542DC
-    TR4_DoorIDAddress = 0x1542E0
+    # To translate Transition ID from doorTransitions Table to which address we need to change for the room
+    transitionAddresses = {
+        # --Array content--
+        # TR_ID : {TargetRoomAddress,TargetDoorAddress}
+        1 : {0x154264,0x154268},
+        2 : {0x15428C,0x154290},
+        3 : {0x1542B4, 0x1542B8},
+        4 : {0x1542DC, 0x1542E0},
+        5 : {0x154304, 0x154308},
+        6 : {0x15432C, 0x154330},
+        7 : {0x154354, 0x154358},
+        8 : {0x15437C, 0x154380},
+    }
+
+    #TargetRoomID1Address = 0x154264
+    #TR1_DoorIDAddress = 0x154268
+    #TargetRoomID2Address = 0x15428C
+    #TR2_DoorIDAddress = 0x154290
+    #TargetRoomID3Address = 0x1542B4
+    #TR3_DoorIDAddress = 0x1542B8
+    #TargetRoomID4Address = 0x1542DC
+    #TR4_DoorIDAddress = 0x1542E0
     TR4_TransitionEnabled = 0x1542BC # For CrC_Boss_Door -> Blocked value : 0x03, Opened Value : 0x00
-    TargetRoomID5Address = 0x154304
-    TR5_DoorIDAddress = 0x154308
-    TargetRoomID6Address = 0x15432C
-    TR6_DoorIDAddress = 0x154330
-    TargetRoomID7Address = 0x154354
-    TR7_DoorIDAddress = 0x154358
-    TargetRoomID8Address = 0x15437C
-    TR8_DoorIDAddress = 0x154380
+    #TargetRoomID5Address = 0x154304
+    #TR5_DoorIDAddress = 0x154308
+    #TargetRoomID6Address = 0x15432C
+    #TR6_DoorIDAddress = 0x154330
+    #TargetRoomID7Address = 0x154354
+    #TR7_DoorIDAddress = 0x154358
+    #TargetRoomID8Address = 0x15437C
+    #TR8_DoorIDAddress = 0x154380
 
     localLevelState = 0x0F447E # Same as level state, but can be changed to impact some behaviors (Like Kickout Prevention)
 
