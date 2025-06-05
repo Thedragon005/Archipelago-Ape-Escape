@@ -352,7 +352,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     # TODO Remove when doing official PR
-    client_version = "0.8.5"
+    client_version = "0.8.6"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -509,12 +509,12 @@ class ApeEscapeClient(BizHawkClient):
                 ctx.command_processor.commands.pop("spikecolor")
             return False
         # TODO Remove when doing official PR
-        logger.info("================================================")
-        logger.info("Archipelago Ape Escape version "  + self.client_version)
-        logger.info("================================================")
-        logger.info("Custom commands are available for this game")
-        logger.info("Type /ae_commands for the full list")
-        logger.info("================================================")
+        #logger.info("================================================")
+        #logger.info("Archipelago Ape Escape version "  + self.client_version)
+        #logger.info("================================================")
+        #logger.info("Custom commands are available for this game")
+        #logger.info("Type /ae_commands for the full list")
+        #logger.info("================================================")
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
@@ -539,11 +539,13 @@ class ApeEscapeClient(BizHawkClient):
 
 
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
-        # if cmd == "Connected":
-            # self.kickout_prevention_handling(ctx, "init")
-            # self.deathlink_option_handling(ctx, "init")
-            # self.autoequip_option_handling(ctx, "init")
-            # self.bh_display_option_handling(ctx, "init")
+        if cmd == "Connected":
+            logger.info(f"================================================\n"
+                        f"Connected to Bizhawk successfully ! \n"
+                        f"Client version: {self.client_version}\n\n"
+                        f"Custom commands are available for this game\n"
+                        f"Type /ae_commands for the full list\n"
+                        f"================================================\n")
 
         if cmd == "Bounced":
             if "tags" in args:
