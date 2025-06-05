@@ -403,6 +403,8 @@ class ApeEscapeWorld(World):
             "itemdisplay": self.options.itemdisplay.value,
             "kickoutprevention": self.options.kickoutprevention.value,
             "autoequip": self.options.autoequip.value,
+            "spikeskin" : self.options.spikeskin.value,
+            "customspikeskin": self.options.customspikeskin.value,
             "levelnames": bytestowrite,  # List of level names in entrance order. FF leads to the first.
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "newpositions": newpositions,  # List of positions a level is moved to. The position of FF is first.

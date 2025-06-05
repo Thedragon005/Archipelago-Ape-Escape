@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from Options import Choice, Range, DeathLink, PerGameCommonOptions
+from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText
 
 
 class GoalOption(Choice):
@@ -354,6 +354,43 @@ class AutoEquipOption(Choice):
     option_on = 0x01
     default = option_on
 
+class SpikeSkin(Choice):
+    """
+    Determine the color of Spike in-game.
+    Can pick between defined values or use the custom value to enter a personalised color in the "CustomSpikeColor" value
+    Please note that this can be changed at all times with the command "/spikecolor <NameOrHexOfColor>"
+    """
+    display_name = "Spike Skin"
+    option_vanilla = 0
+    option_saturated = 1
+    option_greySaturated = 2
+    option_purple = 3
+    option_darkblue = 4
+    option_neonpink = 5
+    option_grey = 6
+    option_neongreen = 7
+    option_red = 8
+    option_alien = 9
+    option_metal = 10
+    option_orange = 11
+    option_white = 12
+    option_cyan = 13
+    option_clothechange = 14
+    option_darkgreen = 15
+    option_rave = 16
+    option_custom = -1
+    default = option_vanilla
+
+class CustomSpikeSkin(FreeText):
+    """
+    Use a custom Spike Skin by choosing "Custom" in the "Spike Skin" option
+    To use a custom color, enter an hexadecimal value of 4 characters with the desired color.
+    Range : 0000 to FFFF (3010 is the vanilla color)
+    **Note : If an invalid color is entered, it will be set to "Vanilla"
+    """
+    default = {
+      "Custom": "3010"
+    }
 
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
@@ -378,4 +415,6 @@ class ApeEscapeOptions(PerGameCommonOptions):
     itemdisplay: ItemDisplayOption
     kickoutprevention: KickoutPreventionOption
     autoequip: AutoEquipOption
+    spikeskin: SpikeSkin
+    customspikeskin : CustomSpikeSkin
     death_link: DeathLink

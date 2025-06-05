@@ -1486,27 +1486,28 @@ class RAM:
     spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
-    spikeColor1 = 0x0EC1E5
-    spikeColor2 = 0x0EC1E6
+    spikeColor = 0x0EC1E5
+    #spikeColor2 = 0x0EC1E6
 
     colortable = {
-        "Vanilla" : 0x3010,
-        "Saturated" : 0x0018,
-        "GreySaturated": 0x0018,
-        "Purple" : 0x001C,
-        "DarkBlue" : 0x0026,
-        "NeonPink" : 0xFF3B,
-        "Grey": 0xFF59,
-        "NeonGreen": 0xF62E,
-        "Red" : 0x002F,
-        "Alien" : 0x0033,
-        "Metal" : 0x003A,
-        "Orange" : 0x0700,
-        "PureWhite" : 0x011A,
-        "Cyan" : 0x1C33,
-        "ClotheChange" : 0x3933,
-        "DarkGreen": 0x3101,
-        "Rave" : 0x6F1A
+        "vanilla" : 0x1030,
+        "saturated" : 0x0018,
+        "greysaturated": 0x0018,
+        "purple" : 0x1C00,
+        "darkblue" : 0x106B,
+        "neonpink" : 0x3BFF,
+        "grey": 0x59FF,
+        "neongreen": 0x2EF6,
+        "red" : 0x2F00,
+        "alien" : 0x3300,
+        "metal" : 0x3A00,
+        "orange" : 0x0007,
+        "white" : 0x37FF,
+        "cyan" : 0x331C,
+        "clothechange" : 0x3339,
+        "darkgreen": 0x0131,
+        "yellow": 0x1065,
+        "rave" : 0x1D1A
     }
 
 

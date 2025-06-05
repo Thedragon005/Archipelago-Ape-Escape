@@ -74,7 +74,13 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /syncprogress \n"
                 f"      Description : Fetch the server's state of monkeys and sync it into the game\n"
-                f"      [Optional] \"cancel\" : If prompted, cancel the currently pending sync\n")
+                f"      [Optional] \"cancel\" : If prompted, cancel the currently pending sync\n"
+                f"  /spikecolor \n"
+                f"      Description : Display/Change Spike's color palette according to presets or Hex value\n"
+                f"      Presets : vanilla, saturated, greysaturated, purple, darkblue, neonpink, grey, neongreen,\n"
+                f"      red, alien, metal, orange, white, cyan, clotchange, darkgreen, yellow, rave\n"
+                f"      [Optional] color Name of the preset or Hex Value from \"0000\" to \"FFFF\"")
+
 
 
 def cmd_bh_itemdisplay(self: "BizHawkClientCommandProcessor", status = "") -> None:
@@ -241,6 +247,68 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
     client.AutoEquipOption = client.autoequip
     logger.info(f"Auto Equip is now {msg}\n")
 
+def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
+    """Toggle Auto-Equip on and off"""
+    from worlds._bizhawk.context import BizHawkClientContext
+    if self.ctx.game != "Ape Escape":
+        logger.warning("This command can only be used when playing Ape Escape.")
+        return
+    if not self.ctx.server or not self.ctx.slot:
+        logger.warning("You must be connected to a server to use this command.")
+        return
+
+    ctx = self.ctx
+    assert isinstance(ctx, BizHawkClientContext)
+    client = ctx.client_handler
+    assert isinstance(client, ApeEscapeClient)
+    presetColors = list(RAM.colortable.keys())
+    presetValues = list(RAM.colortable.values())
+    if color == "":
+        if client.datastoreskin == -2:
+            #No datastorage, use slot_data
+            spikecolor = presetColors[ctx.slot_data["spikeskin"]]
+        else:
+            # Custom
+            if type(client.datastoreskin) is str or type(client.datastoreskin) is int:
+                error = False
+                try:
+                    #Preset color name
+                    spikecolor = presetColors[presetValues.index(client.datastoreskin)]
+                except:
+                    spikecolor = ""
+                    error = True
+
+                if error:
+                    try:
+                        # Preset color number
+                        #print("Not in preset list(NAME)")
+                        spikecolor = presetColors[client.datastoreskin]
+                    except:
+                        #print("Not in preset list(COLOR#)")
+                        spikecolor = client.datastoreskin
+            else:
+                # Custom but numeral
+                spikecolor = presetColors[client.datastoreskin]
+        logger.info(f"Current Spike color: {spikecolor}\n"
+                    f"    To change the status, use the command like so: /spikecolor [color]\n"
+                    f"    Accepts Hex values (\"0000\" to \"FFFF\") and preset values\n"
+                    f"    Presets : vanilla, saturated, greysaturated, purple, darkblue, neonpink, grey, neongreen,\n"
+                    f"      red, alien, metal, orange, white, cyan, clotchange, darkgreen, yellow, rave\n")
+        return
+    elif color.lower() in presetColors:
+        client.datastoreskin = str(presetColors[presetColors.index(color)])
+    elif len(color) == 4:
+        try:
+            test = bytes.fromhex(str(color))
+            client.datastoreskin = f"{str(color)}"
+        except:
+            logger.info(f"Invalid argument for function ""color""\n")
+            return
+    else:
+        logger.info(f"Invalid argument for function ""color""\n")
+        return
+    client.changeSkin = True
+    logger.info(f"Spike color is now {color}\n")
 
 def cmd_syncprogress(self: "BizHawkClientCommandProcessor", status = "") -> None:
     """Sync the game progress with the server (Monkeys ONLY)"""
@@ -337,6 +405,8 @@ class ApeEscapeClient(BizHawkClient):
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
         self.countMonkeys = False
+        self.datastoreskin = -2
+        self.changeSkin = False
         self.lastenteredLevel = 0
         self.boolsyncprogress = False
         self.syncWaitConfirm = False
@@ -402,6 +472,8 @@ class ApeEscapeClient(BizHawkClient):
                     ctx.command_processor.commands.pop("auto_equip")
                 if "syncprogress" in ctx.command_processor.commands:
                     ctx.command_processor.commands.pop("syncprogress")
+                if "spikecolor" in ctx.command_processor.commands:
+                    ctx.command_processor.commands.pop("spikecolor")
                 return False
         except Exception:
             if "ae_commands" in ctx.command_processor.commands:
@@ -416,6 +488,8 @@ class ApeEscapeClient(BizHawkClient):
                 ctx.command_processor.commands.pop("auto_equip")
             if "syncprogress" in ctx.command_processor.commands:
                 ctx.command_processor.commands.pop("syncprogress")
+            if "spikecolor" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("spikecolor")
             return False
 
         if not self.game == "Ape Escape":
@@ -431,6 +505,8 @@ class ApeEscapeClient(BizHawkClient):
                 ctx.command_processor.commands.pop("auto_equip")
             if "syncprogress" in ctx.command_processor.commands:
                 ctx.command_processor.commands.pop("syncprogress")
+            if "spikecolor" in ctx.command_processor.commands:
+                ctx.command_processor.commands.pop("spikecolor")
             return False
         # TODO Remove when doing official PR
         logger.info("================================================")
@@ -455,6 +531,8 @@ class ApeEscapeClient(BizHawkClient):
             ctx.command_processor.commands["auto_equip"] = cmd_auto_equip
         if "syncprogress" not in ctx.command_processor.commands:
             ctx.command_processor.commands["syncprogress"] = cmd_syncprogress
+        if "spikecolor" not in ctx.command_processor.commands:
+            ctx.command_processor.commands["spikecolor"] = cmd_spikecolor
         self.initialize_client()
 
         return True
@@ -499,6 +577,8 @@ class ApeEscapeClient(BizHawkClient):
                 self.TVT_Lobby_Button = keys.get(f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}", None)
             if f"AE_DR_Block_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DR_Block_Pushed = keys.get(f"AE_DR_Block_{ctx.team}_{ctx.slot}", None),
+            if f"AE_spikecolor_{ctx.team}_{ctx.slot}" in args["keys"]:
+                self.datastoreskin = keys.get(f"AE_spikecolor_{ctx.team}_{ctx.slot}", None),
 
 
     async def check_gadgets(self, ctx: "BizHawkClientContext",gadgetStateFromServer) -> list[str]:
@@ -535,11 +615,11 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.KickoutPrevention == 2:
-                print("Still Waiting")
+                #print("Still Waiting")
                 return
             if self.KickoutPrevention is None:
-                print("Used slotdata")
-                print(ctx.slot_data["kickoutprevention"])
+                #print("Used slotdata")
+                #print(ctx.slot_data["kickoutprevention"])
                 self.preventKickOut = int(ctx.slot_data["kickoutprevention"])
             else:
                 # Got valid Datastorage, take this instead of slot_data
@@ -831,6 +911,9 @@ class ApeEscapeClient(BizHawkClient):
             if self.changeBHDisplay == True:
                 self.changeBHDisplay = False
                 await self.bh_display_option_handling(ctx,"change")
+            if self.datastoreskin == -2:
+                await self.Spike_Color_handling(ctx, "", "init")
+
             # Not send anything before having the options set
             if self.preventKickOut == 2 or self.deathlink == 2 or self.autoequip == 2 or self.bhdisplay == 2:
                 return
@@ -886,6 +969,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S1_Cutscene_Redirection, 4, "MainRAM"),
                 (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
                 (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
+                (RAM.spikeColor, 2, "MainRAM"),
+                #(RAM.spikeColor2, 1, "MainRAM"),
             ]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
@@ -935,6 +1020,7 @@ class ApeEscapeClient(BizHawkClient):
             S1_Cutscene_Redirection = int.from_bytes(reads[38], byteorder = "little")
             S2_Cutscene_Redirection = int.from_bytes(reads[39], byteorder = "little")
             S1_P1_FightTrigger = int.from_bytes(reads[40], byteorder = "little")
+            spikeColor = int.from_bytes(reads[41], byteorder = "little")
 
             # Related to Gadgets
             gadgetTuples = [
@@ -1605,6 +1691,13 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in coins)
                 }])
+            # ======== Trap Handling =========
+            # For Traps.
+            currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
+            Color_Reads = [gameState, spikeColor]
+            await self.Spike_Color_handling(ctx, Color_Reads,"")
+            # ================================
+
 
             # ======== Trap Handling =========
             # For Traps.
@@ -1614,7 +1707,8 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
 
             # ======== Monkey Mashing =========
-            await self.ape_handler.send_monkey_inputs()  # Call the method to handle inputs
+            if self.ape_handler.is_active:
+                await self.ape_handler.send_monkey_inputs()  # Call the method to handle inputs
             # ================================
 
             # ======= Credits skipping =======
@@ -2200,6 +2294,114 @@ class ApeEscapeClient(BizHawkClient):
                 await bizhawk.guarded_write(ctx.bizhawk_ctx, punch_Writes, punch_Guards)
         await bizhawk.write(ctx.bizhawk_ctx, gadgets_Writes)
 
+    async def Spike_Color_handling(self, ctx: "BizHawkClientContext", Color_Reads, context) -> None:
+        if context == "init":
+            #print(f"Datastoredskin : {self.datastoreskin}")
+            await ctx.send_msgs([{
+                "cmd": "Get",
+                "keys": [f"AE_spikecolor_{ctx.team}_{ctx.slot}"]
+            }])
+            return
+        gameState = Color_Reads[0]
+        spikecolor = Color_Reads[1]
+        #print(spikecolor)
+        #spike_bytes = spikecolor.to_bytes(2, "little")
+
+        presetskins = list(RAM.colortable.keys())
+        presetskinsvalues = list(RAM.colortable.values())
+
+        Color_Writes = []
+
+        validgamestates = (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'],RAM.gameState['TimeStation'])
+        # Does not execute the function if you not in a level or TimeStation
+
+        if (gameState not in validgamestates):
+            return None
+
+        if self.datastoreskin != -2:
+            if type(self.datastoreskin) is tuple:
+                #print(f"Changed datastorage:{self.datastoreskin[0]}")
+                self.datastoreskin = self.datastoreskin[0]
+            if type(self.datastoreskin) is str:
+                if str(self.datastoreskin).lower() in presetskins:
+                    #print (f"C_SpikeSkin# : {presetskins.index(str(self.datastoreskin).lower())}")
+                    spikeskin = presetskins.index(str(self.datastoreskin).lower())
+                    customspikeskin = presetskinsvalues[presetskins.index(str(self.datastoreskin).lower())]
+                else:
+                    # Not in vanilla skins, treat as custom
+                    spikeskin = -1
+                    customspikeskin = self.datastoreskin
+            elif type(self.datastoreskin) is int:
+                #print(f"Y01:{self.datastoreskin}")
+                spikeskin = -1
+                customspikeskin = self.datastoreskin
+
+            else:
+                #Non-valid type, treat as "Vanilla"
+                #print("Non valid, take vanilla")
+                #print(type(self.datastoreskin))
+                spikeskin = 0
+                customspikeskin = 0x1030
+        else:
+            #No Datastorage yet,use slotdata
+            #print("SlotdataSkin")
+            #print(ctx.slot_data["spikeskin"])
+            spikeskin = ctx.slot_data["spikeskin"]
+            customspikeskin = ctx.slot_data["customspikeskin"]
+
+        # Check which skin to choose from the list
+        #print(f"{spikeskin}")
+        if spikeskin != -1:
+            # Preset Skin
+            #print(f"P_SpikeSkin# : {presetskinsvalues[spikeskin]}")
+            #spikeskin = presetskins[spikeskin]
+            customspikeskin = presetskinsvalues[spikeskin]
+            #print(f"P_customspikeskin# : {customspikeskin}")
+            skin_to_bytes = customspikeskin.to_bytes(2, "little")
+        else:
+            # Check for a Custom Skin
+            #print(f"SpikeSkin# : {presetskins[spikeskin]}")
+
+            error = False
+            try:
+                #Custom Skin validation
+                #print(f"Value:{bytes.fromhex(customspikeskin)}")
+                skin_to_bytes = bytes.fromhex(customspikeskin)
+                # If it passes this check, it's safe to say it's at least Hexadecimal
+                customspikeskin = int.from_bytes(skin_to_bytes,"little")
+                #print(f"SkinPassed : {skin_to_bytes}")
+            except:
+                error = True
+            if error:
+                try:
+                    #Custom Skin validation (int)
+                    #print(f"Value:{hex(customspikeskin)}")
+                    #skin_to_bytes = bytes.fromhex(hex(customspikeskin).replace("0x",""))
+                    skin_to_bytes = bytes.fromhex(format(customspikeskin, 'x'))
+                    # If it passes this check, it's safe to say it's at least Hexadecimal
+                    customspikeskin = customspikeskin
+                    #print(f"SkinPassed2 : {customspikeskin}")
+                except:
+                    #print("Value not in Hex format,applying vanilla skin")
+                    #print(f"Value:{int(customspikeskin)}")
+                    spikeskin = 0
+                    customspikeskin = 0x1030
+                    skin_to_bytes = 0x1030.to_bytes(2, "little")
+        if self.changeSkin == True:
+            await ctx.send_msgs([{
+                "cmd": "Set",
+                # "key": str(ctx.player_names[ctx.slot]) + "_DIButton",
+                "key": f"AE_spikecolor_{ctx.team}_{ctx.slot}",
+                "default": 0,
+                "want_reply": False,
+                "operations": [{"operation": "replace", "value": customspikeskin}]
+            }])
+            self.changeSkin = False
+        #print(f"P_spikecolor# : {spikecolor} customspikeskin: {customspikeskin}")
+        if spikecolor != customspikeskin:
+            # Overwrite the skin if it not currently in place
+            Color_Writes += [(RAM.spikeColor, skin_to_bytes, "MainRAM")]
+            await bizhawk.write(ctx.bizhawk_ctx, Color_Writes)
 
     async def Credits_handling(self, ctx: "BizHawkClientContext", Credits_Reads) -> None:
         currentRoom = Credits_Reads[0]
