@@ -1491,23 +1491,27 @@ class RAM:
 
     colortable = {
         "vanilla" : 0x1030,
-        "saturated" : 0x0018,
-        "greysaturated": 0x0018,
+        "white" : 0x7617,
+        "grey" : 0x4c00,
         "purple" : 0x1C00,
-        "darkblue" : 0x106B,
-        "neonpink" : 0x3BFF,
-        "grey": 0x59FF,
-        "neongreen": 0x2EF6,
+        "orange" : 0x2F2F,
+        "green" : 0x35F6,
         "red" : 0x2F00,
-        "alien" : 0x3300,
-        "metal" : 0x3A00,
-        "orange" : 0x0007,
-        "white" : 0x37FF,
-        "cyan" : 0x331C,
-        "clothechange" : 0x3339,
-        "darkgreen": 0x0131,
         "yellow": 0x1065,
-        "rave" : 0x1D1A
+        "darkgreen": 0x0131,
+        "darkblue" : 0x2600,
+        "voidwhite" : 0x2E2E,
+        "voidpurple": 0x4DFF,
+        "voidorange" : 0x0007,
+        "voidred" : 0x7595,
+        "neonpink" : 0x3BFF,
+        "neongreen": 0x2EF6,
+        "blueskin": 0x75D8,
+        "purpleskin" : 0x75D7,
+        "alien" : 0x3300,
+        "alien2" : 0x350C,
+        "metal" : 0x3674,
+        "rave" : 0x1D2F
     }
 
 

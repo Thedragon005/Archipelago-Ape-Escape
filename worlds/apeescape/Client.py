@@ -248,7 +248,7 @@ def cmd_auto_equip(self: "BizHawkClientCommandProcessor", status = "") -> None:
     logger.info(f"Auto Equip is now {msg}\n")
 
 def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
-    """Toggle Auto-Equip on and off"""
+    """Check or change Spike's color"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
         logger.warning("This command can only be used when playing Ape Escape.")
@@ -264,9 +264,13 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
     presetColors = list(RAM.colortable.keys())
     presetValues = list(RAM.colortable.values())
     if color == "":
-        if client.datastoreskin == -2:
+        if client.datastoreskin == -2 or client.datastoreskin is None:
             #No datastorage, use slot_data
-            spikecolor = presetColors[ctx.slot_data["spikeskin"]]
+            try:
+                spikecolor = presetColors[ctx.slot_data["spikecolor"]]
+            except:
+                #No slot_data, use vanilla
+                spikecolor = presetColors[0]
         else:
             # Custom
             if type(client.datastoreskin) is str or type(client.datastoreskin) is int:
@@ -292,8 +296,7 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
         logger.info(f"Current Spike color: {spikecolor}\n"
                     f"    To change the status, use the command like so: /spikecolor [color]\n"
                     f"    Accepts Hex values (\"0000\" to \"FFFF\") and preset values\n"
-                    f"    Presets : vanilla, saturated, greysaturated, purple, darkblue, neonpink, grey, neongreen,\n"
-                    f"      red, alien, metal, orange, white, cyan, clotchange, darkgreen, yellow, rave\n")
+                    f"    Presets : {presetColors}\n")
         return
     elif color.lower() in presetColors:
         client.datastoreskin = str(presetColors[presetColors.index(color)])
@@ -541,10 +544,11 @@ class ApeEscapeClient(BizHawkClient):
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
         if cmd == "Connected":
             logger.info(f"================================================\n"
-                        f"Connected to Bizhawk successfully ! \n"
-                        f"Client version: {self.client_version}\n\n"
-                        f"Custom commands are available for this game\n"
-                        f"Type /ae_commands for the full list\n"
+                        f"     -- Connected to Bizhawk successfully -- !  \n"
+                        f"Archipelago Ape Escape version {self.client_version}\n"
+                        f"================================================\n"
+                        f"Custom commands are available for this game     \n"
+                        f"Type /ae_commands for the full list             \n"
                         f"================================================\n")
 
         if cmd == "Bounced":
@@ -2305,7 +2309,7 @@ class ApeEscapeClient(BizHawkClient):
             }])
             return
         gameState = Color_Reads[0]
-        spikecolor = Color_Reads[1]
+        currentspikecolor = Color_Reads[1]
         #print(spikecolor)
         #spike_bytes = spikecolor.to_bytes(2, "little")
 
@@ -2327,39 +2331,39 @@ class ApeEscapeClient(BizHawkClient):
             if type(self.datastoreskin) is str:
                 if str(self.datastoreskin).lower() in presetskins:
                     #print (f"C_SpikeSkin# : {presetskins.index(str(self.datastoreskin).lower())}")
-                    spikeskin = presetskins.index(str(self.datastoreskin).lower())
-                    customspikeskin = presetskinsvalues[presetskins.index(str(self.datastoreskin).lower())]
+                    spikecolor = presetskins.index(str(self.datastoreskin).lower())
+                    customspikecolor = presetskinsvalues[presetskins.index(str(self.datastoreskin).lower())]
                 else:
                     # Not in vanilla skins, treat as custom
-                    spikeskin = -1
-                    customspikeskin = self.datastoreskin
+                    spikecolor = -1
+                    customspikecolor = self.datastoreskin
             elif type(self.datastoreskin) is int:
                 #print(f"Y01:{self.datastoreskin}")
-                spikeskin = -1
-                customspikeskin = self.datastoreskin
+                spikecolor = -1
+                customspikecolor = self.datastoreskin
 
             else:
                 #Non-valid type, treat as "Vanilla"
                 #print("Non valid, take vanilla")
                 #print(type(self.datastoreskin))
-                spikeskin = 0
-                customspikeskin = 0x1030
+                spikecolor = 0
+                customspikecolor = 0x1030
         else:
             #No Datastorage yet,use slotdata
             #print("SlotdataSkin")
             #print(ctx.slot_data["spikeskin"])
-            spikeskin = ctx.slot_data["spikeskin"]
-            customspikeskin = ctx.slot_data["customspikeskin"]
+            spikecolor = ctx.slot_data["spikecolor"]
+            customspikecolor = ctx.slot_data["customspikecolor"]
 
         # Check which skin to choose from the list
         #print(f"{spikeskin}")
-        if spikeskin != -1:
+        if spikecolor != -1:
             # Preset Skin
             #print(f"P_SpikeSkin# : {presetskinsvalues[spikeskin]}")
             #spikeskin = presetskins[spikeskin]
-            customspikeskin = presetskinsvalues[spikeskin]
+            customspikecolor = presetskinsvalues[spikecolor]
             #print(f"P_customspikeskin# : {customspikeskin}")
-            skin_to_bytes = customspikeskin.to_bytes(2, "little")
+            skin_to_bytes = customspikecolor.to_bytes(2, "little")
         else:
             # Check for a Custom Skin
             #print(f"SpikeSkin# : {presetskins[spikeskin]}")
@@ -2368,9 +2372,9 @@ class ApeEscapeClient(BizHawkClient):
             try:
                 #Custom Skin validation
                 #print(f"Value:{bytes.fromhex(customspikeskin)}")
-                skin_to_bytes = bytes.fromhex(customspikeskin)
+                skin_to_bytes = bytes.fromhex(customspikecolor)
                 # If it passes this check, it's safe to say it's at least Hexadecimal
-                customspikeskin = int.from_bytes(skin_to_bytes,"little")
+                customspikecolor = int.from_bytes(skin_to_bytes,"little")
                 #print(f"SkinPassed : {skin_to_bytes}")
             except:
                 error = True
@@ -2379,15 +2383,15 @@ class ApeEscapeClient(BizHawkClient):
                     #Custom Skin validation (int)
                     #print(f"Value:{hex(customspikeskin)}")
                     #skin_to_bytes = bytes.fromhex(hex(customspikeskin).replace("0x",""))
-                    skin_to_bytes = bytes.fromhex(format(customspikeskin, 'x'))
+                    skin_to_bytes = bytes.fromhex(format(customspikecolor, 'x'))
                     # If it passes this check, it's safe to say it's at least Hexadecimal
-                    customspikeskin = customspikeskin
+                    customspikecolor = customspikecolor
                     #print(f"SkinPassed2 : {customspikeskin}")
                 except:
                     #print("Value not in Hex format,applying vanilla skin")
                     #print(f"Value:{int(customspikeskin)}")
-                    spikeskin = 0
-                    customspikeskin = 0x1030
+                    spikecolor = 0
+                    customspikecolor = 0x1030
                     skin_to_bytes = 0x1030.to_bytes(2, "little")
         if self.changeSkin == True:
             await ctx.send_msgs([{
@@ -2396,11 +2400,11 @@ class ApeEscapeClient(BizHawkClient):
                 "key": f"AE_spikecolor_{ctx.team}_{ctx.slot}",
                 "default": 0,
                 "want_reply": False,
-                "operations": [{"operation": "replace", "value": customspikeskin}]
+                "operations": [{"operation": "replace", "value": customspikecolor}]
             }])
             self.changeSkin = False
         #print(f"P_spikecolor# : {spikecolor} customspikeskin: {customspikeskin}")
-        if spikecolor != customspikeskin:
+        if currentspikecolor != customspikecolor:
             # Overwrite the skin if it not currently in place
             Color_Writes += [(RAM.spikeColor, skin_to_bytes, "MainRAM")]
             await bizhawk.write(ctx.bizhawk_ctx, Color_Writes)

@@ -354,42 +354,46 @@ class AutoEquipOption(Choice):
     option_on = 0x01
     default = option_on
 
-class SpikeSkin(Choice):
+class SpikeColor(Choice):
     """
     Determine the color of Spike in-game.
-    Can pick between defined values or use the custom value to enter a personalised color in the "CustomSpikeColor" value
+    Can pick between defined values or use the "custom" value to enter a custom color in the "CustomSpikeColor" value
     Please note that this can be changed at all times with the command "/spikecolor <NameOrHexOfColor>"
     """
-    display_name = "Spike Skin"
+    display_name = "Spike Color"
     option_vanilla = 0
-    option_saturated = 1
-    option_greySaturated = 2
+    option_white = 1
+    option_grey = 2
     option_purple = 3
-    option_darkblue = 4
-    option_neonpink = 5
-    option_grey = 6
-    option_neongreen = 7
-    option_red = 8
-    option_alien = 9
-    option_metal = 10
-    option_orange = 11
-    option_white = 12
-    option_cyan = 13
-    option_clothechange = 14
-    option_darkgreen = 15
-    option_rave = 16
+    option_green = 4
+    option_red = 5
+    option_yellow = 6
+    option_darkgreen = 7
+    option_darkblue = 8
+    option_voidwhite = 9
+    option_voidpurple = 10
+    option_voidorange = 11
+    option_voidred = 12
+    option_neonpink = 13
+    option_neongreen = 14
+    option_blueskin = 15
+    option_purpleskin = 16
+    option_alien = 17
+    option_alien2 = 18
+    option_metal = 19
+    option_rave = 20
     option_custom = -1
     default = option_vanilla
 
-class CustomSpikeSkin(FreeText):
+class CustomSpikeColor(FreeText):
     """
-    Use a custom Spike Skin by choosing "Custom" in the "Spike Skin" option
+    Use a custom Spike Color by choosing "Custom" in the "Spike Skin" option
     To use a custom color, enter an hexadecimal value of 4 characters with the desired color.
-    Range : 0000 to FFFF (3010 is the vanilla color)
+    Range : 0000 to FFFF (1030 is the vanilla color)
     **Note : If an invalid color is entered, it will be set to "Vanilla"
     """
     default = {
-      "Custom": "3010"
+      "Custom": "1030"
     }
 
 @dataclass
@@ -415,6 +419,6 @@ class ApeEscapeOptions(PerGameCommonOptions):
     itemdisplay: ItemDisplayOption
     kickoutprevention: KickoutPreventionOption
     autoequip: AutoEquipOption
-    spikeskin: SpikeSkin
-    customspikeskin : CustomSpikeSkin
+    spikecolor: SpikeColor
+    customspikecolor : CustomSpikeColor
     death_link: DeathLink
