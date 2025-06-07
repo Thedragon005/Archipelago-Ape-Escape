@@ -264,7 +264,7 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
     presetColors = list(RAM.colortable.keys())
     presetValues = list(RAM.colortable.values())
     if color == "":
-        if client.datastoreskin == -2 or client.datastoreskin is None:
+        if client.DS_spikecolor == -2 or client.DS_spikecolor is None:
             #No datastorage, use slot_data
             try:
                 spikecolor = presetColors[ctx.slot_data["spikecolor"]]
@@ -273,11 +273,11 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
                 spikecolor = presetColors[0]
         else:
             # Custom
-            if type(client.datastoreskin) is str or type(client.datastoreskin) is int:
+            if type(client.DS_spikecolor) is str or type(client.DS_spikecolor) is int:
                 error = False
                 try:
                     #Preset color name
-                    spikecolor = presetColors[presetValues.index(client.datastoreskin)]
+                    spikecolor = presetColors[presetValues.index(client.DS_spikecolor)]
                 except:
                     spikecolor = ""
                     error = True
@@ -286,24 +286,24 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
                     try:
                         # Preset color number
                         #print("Not in preset list(NAME)")
-                        spikecolor = presetColors[client.datastoreskin]
+                        spikecolor = presetColors[client.DS_spikecolor]
                     except:
                         #print("Not in preset list(COLOR#)")
-                        spikecolor = client.datastoreskin
+                        spikecolor = client.DS_spikecolor
             else:
                 # Custom but numeral
-                spikecolor = presetColors[client.datastoreskin]
+                spikecolor = presetColors[client.DS_spikecolor]
         logger.info(f"Current Spike color: {spikecolor}\n"
                     f"    To change the status, use the command like so: /spikecolor [color]\n"
                     f"    Accepts Hex values (\"0000\" to \"FFFF\") and preset values\n"
                     f"    Presets : {presetColors}\n")
         return
     elif color.lower() in presetColors:
-        client.datastoreskin = str(presetColors[presetColors.index(color)])
+        client.DS_spikecolor = str(presetColors[presetColors.index(color)])
     elif len(color) == 4:
         try:
             test = bytes.fromhex(str(color))
-            client.datastoreskin = f"{str(color)}"
+            client.DS_spikecolor = f"{str(color)}"
         except:
             logger.info(f"Invalid argument for function ""color""\n")
             return
@@ -408,7 +408,7 @@ class ApeEscapeClient(BizHawkClient):
     def initialize_client(self):
         self.currentCoinAddress = RAM.startingCoinAddress
         self.countMonkeys = False
-        self.datastoreskin = -2
+        self.DS_spikecolor = -2
         self.changeSkin = False
         self.lastenteredLevel = 0
         self.boolsyncprogress = False
@@ -584,7 +584,7 @@ class ApeEscapeClient(BizHawkClient):
             if f"AE_DR_Block_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DR_Block_Pushed = keys.get(f"AE_DR_Block_{ctx.team}_{ctx.slot}", None),
             if f"AE_spikecolor_{ctx.team}_{ctx.slot}" in args["keys"]:
-                self.datastoreskin = keys.get(f"AE_spikecolor_{ctx.team}_{ctx.slot}", None),
+                self.DS_spikecolor = keys.get(f"AE_spikecolor_{ctx.team}_{ctx.slot}", None),
 
 
     async def check_gadgets(self, ctx: "BizHawkClientContext",gadgetStateFromServer) -> list[str]:
@@ -917,7 +917,7 @@ class ApeEscapeClient(BizHawkClient):
             if self.changeBHDisplay == True:
                 self.changeBHDisplay = False
                 await self.bh_display_option_handling(ctx,"change")
-            if self.datastoreskin == -2:
+            if self.DS_spikecolor == -2:
                 await self.Spike_Color_handling(ctx, "", "init")
 
             # Not send anything before having the options set
@@ -2302,7 +2302,7 @@ class ApeEscapeClient(BizHawkClient):
 
     async def Spike_Color_handling(self, ctx: "BizHawkClientContext", Color_Reads, context) -> None:
         if context == "init":
-            #print(f"Datastoredskin : {self.datastoreskin}")
+            #print(f"Datastoredskin : {self.DS_spikecolor}")
             await ctx.send_msgs([{
                 "cmd": "Get",
                 "keys": [f"AE_spikecolor_{ctx.team}_{ctx.slot}"]
@@ -2324,28 +2324,28 @@ class ApeEscapeClient(BizHawkClient):
         if (gameState not in validgamestates):
             return None
 
-        if self.datastoreskin != -2:
-            if type(self.datastoreskin) is tuple:
-                #print(f"Changed datastorage:{self.datastoreskin[0]}")
-                self.datastoreskin = self.datastoreskin[0]
-            if type(self.datastoreskin) is str:
-                if str(self.datastoreskin).lower() in presetskins:
-                    #print (f"C_SpikeSkin# : {presetskins.index(str(self.datastoreskin).lower())}")
-                    spikecolor = presetskins.index(str(self.datastoreskin).lower())
-                    customspikecolor = presetskinsvalues[presetskins.index(str(self.datastoreskin).lower())]
+        if self.DS_spikecolor != -2:
+            if type(self.DS_spikecolor) is tuple:
+                #print(f"Changed datastorage:{self.DS_spikecolor[0]}")
+                self.DS_spikecolor = self.DS_spikecolor[0]
+            if type(self.DS_spikecolor) is str:
+                if str(self.DS_spikecolor).lower() in presetskins:
+                    #print (f"C_SpikeSkin# : {presetskins.index(str(self.DS_spikecolor).lower())}")
+                    spikecolor = presetskins.index(str(self.DS_spikecolor).lower())
+                    customspikecolor = presetskinsvalues[presetskins.index(str(self.DS_spikecolor).lower())]
                 else:
                     # Not in vanilla skins, treat as custom
                     spikecolor = -1
-                    customspikecolor = self.datastoreskin
-            elif type(self.datastoreskin) is int:
-                #print(f"Y01:{self.datastoreskin}")
+                    customspikecolor = self.DS_spikecolor
+            elif type(self.DS_spikecolor) is int:
+                #print(f"Y01:{self.DS_spikecolor}")
                 spikecolor = -1
-                customspikecolor = self.datastoreskin
+                customspikecolor = self.DS_spikecolor
 
             else:
                 #Non-valid type, treat as "Vanilla"
                 #print("Non valid, take vanilla")
-                #print(type(self.datastoreskin))
+                #print(type(self.DS_spikecolor))
                 spikecolor = 0
                 customspikecolor = 0x1030
         else:
