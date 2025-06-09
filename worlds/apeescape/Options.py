@@ -357,7 +357,7 @@ class AutoEquipOption(Choice):
 class SpikeColor(Choice):
     """
     Determine the color of Spike in-game.
-    Can pick between defined values or use the "custom" value to enter a custom color in the "CustomSpikeColor" value
+    Can pick between defined values or use the "custom" value to enter a custom color in the "CustomSpikeColor" option
     Please note that this can be changed at all times with the command "/spikecolor <NameOrHexOfColor>"
     """
     display_name = "Spike Color"
