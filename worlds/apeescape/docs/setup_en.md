@@ -3,20 +3,25 @@
 ## Required Software
 - [Archipelago](https://github.com/ArchipelagoMW/Archipelago/releases). Please use version 0.6.1 or later for integrated
 BizHawk support.
-- Ape Escape (USA) ISO or BIN/CUE.
+- Ape Escape (USA) ISO or BIN/CUE. Either an original black label version or the Greatest Hits version should work.
 - [BizHawk](https://tasvideos.org/BizHawk/ReleaseHistory) 2.7 to 2.9.1. Bizhawk version 2.10 or other emulators are **not** supported.
 - The latest `apeescape.apworld` file. You can find this on the [Releases page](https://github.com/Thedragon005/Archipelago-Ape-Escape/releases/latest). Put this in your `Archipelago/custom_worlds` folder.
 
-### Configuring BizHawk
-
+## Configuring BizHawk
 Once you have installed BizHawk, open `EmuHawk.exe` and change the following settings:
 
 - If you're using BizHawk 2.7 or 2.8, go to `Config > Customize`. On the Advanced tab, switch the Lua Core from
 `NLua+KopiLua` to `Lua+LuaInterface`, then restart EmuHawk. (If you're using BizHawk 2.9, you can skip this step.)
 - Under `Config > Customize`, check the "Run in background" option to prevent disconnecting from the client while you're
 tabbed out of EmuHawk.
+- Under `Config > Preferred Cores > PSX`, select NymaShock.
 - Open any PlayStation game in EmuHawk and go to `Config > Controllers…` to configure your inputs. If you can't click
 `Controllers…`, it's because you need to load a game first.
+- Ape Escape is very particular about its analog setup: go to `PSX > Settings` and select `Sync Settings`. Change Virtual
+Port 1 to Dual Analog to help prevent deadzone issues.
+You may need to invert Sensitivity for the up/down axis to -100%.
+This can be found under Analog Controls through `Config > Controllers…`.
+Depending on your controller, you may also want to tweak the Deadzone. Something like 6% is recommended for a DualShock 4.
 - Consider clearing keybinds in `Config > Hotkeys…` if you don't intend to use them. Select the keybind and press Esc to
 clear it.
 
@@ -42,10 +47,7 @@ top text field of the client and click Connect.
 
 You should now be able to receive and send items. You'll need to do these steps every time you want to reconnect.
 
-## Tips on joystick configuration for Ape Escape on Bizhawk
-
-Analog sensitivity in Bizhawk can be a bit of a pain to get working at first.
-You may need to bind them inverted to how you expect.
-The first time, you'll want to go up to the menu at the top of Bizhawk, click PSX, open the settings,
-go to the Sync Settings tab, scroll down a little bit, and make sure Virtual Port 1 is set to dualanalog.
-If you don't, analog sticks will be a little weird when running exactly to the right
+## Ending a session
+- Ape Escape does not automatically save your progress. When you're done playing, either save your game to a virtual
+memory card in the save station (recommended) or make a savestate to resume later. When reconnecting later, Archipelago
+will send you any items you received while disconnected.
