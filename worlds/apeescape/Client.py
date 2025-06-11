@@ -58,26 +58,26 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
                 f"Commands for Ape Escape\n"
                 f"----------------------------------------------\n"
                 f"  /ae_commands\n"
-                f"      Description : Show this list\n"
+                f"      Description: Show this list\n"
                 f"  /bh_itemdisplay [On/Off]\n"
-                f"      Description : Display items directly in the Bizhawk client\n"
+                f"      Description: Display items directly in the Bizhawk client\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /prevent_kickout [On/Off]\n"
-                f"      Description : If on, prevents Spike from being ejected \n"
+                f"      Description: If on, prevents Spike from being ejected \n"
                 f"                    after catching all monkeys in a level\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /deathlink [On/Off]\n"
-                f"      Description : Enable/Disable the deathlink option\n"
+                f"      Description: Enable/Disable the deathlink option\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /auto_equip [On/Off]\n"
-                f"      Description : When on, will equip gadgets if there is a free face button\n"
+                f"      Description: When on, will equip gadgets if there is a free face button\n"
                 f"      [Optional] Status (On/Off) : Toggle or Enable/Disable the option\n"
                 f"  /syncprogress \n"
-                f"      Description : Fetch the server's state of monkeys and sync it into the game\n"
+                f"      Description: Fetch the server's state of monkeys and sync it into the game\n"
                 f"      [Optional] \"cancel\" : If prompted, cancel the currently pending sync\n"
                 f"  /spikecolor \n"
-                f"      Description : Display/Change Spike's color palette according to presets or Hex value\n"
-                f"      Presets : vanilla, saturated, greysaturated, purple, darkblue, neonpink, grey, neongreen,\n"
+                f"      Description: Display/Change Spike's color palette according to presets or Hex value\n"
+                f"      Presets: vanilla, saturated, greysaturated, purple, darkblue, neonpink, grey, neongreen,\n"
                 f"      red, alien, metal, orange, white, cyan, clotchange, darkgreen, yellow, rave\n"
                 f"      [Optional] color Name of the preset or Hex Value from \"0000\" to \"FFFF\"")
 
@@ -295,9 +295,9 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
             except:
                 pass
         logger.info(f"Current Spike color: {spikecolor}\n"
-                    f"    To change the status, use the command like so: /spikecolor [color]\n"
+                    f"    To change Spike's color, use the following command: /spikecolor [color]\n"
                     f"    Accepts Hex values (\"0000\" to \"FFFF\") and preset values\n"
-                    f"    Presets : {presetColors}\n")
+                    f"    Presets: {presetColors}\n")
         return
     elif color.lower() in presetColors:
         client.DS_spikecolor = str(presetColors[presetColors.index(color)])
@@ -546,11 +546,11 @@ class ApeEscapeClient(BizHawkClient):
     def on_package(self, ctx: "BizHawkClientContext", cmd: str, args: Dict[str, Any]) -> None:
         if cmd == "Connected":
             logger.info(f"================================================\n"
-                        f"     -- Connected to Bizhawk successfully -- !  \n"
-                        f"Archipelago Ape Escape version {self.client_version}\n"
+                        f"    -- Connected to Bizhawk successfully! --    \n"
+                        f"      Archipelago Ape Escape version {self.client_version}      \n"
                         f"================================================\n"
-                        f"Custom commands are available for this game     \n"
-                        f"Type /ae_commands for the full list             \n"
+                        f"Custom commands are available for this game.    \n"
+                        f"Type /ae_commands for the full list.            \n"
                         f"================================================\n")
 
         if cmd == "Bounced":
