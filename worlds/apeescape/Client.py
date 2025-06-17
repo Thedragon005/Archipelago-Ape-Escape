@@ -1673,6 +1673,31 @@ class ApeEscapeClient(BizHawkClient):
                 if kickoutofLevel == 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                     writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
+                if RAM.gameState["Cleared"] == gameState:
+                    print ("Cleared")
+                    print(f"SA_Completed:{SA_Completed},temp:{temp_SA_Completed}")
+                    print(f"GA_Completed:{GA_Completed},temp:{temp_GA_Completed}")
+
+                    # Todo Make sure this work, in theory this should replace the SA and GA complete address if they are not already done, then store the old values in the variable
+                    #if SA_Completed != 0x19:
+                    if temp_SA_Completed == 0xFF:
+                        writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    #if GA_Completed != 0x19:
+                        writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
+                elif RAM.gameState["LevelSelect"] != gameState:
+                    # Should reset the values once "Completed" state is exited
+                    # Could maybe check if in Time Hub instead ?
+                    if temp_SA_Completed != 0xFF:
+                        print("SA Correced back")
+                        writes += [(RAM.SA_CompletedAddress, temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    # Maybe not needed for GA since it will result in 0 but kept just to be safe
+                    if temp_SA_Completed != 0xFF:
+                        print("GA Correced back")
+                        writes += [(RAM.GA_CompletedAddress, temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
@@ -3028,13 +3053,13 @@ class ApeEscapeClient(BizHawkClient):
             if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
                 LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
-            if SA_Completed != 0x00 and Temp_SA_Completed == 0xFF:
+            if Temp_SA_Completed == 0xFF:
                 LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 LS_Writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
 
-        else:
+        elif RAM.gameState["Cleared"] != gameState:
             if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
                 LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
