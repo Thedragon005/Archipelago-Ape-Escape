@@ -369,7 +369,7 @@ class SpikeColor(Choice):
     option_red = 5
     option_yellow = 6
     option_darkblue = 7
-    option_voidwhite = 6
+    option_voidwhite = 8
     option_voidpurple = 9
     option_voidorange = 10
     option_neonpink = 11
