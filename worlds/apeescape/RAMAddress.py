@@ -928,7 +928,8 @@ class RAM:
         "ThreeRocket": 0x219,
         "BananaPeelTrap": 0x250,
         "GadgetShuffleTrap": 0x251,
-        "MonkeyMashTrap": 0x252
+        "MonkeyMashTrap": 0x252,
+        "RainbowCookie": 0x270
 
     }
 
@@ -1166,8 +1167,6 @@ class RAM:
     # These 4 addresses are consecutive and will be written as a single 4-byte block starting at ANALOG_START_ADDR
     ANALOG_START_ADDR = 0x0B87A4  # Start of analog joystick data (RY, RX, LY, LX)
 
-    MEMORY_DOMAIN = "MainRAM"  # Common for PS1 I/O registers
-
     # --- Button Mappings to Bit Positions within a conceptual 16-bit controller word ---
     # This dictionary maps the button name (e.g., "P1 X") to its bit position (0-15)
     # within the combined 16-bit digital input word.
@@ -1190,8 +1189,21 @@ class RAM:
         "P1 Square": 15,  # Bit 7 (high byte)
     }
     #ANALOG_STICK_ORDER = ["P1 R_Y", "P1 R_X", "P1 L_Y", "P1 L_X"]
+
+
     ANALOG_STICK_ORDER = ["P1 R_Y", "P1 R_X"]
     ANALOG_CENTER_VALUE = 0x80  # Default center value for 8-bit analog sticks (128 decimal)
+    RIGHT_JOYSTICK_PSEUDO_INPUT = "Right Joystick"
+
+    SPIKE_INVINCIBILITY_ADDR = 0x05E748 # Address for Spike's invincibility flag/state
+    SPIKE_GOLDEN_FORM_ADDR = 0x0EC2E2    # Address for Spike's golden visual state flag/model ID
+
+    # Values to write to these addresses to enable/disable effects.
+    INVINCIBLE_ON_VALUE = 0xA46200E0  # Value to write to SPIKE_INVINCIBILITY_ADDR to make Spike invincible
+    INVINCIBLE_OFF_VALUE = 0xA46200E8 # Value to write to SPIKE_INVINCIBILITY_ADDR to make Spike vulnerable
+
+    GOLDEN_ON_VALUE = 0x01      # Value to write to SPIKE_GOLDEN_FORM_ADDR to activate golden form
+    GOLDEN_OFF_VALUE = 0x00     # Value to write to SPIKE_GOLDEN_FORM_ADDR to revert form
 
     isUnderwater = 0x0F4DCA
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)

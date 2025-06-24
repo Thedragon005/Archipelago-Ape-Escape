@@ -330,7 +330,7 @@ class ApeEscapeWorld(World):
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets and Nothing, respectively.
         # TODO: expose these weights as a YAML option.
-        weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 0]
+        weights = [7, 16, 3, 24, 14, 4, 9, 3, 9, 3,7, 0]
 
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
@@ -357,6 +357,8 @@ class ApeEscapeWorld(World):
                 self.itempool += [self.create_item_filler(AEItem.Rocket.value)]
             elif weights[8] < randomFiller <= weights[9]:
                 self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
+            elif weights[9] < randomFiller <= weights[10]:
+                self.itempool += [self.create_item_useful(AEItem.RainbowCookie.value)]
             else:
                 self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
 

@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Uni
 
 from BaseClasses import ItemClassification
 from NetUtils import ClientStatus, NetworkItem
-from .Traps import *
+from .SpecialItems import *
 from .Strings import AEItem
 from .Items import gadgetsValues
 
@@ -405,6 +405,7 @@ class ApeEscapeClient(BizHawkClient):
     def __init__(self) -> None:
         super().__init__()
         self.ape_handler = MonkeyMashHandler(None)
+        self.rainbow_cookie = RainbowCookieHandler(None)
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
@@ -453,7 +454,7 @@ class ApeEscapeClient(BizHawkClient):
         self.bool_LampGlobal = False
         self.gotBanana = False
         self.lowOxygenCounter = 1
-        self.trap_queue = []
+        self.specialitem_queue = []
         self.bizhawk_itemdisplay = False
         self.bizhawk_display_set = False
 
@@ -956,9 +957,12 @@ class ApeEscapeClient(BizHawkClient):
                 return
             # Set locations list to use within functions
             self.locations_list = ctx.checked_locations
-            #print(self.locations_list)
+
             if self.ape_handler.bizhawk_context is None:
                 self.ape_handler = MonkeyMashHandler(ctx)  # Pass the full BizHawkClientContext
+
+            if self.rainbow_cookie.bizhawk_context is None:
+                self.rainbow_cookie = RainbowCookieHandler(ctx)  # Pass the full BizHawkClientContext
 
             # Game state, locations and items read
             readTuples = [
@@ -1417,7 +1421,9 @@ class ApeEscapeClient(BizHawkClient):
                                     rocketAmmo = 9
                         elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["MonkeyMashTrap"]:
                         #elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
-                            self.trap_queue.append((item.item - self.offset))
+                            self.specialitem_queue.append((item.item - self.offset))
+                        elif RAM.items["RainbowCookie"] <= (item.item - self.offset) <= RAM.items["RainbowCookie"]:
+                            self.specialitem_queue.append((item.item - self.offset))
 
                         # Not needed anymore, will see if this impacts something then remove it later
                         # Send message of received item - Victory has a special message above
@@ -1646,6 +1652,29 @@ class ApeEscapeClient(BizHawkClient):
                         "locations": list(x for x in mail_to_send)
                     }])
 
+            # Check for Jake Victory
+            if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
+                coins = set()
+                coins.add(295 + self.offset)
+                coins.add(296 + self.offset)
+                coins.add(297 + self.offset)
+                coins.add(298 + self.offset)
+                coins.add(299 + self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in coins)
+                }])
+            elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
+                coins = set()
+                coins.add(290 + self.offset)
+                coins.add(291 + self.offset)
+                coins.add(292 + self.offset)
+                coins.add(293 + self.offset)
+                coins.add(294 + self.offset)
+                await ctx.send_msgs([{
+                    "cmd": "LocationChecks",
+                    "locations": list(x for x in coins)
+                }])
 
             # Check for victory conditions
             specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
@@ -1716,58 +1745,25 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                     writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
                 if RAM.gameState["Cleared"] == gameState:
-                    print ("Cleared")
-                    print(f"SA_Completed:{SA_Completed},temp:{temp_SA_Completed}")
-                    print(f"GA_Completed:{GA_Completed},temp:{temp_GA_Completed}")
-
-                    # Todo Make sure this work, in theory this should replace the SA and GA complete address if they are not already done, then store the old values in the variable
-                    #if SA_Completed != 0x19:
                     if temp_SA_Completed == 0xFF:
                         writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
-                    #if GA_Completed != 0x19:
                         writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
                 elif RAM.gameState["LevelSelect"] != gameState:
                     # Should reset the values once "Completed" state is exited
                     # Could maybe check if in Time Hub instead ?
                     if temp_SA_Completed != 0xFF:
-                        print("SA Correced back")
                         writes += [(RAM.SA_CompletedAddress, temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     # Maybe not needed for GA since it will result in 0 but kept just to be safe
                     if temp_SA_Completed != 0xFF:
-                        print("GA Correced back")
                         writes += [(RAM.GA_CompletedAddress, temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
-            # Check for Jake Victory
-            if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
-                coins = set()
-                coins.add(295 + self.offset)
-                coins.add(296 + self.offset)
-                coins.add(297 + self.offset)
-                coins.add(298 + self.offset)
-                coins.add(299 + self.offset)
-                await ctx.send_msgs([{
-                    "cmd": "LocationChecks",
-                    "locations": list(x for x in coins)
-                }])
-            elif currentRoom == 36 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
-                coins = set()
-                coins.add(290 + self.offset)
-                coins.add(291 + self.offset)
-                coins.add(292 + self.offset)
-                coins.add(293 + self.offset)
-                coins.add(294 + self.offset)
-                await ctx.send_msgs([{
-                    "cmd": "LocationChecks",
-                    "locations": list(x for x in coins)
-                }])
-            # If there is message waiting in the queue, print them to Bizhawk
-
+            # If there is messages waiting in the queue, print them to Bizhawk
             if self.messagequeue is not None and self.messagequeue != []:
                 await self.process_bizhawk_messages(ctx)
 
@@ -1779,16 +1775,21 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
 
 
-            # ======== Trap Handling =========
-            # For Traps.
+            # ======== Special Items Handling =========
+            # For Traps and Special Items.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning]
-            await self.traps_handling(ctx, Trap_Reads)
+            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning]
+            await self.specialitems_handling(ctx, SpecialItems_Reads)
             # ================================
 
             # ======== Monkey Mashing =========
             if self.ape_handler.is_active:
                 await self.ape_handler.send_monkey_inputs()  # Call the method to handle inputs
+            # ================================
+
+            # ======== Rainbow Cookie =========
+            if self.rainbow_cookie.is_active:
+                await self.rainbow_cookie.update_state_and_deactivate()  # Call the method to handle inputs
             # ================================
 
             # ======= Credits skipping =======
@@ -2969,58 +2970,60 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx, Lamps_writes)
 
 
-    async def traps_handling(self, ctx: "BizHawkClientContext", Trap_Reads) -> None:
+    async def specialitems_handling(self, ctx: "BizHawkClientContext", SpecialItems_Reads) -> None:
         # TODO: GadgetShuffle Trap is very unstable right now, it had been deactivated
 
         # Notes for traps for now:
         # Banana Peel = Slip by setting SpikeState2 to 0x2F
-        gameState = Trap_Reads[0]
-        gotMail = Trap_Reads[1]
-        spikeState2 = Trap_Reads[2]
-        menuState = Trap_Reads[3]
-        menuState2 = Trap_Reads[4]
-        currentGadgets = Trap_Reads[5]
-        currentRoom = Trap_Reads[6]
-        gameRunning = Trap_Reads[7]
+        gameState = SpecialItems_Reads[0]
+        gotMail = SpecialItems_Reads[1]
+        spikeState = SpecialItems_Reads[2]
+        spikeState2 = SpecialItems_Reads[3]
+        menuState = SpecialItems_Reads[4]
+        menuState2 = SpecialItems_Reads[5]
+        currentGadgets = SpecialItems_Reads[6]
+        currentRoom = SpecialItems_Reads[7]
+        gameRunning = SpecialItems_Reads[8]
 
-        Trap_Writes = []
-        Trap_Guards = []
+        SpecialItems_Writes = []
+        SpecialItems_Guards = []
 
         # Gamestate
         valid_gameStates = (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'], RAM.gameState['TimeStation'], RAM.gameState['Jake'])
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
         is_sliding = (spikeState2 == 0x2F)
-        is_idle = (spikeState2 in {0x80,0x81,0x82,0x83,0x84})
+        is_idle = (spikeState == 0x18)and (spikeState2 in {0x80,0x81,0x82,0x83,0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
         cannot_control = (gameRunning == 0)
 
         if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle or cannot_control):
             self.ape_handler.pause = True
+            self.rainbow_cookie.pause = True
         else:
             self.ape_handler.pause = False
+            self.rainbow_cookie.pause = False
 
-        if self.trap_queue == []:
+        if self.specialitem_queue == []:
             #Exit if no traps
             return None
         else:
             # Does not send the traps in these states
             if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race or is_idle or cannot_control):
-                # print("Waiiiitttiinnng for...valid state")
                 if is_idle:
                     # Trigger a Wake Up for spike. Banana Peel is deadly while Idle
-                    Trap_Writes += [(RAM.spikeIdleTimer, 0x0000.to_bytes(2, "little"), "MainRAM")]
-                    await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
+                    SpecialItems_Writes += [(RAM.spikeIdleTimer, 0x0000.to_bytes(2, "little"), "MainRAM")]
+                    await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
                 return None
                 # Exit without sending trap, keeping it active for the next pass
 
-            if self.trap_queue[0] == RAM.items['BananaPeelTrap']:
-                self.trap_queue.pop(0)
-                Trap_Writes += [(RAM.spikeState2Address, 0x2F.to_bytes(1, "little"), "MainRAM")]
-            elif self.trap_queue[0] == RAM.items['GadgetShuffleTrap']:
-                self.trap_queue.pop(0)
+            if self.specialitem_queue[0] == RAM.items['BananaPeelTrap']:
+                self.specialitem_queue.pop(0)
+                SpecialItems_Writes += [(RAM.spikeState2Address, 0x2F.to_bytes(1, "little"), "MainRAM")]
+            elif self.specialitem_queue[0] == RAM.items['GadgetShuffleTrap']:
+                self.specialitem_queue.pop(0)
 
-                # print(self.trap_queue)
+                # print(self.specialitem_queue)
                 chosen_gadgets = []
                 chosen_values = [0, 0, 0, 0]
                 faces = [0, 1, 2, 3]
@@ -3047,10 +3050,10 @@ class ApeEscapeClient(BizHawkClient):
                         faces.pop(randomFace)
                 # print(chosen_gadgets)
 
-                Trap_Writes += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
-                Trap_Writes += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
-                Trap_Writes += [(RAM.circleGadgetAddress, chosen_values[2].to_bytes(1, "little"), "MainRAM")]
-                Trap_Writes += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
+                SpecialItems_Writes += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
+                SpecialItems_Writes += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
+                SpecialItems_Writes += [(RAM.circleGadgetAddress, chosen_values[2].to_bytes(1, "little"), "MainRAM")]
+                SpecialItems_Writes += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
 
                 # Select a gadget slot
                 randomSelect = int(round(random.random() * (len(chosen_values) - 1), None))
@@ -3071,25 +3074,33 @@ class ApeEscapeClient(BizHawkClient):
                     Trap_Writes1 += [(RAM.hoopFixAddress, 0x0000000000000000.to_bytes(14, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
                 if spikeState2 in (128, 129, 131):
-                    Trap_Writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
-                Trap_Writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
+                    SpecialItems_Writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
+                SpecialItems_Writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
                 # if chosen_values[randomSelect] != 0xFF:
                     # print(chosen_values[randomSelect])
                     # print("Selected gadget : " + chosen_gadgets[randomSelect])
                 # else:
                     # print("Selected gadget : NONE")
-            elif self.trap_queue[0] == RAM.items['MonkeyMashTrap']:
-                self.trap_queue.pop(0)
-                mash_duration = 15  # Example: 10 seconds per powerup item
-                self.ape_handler.activate_monkey(mash_duration)
+            elif self.specialitem_queue[0] == RAM.items['MonkeyMashTrap']:
+                self.specialitem_queue.pop(0)
+                mash_duration = 15  # Example: 15 seconds per powerup item
                 if self.ape_handler.is_active:
                     message = f"Monkey Mash trap extended by {mash_duration}s ! (Current:{round(self.ape_handler.duration,0)}s)"
                 else:
                     message = f"Monkey Mash trap activated for {mash_duration}s !"
-                await self.send_bizhawk_message(ctx, message, "Passthrough", "")
+                await self.send_bizhawk_message(ctx, message,"Passthrough","")
+                self.ape_handler.activate_monkey(mash_duration)
                 #print(message)
-
-            await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
+            elif self.specialitem_queue[0] == RAM.items['RainbowCookie']:
+                self.specialitem_queue.pop(0)
+                item_duration = 10  # Example: 10 seconds per powerup item
+                if self.rainbow_cookie.is_active:
+                    message = f"Rainbow Cookie extended by {item_duration}s ! (Current:{round(self.rainbow_cookie.duration,0)}s)"
+                else:
+                    message = f"Rainbow Cookie activated for {item_duration}s !"
+                await self.send_bizhawk_message(ctx,message,"Passthrough","")
+                await self.rainbow_cookie.activate_rainbow_cookie(item_duration)
+            await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
 
 
     async def level_select_optimization(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
