@@ -328,9 +328,9 @@ class ApeEscapeWorld(World):
                     self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
 
         # Junk item fill: randomly pick items according to a set of weights.
-        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets and Nothing, respectively.
+        # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets, Rainbow Cookie and Nothing, respectively.
         # TODO: expose these weights as a YAML option.
-        weights = [7, 16, 3, 24, 14, 4, 9, 3, 9, 3,7, 0]
+        weights = [7, 16, 3, 24, 14, 4, 9, 3, 9, 3, 8, 0]
 
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
