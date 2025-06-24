@@ -104,8 +104,7 @@ class MonkeyMashHandler:
         self.duration = 0
         self.remaining_time = 0
         self.last_update = 0
-
-        # NEW: Add a pause variable
+        self.max_duration = 30
         self.pause = False
 
         # Initialize the new memory input controller with the BizHawkClientContext
@@ -113,12 +112,11 @@ class MonkeyMashHandler:
             self.bizhawk_client_context) if self.bizhawk_client_context else None
 
         # Define input frequencies and durations
-        self.input_frequency = 1.25  # Changed to 2 seconds as requested
+        self.input_frequency = 0.5
         self.last_input_time = 0  # Timestamp of the last time a NEW input was generated and put
 
         # input_hold_time for how long the inputs will be pressed
-        # Increased hold time to 0.75 seconds for better reliability
-        self.input_hold_time = 0.75
+        self.input_hold_time = 1
 
         self.current_held_inputs = {}  # Stores inputs that are currently being pressed
         self.press_start_time = None  # Timestamp when the current brief press started
@@ -134,10 +132,10 @@ class MonkeyMashHandler:
             self.press_start_time = None  # Reset press start time
             print(f"Monkey Button Mash activated for {duration_seconds} seconds.")
         else:
-            self.remaining_time += duration_seconds
+            new_remaining_time = self.remaining_time + duration_seconds
+            self.remaining_time = min(new_remaining_time, self.max_duration)
             self.duration = self.remaining_time
-            print(
-                f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s")
+            print(f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s")
 
     async def send_monkey_inputs(self):
         # Check BizHawk connection status first, as we might need to clear inputs even if paused
@@ -178,8 +176,8 @@ class MonkeyMashHandler:
                 newly_generated_inputs = {}
 
                 # Reset analog sticks to center for this cycle unless chosen randomly
-                for stick_name in self.input_controller.ANALOG_STICK_ORDER:  # Access via self.input_controller
-                    newly_generated_inputs[stick_name] = self.input_controller.ANALOG_CENTER_VALUE
+                #for stick_name in self.input_controller.ANALOG_STICK_ORDER:  # Access via self.input_controller
+                    #newly_generated_inputs[stick_name] = self.input_controller.ANALOG_CENTER_VALUE
 
                 # Randomly select MULTIPLE inputs (digital or analog) to manipulate
                 # Reverted to random.randint(1, 3) to allow multiple inputs

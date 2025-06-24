@@ -324,8 +324,8 @@ class ApeEscapeWorld(World):
                     # self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                 else:
-                    self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
-                    #self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
+                    #self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
+                    self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
 
 
             # print("Created " + str(trap_count) + " traps.")
