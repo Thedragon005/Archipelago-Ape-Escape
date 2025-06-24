@@ -438,7 +438,7 @@ class ApeEscapeClient(BizHawkClient):
         self.death_counter = None
         self.previous_death_link = 0
         self.pending_death_link: bool = False
-        self.locations_list= {}
+        self.locations_list = {}
         # default to true, as we don't want to send a deathlink until playing
         self.sending_death_link: bool = True
         self.ignore_next_death_link = False
@@ -563,7 +563,6 @@ class ApeEscapeClient(BizHawkClient):
                 if "DeathLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
                     self.on_deathlink(ctx)
 
-
         if cmd in {"PrintJSON"} and "type" in args:
             # When a message is received
             if args["type"] == "ItemSend":
@@ -588,16 +587,15 @@ class ApeEscapeClient(BizHawkClient):
                     else:
                         itemClass = "Other"
 
-
                     recieverName = ctx.player_names[recieverID]
                     senderName = ctx.player_names[senderID]
 
                     if recieverID != ctx.slot and senderID == ctx.slot:
-                        message = f"Sent '{itemName}'({itemClass}) to {recieverName}"
+                        message = f"Sent '{itemName}' ({itemClass}) to {recieverName}"
                     elif recieverID == ctx.slot and senderID != ctx.slot:
-                        message = f"Received '{itemName}'({itemClass}) from {senderName}"
+                        message = f"Received '{itemName}' ({itemClass}) from {senderName}"
                     elif recieverID == ctx.slot and senderID == ctx.slot:
-                        message =  f"You found your own '{itemName}'({itemClass})"
+                        message =  f"You found your own '{itemName}' ({itemClass})"
                     self.messagequeue.append(message)
 
         if cmd == "Retrieved":
@@ -871,7 +869,7 @@ class ApeEscapeClient(BizHawkClient):
     async def process_bizhawk_messages(self, ctx: "BizHawkClientContext") -> None:
         if self.bhdisplay == 1:
             for message in self.messagequeue:
-                await self.send_bizhawk_message(ctx,message,"Custom","")
+                await self.send_bizhawk_message(ctx, message, "Custom", "")
                 self.messagequeue.pop(0)
         else:
             self.messagequeue = []
@@ -1784,7 +1782,7 @@ class ApeEscapeClient(BizHawkClient):
             # ======== Trap Handling =========
             # For Traps.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets,currentRoom,gameRunning]
+            Trap_Reads = [gameState, gotMail, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning]
             await self.traps_handling(ctx, Trap_Reads)
             # ================================
 
@@ -1801,7 +1799,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ======= MM Optimizations =======
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger,MM_Clown_State]
+            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger, MM_Clown_State]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -3088,7 +3086,7 @@ class ApeEscapeClient(BizHawkClient):
                     message = f"Monkey Mash trap extended by {mash_duration}s ! (Current:{round(self.ape_handler.duration,0)}s)"
                 else:
                     message = f"Monkey Mash trap activated for {mash_duration}s !"
-                await self.send_bizhawk_message(ctx,message,"Passthrough","")
+                await self.send_bizhawk_message(ctx, message, "Passthrough", "")
                 #print(message)
 
             await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)

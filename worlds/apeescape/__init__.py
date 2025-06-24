@@ -350,11 +350,11 @@ class ApeEscapeWorld(World):
             elif weights[4] < randomFiller <= weights[5]:
                 self.itempool += [self.create_item_filler(AEItem.BiggerTriangle.value)]
             elif weights[5] < randomFiller <= weights[6]:
-                self.itempool += [self.create_item_useful(AEItem.Flash.value)]
+                self.itempool += [self.create_item_filler(AEItem.Flash.value)]
             elif weights[6] < randomFiller <= weights[7]:
                 self.itempool += [self.create_item_useful(AEItem.ThreeFlash.value)]
             elif weights[7] < randomFiller <= weights[8]:
-                self.itempool += [self.create_item_useful(AEItem.Rocket.value)]
+                self.itempool += [self.create_item_filler(AEItem.Rocket.value)]
             elif weights[8] < randomFiller <= weights[9]:
                 self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
             else:
