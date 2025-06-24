@@ -1,8 +1,6 @@
 from typing import TYPE_CHECKING
 
 from BaseClasses import Region, Item, ItemClassification, CollectionState
-from .Items import ApeEscapeItem
-from .Locations import ApeEscapeLocation
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AEDoor, AELocation
 

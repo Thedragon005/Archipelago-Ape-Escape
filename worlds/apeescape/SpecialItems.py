@@ -2,7 +2,7 @@ import random
 import time
 import worlds._bizhawk as bizhawk
 
-from worlds.apeescape.RAMAddress import RAM
+from .RAMAddress import RAM
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Union
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor

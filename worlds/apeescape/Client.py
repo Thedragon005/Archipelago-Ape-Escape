@@ -5,8 +5,6 @@ import logging
 import time
 import random
 
-from unicodedata import category
-
 import Utils
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Union
 
