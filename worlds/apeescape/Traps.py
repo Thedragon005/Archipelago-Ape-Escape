@@ -130,12 +130,12 @@ class MonkeyMashHandler:
             self.last_input_time = 0  # Reset last input time to trigger immediate input
             self.current_held_inputs = {}  # Ensure no inputs are held from previous state
             self.press_start_time = None  # Reset press start time
-            print(f"Monkey Button Mash activated for {duration_seconds} seconds.")
+            #print(f"Monkey Button Mash activated for {duration_seconds} seconds.")
         else:
             new_remaining_time = self.remaining_time + duration_seconds
             self.remaining_time = min(new_remaining_time, self.max_duration)
             self.duration = self.remaining_time
-            print(f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s")
+            #print(f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s")
 
     async def send_monkey_inputs(self):
         # Check BizHawk connection status first, as we might need to clear inputs even if paused
@@ -196,7 +196,7 @@ class MonkeyMashHandler:
                 self.current_held_inputs = newly_generated_inputs
                 self.last_input_time = current_time  # Update last input generation time
 
-                print(f"[{self.remaining_time:.2f}s remaining] Holding new inputs: {self.current_held_inputs}")
+                #print(f"[{self.remaining_time:.2f}s remaining] Holding new inputs: {self.current_held_inputs}")
 
             # Continuously send the current_held_inputs every frame
             # This ensures the inputs are held for the duration of the input_frequency interval

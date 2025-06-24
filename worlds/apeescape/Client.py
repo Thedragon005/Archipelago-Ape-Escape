@@ -296,7 +296,6 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
                 spikecolor = 0x1030
             try:
                 spikecolor = format(int(spikecolor,16), "x").upper()
-                #print("FORMATTED int")
             except:
                 pass
         logger.info(f"Current Spike color: {spikecolor}\n"
@@ -306,7 +305,6 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
         return
     elif color.lower() in presetColors:
         client.DS_spikecolor = str(presetColors[presetColors.index(color)])
-        #print(client.DS_spikecolor)
     elif len(color) == 4:
         try:
             client.DS_spikecolor = format(int(color,16),"x")
@@ -667,16 +665,12 @@ class ApeEscapeClient(BizHawkClient):
             }])
 
             if self.KickoutPrevention == 2:
-                #print("Still Waiting")
                 return
             if self.KickoutPrevention is None:
-                #print("Used slotdata")
-                #print(ctx.slot_data["kickoutprevention"])
+                #Used slotdata
                 self.preventKickOut = int(ctx.slot_data["kickoutprevention"])
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                # print("Got valid datastorage")
-                # print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.preventKickOut = self.KickoutPrevention
             if self.preventKickOut == 1:
                 msg = "ON"
@@ -706,7 +700,6 @@ class ApeEscapeClient(BizHawkClient):
     async def deathlink_option_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
-                #print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -716,15 +709,10 @@ class ApeEscapeClient(BizHawkClient):
             if self.DeathLinkOption == 2:
                 return
             if self.DeathLinkOption is None:
-                # print("Used slotdata")
-                # print(ctx.slot_data["kickoutprevention"])
+                # Used slotdata
                 self.deathlink = int(ctx.slot_data["death_link"])
-                # self.KickoutPrevention = self.preventKickOut
-                # self.changeKickout = True
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                # print("Got valid datastorage")
-                # print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.deathlink = self.DeathLinkOption
             if self.deathlink == 1:
                 msg = "ON"
@@ -753,7 +741,6 @@ class ApeEscapeClient(BizHawkClient):
     async def autoequip_option_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
-                # print("skip")
                 return
             await ctx.send_msgs([{
                 "cmd": "Get",
@@ -762,16 +749,12 @@ class ApeEscapeClient(BizHawkClient):
 
             if self.AutoEquipOption == 2:
                 return
-            # print(self.AutoEquipOption)
             if self.AutoEquipOption is None:
-                # print("Used slotdata")
-                # print(ctx.slot_data["autoequip"])
+                # Used slotdata
                 self.autoequip = int(ctx.slot_data["autoequip"])
                 self.AutoEquipOption = self.autoequip
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                # print("Got valid datastorage")
-                # print(f"DATASTORAGE_{self.autoequip}_KP{self.AutoEquipOption}_{context}")
                 self.autoequip = self.AutoEquipOption
             if self.autoequip == 1:
                 msg = "ON"
@@ -809,15 +792,11 @@ class ApeEscapeClient(BizHawkClient):
             if self.BHDisplayOption == 2:
                 return
             if self.BHDisplayOption is None:
-                # print("Used slotdata")
-                # print(ctx.slot_data["kickoutprevention"])
+                # Used slotdata
                 self.bhdisplay = int(ctx.slot_data["itemdisplay"])
                 self.BHDisplayOption = self.bhdisplay
-                # self.changeBHDisplay = True
             else:
                 # Got valid Datastorage, take this instead of slot_data
-                # print("Got valid datastorage")
-                # print(f"DATASTORAGE_PK{self.preventKickOut}_KP{self.KickoutPrevention}_{context}")
                 self.bhdisplay = self.BHDisplayOption
             if self.bhdisplay == 1:
                 msg = "ON"
@@ -841,7 +820,6 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 await self.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Passthrough", "")
 
-            # self.bhdisplay = self.BHDisplayOption
             print(f"set AE_bhdisplay_{ctx.team}_{ctx.slot} to {self.bhdisplay}")
 
     async def syncprogress(self, ctx: "BizHawkClientContext") -> None:
@@ -983,7 +961,6 @@ class ApeEscapeClient(BizHawkClient):
             #print(self.locations_list)
             if self.ape_handler.bizhawk_context is None:
                 self.ape_handler = MonkeyMashHandler(ctx)  # Pass the full BizHawkClientContext
-                #print("MonkeyMashHandler's BizHawkClientContext and internal BizHawkContext have been set and times initialized.")
 
             # Game state, locations and items read
             readTuples = [
@@ -3082,9 +3059,13 @@ class ApeEscapeClient(BizHawkClient):
                 # print("random:" + str(randomSelect))
                 # print(chosen_values)
                 # Attempt to correct the radar being weird on shuffle sometimes
+                # TODO Maybe the key for this is to reset joystick position?
+                Analog_values = {}
+                await self.ape_handler.input_controller.set_inputs(Analog_values)
                 if chosen_values[randomSelect] == 0x02:
                     Trap_Writes1 = []
                     Trap_Writes1 += [(RAM.radarFixAddress, 0x30.to_bytes(1, "little"), "MainRAM")]
+                    Trap_Writes1 += [(RAM.ANALOG_START_ADDR, 0x00008080.to_bytes(2, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
                 elif chosen_values[randomSelect] == 0x04:
                     Trap_Writes1 = []
@@ -3101,14 +3082,14 @@ class ApeEscapeClient(BizHawkClient):
                     # print("Selected gadget : NONE")
             elif self.trap_queue[0] == RAM.items['MonkeyMashTrap']:
                 self.trap_queue.pop(0)
-                mash_duration = 10  # Example: 10 seconds per powerup item
+                mash_duration = 15  # Example: 10 seconds per powerup item
                 self.ape_handler.activate_monkey(mash_duration)
                 if self.ape_handler.is_active:
                     message = f"Monkey Mash trap extended by {mash_duration}s ! (Current:{round(self.ape_handler.duration,0)}s)"
                 else:
                     message = f"Monkey Mash trap activated for {mash_duration}s !"
                 await self.send_bizhawk_message(ctx,message,"Passthrough","")
-                print(message)
+                #print(message)
 
             await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes)
 

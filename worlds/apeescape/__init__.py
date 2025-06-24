@@ -327,9 +327,6 @@ class ApeEscapeWorld(World):
                     #self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                     self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
 
-
-            # print("Created " + str(trap_count) + " traps.")
-
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets and Nothing, respectively.
         # TODO: expose these weights as a YAML option.
@@ -362,7 +359,6 @@ class ApeEscapeWorld(World):
                 self.itempool += [self.create_item_useful(AEItem.ThreeRocket.value)]
             else:
                 self.itempool += [self.create_item_filler(AEItem.Nothing.value)]
-        # print("Created " + str(filler_count) + " filler items.")
 
         self.multiworld.itempool += self.itempool
 
