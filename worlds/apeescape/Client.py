@@ -575,16 +575,23 @@ class ApeEscapeClient(BizHawkClient):
                 if relevant:
                     itemName = ctx.item_names.lookup_in_slot(networkItem.item, recieverID)
                     itemCategory = networkItem.flags
-                    if itemCategory == ItemClassification.progression:
+                    if itemCategory == ItemClassification.progression + ItemClassification.useful:
+                        itemClass = "Prog. Useful"
+                    elif itemCategory == ItemClassification.progression + ItemClassification.trap:
+                        itemClass = "Prog. Trap"
+                    elif itemCategory == ItemClassification.useful + ItemClassification.trap:
+                        itemClass = "Useful Trap"
+                    elif itemCategory == ItemClassification.progression:
                         itemClass = "Progression"
                     elif itemCategory == ItemClassification.useful:
                         itemClass = "Useful"
-                    elif itemCategory == ItemClassification.filler:
-                        itemClass = "Filler"
                     elif itemCategory == ItemClassification.trap:
                         itemClass = "Trap"
+                    elif itemCategory == ItemClassification.filler:
+                        itemClass = "Filler"
                     else:
                         itemClass = "Other"
+                        # Should not happen anymore,except for rare occasions that items get the progressive_skip_balancing tag
 
                     recieverName = ctx.player_names[recieverID]
                     senderName = ctx.player_names[senderID]
