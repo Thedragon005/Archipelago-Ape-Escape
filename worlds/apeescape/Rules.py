@@ -1962,16 +1962,16 @@ def set_locations(self):
     # Barrel
     if self.options.logic == "normal":
         connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Kong.value, 
-                        lambda state: (HasFlyer(state, self) or HasSling(state, self) or (HasHoop(state, self) and (HasClub(state, self) or HasPunch(state, self)))) and HasNet(state, self))
-    else:
-        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Kong.value, 
-                        lambda state: (HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
-    if self.options.logic == "normal":
-        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
                         lambda state: HasSling(state, self) and HasNet(state, self))
     else:
-        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Kong.value, 
                         lambda state: (HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
+    if self.options.logic == "normal":
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
+                        lambda state: (HasFlyer(state, self) or HasSling(state, self) or (HasHoop(state, self) and (HasClub(state, self) or HasPunch(state, self)))) and HasNet(state, self))
+    else:
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.W7L2Phool.value, 
+                        lambda state: (HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self)) and HasNet(state, self))
     
     if self.options.coin == "true":
         connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AELocation.Coin40.value, 
