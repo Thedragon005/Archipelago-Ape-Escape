@@ -297,7 +297,7 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
                 pass
         logger.info(f"Current Spike color: {spikecolor}\n"
                     f"    To change Spike's color, use the following command: /spikecolor [color]\n"
-                    f"    Accepts Hex values (\"000000\" to \"FFFFFF\") and preset values\n"
+                    f"    Accepts RGB Hex values (\"000000\" to \"FFFFFF\") and preset values\n"
                     f"    Presets: {presetColors}\n")
         return
     elif color.lower() in presetColors:
