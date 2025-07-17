@@ -1498,10 +1498,24 @@ class RAM:
     spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
     spikeUltraInstinctAddress = 0x0EC2E2
-    spikeColor = 0x0EC1E5
+    spikeSkinPalette = 0x0EC1E5
+    spikeColor = 0x0EC2D4
     #spikeColor2 = 0x0EC1E6
+    spike_RedColorUpdate = 0x063AEC
+    spike_GreenColorUpdate = 0x063B00
+    spike_BlueColorUpdate = 0x063B04
 
-    colortable = {
+    colortable={
+        "vanilla" : 0xFFFFFF,
+        "red": 0x0000FF,
+        "green": 0x00FF00,
+        "blue": 0xFF0000,
+        "yellow": 0x00FFFF,
+        "purple": 0xFF00FF,
+        "dark": 0x000000,
+    }
+
+    skinpallettable = {
         "vanilla": 0x1030,
         "white": 0x7617,
         "grey": 0x5E03,

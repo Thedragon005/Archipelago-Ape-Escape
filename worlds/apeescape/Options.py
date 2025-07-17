@@ -360,38 +360,24 @@ class SpikeColor(Choice):
     """
     display_name = "Spike Color"
     option_vanilla = 0
-    option_white = 1
-    option_grey = 2
-    option_purple = 3
-    option_green = 4
-    option_red = 5
-    option_yellow = 6
-    option_darkblue = 7
-    option_voidwhite = 8
-    option_voidpurple = 9
-    option_voidorange = 10
-    option_neonpink = 11
-    option_neongreen = 12
-    option_greenskin = 13
-    option_blueskin = 14
-    option_purpleskin = 15
-    option_alien = 16
-    option_alien2 = 17
-    option_metal = 18
-    option_rave = 19
+    option_red = 1
+    option_green = 2
+    option_blue = 3
+    option_yellow = 4
+    option_purple = 5
+    option_dark = 6
     option_custom = -1
     default = option_vanilla
 
 class CustomSpikeColor(FreeText):
     """
     Use a custom color for Spike by choosing "Custom" in the "Spike Color" option.
-    Enter an hexadecimal value of 4 characters with the desired color.
-    Range: 0000 to FFFF (1030 is the vanilla color)
+    Enter an RGB hexadecimal value for the desired color.
+    Range: 000000 to FFFFFF (FFFFFF is the vanilla color)
     **Note: If an invalid color is entered, it will be set to "Vanilla"!
-    **TODO: document the color format
     """
     default = {
-      "Custom": "1030"
+      "Custom": "FFFFFF"
     }
 
 @dataclass
