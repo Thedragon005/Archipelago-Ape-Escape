@@ -376,9 +376,8 @@ class CustomSpikeColor(FreeText):
     Range: 000000 to FFFFFF (FFFFFF is the vanilla color)
     **Note: If an invalid color is entered, it will be set to "Vanilla"!
     """
-    default = {
-      "Custom": "FFFFFF"
-    }
+    display_name = "Custom Spike Color"
+    default = "FFFFFF"
 
 @dataclass
 class ApeEscapeOptions(PerGameCommonOptions):
