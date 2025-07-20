@@ -2281,7 +2281,7 @@ def set_locations(self):
                         lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Manic.value, 
-                        lambda state: (HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self) and HasNet(state, self)))
+                        lambda state: (HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self)) and HasNet(state, self))
     # Tank
     connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AELocation.W8L3Ruptdis.value, 
                         lambda state: HasNet(state, self))
