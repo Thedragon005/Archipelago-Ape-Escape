@@ -929,6 +929,7 @@ class RAM:
         "BananaPeelTrap": 0x250,
         "GadgetShuffleTrap": 0x251,
         "MonkeyMashTrap": 0x252,
+        "IcyHotPantsTrap": 0x253,
         "RainbowCookie": 0x270
 
     }
@@ -1504,6 +1505,7 @@ class RAM:
     spike_RedColorUpdate = 0x063AEC
     spike_GreenColorUpdate = 0x063B00
     spike_BlueColorUpdate = 0x063B04
+    spike_LavaOrIceTimer = 0x0EC2D0 # 0100 means Spike is being launched in the air
 
     colortable={
         "vanilla" : 0xFFFFFF,

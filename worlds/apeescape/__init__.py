@@ -307,9 +307,9 @@ class ApeEscapeWorld(World):
         # This is where creating items for increasing special pellet maximums would go.
 
         # Trap item fill: randomly pick items according to a set of weights.
-        # Trap weights: Banana Peel, Gadget Shuffle
+        # Trap weights: Banana Peel, Gadget Shuffle (Disabled), Monkey Mash, Icy Hot Pants
         if self.options.trapfillpercentage != 0:
-            trap_weights = [50, 25, 25]
+            trap_weights = [50, 25, 25, 25]
             trap_percentage = self.options.trapfillpercentage / 100
             trap_count = round((len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations) * trap_percentage, None)
 
@@ -324,10 +324,12 @@ class ApeEscapeWorld(World):
                     # Deactivated for now
                     # self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
-                else:
+                elif trap_weights[1] < randomTrap <= trap_weights[2]:
                     #self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                     self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
-
+                else:
+                    #self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
+                    self.itempool += [self.create_item_trap(AEItem.IcyHotPantsTrap.value)]
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets, Rainbow Cookie and Nothing, respectively.
         # TODO: expose these weights as a YAML option.

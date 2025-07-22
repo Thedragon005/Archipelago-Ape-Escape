@@ -1423,10 +1423,10 @@ class ApeEscapeClient(BizHawkClient):
                                 rocketAmmo += 3
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
-                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["MonkeyMashTrap"]:
+                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["IcyHotPantsTrap"]:
                         #elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
                             self.specialitem_queue.append((item.item - self.offset))
-                        elif RAM.items["RainbowCookie"] <= (item.item - self.offset) <= RAM.items["RainbowCookie"]:
+                        elif (item.item - self.offset) == RAM.items["RainbowCookie"]:
                             self.specialitem_queue.append((item.item - self.offset))
 
                         # Not needed anymore, will see if this impacts something then remove it later
@@ -1775,7 +1775,7 @@ class ApeEscapeClient(BizHawkClient):
             # ======== Spike Color handling =========
             # For checking if the chosen color currently needs to be applied.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            Color_Reads = [gameState, spikeColor]
+            Color_Reads = [gameState, spikeColor,spikeState2]
             await self.Spike_Color_handling(ctx, Color_Reads,"")
             # ================================
 
@@ -1783,7 +1783,7 @@ class ApeEscapeClient(BizHawkClient):
             # ======== Special Items Handling =========
             # For Traps and Special Items.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning]
+            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning,self.DS_spikecolor]
             await self.specialitems_handling(ctx, SpecialItems_Reads)
             # ================================
 
@@ -2388,9 +2388,10 @@ class ApeEscapeClient(BizHawkClient):
                 "keys": [f"AE_spikecolor_{ctx.team}_{ctx.slot}"]
             }])
             return
-
+        # grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x08, 0x09]
         gameState = Color_Reads[0]
         currentspikecolor = Color_Reads[1]
+        spikeState2 = Color_Reads[2]
         #print(currentspikecolor)
         #spike_bytes = spikecolor.to_bytes(2, "little")
 
@@ -2511,8 +2512,9 @@ class ApeEscapeClient(BizHawkClient):
             Color_Writes += [(RAM.spike_BlueColorUpdate, 0xA20200F6.to_bytes(4, "little"), "MainRAM")]
             pass
 
-        if currentspikecolor != customspikecolor:
+        if currentspikecolor != customspikecolor and spikeState2 not in [0x2B,0x4D]:
             # Overwrite the skin if it not currently in place
+            # *And if spike is not burning in Ice/Lava
             Color_Writes += [(RAM.spikeColor, skin_to_bytes, "MainRAM")]
 
 
@@ -3006,12 +3008,13 @@ class ApeEscapeClient(BizHawkClient):
         currentGadgets = SpecialItems_Reads[6]
         currentRoom = SpecialItems_Reads[7]
         gameRunning = SpecialItems_Reads[8]
-
+        DS_spikeColor = SpecialItems_Reads[9]
         SpecialItems_Writes = []
         SpecialItems_Guards = []
 
         # Gamestate
         valid_gameStates = (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'], RAM.gameState['TimeStation'], RAM.gameState['Jake'])
+        grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x08, 0x09]
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
         is_sliding = (spikeState2 == 0x2F)
@@ -3113,6 +3116,21 @@ class ApeEscapeClient(BizHawkClient):
                 await self.send_bizhawk_message(ctx, message,"Passthrough","")
                 self.ape_handler.activate_monkey(mash_duration)
                 #print(message)
+            elif self.specialitem_queue[0] == RAM.items['IcyHotPantsTrap']:
+                # Does not fire the trap if not grounded in some way
+                if spikeState2 in grounded:
+                    self.specialitem_queue.pop(0)
+                    SpecialItems_Writes += [(RAM.spikeState2Address, 0x4D.to_bytes(1, "little"), "MainRAM")]
+                    SpecialItems_Writes += [(RAM.spike_LavaOrIceTimer, 0x0100.to_bytes(2, "little"), "MainRAM")]
+                    # If the chosen spikecolor is "Vanilla", choose an effect at random between Burn/Frost
+                    if DS_spikeColor == 0xFFFFFF:
+                        randomEffect = int(round(random.random() * (2-1), None))
+                        if randomEffect == 0:
+                            # Burn Effect
+                            SpecialItems_Writes += [(RAM.spikeColor, 0x000000.to_bytes(3, "big"), "MainRAM")]
+                        else:
+                            # Frost Effect:
+                            SpecialItems_Writes += [(RAM.spikeColor, 0x0000FF.to_bytes(3, "big"), "MainRAM")]
             elif self.specialitem_queue[0] == RAM.items['RainbowCookie']:
                 self.specialitem_queue.pop(0)
                 item_duration = 10  # Example: 10 seconds per powerup item
@@ -3208,7 +3226,7 @@ class ApeEscapeClient(BizHawkClient):
 
         inAir = [0x08, 0x09, 0x35, 0x36, 0x83, 0x84]
         swimming = [0x46, 0x47]
-        grounded = [0x00, 0x01, 0x02, 0x05,0x07]  # 0x80, 0x81 Removed them since you can fling you net and give you extra air
+        grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x08, 0x09]  # 0x80, 0x81 Removed them since you can fling you net and give you extra air
         limited_OxygenLevel = 0x64
 
         gameState = WN_Reads[0]
