@@ -286,8 +286,13 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
                         # Preset color number
                         spikecolor = presetColors[presetValues.index(int(client.DS_spikecolor,16))]
                     except:
-                        # Use custom color as given
-                        spikecolor = client.DS_spikecolor
+                        # Preset color value
+                        try:
+                            print(f"DS_spikecolor_HEX:{int(format(client.DS_spikecolor,'x'),16)}")
+                            spikecolor = presetColors[presetValues.index(int(format(client.DS_spikecolor,"x"),16))]
+                        except:
+                            # Use custom color as given
+                            spikecolor = client.DS_spikecolor
             else:
                 # Custom but not recognised, setting to vanilla
                 spikecolor = 0xFFFFFF
@@ -2505,12 +2510,10 @@ class ApeEscapeClient(BizHawkClient):
             Color_Writes += [(RAM.spike_RedColorUpdate, 0x00000000.to_bytes(4,"little"), "MainRAM")]
             Color_Writes += [(RAM.spike_GreenColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             Color_Writes += [(RAM.spike_BlueColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            pass
         else:
             Color_Writes += [(RAM.spike_RedColorUpdate, 0xA20200F4.to_bytes(4,"little"), "MainRAM")]
             Color_Writes += [(RAM.spike_GreenColorUpdate, 0xA20200F5.to_bytes(4, "little"), "MainRAM")]
             Color_Writes += [(RAM.spike_BlueColorUpdate, 0xA20200F6.to_bytes(4, "little"), "MainRAM")]
-            pass
 
         if currentspikecolor != customspikecolor and spikeState2 not in [0x2B,0x4D]:
             # Overwrite the skin if it not currently in place
