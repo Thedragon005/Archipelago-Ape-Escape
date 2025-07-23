@@ -1509,17 +1509,21 @@ class RAM:
 
     colortable={
         "vanilla" : 0xFFFFFF,
+        "dark": 0x000000,
+        "white" : 0xFFFFFE, # White is one off intentionally since we use 0xFFFFFF for vanilla skin
         "red": 0x0000FF,
         "green": 0x00FF00,
         "blue": 0xFF0000,
         "yellow": 0x00FFFF,
-        "purple": 0xFF00FF,
-        "dark": 0x000000,
+        "cyan": 0xFFFF00,
+        "majenta": 0xFF00FF
+
     }
 
     skinpallettable = {
         "vanilla": 0x1030,
-        "white": 0x7617,
+        #"white": 0x7617,
+        "white": 0x101F, # Pallet seems consistent in all levels, used as base for spikecolor
         "grey": 0x5E03,
         "purple": 0x1000,
         "orange": 0x2F2F,

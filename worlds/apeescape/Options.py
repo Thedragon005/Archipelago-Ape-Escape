@@ -360,12 +360,14 @@ class SpikeColor(Choice):
     """
     display_name = "Spike Color"
     option_vanilla = 0
-    option_red = 1
-    option_green = 2
-    option_blue = 3
-    option_yellow = 4
-    option_purple = 5
-    option_dark = 6
+    option_dark = 1
+    option_white = 2
+    option_red = 3
+    option_green = 4
+    option_blue = 5
+    option_yellow = 6
+    option_cyan = 7
+    option_majenta = 8
     option_custom = -1
     default = option_vanilla
 
@@ -373,8 +375,8 @@ class CustomSpikeColor(FreeText):
     """
     Use a custom color for Spike by choosing "Custom" in the "Spike Color" option.
     Enter an RGB hexadecimal value for the desired color.
-    Range: 000000 to FFFFFF (FFFFFF is the vanilla color)
-    **Note: If an invalid color is entered, it will be set to "Vanilla"!
+    Range: 000000 to FFFFFF
+    **Note: If an invalid color is entered, it will be set to the "Vanilla" preset!
     """
     display_name = "Custom Spike Color"
     default = "FFFFFF"

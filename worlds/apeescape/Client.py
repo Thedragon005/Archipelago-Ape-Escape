@@ -2510,10 +2510,13 @@ class ApeEscapeClient(BizHawkClient):
             Color_Writes += [(RAM.spike_RedColorUpdate, 0x00000000.to_bytes(4,"little"), "MainRAM")]
             Color_Writes += [(RAM.spike_GreenColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             Color_Writes += [(RAM.spike_BlueColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            Color_Writes += [(RAM.spikeSkinPalette, RAM.skinpallettable["white"].to_bytes(3, "little"), "MainRAM")]
+
         else:
             Color_Writes += [(RAM.spike_RedColorUpdate, 0xA20200F4.to_bytes(4,"little"), "MainRAM")]
             Color_Writes += [(RAM.spike_GreenColorUpdate, 0xA20200F5.to_bytes(4, "little"), "MainRAM")]
             Color_Writes += [(RAM.spike_BlueColorUpdate, 0xA20200F6.to_bytes(4, "little"), "MainRAM")]
+            Color_Writes += [(RAM.spikeSkinPalette, RAM.skinpallettable["vanilla"].to_bytes(3, "little"), "MainRAM")]
 
         if currentspikecolor != customspikecolor and spikeState2 not in [0x2B,0x4D]:
             # Overwrite the skin if it not currently in place
