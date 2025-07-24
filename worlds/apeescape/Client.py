@@ -591,6 +591,8 @@ class ApeEscapeClient(BizHawkClient):
                         itemClass = "Useful"
                     elif itemCategory == ItemClassification.trap:
                         itemClass = "Trap"
+                        if itemName not in ctx.slot_data["trapsonreconnect"] and recieverID == ctx.slot:
+                            self.specialitem_queue.append((networkItem.item - self.offset))
                     elif itemCategory == ItemClassification.filler:
                         itemClass = "Filler"
                     else:
@@ -606,6 +608,7 @@ class ApeEscapeClient(BizHawkClient):
                         message = f"Received '{itemName}' ({itemClass}) from {senderName}"
                     elif recieverID == ctx.slot and senderID == ctx.slot:
                         message =  f"You found your own '{itemName}' ({itemClass})"
+
                     self.messagequeue.append(message)
 
         if cmd == "Retrieved":
@@ -1342,6 +1345,7 @@ class ApeEscapeClient(BizHawkClient):
                 increment = 0
                 for item in ctx.items_received:
                     # Increment to already received address first before sending
+                    itemName = ctx.item_names.lookup_in_slot(item.item,ctx.slot)
                     if increment < START_recv_index:
                         increment += 1
                     else:
@@ -1429,8 +1433,8 @@ class ApeEscapeClient(BizHawkClient):
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
                         elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["IcyHotPantsTrap"]:
-                        #elif RAM.items["BananaPeelTrap"] == (item.item - self.offset):
-                            self.specialitem_queue.append((item.item - self.offset))
+                            if itemName in ctx.slot_data["trapsonreconnect"]:
+                                self.specialitem_queue.append((item.item - self.offset))
                         elif (item.item - self.offset) == RAM.items["RainbowCookie"]:
                             self.specialitem_queue.append((item.item - self.offset))
 
@@ -3024,7 +3028,7 @@ class ApeEscapeClient(BizHawkClient):
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
         is_sliding = (spikeState2 == 0x2F)
-        is_idle = (spikeState == 0x18)and (spikeState2 in {0x80,0x81,0x82,0x83,0x84})
+        is_idle = (spikeState == 0x12) and (spikeState2 in {0x80,0x81,0x82,0x83,0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
         cannot_control = (gameRunning == 0)
 

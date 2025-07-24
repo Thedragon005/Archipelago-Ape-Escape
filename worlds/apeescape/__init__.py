@@ -402,6 +402,7 @@ class ApeEscapeWorld(World):
             "shufflewaternet": self.options.shufflewaternet.value,
             "lowoxygensounds": self.options.lowoxygensounds.value,
             "trapfillpercentage": self.options.trapfillpercentage.value,
+            "trapsonreconnect": self.options.trapsonreconnect.value,
             "itemdisplay": self.options.itemdisplay.value,
             "kickoutprevention": self.options.kickoutprevention.value,
             "autoequip": self.options.autoequip.value,

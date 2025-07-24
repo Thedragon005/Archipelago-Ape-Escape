@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText
+from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet
 
 
 class GoalOption(Choice):
@@ -307,6 +307,21 @@ class TrapFillPercentage(Range):
     range_end = 100
     default = 0
 
+class TrapsOnReconnect(OptionSet):
+    """Determine which traps are sent when reconnecting.
+
+    This option determines which traps will be sent when reconnecting to the client
+    Removing a trap from this list means it will only activate if received while playing/connected
+
+    Valid entries : "Banana Peel","Monkey Mash","Icy Hot Pants"
+    """
+    internal_name = "trapsonreconnect"
+    display_name = "Traps On Reconnect"
+    supports_weighting = False
+    valid_keys = frozenset({"Banana Peel", "Monkey Mash", "Icy Hot Pants"})
+    preset_none = frozenset()
+    preset_all = valid_keys
+    default = frozenset({"Banana Peel", "Monkey Mash", "Icy Hot Pants"})
 
 class ItemDisplayOption(Choice):
     """Set the default for the Bizhawk item display command. This can be changed in the client at any time. The position and duration of these messages can be changed in Bizhawk config at any time.
@@ -401,6 +416,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     shufflewaternet: ShuffleWaterNetOption
     lowoxygensounds: LowOxygenSounds
     trapfillpercentage: TrapFillPercentage
+    trapsonreconnect: TrapsOnReconnect
     itemdisplay: ItemDisplayOption
     kickoutprevention: KickoutPreventionOption
     autoequip: AutoEquipOption
