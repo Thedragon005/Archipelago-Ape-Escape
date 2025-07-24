@@ -68,6 +68,7 @@ class ApeEscapeWorld(World):
     item_name_groups = GROUPED_ITEMS
     location_name_groups = GROUPED_LOCATIONS
 
+    glitches_item_name = AEItem.FAKE_OOL_ITEM.value
     ut_can_gen_without_yaml = True  # class var that tells it to ignore the player yaml
     using_ut: bool  # so we can check if we're using UT only once
     passthrough: Dict[str, Any]

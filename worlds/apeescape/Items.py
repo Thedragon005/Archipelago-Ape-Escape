@@ -67,6 +67,7 @@ item_table = {
 
     # SpecialItems
     AEItem.RainbowCookie.value: RAM.items["RainbowCookie"],
+    AEItem.FAKE_OOL_ITEM.value: RAM.items["FAKE_OOL_ITEM"],
 
 }
 

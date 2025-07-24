@@ -930,7 +930,8 @@ class RAM:
         "GadgetShuffleTrap": 0x251,
         "MonkeyMashTrap": 0x252,
         "IcyHotPantsTrap": 0x253,
-        "RainbowCookie": 0x270
+        "RainbowCookie": 0x270,
+        "FAKE_OOL_ITEM": 0x999,
 
     }
 
