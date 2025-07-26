@@ -198,7 +198,6 @@ class ApeEscapeWorld(World):
         item = ApeEscapeItem(name, classification, item_id, self.player)
         return item
 
-
     def create_items(self):
         reservedlocations = 0
 
@@ -310,7 +309,17 @@ class ApeEscapeWorld(World):
         # Trap item fill: randomly pick items according to a set of weights.
         # Trap weights: Banana Peel, Gadget Shuffle (Disabled), Monkey Mash, Icy Hot Pants
         if self.options.trapfillpercentage != 0:
-            trap_weights = [50, 25, 25, 25]
+            custom_trapweights = [
+                self.options.trapweights[AEItem.BananaPeelTrap.value],
+                self.options.trapweights[AEItem.MonkeyMashTrap.value],
+                self.options.trapweights[AEItem.IcyHotPantsTrap.value]
+            ]
+            # if custom_trapweights are all zeros, reset to default values
+            if not any(y > 0 for y in custom_trapweights):
+                trap_weights = [75,25,25]
+            else:
+                trap_weights = list(custom_trapweights)
+
             trap_percentage = self.options.trapfillpercentage / 100
             trap_count = round((len(self.multiworld.get_unfilled_locations(self.player)) - len(self.itempool) - reservedlocations) * trap_percentage, None)
 
@@ -322,19 +331,45 @@ class ApeEscapeWorld(World):
                 if 0 < randomTrap <= trap_weights[0]:
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                 elif trap_weights[0] < randomTrap <= trap_weights[1]:
-                    # Deactivated for now
-                    # self.itempool += [self.create_item_trap(AEItem.GadgetShuffleTrap.value)]
-                    self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
-                elif trap_weights[1] < randomTrap <= trap_weights[2]:
-                    #self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                     self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
                 else:
-                    #self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                     self.itempool += [self.create_item_trap(AEItem.IcyHotPantsTrap.value)]
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets, Rainbow Cookie and Nothing, respectively.
         # TODO: expose these weights as a YAML option.
-        weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 6, 0]
+        custom_fillervalues = [
+            self.options.customfillerweights[AEItem.Shirt.value],
+            self.options.customfillerweights[AEItem.Cookie.value],
+            self.options.customfillerweights[AEItem.FiveCookies.value],
+            self.options.customfillerweights[AEItem.Triangle.value],
+            self.options.customfillerweights[AEItem.BigTriangle.value],
+            self.options.customfillerweights[AEItem.BiggerTriangle.value],
+            self.options.customfillerweights[AEItem.Flash.value],
+            self.options.customfillerweights[AEItem.ThreeFlash.value],
+            self.options.customfillerweights[AEItem.Rocket.value],
+            self.options.customfillerweights[AEItem.ThreeRocket.value],
+            self.options.customfillerweights[AEItem.RainbowCookie.value],
+            self.options.customfillerweights[AEItem.Nothing.value]
+        ]
+
+        if self.options.fillerpreset == 0x01: # Bountiful
+            # Doubled the value of "Good items"
+            weights = [14, 16, 6, 31, 28, 8, 9, 6, 9, 6, 12, 0]
+        elif self.options.fillerpreset == 0x02: # Stingy
+            # Doubled the value of "Not so good items"
+            weights = [7, 32, 3, 62, 14, 4, 18, 3, 18, 3, 6, 0]
+        elif self.options.fillerpreset == 0x03: # Nothing
+            # All nothing
+            weights = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+        elif self.options.fillerpreset == 0x04: # Custom
+            # If the list is all zeros, it should add all "Nothing" items
+            if not any(y > 0 for y in custom_fillervalues):
+                weights = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100]
+            else:
+                weights = list(custom_fillervalues)
+        else: # Normal
+            # Default weights
+            weights = [7, 16, 3, 31, 14, 4, 9, 3, 9, 3, 6, 0]
 
         for x in range(1, len(weights)):
             weights[x] = weights[x] + weights[x - 1]
@@ -401,7 +436,10 @@ class ApeEscapeWorld(World):
             "shufflenet": self.options.shufflenet.value,
             "shufflewaternet": self.options.shufflewaternet.value,
             "lowoxygensounds": self.options.lowoxygensounds.value,
+            "fillerpreset": self.options.fillerpreset.value,
+            "customfillerweights":self.options.customfillerweights.value,
             "trapfillpercentage": self.options.trapfillpercentage.value,
+            "trapweights": self.options.trapweights.value,
             "trapsonreconnect": self.options.trapsonreconnect.value,
             "itemdisplay": self.options.itemdisplay.value,
             "kickoutprevention": self.options.kickoutprevention.value,

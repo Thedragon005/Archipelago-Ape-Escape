@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet
-
+from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter
+from .Items import AEItem
 
 class GoalOption(Choice):
     """Choose the victory condition for this world.
@@ -297,6 +297,44 @@ class LowOxygenSounds(Choice):
     option_on = 0x02
     default = option_half
 
+class FillerPreset(Choice):
+    """
+    Determines the quality/quantity of fillers
+
+    Normal: Balanced weight depending on item utility
+    Bountiful: A lot more of the good items, a lot less of the low value items
+    Stingy: Low value items are more frequent (single chip, cookie, pellet, etc.)
+    Nothing: Replace all fillers with "Nothing"
+    Custom: Allow setting custom filler weights in the option "customfillerweights"
+    """
+    display_name = "Filler Preset"
+    option_normal = 0x00
+    option_bountiful = 0x01
+    option_stingy = 0x02
+    option_nothing = 0x03
+    option_custom = 0x04
+    default = option_normal
+
+class CustomFillerWeights(OptionCounter):
+    """
+    Specify the weighted chance of rolling individual filler items.
+    You can use weight "0" to disable the filler entirely.
+    **This option is only taking into account when "Filler Preset" option is set to "custom"
+    """
+    internal_name = "customfillerweights"
+    display_name = "Custom Filler Weights"
+    default_weight = 10
+    min = 0
+    max = 100
+    valid_keys = frozenset({
+        AEItem.Shirt.value,AEItem.Cookie.value,AEItem.FiveCookies.value,AEItem.Triangle.value,AEItem.BigTriangle.value,
+        AEItem.BiggerTriangle.value,AEItem.Flash.value,AEItem.ThreeFlash.value,AEItem.Rocket.value,AEItem.ThreeRocket.value,
+        AEItem.RainbowCookie.value,AEItem.Nothing.value})
+    default = {
+        AEItem.Shirt.value: 7,AEItem.Cookie.value: 16,AEItem.FiveCookies.value: 3,AEItem.Triangle.value: 31,AEItem.BigTriangle.value : 14,
+        AEItem.BiggerTriangle.value: 4,AEItem.Flash.value: 9,AEItem.ThreeFlash.value: 3,AEItem.Rocket.value: 9,AEItem.ThreeRocket.value : 3,
+        AEItem.RainbowCookie.value : 6,AEItem.Nothing.value : 0
+    }
 
 class TrapFillPercentage(Range):
     """
@@ -306,6 +344,25 @@ class TrapFillPercentage(Range):
     range_start = 0
     range_end = 100
     default = 0
+
+class TrapWeights(OptionCounter):
+    """
+    Specify the weighted chance of rolling individual trap items.
+    You can use weight "0" to disable the filler entirely.
+    **This option is ignored when "TrapFillPercentage" option is set to an other value than "custom"
+    """
+    internal_name = "customfillerweights"
+    display_name = "Custom Filler Weights"
+    #default_weight = 10
+    min = 0
+    max = 100
+    valid_keys = frozenset({
+        AEItem.BananaPeelTrap.value,AEItem.MonkeyMashTrap.value,AEItem.IcyHotPantsTrap.value
+    })
+
+    default = {
+        AEItem.BananaPeelTrap.value : 75,AEItem.MonkeyMashTrap.value: 25,AEItem.IcyHotPantsTrap.value : 25
+    }
 
 class TrapsOnReconnect(OptionSet):
     """Determine which traps are sent when reconnecting.
@@ -415,7 +472,10 @@ class ApeEscapeOptions(PerGameCommonOptions):
     shufflenet: ShuffleNetOption
     shufflewaternet: ShuffleWaterNetOption
     lowoxygensounds: LowOxygenSounds
+    fillerpreset: FillerPreset
+    customfillerweights: CustomFillerWeights
     trapfillpercentage: TrapFillPercentage
+    trapweights:TrapWeights
     trapsonreconnect: TrapsOnReconnect
     itemdisplay: ItemDisplayOption
     kickoutprevention: KickoutPreventionOption
