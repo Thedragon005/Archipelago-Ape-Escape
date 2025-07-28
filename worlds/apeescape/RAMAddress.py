@@ -1508,17 +1508,16 @@ class RAM:
     spike_BlueColorUpdate = 0x063B04
     spike_LavaOrIceTimer = 0x0EC2D0 # 0100 means Spike is being launched in the air
 
-    colortable={
-        "vanilla" : 0xFFFFFF,
+    colortable = {
+        "vanilla": 0xFFFFFF,
         "dark": 0x000000,
-        "white" : 0xFFFFFE, # White is one off intentionally since we use 0xFFFFFF for vanilla skin
+        "white": 0xFFFFFE, # White is one off intentionally since we use 0xFFFFFF for vanilla skin
         "red": 0x0000FF,
         "green": 0x00FF00,
         "blue": 0xFF0000,
         "yellow": 0x00FFFF,
         "cyan": 0xFFFF00,
-        "majenta": 0xFF00FF
-
+        "magenta": 0xFF00FF
     }
 
     skinpallettable = {
@@ -1531,9 +1530,9 @@ class RAM:
         "green": 0x35F6,
         "red": 0x2F00,
         "yellow": 0x1065,
-        "darkblue": 0x2600,#6F65
+        "darkblue": 0x2600, #6F65
         "voidwhite": 0x2E05,
-        "voidpurple": 0x4DFA,#
+        "voidpurple": 0x4DFA,
         "voidorange": 0x0007,
         #"voidred": 0x372E, #More like voidbrown sometimes
         "neonpink": 0x3BFF,
@@ -1546,7 +1545,6 @@ class RAM:
         "metal": 0x3674,
         "rave": 0x1D2F
     }
-
 
     # Specter bosses values
     S1_P1_Life = 0x1408FB
