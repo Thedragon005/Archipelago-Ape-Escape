@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
-from BaseClasses import Region, Entrance, ItemClassification,CollectionState
+from BaseClasses import Region, Entrance, ItemClassification, CollectionState
 from .Locations import location_table, ApeEscapeLocation
-from .Strings import AEDoor, AELocation,AEItem
+from .Strings import AEDoor, AELocation, AEItem
 from .Items import ApeEscapeItem
-from worlds.generic.Rules import add_rule,set_rule
+from worlds.generic.Rules import add_rule, set_rule
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
@@ -1289,6 +1289,7 @@ def create_regions(world: "ApeEscapeWorld"):
     multiworld.regions.extend(regions)
     create_event_items(world)
 
+
 def connect_regions(world: "ApeEscapeWorld", source: str, target: str, rule=None):
     source_region = world.get_region(source)
     target_region = world.get_region(target)
@@ -1304,13 +1305,12 @@ def connect_regions(world: "ApeEscapeWorld", source: str, target: str, rule=None
     # Connection exists only when this is an UT re-gen.
     if rule and connectionExist:
         glitched_rule = lambda state: state.has(AEItem.FAKE_OOL_ITEM.value, world.player) and rule(state)
-        add_rule(varEntrance,glitched_rule,"or")
+        add_rule(varEntrance, glitched_rule, "or")
     elif rule:
         connection.access_rule = rule
     if not connectionExist:
         source_region.exits.append(connection)
         connection.connect(target_region)
-
 
 
 def get_range(i, j):
