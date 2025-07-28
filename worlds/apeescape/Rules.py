@@ -29,21 +29,22 @@ def set_rules(world: "ApeEscapeWorld"):
     if (world.options.entrance != 0x00):
         world.levellist.sort()
 
-    set_entrances(world,world.options.logic)
-    set_doors(world,world.options.logic)
-    set_transitions(world,world.options.logic)
-    set_locations(world,world.options.logic)
+    set_entrances(world, world.options.logic)
+    set_doors(world, world.options.logic)
+    set_transitions(world, world.options.logic)
+    set_locations(world, world.options.logic)
+
     if world.using_ut:
         # For Out-of-logic checks in UT:
-        # Regen entries/region rules with max difficulty(Expert) and glitched UT item)
-        set_entrances(world,"expert")
-        set_doors(world,"expert")
-        set_transitions(world,"expert")
-        set_locations(world,"expert")
+        # Re-gen entries/region rules with max difficulty (Expert) and glitched UT item
+        set_entrances(world, "expert")
+        set_doors(world, "expert")
+        set_transitions(world, "expert")
+        set_locations(world, "expert")
 
 # Entrances are specifically connections between the Time Station (level select) and a level.
 # If we ever want to change the starting room of a level, this is where we would set that room.
-def set_entrances(self,logic):
+def set_entrances(self, logic):
     connect_regions(self, "Menu", AEDoor.TIME_ENTRY.value, lambda state: True)
     connect_regions(self, "Menu", AEDoor.FF_ENTRY.value, lambda state: Keys(state, self, self.levellist[0].keys))
     connect_regions(self, "Menu", AEDoor.PO_ENTRY.value, lambda state: Keys(state, self, self.levellist[1].keys))
@@ -84,7 +85,7 @@ def set_entrances(self,logic):
 
 # A door is defined as a connection between rooms, typically bi-directional.
 # For the logic behind door shuffle, this is the section to change.
-def set_doors(self,logic):
+def set_doors(self, logic):
     # I'm not sure if these have to be manually connected in both directions? There are a few one-ways in here, so probably better to be explicit?
     # Time Station
     connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_MAIN.value,
@@ -422,7 +423,7 @@ def set_doors(self,logic):
 
 
 # A transition is defined as navigating between two doors in the same room.
-def set_transitions(self,logic):
+def set_transitions(self, logic):
     # I'm not sure if these have to be manually connected in both directions? I think they do because connections are asymmetric.
     # Time Station
     connect_regions(self, AEDoor.TIME_ENTRY.value, AEDoor.TIME_MAIN_TRAINING.value,
@@ -1119,7 +1120,7 @@ def set_transitions(self,logic):
 
 
 # A location is always accessed from a transition. The level entrance is a special case of a transition.
-def set_locations(self,logic):
+def set_locations(self, logic):
 
     # Time Station
     if self.options.mailbox == "true" or (self.options.shufflenet == "true" and self.options.coin == "true"):
@@ -1590,7 +1591,7 @@ def set_locations(self,logic):
                         lambda state: (((((HasHoop(state, self) and CanHitMultiple(state, self)) or HasSling(state, self)) and CanSwim(state, self)) or HasFlyer(state, self)) and HasNet(state, self)) or HasWaterNet(state, self))
     else:
         connect_regions(self, AEDoor.CCAVE_ENTRY.value, AELocation.W4L2Kalama.value, 
-                        lambda state: ((HasHoop(state, self) or HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self)) or HasWaterNet(state, self))
+                        lambda state: ((CanSwim(state, self) or HasFlyer(state, self) or HasHoop(state, self) or IJ(state, self)) and (CanHitWheel(state, self) or HasFlyer(state, self)) and HasNet(state, self)) or HasWaterNet(state, self))
     # Second
     connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AELocation.W4L2Iz.value, 
                         lambda state: HasNet(state, self))
@@ -2394,11 +2395,17 @@ def set_locations(self,logic):
     if logic == "normal":
         connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
                         lambda state: HasFlyer(state, self) and HasNet(state, self))
-    elif logic == "hard":
-        connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
-                        lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AELocation.W9L1Schafette.value, 
+                        lambda state: HasNet(state, self))
+    if logic == "normal":
+        connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AELocation.W9L1Schafette.value, 
+                        lambda state: HasFlyer(state, self) and HasNet(state, self))
+    elif logic == "hard":
+        connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AELocation.W9L1Schafette.value, 
+                        lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
+    else:
+        connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AELocation.W9L1Schafette.value, 
                         lambda state: (HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self)) and HasNet(state, self))
     # Castle Outside
     if logic == "normal":
@@ -2525,7 +2532,7 @@ def set_locations(self,logic):
         #print(varLocation.access_rule)
         #print("======================")
         #if varLocation.name != "Menu" and varLocation.is_event == False:
-            #add_rule(varLocation,lambda state: state.has(AEItem.FAKE_OOL_ITEM.value),"or")
+            #add_rule(varLocation,lambda state: state.has(AEItem.FAKE_OOL_ITEM.value), "or")
 
 
 # Item Checking Helper Functions
