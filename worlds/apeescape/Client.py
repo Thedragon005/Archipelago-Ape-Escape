@@ -2398,7 +2398,7 @@ class ApeEscapeClient(BizHawkClient):
                 "keys": [f"AE_spikecolor_{ctx.team}_{ctx.slot}"]
             }])
             return
-        # grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x08, 0x09]
+        # grounded = [0x00, 0x01, 0x02, 0x05, 0x07]
         gameState = Color_Reads[0]
         currentspikecolor = Color_Reads[1]
         spikeState2 = Color_Reads[2]
@@ -3025,7 +3025,7 @@ class ApeEscapeClient(BizHawkClient):
 
         # Gamestate
         valid_gameStates = (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'], RAM.gameState['TimeStation'], RAM.gameState['Jake'])
-        grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x08, 0x09]
+        grounded = [0x00, 0x01, 0x02, 0x05, 0x07]
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
         is_sliding = (spikeState2 == 0x2F)
@@ -3246,7 +3246,7 @@ class ApeEscapeClient(BizHawkClient):
 
         inAir = [0x08, 0x09, 0x35, 0x36, 0x83, 0x84]
         swimming = [0x46, 0x47]
-        grounded = [0x00, 0x01, 0x02, 0x05, 0x07, 0x08, 0x09]  # 0x80, 0x81 Removed them since you can fling you net and give you extra air
+        grounded = [0x00, 0x01, 0x02, 0x05, 0x07]  # 0x80, 0x81 Removed them since you can fling you net and give you extra air
         limited_OxygenLevel = 0x64
 
         gameState = WN_Reads[0]
