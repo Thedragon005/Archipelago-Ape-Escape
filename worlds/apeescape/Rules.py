@@ -566,6 +566,8 @@ def set_transitions(self, logic):
                         lambda state: True)
     connect_regions(self, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, AEDoor.DR_ENTRY.value,
                         lambda state: True)
+    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, AEDoor.DR_OUTSIDE_HOLE.value,
+                        lambda state: True)
     # Fan Basement
     connect_regions(self, AEDoor.DR_FAN_OUTSIDE_FENCE.value, AEDoor.DR_FAN_OUTSIDE_HOLE.value,
                         lambda state: True)
