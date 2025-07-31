@@ -36,10 +36,10 @@ def __add_event_location(self, region: Region, name: str, event_name: str) -> No
 
 def create_event_items(self):
     # Buttons and state changes.
-    __add_event_location(self, self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value), "Dark Ruins - Floor Broken",
-                         "DR-Block")
-    __add_event_location(self, self.get_region(AEDoor.DI_SLIDE_ROOM_GALLERY.value), "Dexter's Island - Button Reached",
-                         "DI-Button")
+    __add_event_location(self, self.get_region(AEDoor.DR_OUTSIDE_OBELISK_TOP.value),
+                         "Dark Ruins - Floor Broken", "DR-Block")
+    __add_event_location(self, self.get_region(AEDoor.DI_SLIDE_ROOM_GALLERY.value),
+                         "Dexter's Island - Button Reached", "DI-Button")
     __add_event_location(self, self.get_region(AEDoor.CC_BASEMENT_BUTTON_DOWN.value),
                          "Crumbling Castle - Button Reached", "CC-Button")
     __add_event_location(self, self.get_region(AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value),
@@ -49,10 +49,10 @@ def create_event_items(self):
     __add_event_location(self, self.get_region(AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value),
                          "Monkey Madness - Specter 1 Open", "MM-Painting")
     # Monkey Madness UFO monkeys - specifically for the door.
-    __add_event_location(self, self.get_region(AELocation.W9L1Donovan.value), "Monkey Madness UFO Monkey 1",
-                         "MM UFO Monkey")
-    __add_event_location(self, self.get_region(AELocation.W9L1Laura.value), "Monkey Madness UFO Monkey 2",
-                         "MM UFO Monkey")
+    __add_event_location(self, self.get_region(AELocation.W9L1Donovan.value),
+                         "Monkey Madness UFO Monkey 1", "MM UFO Monkey")
+    __add_event_location(self, self.get_region(AELocation.W9L1Laura.value),
+                         "Monkey Madness UFO Monkey 2", "MM UFO Monkey")
 
     # ''' Event items for monkeys - mostly useful for debugging. NOTE: Add "# " to the beginning to uncomment.
     # Monkeys by level, for lamps and Specter 2 vanilla condition.
