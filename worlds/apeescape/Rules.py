@@ -1518,7 +1518,7 @@ def set_locations(self, logic):
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.CR_ENTRY.value, AELocation.Mailbox30.value, 
                         lambda state: True)
-        connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Mailbox31.value, 
+        connect_regions(self, AEDoor.CR_MAIN_RUINS_ENTRY.value, AELocation.Mailbox31.value,
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Mailbox32.value, 
                         lambda state: (CanHitWheel(state, self) or HasFlyer(state, self)) and CanSwim(state, self))
