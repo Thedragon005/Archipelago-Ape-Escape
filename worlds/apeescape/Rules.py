@@ -8,13 +8,14 @@ from .RAMAddress import RAM
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
 
+
 def set_rules(world: "ApeEscapeWorld"):
     # Detect if connected with UT and put the shuffled order back into the initialize_level_list function
     if hasattr(world.multiworld, "re_gen_passthrough"):
         levelids = world.passthrough["entranceids"]
         firstroomids = world.passthrough["firstrooms"]
         world.levellist = initialize_level_list(levelids)
-        world.firstrooms = initialize_room_list(world,RAM.roomsperlevels,levelids,firstroomids)
+        world.firstrooms = initialize_room_list(world, RAM.roomsperlevel, levelids, firstroomids)
     else:
         # Normal world generation
         world.levellist = initialize_level_list()
@@ -22,8 +23,8 @@ def set_rules(world: "ApeEscapeWorld"):
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
             # Some levels need to be kept at a specific entrance - put those back.
-            world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin,world.options.goal)
-        world.firstrooms = initialize_room_list(world, RAM.roomsperlevels)
+            world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin, world.options.goal)
+        world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
     print(f"Rooms:{world.firstrooms}")
     print(f"RULES_FirstRooms{world.firstrooms}")
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
@@ -47,13 +48,14 @@ def set_rules(world: "ApeEscapeWorld"):
         set_transitions(world, "expert")
         set_locations(world, "expert")
 
+
 # Entrances are specifically connections between the Time Station (level select) and a level.
 # If we ever want to change the starting room of a level, this is where we would set that room.
 def set_entrances(self, logic):
     connect_regions(self, "Menu", AEDoor.TIME_ENTRY.value, lambda state: True)
 
-    roomperlevelsKeys = list(RAM.roomsperlevels.keys())
-    roomperlevelsValues = list(RAM.roomsperlevels.values())
+    roomperlevelsKeys = list(RAM.roomsperlevel.keys())
+    roomperlevelsValues = list(RAM.roomsperlevel.values())
     LevelperFirstRooms = []
     RoomRegion = []
     for y in self.firstrooms:
@@ -90,7 +92,6 @@ def set_entrances(self, logic):
     elif self.options.goal == "tokenhunt" or self.options.goal == "mmtoken": # If other token goal, just require keys.
         connect_regions(self, "Menu", SortedEntries[21], lambda state: Keys(state, self, self.levellist[21].keys))
 
-    # TODO: Test this.
     # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
     if self.options.goal != "tokenhunt":
         self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player, 1)
@@ -2867,13 +2868,11 @@ def initialize_level_list(setlevelids=None):
         levellist.append(ApeEscapeLevel(levelnames[x], levelids[x], vanillapos))
     return levellist
 
-def initialize_room_list(world,roomsperlevel,setlevelids=None,setroomids=None):
 
-    #baselevelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
-    baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11,
-                0x14, 0x15, 0x16, 0x18, 0x1E]
-    firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
-                    0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+def initialize_room_list(world,roomsperlevel,setlevelids=None,setroomids=None):
+    # baselevelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
+    baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
+    firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
     firstroomlist = []
 
     if setlevelids is None:
@@ -2883,17 +2882,17 @@ def initialize_room_list(world,roomsperlevel,setlevelids=None,setroomids=None):
         levelids = setlevelids
 
     orderedfirstroomids = []
-    excludedrooms_LampsOff = [27] #Exclude certain rooms if LampShuffle is off
+    excludedrooms_LampsOff = [27] # Exclude certain rooms if LampShuffle is off
     excludedrooms = []
     for x in range (0, 22):
 
-        levelrooms = list(RAM.roomsperlevels[levelids[x]])
+        levelrooms = list(RAM.roomsperlevel[levelids[x]])
         # Rooms exclusion
         levelrooms = [item for item in levelrooms if item not in excludedrooms]
         # Exclude some rooms if Lamps are not shuffled, to prevent getting stuck
         if world.options.lamp == 0x00:
             levelrooms = [item for item in levelrooms if item not in excludedrooms_LampsOff]
-        if not world.options.randomizestartingroom:  # Option off
+        if not world.options.randomizestartingroom: # Option off
             orderedfirstroomids.append(levelrooms[0])
         else:
             if setroomids:
@@ -2963,6 +2962,7 @@ def set_calculated_level_data(levellist, keyoption, goaloption, coinoption):
         levellist[x].keys = reqkeys[x]
         levellist[x].newpos = x
     return levellist
+
 
 def get_required_keys(key, goal, coin):
     reqkeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
