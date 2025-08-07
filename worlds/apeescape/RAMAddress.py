@@ -1,3 +1,6 @@
+from worlds.apeescape.Strings import AEDoor
+
+
 class RAM:
     monkeyListGlobal = {
         1: 0x0DF828,
@@ -606,7 +609,7 @@ class RAM:
             32, 33, 34, 37, 42, 35, 36, 38, 41, 43, 39, 40, 44
         },
         6: {
-            49, 51, 45, 47, 50, 46, 48, 52
+            49, 51, 45, 47, 50, 46, 52
         },
         7: {
 
@@ -621,10 +624,10 @@ class RAM:
             69, 70, 71, 77, 78, 72, 73, 74, 75, 76, 79
         },
         11: {
-            80, 81, 84, 83, 85, 82
+            80, 81, 84, 85, 82
         },
         12: {
-            86, 87, 91, 92, 93, 94, 88, 90, 89
+            91, 92, 93, 94, 88, 90, 89
         },
         13: {
             95, 96, 99, 100, 101, 102, 103, 98, 97
@@ -654,6 +657,157 @@ class RAM:
             181, 182, 183, 184, 185, 187, 186, 188, 189, 190, 192, 191,
             194, 195, 196, 193, 197, 198, 199, 200, 201, 202, 203, 204
         }
+    }
+    roomsperlevels = {
+        1: {
+            1
+        },
+        2: {
+            2
+        },
+        3: {
+            3,4,5
+        },
+        4: {
+            6,7,8,9,10
+        },
+        5: {
+            11,12,13,14
+        },
+        6: {
+            15,16,17,18
+        },
+        7: {
+            19
+        },
+        8: {
+            20,21
+        },
+        9: {
+            22,23
+        },
+        10: {
+            24,25,26,27,28 #Original array
+            #25 #Singular Room test
+            #24,25,26,28 # Removed Tentacle Room to test
+        },
+        11: {
+            29
+        },
+        12: {
+            30,31,32
+        },
+        13: {
+            33,34,35
+        },
+        14: {
+            36
+        },
+        15: {
+            37,38,39
+        },
+        16: {
+            40,41,42,43,44
+        },
+        17: {
+            45,46,47,49,50,51
+        },
+        20: {
+            53,54,55
+        },
+        21: {
+            56,57,58,59,60,61,62
+        },
+        22: {
+            63,64,65,66,67},
+        24: {
+            69,72,73,74,75,76,77,78,79,80,81,82,84,85
+        },
+        30:{
+            87
+        }
+    }
+    roomstostring = {
+            1  : AEDoor.FF_ENTRY.value,
+            2  : AEDoor.PO_ENTRY.value,
+            3  : AEDoor.ML_ENTRY.value,
+            4  : AEDoor.ML_VOLCANO_ENTRY.value,
+            5  : AEDoor.ML_TRICERATOPS_ENTRY.value,
+            6  : AEDoor.TJ_ENTRY.value,
+            7  : AEDoor.TJ_MUSHROOM_ENTRY .value,
+            8  : AEDoor.TJ_FISH_ENTRY.value,
+            9  : AEDoor.TJ_TENT_FISH.value,
+            10 : AEDoor.TJ_BOULDER_ENTRY.value,
+            11 : AEDoor.DR_ENTRY.value,
+            12 : AEDoor.DR_FAN_OUTSIDE_HOLE.value,
+            13 : AEDoor.DR_OBELISK_BOTTOM.value,
+            14 : AEDoor.DR_WATER_SIDE.value,
+            15 : AEDoor.CR_ENTRY.value,
+            16 : AEDoor.CR_SIDE_ROOM_ENTRY.value,
+            17 : AEDoor.CR_MAIN_RUINS_ENTRY.value,
+            18 : AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value,
+            19 : AEDoor.SA_ENTRY.value,
+            20 : AEDoor.CB_ENTRY.value,
+            21 : AEDoor.CB_SECOND_ROOM_ENTRY.value,
+            22 : AEDoor.CCAVE_ENTRY.value,
+            23 : AEDoor.CCAVE_SECOND_ROOM_ENTRY.value,
+            24 : AEDoor.DI_ENTRY.value,
+            25 : AEDoor.DI_STOMACH_ENTRY.value,
+            26 : AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value,
+            27 : AEDoor.DI_TENTACLE.value, #This room causes a generation error when it's the first room (In any seed)
+            28 : AEDoor.DI_SLIDE_ROOM_STOMACH.value,
+            29 : AEDoor.SM_ENTRY.value,
+            30 : AEDoor.FR_ENTRY.value,
+            31 : AEDoor.FR_WATER_CAVERNS.value,
+            32 : AEDoor.FR_CAVERNS_ENTRY.value,
+            33 : AEDoor.HS_ENTRY.value,
+            34 : AEDoor.HS_HOT_SPRING.value,
+            35 : AEDoor.HS_POLAR_BEAR_CAVE.value,
+            36 : AEDoor.GA_ENTRY.value,
+            37 : AEDoor.ST_ENTRY.value,
+            38 : AEDoor.ST_TEMPLE.value,
+            39 : AEDoor.ST_WELL.value,
+            40 : AEDoor.WSW_ENTRY.value,
+            41 : AEDoor.WSW_GONG_ENTRY.value,
+            42 : AEDoor.WSW_MIDDLE_GONG.value,
+            43 : AEDoor.WSW_OBSTACLE_MIDDLE.value,
+            44 : AEDoor.WSW_BARREL_OBSTACLE.value,
+            45 : AEDoor.CC_ENTRY.value,
+            46 : AEDoor.CC_CASTLEMAIN_ENTRY.value,
+            47 : AEDoor.CC_BASEMENT_ENTRY.value,
+            49 : AEDoor.CC_BUTTON_BASEMENT_WATER.value,
+            50 : AEDoor.CC_ELEVATOR_CASTLEMAIN.value,
+            51 : AEDoor.CC_BELL_CASTLE.value,
+            53 : AEDoor.CP_ENTRY.value,
+            54 : AEDoor.CP_SEWERSFRONT_OUTSIDE.value,
+            55 : AEDoor.CP_BARREL_SEWERS_FRONT.value,
+            56 : AEDoor.SF_ENTRY.value,
+            57 : AEDoor.SF_FACTORY_OUTSIDE.value,
+            58 : AEDoor.SF_RC_CAR_FACTORY.value,
+            59 : AEDoor.SF_LAVA_MECH.value,
+            60 : AEDoor.SF_WHEEL_FACTORY_BOTTOM.value,
+            61 : AEDoor.SF_CONVEYOR_LAVA.value,
+            62 : AEDoor.SF_MECH_FACTORY.value,
+            63 : AEDoor.TVT_ENTRY.value,
+            64 : AEDoor.TVT_WATER_LOBBY.value,
+            65 : AEDoor.TVT_LOBBY_OUTSIDE.value,
+            66 : AEDoor.TVT_TANK_LOBBY.value,
+            67 : AEDoor.TVT_FAN_TANK.value,
+            69 : AEDoor.MM_SL_HUB.value,
+            72 : AEDoor.MM_COASTER_ENTRY_SL_HUB.value,
+            73 : AEDoor.MM_COASTER1_ENTRY.value,
+            74 : AEDoor.MM_COASTER2_ENTRY.value,
+            75 : AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value,
+            76 : AEDoor.MM_COFFIN_HAUNTED_HOUSE.value,
+            77 : AEDoor.MM_WESTERN_SL_HUB.value,
+            78 : AEDoor.MM_CRATER_SL_HUB.value,
+            79 : AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
+            80 : AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value,
+            81 : AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value,
+            82 : AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value,
+            84 : AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value,
+            85 : AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value,
+            87 : AEDoor.PPM_ENTRY.value
     }
     # To check if red mailboxes are already checked in the current room
     redMailboxes = {

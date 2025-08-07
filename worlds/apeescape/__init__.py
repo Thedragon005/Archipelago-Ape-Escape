@@ -82,6 +82,7 @@ class ApeEscapeWorld(World):
         self.infinitejump: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.entrance: Optional[int] = 0
+        self.randomizestartingroom: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.extrakeys: Optional[int] = 0
         self.coin: Optional[int] = 0
@@ -96,7 +97,7 @@ class ApeEscapeWorld(World):
         self.itempool: List[ApeEscapeItem] = []
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
-
+        self.firstrooms = []
         super(ApeEscapeWorld, self).__init__(multiworld, player)
 
 
@@ -109,6 +110,7 @@ class ApeEscapeWorld(World):
         self.infinitejump = self.options.infinitejump.value
         self.superflyer = self.options.superflyer.value
         self.entrance = self.options.entrance.value
+        self.randomizestartingroom = self.options.randomizestartingroom.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.extrakeys = self.options.extrakeys.value
         self.coin = self.options.coin.value
@@ -135,6 +137,7 @@ class ApeEscapeWorld(World):
                 self.options.infinitejump.value = self.passthrough["infinitejump"]
                 self.options.superflyer.value = self.passthrough["superflyer"]
                 self.options.entrance.value = self.passthrough["entrance"]
+                self.options.randomizestartingroom.value = self.passthrough["randomizestartingroom"]
                 self.options.unlocksperkey.value = self.passthrough["unlocksperkey"]
                 self.options.extrakeys.value = self.passthrough["extrakeys"]
                 self.options.coin.value = self.passthrough["coin"]
@@ -414,16 +417,14 @@ class ApeEscapeWorld(World):
         bytestowrite = []
         entranceids = []
         newpositions = []
-        firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
-                        0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
-        orderedfirstroomids = []
+        orderedfirstroomids = list(self.firstrooms)
         for x in range(0, 22):
             newpositions.append(self.levellist[x].newpos)
             entranceids.append(self.entranceorder[x].entrance)
-            orderedfirstroomids.append(firstroomids[self.entranceorder[x].vanillapos])
             bytestowrite += self.entranceorder[x].bytes
             bytestowrite.append(0)  # We need a separator byte after each level name.
-
+        #self.firstrooms = orderedfirstroomids
+        #print(f"INIT_FirstRooms{self.firstrooms}")
         return {
             "goal": self.options.goal.value,
             "requiredtokens": self.options.requiredtokens.value,
@@ -433,6 +434,7 @@ class ApeEscapeWorld(World):
             "infinitejump": self.options.infinitejump.value,
             "superflyer": self.options.superflyer.value,
             "entrance": self.options.entrance.value,
+            "randomizestartingroom": self.options.randomizestartingroom.value,
             "unlocksperkey": self.options.unlocksperkey.value,
             "extrakeys": self.options.extrakeys.value,
             "coin": self.options.coin.value,

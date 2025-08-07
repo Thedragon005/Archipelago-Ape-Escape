@@ -3,26 +3,34 @@ from typing import TYPE_CHECKING
 from BaseClasses import Region, Item, ItemClassification, CollectionState
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AEDoor, AELocation
-from worlds.generic.Rules import add_rule
+from .RAMAddress import RAM
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
+
 
 def set_rules(world: "ApeEscapeWorld"):
     # Detect if connected with UT and put the shuffled order back into the initialize_level_list function
     if hasattr(world.multiworld, "re_gen_passthrough"):
         levelids = world.passthrough["entranceids"]
+        firstroomids = world.passthrough["firstrooms"]
         world.levellist = initialize_level_list(levelids)
+        world.firstrooms = initialize_room_list(world,RAM.roomsperlevels,levelids,firstroomids)
     else:
         # Normal world generation
         world.levellist = initialize_level_list()
+
+
         # If entrances aren't shuffled, then we don't need to shuffle the entrances.
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
             # Some levels need to be kept at a specific entrance - put those back.
             world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin)
-
+    world.firstrooms = initialize_room_list(world, RAM.roomsperlevels)
+    print(f"Rooms:{world.firstrooms}")
+    print(f"RULES_FirstRooms{world.firstrooms}")
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
+
     # Make a copy of the list for passing to the client for entrance shuffle purposes. We know this list has the levels sorted in the order they'd be presented in-game (so whatever is at the Fossil Field entrance first, etc.)
     world.entranceorder = list(world.levellist)
     # If entrances weren't shuffled, then this list is already sorted. We sort the list for ease of setting up access rules in the logic files.
@@ -46,34 +54,44 @@ def set_rules(world: "ApeEscapeWorld"):
 # If we ever want to change the starting room of a level, this is where we would set that room.
 def set_entrances(self, logic):
     connect_regions(self, "Menu", AEDoor.TIME_ENTRY.value, lambda state: True)
-    connect_regions(self, "Menu", AEDoor.FF_ENTRY.value, lambda state: Keys(state, self, self.levellist[0].keys))
-    connect_regions(self, "Menu", AEDoor.PO_ENTRY.value, lambda state: Keys(state, self, self.levellist[1].keys))
-    connect_regions(self, "Menu", AEDoor.ML_ENTRY.value, lambda state: Keys(state, self, self.levellist[2].keys))
-    connect_regions(self, "Menu", AEDoor.TJ_ENTRY.value, lambda state: Keys(state, self, self.levellist[3].keys))
-    connect_regions(self, "Menu", AEDoor.DR_ENTRY.value, lambda state: Keys(state, self, self.levellist[4].keys))
-    connect_regions(self, "Menu", AEDoor.CR_ENTRY.value, lambda state: Keys(state, self, self.levellist[5].keys))
-    connect_regions(self, "Menu", AEDoor.SA_ENTRY.value, lambda state: Keys(state, self, self.levellist[6].keys))
-    connect_regions(self, "Menu", AEDoor.CB_ENTRY.value, lambda state: Keys(state, self, self.levellist[7].keys))
-    connect_regions(self, "Menu", AEDoor.CCAVE_ENTRY.value, lambda state: Keys(state, self, self.levellist[8].keys))
-    connect_regions(self, "Menu", AEDoor.DI_ENTRY.value, lambda state: Keys(state, self, self.levellist[9].keys))
-    connect_regions(self, "Menu", AEDoor.SM_ENTRY.value, lambda state: Keys(state, self, self.levellist[10].keys))
-    connect_regions(self, "Menu", AEDoor.FR_ENTRY.value, lambda state: Keys(state, self, self.levellist[11].keys))
-    connect_regions(self, "Menu", AEDoor.HS_ENTRY.value, lambda state: Keys(state, self, self.levellist[12].keys))
-    connect_regions(self, "Menu", AEDoor.GA_ENTRY.value, lambda state: Keys(state, self, self.levellist[13].keys))
-    connect_regions(self, "Menu", AEDoor.ST_ENTRY.value, lambda state: Keys(state, self, self.levellist[14].keys))
-    connect_regions(self, "Menu", AEDoor.WSW_ENTRY.value, lambda state: Keys(state, self, self.levellist[15].keys))
-    connect_regions(self, "Menu", AEDoor.CC_ENTRY.value, lambda state: Keys(state, self, self.levellist[16].keys))
-    connect_regions(self, "Menu", AEDoor.CP_ENTRY.value, lambda state: Keys(state, self, self.levellist[17].keys))
-    connect_regions(self, "Menu", AEDoor.SF_ENTRY.value, lambda state: Keys(state, self, self.levellist[18].keys))
-    connect_regions(self, "Menu", AEDoor.TVT_ENTRY.value, lambda state: Keys(state, self, self.levellist[19].keys))
-    connect_regions(self, "Menu", AEDoor.MM_SL_HUB.value, lambda state: Keys(state, self, self.levellist[20].keys))
 
+    roomperlevelsKeys = list(RAM.roomsperlevels.keys())
+    roomperlevelsValues = list(RAM.roomsperlevels.values())
+    LevelperFirstRooms = []
+    RoomRegion = []
+    for y in self.firstrooms:
+        LevelperFirstRooms.append(
+            roomperlevelsKeys[[roomperlevelsValues[x].__contains__(y) for x in range(0, 22)].index(True)])
+        RoomRegion.append(RAM.roomstostring[y])
+    SortedEntries = [x for _, x in sorted(zip(LevelperFirstRooms, RoomRegion))]
+    print(SortedEntries)
+    connect_regions(self, "Menu", SortedEntries[0], lambda state: Keys(state, self, self.levellist[0].keys))
+    connect_regions(self, "Menu", SortedEntries[1], lambda state: Keys(state, self, self.levellist[1].keys))
+    connect_regions(self, "Menu", SortedEntries[2], lambda state: Keys(state, self, self.levellist[2].keys))
+    connect_regions(self, "Menu", SortedEntries[3], lambda state: Keys(state, self, self.levellist[3].keys))
+    connect_regions(self, "Menu", SortedEntries[4], lambda state: Keys(state, self, self.levellist[4].keys))
+    connect_regions(self, "Menu", SortedEntries[5], lambda state: Keys(state, self, self.levellist[5].keys))
+    connect_regions(self, "Menu", SortedEntries[6], lambda state: Keys(state, self, self.levellist[6].keys))
+    connect_regions(self, "Menu", SortedEntries[7], lambda state: Keys(state, self, self.levellist[7].keys))
+    connect_regions(self, "Menu", SortedEntries[8], lambda state: Keys(state, self, self.levellist[8].keys))
+    connect_regions(self, "Menu", SortedEntries[9], lambda state: Keys(state, self, self.levellist[9].keys))
+    connect_regions(self, "Menu", SortedEntries[10], lambda state: Keys(state, self, self.levellist[10].keys))
+    connect_regions(self, "Menu", SortedEntries[11], lambda state: Keys(state, self, self.levellist[11].keys))
+    connect_regions(self, "Menu", SortedEntries[12], lambda state: Keys(state, self, self.levellist[12].keys))
+    connect_regions(self, "Menu", SortedEntries[13], lambda state: Keys(state, self, self.levellist[13].keys))
+    connect_regions(self, "Menu", SortedEntries[14], lambda state: Keys(state, self, self.levellist[14].keys))
+    connect_regions(self, "Menu", SortedEntries[15], lambda state: Keys(state, self, self.levellist[15].keys))
+    connect_regions(self, "Menu", SortedEntries[16], lambda state: Keys(state, self, self.levellist[16].keys))
+    connect_regions(self, "Menu", SortedEntries[17], lambda state: Keys(state, self, self.levellist[17].keys))
+    connect_regions(self, "Menu", SortedEntries[18], lambda state: Keys(state, self, self.levellist[18].keys))
+    connect_regions(self, "Menu", SortedEntries[19], lambda state: Keys(state, self, self.levellist[19].keys))
+    connect_regions(self, "Menu", SortedEntries[20], lambda state: Keys(state, self, self.levellist[20].keys))
     if self.options.goal == "ppm": # If Specter 2 is the goal, require enough keys and all monkeys.
-        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
+        connect_regions(self, "Menu", SortedEntries[21], lambda state: Keys(state, self, self.levellist[21].keys) and HasAllMonkeys(state, self))
     elif self.options.goal == "ppmtoken": # If Specter 2 token is the goal, require enough keys and tokens.
-        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens)))
+        connect_regions(self, "Menu", SortedEntries[21], lambda state: Keys(state, self, self.levellist[21].keys) and Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens)))
     elif self.options.goal == "tokenhunt" or self.options.goal == "mmtoken": # If other token goal, just require keys.
-        connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value, lambda state: Keys(state, self, self.levellist[21].keys))
+        connect_regions(self, "Menu", SortedEntries[21], lambda state: Keys(state, self, self.levellist[21].keys))
 
     # TODO: Test this.
     # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
@@ -2274,7 +2292,7 @@ def set_locations(self, logic):
 
     # TV Tower
     # Outside
-    connect_regions(self, AEDoor.TVT_ENTRY.value, AELocation.W8L3Fredo.value, 
+    connect_regions(self, AEDoor.TVT_OUTSIDE_LOBBY.value, AELocation.W8L3Fredo.value,
                         lambda state: HasPunch(state, self) and HasNet(state, self))
     # Basement
     if logic == "normal":
@@ -2859,6 +2877,36 @@ def initialize_level_list(setlevelids=None):
         levellist.append(ApeEscapeLevel(levelnames[x], levelids[x], vanillapos))
     return levellist
 
+def initialize_room_list(world,roomsperlevel,setlevelids=None,setroomids=None):
+
+    #baselevelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
+    baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11,
+                0x14, 0x15, 0x16, 0x18, 0x1E]
+    firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28,
+                    0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
+    firstroomlist = []
+
+    if setlevelids is None:
+        levelids = [world.levellist[x].entrance for x in range(0, 22)]
+    # Using UT, will replace the vanilla list with the already shuffled one
+    else:
+        levelids = setlevelids
+
+    orderedfirstroomids = []
+    for x in range (0, 22):
+
+        levelrooms = list(RAM.roomsperlevels[levelids[x]])
+        if not world.options.randomizestartingroom:  # Option off
+            orderedfirstroomids.append(levelrooms[0])
+        else:
+            if setroomids:
+                orderedfirstroomids.append(levelids[x])
+            else:
+                randomroom = world.random.randint(0, len(levelrooms) - 1)
+                orderedfirstroomids.append(levelrooms[randomroom])
+
+    return orderedfirstroomids
+
 
 def level_to_bytes(name):
     bytelist = []
@@ -2915,7 +2963,6 @@ def set_calculated_level_data(levellist, keyoption, goaloption, coinoption):
         levellist[x].keys = reqkeys[x]
         levellist[x].newpos = x
     return levellist
-
 
 def get_required_keys(key, goal, coin):
     reqkeys = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

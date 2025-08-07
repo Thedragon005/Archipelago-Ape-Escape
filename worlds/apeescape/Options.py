@@ -132,6 +132,20 @@ class EntranceOption(Choice):
     option_lockmm = 0x02
     default = option_on
 
+class RandomizeStartingRoomOption(Choice):
+    """Randomizes the starting room for each level. This option affects which room you begin in when entering a new level.
+
+        off: The starting room for a level is always the game's vanilla room.
+        on: The starting room is a random room from within that level.
+
+        Supported values: off, on
+        Default value: on
+    """
+
+    display_name = "Randomize Starting Room"
+    option_off = 0x00
+    option_on = 0x01
+    default = option_off
 
 class KeyOption(Choice):
     """Choose how many levels each World Key should unlock. The first three levels will always start unlocked.
@@ -497,6 +511,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     infinitejump: InfiniteJumpOption
     superflyer: SuperFlyerOption
     entrance: EntranceOption
+    randomizestartingroom: RandomizeStartingRoomOption
     unlocksperkey: KeyOption
     extrakeys: ExtraKeysOption
     coin: CoinOption
