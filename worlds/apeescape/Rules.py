@@ -8,7 +8,6 @@ from .RAMAddress import RAM
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
 
-
 def set_rules(world: "ApeEscapeWorld"):
     # Detect if connected with UT and put the shuffled order back into the initialize_level_list function
     if hasattr(world.multiworld, "re_gen_passthrough"):
@@ -19,8 +18,6 @@ def set_rules(world: "ApeEscapeWorld"):
     else:
         # Normal world generation
         world.levellist = initialize_level_list()
-
-
         # If entrances aren't shuffled, then we don't need to shuffle the entrances.
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
@@ -1024,6 +1021,9 @@ def set_transitions(self, logic):
     if logic == "normal":
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: HasFlyer(state, self) or IJ(state, self))
+    elif logic == "hard":
+        connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value,
+                        lambda state: HasFlyer(state, self) or HasSling(state, self) or HasClub(state, self))
     else:
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self) or HasClub(state, self))
@@ -1337,7 +1337,7 @@ def set_locations(self, logic):
                             lambda state: HasFlyer(state, self))
         else:
             connect_regions(self, AEDoor.TJ_ENTRY.value, AELocation.Coin6.value, 
-                            lambda state: IJ(state, self) or HasHoop(state, self) or HasFlyer(state, self))
+                            lambda state: IJ(state, self) or (HasHoop(state, self) and CanSwim(state, self)) or HasFlyer(state, self))
         connect_regions(self, AEDoor.TJ_MUSHROOMMAIN.value, AELocation.Coin7.value, 
                         lambda state: True)
         connect_regions(self, AEDoor.TJ_FISHBOAT.value, AELocation.Coin8.value, 
@@ -1736,7 +1736,7 @@ def set_locations(self, logic):
                         lambda state: HasSling(state, self) and HasNet(state, self))
     elif logic == "hard":
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Rickets.value, 
-                        lambda state: (HasSling(state, self) or (HasClub(state, self) and HasFlyer(state, self)) and HasNet(state, self)))
+                        lambda state: (HasSling(state, self) or (HasClub(state, self) and HasFlyer(state, self))) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Rickets.value, 
                         lambda state: (HasSling(state, self) or HasPunch(state, self) or (HasClub(state, self) and HasFlyer(state, self))) and HasNet(state, self))
@@ -2306,7 +2306,7 @@ def set_locations(self, logic):
     # Lobby
     connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Tortuss.value, 
                         lambda state: HasNet(state, self))
-    if logic == "normal":
+    if logic == "normal" or logic == "hard":
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Manic.value, 
                         lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
@@ -2544,16 +2544,6 @@ def set_locations(self, logic):
     if self.options.goal != "mm":
         connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.Specter2.value, 
                         lambda state: HasSling(state, self) and (HasClub(state, self) or HasHoop(state, self) or HasPunch(state, self)) and HasNet(state, self))
-    # TODO NOT WORKING ??
-    #for varLocation in self.get_locations():
-        #print("======================")
-        #print(varLocation.name)
-        #print(varLocation.is_event)
-        #print(varLocation.access_rule)
-        #print("======================")
-        #if varLocation.name != "Menu" and varLocation.is_event == False:
-            #add_rule(varLocation,lambda state: state.has(AEItem.FAKE_OOL_ITEM.value), "or")
-
 
 # Item Checking Helper Functions
 def Keys(state, world, count):
@@ -2871,7 +2861,7 @@ def initialize_level_list(setlevelids=None):
         # Vanilla position
         if setlevelids is None:
             vanillapos = x
-        # Using UT : will get the vanilla level order of the level in the shuffled list
+        # Using UT: will get the vanilla level order of the level in the shuffled list
         else:
             vanillapos = baselevelids.index(setlevelids[x])
         levellist.append(ApeEscapeLevel(levelnames[x], levelids[x], vanillapos))
@@ -2935,11 +2925,14 @@ def character_lookup(byte):
         return 174
 
 
-def fixed_levels(levellist, entoption, coinoption):
-    # Always reset position of Peak Point Matrix
-    for x in range (0, 22):
-        if levellist[x].entrance == 0x1E:
-            levellist[x], levellist[21] = levellist[21], levellist[x]
+def fixed_levels(levellist, entoption, coinoption, goaloption):
+    # Reset position of Peak Point Matrix for mm (postgame), ppm and ppm token (endgame)
+    if goaloption != 0x02 and goaloption != 0x03:
+        # If MM is locked and mmtoken is the goal, then place PPM at the end anyway
+        if entoption == 0x02 and goaloption == 0x03:
+            for x in range (0, 22):
+                if levellist[x].entrance == 0x1E:
+                    levellist[x], levellist[21] = levellist[21], levellist[x]
     # Reset position of Monkey Madness if the option requires it
     if entoption == 0x02:
         for x in range (0, 22):
