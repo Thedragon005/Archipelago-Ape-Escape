@@ -1006,6 +1006,9 @@ def set_transitions(self, logic):
     if logic == "normal":
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: HasFlyer(state, self) or IJ(state, self))
+    elif logic == "hard":
+        connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
+                        lambda state: HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self) or HasClub(state, self))
     else:
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self) or HasClub(state, self))
@@ -1718,7 +1721,7 @@ def set_locations(self, logic):
                         lambda state: HasSling(state, self) and HasNet(state, self))
     elif logic == "hard":
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Rickets.value, 
-                        lambda state: (HasSling(state, self) or (HasClub(state, self) and HasFlyer(state, self)) and HasNet(state, self)))
+                        lambda state: (HasSling(state, self) or (HasClub(state, self) and HasFlyer(state, self))) and HasNet(state, self))
     else:
         connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Rickets.value, 
                         lambda state: (HasSling(state, self) or HasPunch(state, self) or (HasClub(state, self) and HasFlyer(state, self))) and HasNet(state, self))
@@ -2274,7 +2277,7 @@ def set_locations(self, logic):
 
     # TV Tower
     # Outside
-    connect_regions(self, AEDoor.TVT_ENTRY.value, AELocation.W8L3Fredo.value, 
+    connect_regions(self, AEDoor.TVT_OUTSIDE_LOBBY.value, AELocation.W8L3Fredo.value, 
                         lambda state: HasPunch(state, self) and HasNet(state, self))
     # Basement
     if logic == "normal":
@@ -2288,7 +2291,7 @@ def set_locations(self, logic):
     # Lobby
     connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Tortuss.value, 
                         lambda state: HasNet(state, self))
-    if logic == "normal":
+    if logic == "normal" or logic == "hard":
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AELocation.W8L3Manic.value, 
                         lambda state: (HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     else:
