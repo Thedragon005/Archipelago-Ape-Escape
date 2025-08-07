@@ -116,7 +116,7 @@ class SuperFlyerOption(Choice):
 
 
 class EntranceOption(Choice):
-    """Choose which level entrances should be randomized. Peak Point Matrix will always be the last level. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
+    """Choose which level entrances should be randomized. Peak Point Matrix will always be the last level when it's postgame or the goal level. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
 
         off: Levels will be in the vanilla order.
         on: Levels will be in a random order.

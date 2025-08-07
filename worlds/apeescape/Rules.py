@@ -22,7 +22,7 @@ def set_rules(world: "ApeEscapeWorld"):
             # Some levels need to be kept at a specific entrance - put those back.
             world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin)
 
-    world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
+    world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin, world.options.goal)
     # Make a copy of the list for passing to the client for entrance shuffle purposes. We know this list has the levels sorted in the order they'd be presented in-game (so whatever is at the Fossil Field entrance first, etc.)
     world.entranceorder = list(world.levellist)
     # If entrances weren't shuffled, then this list is already sorted. We sort the list for ease of setting up access rules in the logic files.
@@ -2856,7 +2856,7 @@ def initialize_level_list(setlevelids=None):
         # Vanilla position
         if setlevelids is None:
             vanillapos = x
-        # Using UT : will get the vanilla level order of the level in the shuffled list
+        # Using UT: will get the vanilla level order of the level in the shuffled list
         else:
             vanillapos = baselevelids.index(setlevelids[x])
         levellist.append(ApeEscapeLevel(levelnames[x], levelids[x], vanillapos))
@@ -2890,11 +2890,14 @@ def character_lookup(byte):
         return 174
 
 
-def fixed_levels(levellist, entoption, coinoption):
-    # Always reset position of Peak Point Matrix
-    for x in range (0, 22):
-        if levellist[x].entrance == 0x1E:
-            levellist[x], levellist[21] = levellist[21], levellist[x]
+def fixed_levels(levellist, entoption, coinoption, goaloption):
+    # Reset position of Peak Point Matrix for mm (postgame), ppm and ppm token (endgame)
+    if goaloption != 0x02 and goaloption != 0x03:
+        # If MM is locked and mmtoken is the goal, then place PPM at the end anyway
+        if entoption == 0x02 and goaloption == 0x03:
+            for x in range (0, 22):
+                if levellist[x].entrance == 0x1E:
+                    levellist[x], levellist[21] = levellist[21], levellist[x]
     # Reset position of Monkey Madness if the option requires it
     if entoption == 0x02:
         for x in range (0, 22):
