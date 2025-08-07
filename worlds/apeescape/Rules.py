@@ -1008,7 +1008,7 @@ def set_transitions(self, logic):
                         lambda state: HasFlyer(state, self) or IJ(state, self))
     elif logic == "hard":
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
-                        lambda state: HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self) or HasClub(state, self))
+                        lambda state: HasFlyer(state, self) or HasSling(state, self) or HasClub(state, self))
     else:
         connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_LOBBY_WATER.value, 
                         lambda state: HasFlyer(state, self) or HasSling(state, self) or HasHoop(state, self) or HasClub(state, self))
