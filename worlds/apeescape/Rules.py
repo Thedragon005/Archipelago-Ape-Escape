@@ -22,8 +22,8 @@ def set_rules(world: "ApeEscapeWorld"):
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
             # Some levels need to be kept at a specific entrance - put those back.
-            world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin)
-    world.firstrooms = initialize_room_list(world, RAM.roomsperlevels)
+            world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin,world.options.goal)
+        world.firstrooms = initialize_room_list(world, RAM.roomsperlevels)
     print(f"Rooms:{world.firstrooms}")
     print(f"RULES_FirstRooms{world.firstrooms}")
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
@@ -2883,9 +2883,16 @@ def initialize_room_list(world,roomsperlevel,setlevelids=None,setroomids=None):
         levelids = setlevelids
 
     orderedfirstroomids = []
+    excludedrooms_LampsOff = [27] #Exclude certain rooms if LampShuffle is off
+    excludedrooms = []
     for x in range (0, 22):
 
         levelrooms = list(RAM.roomsperlevels[levelids[x]])
+        # Rooms exclusion
+        levelrooms = [item for item in levelrooms if item not in excludedrooms]
+        # Exclude some rooms if Lamps are not shuffled, to prevent getting stuck
+        if world.options.lamp == 0x00:
+            levelrooms = [item for item in levelrooms if item not in excludedrooms_LampsOff]
         if not world.options.randomizestartingroom:  # Option off
             orderedfirstroomids.append(levelrooms[0])
         else:
