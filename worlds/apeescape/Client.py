@@ -1309,6 +1309,12 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Natalie_Rescued > 0x01:
                 MM_Natalie_Rescued = 0
 
+            print(Specter2CompleteAddress)
+            if Specter2CompleteAddress == 0x00.to_bytes(1, "little") and Specter2CompleteAddress != 255:
+                PPM_Completed = False
+            else:
+                PPM_Completed = True
+
             # Get WaterNet state from memory
             waternetState = 0
             if WaterNetStateFromServer != 0xFF:
@@ -1776,7 +1782,7 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
-
+            print(PPM_Completed)
             if PPM_Completed == True and Specter2CompleteAddress == 0x00.to_bytes(1, "little"):
                 writes += [(RAM.Specter2CompleteAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
@@ -1863,7 +1869,7 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
 
             if gameState == RAM.gameState["LevelSelect"]:
-                writes += [(RAM.preventRoomOverride, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                #writes += [(RAM.preventRoomOverride, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 # Update level (and potentially era) names.
                 bytestowrite = ctx.slot_data["levelnames"]
@@ -1871,7 +1877,6 @@ class ApeEscapeClient(BizHawkClient):
                 # Trying to write all the bytes at once also didn't work.
                 for x in range(0, 308):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
-
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
             if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
