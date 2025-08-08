@@ -2892,7 +2892,8 @@ def initialize_room_list(world,roomsperlevel,setlevelids=None,setroomids=None):
         # Exclude some rooms if Lamps are not shuffled, to prevent getting stuck
         if world.options.lamp == 0x00:
             levelrooms = [item for item in levelrooms if item not in excludedrooms_LampsOff]
-        if not world.options.randomizestartingroom: # Option off
+        levelrooms.sort()
+        if world.options.randomizestartingroom == 0x00: # Option off
             orderedfirstroomids.append(levelrooms[0])
         else:
             if setroomids:
