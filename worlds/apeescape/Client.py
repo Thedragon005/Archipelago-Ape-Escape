@@ -3441,14 +3441,17 @@ class ApeEscapeClient(BizHawkClient):
         # Most of this handling is about entrance order - the Hundo check would need to be pulled out of the big if chain because it's about level order right now.
         # Make sure that Hundo doesn't get set on a level that needs to be Locked and that Open doesn't get set on a level that needs to be Hundo.
         levelstates = []
-        for index in range(0, 21):
+        for index in range(0, 22):
             # Do we have enough keys for this level? If no, lock. If yes, continue.
             if key >= reqkeys[index]:
-                # Do we have enough keys for the next level? If no, lock. If yes, open.
-                if key >= reqkeys[index + 1]:
-                    levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
+                if index != 21:
+                    # Do we have enough keys for the next level? If no, lock. If yes, open.
+                    if key >= reqkeys[index + 1]:
+                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
+                    else:
+                        levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
                 else:
-                    levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
+                    levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levelopen, "MainRAM"))
             else:
                 levelstates.append((RAM.levelAddresses[list(RAM.levelAddresses.keys())[index]], levellocked, "MainRAM"))
 
