@@ -56,7 +56,7 @@ def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
     if self.ctx.game != "Ape Escape":
         logger.warning("This command can only be used when playing Ape Escape.")
         return
-
+    presetColors = list(RAM.colortable.keys())
     logger.info(f"----------------------------------------------\n"
                 f"Commands for Ape Escape\n"
                 f"----------------------------------------------\n"
