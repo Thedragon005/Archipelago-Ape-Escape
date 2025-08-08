@@ -1863,6 +1863,7 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
 
             if gameState == RAM.gameState["LevelSelect"]:
+                writes += [(RAM.preventRoomOverride, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
                 # Update level (and potentially era) names.
                 bytestowrite = ctx.slot_data["levelnames"]
@@ -1872,18 +1873,26 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
 
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
-            if gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
-                # print("In level intro state.")
+            if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
                 firstroomids = ctx.slot_data["firstrooms"]
+                entranceorder = ctx.slot_data["entranceids"]
                 # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
                 levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), firstroomids))
+                if gameState == RAM.gameState["LevelSelect"]:
+                    selectedWorld = LS_currentWorld
+                    selectedLevel = LS_currentLevel
+                else:
+                    selectedWorld = status_currentWorld
+                    selectedLevel = status_currentLevel
                 # Use Selected World (0-9) and Selected Level (0-2) to determine the selected level.
-                chosenLevel = 10 * status_currentWorld + status_currentLevel + 11
+                chosenLevel = 10 * selectedWorld + selectedLevel + 11
                 # Peak Point Matrix doesn't follow the pattern, so manually override if it's that.
+                print(chosenLevel)
                 if chosenLevel > 100:
                     chosenLevel = 92
                 targetRoom = levelidtofirstroom.get(chosenLevel)
+                targetLevel = entranceorder[firstroomids.index(targetRoom)]
                 # Actually send Spike to the desired level!
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
