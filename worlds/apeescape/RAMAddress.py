@@ -1398,6 +1398,7 @@ class RAM:
     currentLevelAddress = 0x0F4474
     gameStateAddress = 0x0F4470
 
+
     jakeVictoryAddress = 0x0F447A
     unlockedLevelAddress = 0x0DFC70
     requiredApesAddress = 0x0F44D8
@@ -1569,6 +1570,7 @@ class RAM:
     # LevelSelection addresses (Number -1)
     selectedWorldAddress = 0x139BC4
     selectedLevelAddress = 0x139BCC
+    preventRoomOverride = 0x1380DC #False = 2789343526, True = 0
     worldIsScrollingRight = 0x139BD9 # 2 bytes: 0xFFFF = you are changing to the next world
     worldScrollToRightDPAD = 0x1381D4 # 2 bytes: Enabled = 0009, Disabled = 0000
     worldScrollToRightR1 = 0x138270  # 2 bytes: Enabled = 0009, Disabled = 0000
