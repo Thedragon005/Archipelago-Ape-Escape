@@ -1470,7 +1470,7 @@ class RAM:
     MM_LampAddress = 0x0E00FB
 
     tokenCountFromServer = 0x0E00FC
-
+    Specter2CompleteAddress = 0x0E00FD
 
     DR_Block_Pushed = 0x18459A # Address is more of "Entry is open", but same result at the end
 

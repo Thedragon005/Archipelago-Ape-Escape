@@ -1117,7 +1117,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.temp_SA_CompletedAddress, 1, "MainRAM"),
                 (RAM.GA_CompletedAddress, 1, "MainRAM"),
                 (RAM.temp_GA_CompletedAddress, 1, "MainRAM"),
-                (RAM.worldIsScrollingRight, 2, "MainRAM")
+                (RAM.worldIsScrollingRight, 2, "MainRAM"),
+                (RAM.Specter2CompleteAddress, 1, "MainRAM")
 
             ]
 
@@ -1139,6 +1140,7 @@ class ApeEscapeClient(BizHawkClient):
             GA_Completed = int.from_bytes(menuReads[11], byteorder = "little")
             temp_GA_Completed = int.from_bytes(menuReads[12], byteorder = "little")
             worldIsScrollingRight = int.from_bytes(menuReads[13], byteorder = "little")
+            Specter2CompleteAddress = int.from_bytes(menuReads[14], byteorder = "little")
 
             # Water net shuffle Reads
             swimTuples = [
@@ -1335,7 +1337,6 @@ class ApeEscapeClient(BizHawkClient):
             if TVTLobbyLampStateFromServer != 0x00 and TVTLobbyLampStateFromServer != 0xFF: TVTLobbyLampState = TVTLobbyLampStateFromServer
             if TVTTankLampStateFromServer != 0x00 and TVTTankLampStateFromServer != 0xFF: TVTTankLampState = TVTTankLampStateFromServer
             if MMLampStateFromServer != 0x00 and MMLampStateFromServer != 0xFF: MMLampState = MMLampStateFromServer
-
 
             START_recv_index = recv_index
 
@@ -1617,11 +1618,9 @@ class ApeEscapeClient(BizHawkClient):
             if (localcondition) and (currentRoom in mailboxesRooms) and (gameState == RAM.gameState["InLevel"] or gameState == RAM.gameState["TimeStation"]):
                 mailboxesaddrs = RAM.mailboxListLocal[currentRoom]
 
-
                 boolGotMail = (gotMail == 0x02)
                 key_list = list(mailboxesaddrs.keys())
                 val_list = list(mailboxesaddrs.values())
-
 
                 mail_to_send = set()
                 # Rearange the array if there is 2 indexes for the same mailbox
@@ -1659,7 +1658,6 @@ class ApeEscapeClient(BizHawkClient):
                         if int.from_bytes(redMailboxesList[i], byteorder='little') == 0x01:
                             if (redkey_list[i] + self.offset) not in self.locations_list:
                                 mail_to_send.add(redkey_list[i] + self.offset)
-
 
                 if mail_to_send is not None and mail_to_send != set():
                     await ctx.send_msgs([{
@@ -1705,6 +1703,7 @@ class ApeEscapeClient(BizHawkClient):
                     "cmd": "LocationChecks",
                     "locations": list(x for x in [self.offset + 206])
                 }])
+                PPM_Completed = True
 
             # Write Array
 
@@ -1732,8 +1731,8 @@ class ApeEscapeClient(BizHawkClient):
             if self.preventKickOut == 1:
                 #print(currentRoom)
 
-                #If in level, make the "localLevelState" as "
-                if gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"]):
+                # If in level, make the "localLevelState" as "
+                if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
                     if currentRoom == 48:
                         if CrC_BossPhase == 4 and CrC_BossLife == 0x00:
                             writes += [(RAM.CrC_BossPhaseAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
@@ -1750,12 +1749,12 @@ class ApeEscapeClient(BizHawkClient):
                     if localLevelState != 0x03:
                         writes += [(RAM.localLevelState, 0x03.to_bytes(1, "little"), "MainRAM")]
                 else:
-                    # Stops preventing Kickout outside of the Levels,since it could cause crashes
+                    # Stops preventing Kickout outside of the Levels, since it could cause crashes
                     if kickoutofLevel == 0:
                         writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                         writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
             elif self.preventKickOut == 0:
-                # Ensure you always get kicked out when catching the last monkey,to be consistent
+                # Ensure you always get kicked out when catching the last monkey, to be consistent
                 if kickoutofLevel == 0:
                     writes += [(RAM.kickoutofLevelAddress, 0x84830188.to_bytes(4, "little"), "MainRAM")]
                     writes += [(RAM.kickoutofLevelAddress2, 0x24020001.to_bytes(4, "little"), "MainRAM")]
@@ -1767,7 +1766,7 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
                 elif RAM.gameState["LevelSelect"] != gameState:
                     # Should reset the values once "Completed" state is exited
-                    # Could maybe check if in Time Hub instead ?
+                    # Could maybe check if in Time Hub instead?
                     if temp_SA_Completed != 0xFF:
                         writes += [(RAM.SA_CompletedAddress, temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
@@ -1778,6 +1777,9 @@ class ApeEscapeClient(BizHawkClient):
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
 
+            if PPM_Completed == True and Specter2CompleteAddress == 0x00.to_bytes(1, "little"):
+                writes += [(RAM.Specter2CompleteAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+
             # If there is messages waiting in the queue, print them to Bizhawk
             if self.messagequeue is not None and self.messagequeue != []:
                 await self.process_bizhawk_messages(ctx)
@@ -1785,15 +1787,14 @@ class ApeEscapeClient(BizHawkClient):
             # ======== Spike Color handling =========
             # For checking if the chosen color currently needs to be applied.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            Color_Reads = [gameState, spikeColor,spikeState2]
+            Color_Reads = [gameState, spikeColor, spikeState2]
             await self.Spike_Color_handling(ctx, Color_Reads, "")
             # ================================
-
 
             # ======== Special Items Handling =========
             # For Traps and Special Items.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning,self.DS_spikecolor]
+            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning, self.DS_spikecolor]
             await self.specialitems_handling(ctx, SpecialItems_Reads)
             # ================================
 
@@ -1804,7 +1805,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ======== Rainbow Cookie =========
             if self.rainbow_cookie.is_active:
-                await self.rainbow_cookie.update_state_and_deactivate()  # Call the method to handle inputs
+                await self.rainbow_cookie.update_state_and_deactivate()  # Call the method to handle status
             # ================================
 
             # ======= Credits skipping =======
@@ -1820,13 +1821,13 @@ class ApeEscapeClient(BizHawkClient):
             # ================================
 
             # ====== Permanent Buttons =======
-            # Execute the Buttons handling code segment
+            # Execute the Button handling code segment
             Button_Reads = [currentRoom, gameState, DI_Button_Pressed, CrC_Water_ButtonPressed, CrC_Basement_ButtonPressed, TVT_Lobby_ButtonPressed, MM_MonkeyHead_ButtonPressed, MM_Painting_ButtonPressed, DI_Button_DoorVisual, CrC_Water_Door_Visual, CrC_Basement_DoorVisual1, TVT_Lobby_Water_Hitbox, MM_MonkeyHead_Door, MM_Painting_Visual, DR_Block_Pushed, transitionPhase]
             await self.permanent_buttons_handling(ctx, Button_Reads)
             # ================================
 
             localLampsUpdate = {20: CBLampState, 53: CPLampState, 79: MMLampState}
-            globalLampsUpdate = {26: DILampState, 46: CrCLampState, 57: SFLampState, 65: TVTLobbyLampState,66: TVTTankLampState}
+            globalLampsUpdate = {26: DILampState, 46: CrCLampState, 57: SFLampState, 65: TVTLobbyLampState, 66: TVTTankLampState}
 
             # ========= Lamp Unlocks =========
             # Tables for Lamp updates
@@ -1887,7 +1888,7 @@ class ApeEscapeClient(BizHawkClient):
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
-            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], temp_SA_Completed, temp_GA_Completed)
+            writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], temp_SA_Completed, temp_GA_Completed, Specter2CompleteAddress)
 
             # ===== Text Replacements ======
             # Replace text Time Station mailbox here.
@@ -3204,8 +3205,7 @@ class ApeEscapeClient(BizHawkClient):
             reqkeys = ctx.slot_data["reqkeys"]
 
             # Get all keys required for the next world, based on first level of ERAS
-            WorldUnlocks = [reqkeys[3], reqkeys[6], reqkeys[7], reqkeys[10], reqkeys[13], reqkeys[14], reqkeys[17],
-                            reqkeys[20], reqkeys[21]]
+            WorldUnlocks = [reqkeys[3], reqkeys[6], reqkeys[7], reqkeys[10], reqkeys[13], reqkeys[14], reqkeys[17], reqkeys[20], reqkeys[21]]
             # Format current selected level to compare against reqkeys table
             currentLevel = (3 * LS_currentWorld) + LS_currentLevel
             if LS_currentWorld >= 3:
@@ -3404,7 +3404,7 @@ class ApeEscapeClient(BizHawkClient):
         self.pending_death_link = True
 
 
-    def unlockLevels(self, ctx: "BizHawkClientContext", monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys, newpositions, SAcomplete, GAcomplete):
+    def unlockLevels(self, ctx: "BizHawkClientContext", monkeylevelCounts, gameState, hundoMonkeysCount, reqkeys, newpositions, SAcomplete, GAcomplete, PPMcomplete):
 
         key = self.worldkeycount
         token = self.tokencount
@@ -3437,13 +3437,13 @@ class ApeEscapeClient(BizHawkClient):
 
         # Set unlocked/locked state of levels
         # This does not handle assignment of Specter Coin icons.
-        # TODO: Change the assignment of "Hundo" status to assign it to the ENTRANCE that's completed, not the LEVEL
         # Most of this handling is about entrance order - the Hundo check would need to be pulled out of the big if chain because it's about level order right now.
         # Make sure that Hundo doesn't get set on a level that needs to be Locked and that Open doesn't get set on a level that needs to be Hundo.
         levelstates = []
         for index in range(0, 22):
             # Do we have enough keys for this level? If no, lock. If yes, continue.
             if key >= reqkeys[index]:
+                # Are we checking the final entrance? If yes, open. If no, continue.
                 if index != 21:
                     # Do we have enough keys for the next level? If no, lock. If yes, open.
                     if key >= reqkeys[index + 1]:
@@ -3457,7 +3457,7 @@ class ApeEscapeClient(BizHawkClient):
 
         # Set hundo status on entrances that are open and have all monkeys in them caught.
         # Starts by checking Fossil Field (the level)
-        for index in range(0, 21):
+        for index in range(0, 22):
             # Is this level a race level?
             if index == 6:
                 # Is Stadium Attack completed?
@@ -3466,6 +3466,10 @@ class ApeEscapeClient(BizHawkClient):
             elif index == 13:
                 # Is Gladiator Attack completed?
                 if GAcomplete == 25:
+                    levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
+            elif index == 21:
+                # Is Peak Point Matrix completed?
+                if PPMcomplete == 1:
                     levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
             else:
                 # Standard level
