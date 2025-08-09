@@ -37,7 +37,7 @@ import worlds._bizhawk as bizhawk
 
 from worlds._bizhawk.client import BizHawkClient
 from worlds.apeescape.RAMAddress import RAM
-from worlds.apeescape.Locations import hundoMonkeysCount
+from worlds.apeescape.Locations import hundoMonkeysCount,hundoCoinsCount
 from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, ItemDisplayOption, KickoutPreventionOption, DeathLink
 
 
@@ -1309,7 +1309,7 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Natalie_Rescued > 0x01:
                 MM_Natalie_Rescued = 0
 
-            print(Specter2CompleteAddress)
+            #print(Specter2CompleteAddress)
             if Specter2CompleteAddress == 0x00.to_bytes(1, "little") and Specter2CompleteAddress != 255:
                 PPM_Completed = False
             else:
@@ -1722,6 +1722,21 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
+            # First Room Randomization broke the status menu counter in game.
+            # I'm putting it back together
+            if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
+                # For all of the Monkey Madness room, treat it as Monkey Madness
+                if 0x18 < currentLevel < 0x1E:
+                    level = 0x18
+                else:
+                    level = currentLevel
+
+                levelTotalMonkeys = hundoMonkeysCount[level]
+                levelTotalCoins = hundoCoinsCount[level]
+                if requiredApes != levelTotalMonkeys:
+                    writes += [(RAM.requiredApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.hundoApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(RAM.hundoCoinsAddress, levelTotalCoins.to_bytes(1, "little"), "MainRAM")]
 
             # Training Room Unlock state:
             # Due to a Bug with Gadget Training, will lock the gadget training ONLY when going into the room
@@ -1782,7 +1797,7 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
-            print(PPM_Completed)
+            #print(PPM_Completed)
             if PPM_Completed == True and Specter2CompleteAddress == 0x00.to_bytes(1, "little"):
                 writes += [(RAM.Specter2CompleteAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
@@ -1893,13 +1908,14 @@ class ApeEscapeClient(BizHawkClient):
                 # Use Selected World (0-9) and Selected Level (0-2) to determine the selected level.
                 chosenLevel = 10 * selectedWorld + selectedLevel + 11
                 # Peak Point Matrix doesn't follow the pattern, so manually override if it's that.
-                print(chosenLevel)
+                #print(chosenLevel)
                 if chosenLevel > 100:
                     chosenLevel = 92
                 targetRoom = levelidtofirstroom.get(chosenLevel)
                 targetLevel = entranceorder[firstroomids.index(targetRoom)]
                 # Actually send Spike to the desired level!
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.currentLevelAddress, targetLevel.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
             writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], temp_SA_Completed, temp_GA_Completed, Specter2CompleteAddress)
