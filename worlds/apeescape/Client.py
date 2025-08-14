@@ -1747,7 +1747,7 @@ class ApeEscapeClient(BizHawkClient):
             ]
             # First Room Randomization broke the status menu counter in game.
             # I'm putting it back together
-            print(ctx.slot_data["randomizestartingroom"])
+            #print(ctx.slot_data["randomizestartingroom"])
             if ctx.slot_data["randomizestartingroom"] == 0x01 or True:
                 baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
                 if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):

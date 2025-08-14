@@ -320,10 +320,10 @@ class RAM:
             64: 0x0E5C6A
         },
         23: {  # second room
-            65: 0x0E5A1A,
+            65: 0x0E557A,
             67: 0x0E57CA,
             68: 0x0E5C6A,
-            66: 0x0E557A
+            66: 0x0E5A1A
         },
         24: {  # 4-3
             69: 0x0E57CA,
