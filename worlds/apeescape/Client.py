@@ -1505,27 +1505,27 @@ class ApeEscapeClient(BizHawkClient):
                 localcondition = (currentLevel == self.levelglobal)
 
             # Stock BossRooms in a variable (For excluding these rooms in local monkeys sending)
+            locationWrites = []
             bossRooms = RAM.bossListLocal.keys()
             mailboxesRooms = RAM.mailboxListLocal.keys()
             redmailboxesRooms = RAM.redMailboxes.keys()
+            keyList = list(RAM.monkeyListGlobal.keys())
+            valList = list(RAM.monkeyListGlobal.values())
+
+            addresses = []
+
+            for val in valList:
+                tuple1 = (val, 1, "MainRAM")
+                addresses.append(tuple1)
+            globalMonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+
             # Check if in level select or in time hub, then read global monkeys
             if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
-                keyList = list(RAM.monkeyListGlobal.keys())
-                valList = list(RAM.monkeyListGlobal.values())
-
-                addresses = []
-
-                for val in valList:
-                    tuple1 = (val, 1, "MainRAM")
-                    addresses.append(tuple1)
-
-                globalMonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
                 monkeysToSend = set()
 
                 for i in range(len(globalMonkeys)):
                     if int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["PrevCaught"]:
                         if (keyList[i] + self.offset) not in self.locations_list:
-
                             monkeysToSend.add(keyList[i] + self.offset)
 
                 if monkeysToSend is not None and monkeysToSend != set():
@@ -1550,7 +1550,29 @@ class ApeEscapeClient(BizHawkClient):
                 monkeys_to_send = set()
 
                 for i in range(len(localmonkeys)):
+                    if ctx.slot_data["randomizestartingroom"] == 0x01:
+                        globalIndex = key_list[i]
+                        localMonkeyaddress = val_list[i]
+
+                        print(f"LocalMonkeyID{key_list[i]}")
+                        print(globalIndex)
+                        print(localMonkeyaddress)
+                        print(format(valList[key_list[i] - 1], "x"))
+                        print(format(localMonkeyaddress, "x"))
+                        print(f"Value:{globalMonkeys[keyList.index(globalIndex)]}")
+                        globalMonkeyValue = globalMonkeys[keyList.index(globalIndex)]
+                        LocalCaught = not (int.from_bytes(localmonkeys[i], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"]))
+
+                        # If monkey is already caught, do not set it again
+                        if LocalCaught and (int.from_bytes(globalMonkeyValue, byteorder='little') == RAM.caughtStatus["Caught"]):
+                            print("===================hello===================")
+                            #locationWrites += (val_List[key_list[i] - 1], 0x03.to_bytes(1, "little"), "MainRAM"),
+                            locationWrites += (localMonkeyaddress, 0x03.to_bytes(1, "little"), "MainRAM"),
+
                     if int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
+                        # Put the monkey to "Catched" state globaly when you are in a "Glitched" level
+                        if ctx.slot_data["randomizestartingroom"] == 0x01:
+                            locationWrites += (valList[key_list[i] - 1], 0x03.to_bytes(1, "little"), "MainRAM"),
                         if (key_list[i] + self.offset) not in self.locations_list:
                             monkeys_to_send.add(key_list[i] + self.offset)
 
@@ -1559,6 +1581,7 @@ class ApeEscapeClient(BizHawkClient):
                         "cmd": "LocationChecks",
                         "locations": list(x for x in monkeys_to_send)
                     }])
+            await bizhawk.write(ctx.bizhawk_ctx, locationWrites)
 
             # Check for Coins
             if gameState != RAM.gameState["LevelSelect"]:
@@ -1724,19 +1747,25 @@ class ApeEscapeClient(BizHawkClient):
             ]
             # First Room Randomization broke the status menu counter in game.
             # I'm putting it back together
-            if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
-                # For all of the Monkey Madness room, treat it as Monkey Madness
-                if 0x18 < currentLevel < 0x1E:
-                    level = 0x18
-                else:
-                    level = currentLevel
+            print(ctx.slot_data["randomizestartingroom"])
+            if ctx.slot_data["randomizestartingroom"] == 0x01 or True:
+                baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
+                if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
+                    # For all of the Monkey Madness room, treat it as Monkey Madness
+                    if 0x18 < currentLevel < 0x1E:
+                        level = 0x18
+                    else:
+                        level = currentLevel
 
-                levelTotalMonkeys = hundoMonkeysCount[level]
-                levelTotalCoins = hundoCoinsCount[level]
-                if requiredApes != levelTotalMonkeys:
-                    writes += [(RAM.requiredApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.hundoApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
-                    writes += [(RAM.hundoCoinsAddress, levelTotalCoins.to_bytes(1, "little"), "MainRAM")]
+                    levelTotalMonkeys = hundoMonkeysCount[level]
+                    levelMonkeyCount = monkeylevelcounts[baselevelids.index(level)]
+                    levelTotalCoins = hundoCoinsCount[level]
+                    #TODO Broken counter and functionality if entry is not vanilla, need to investigate
+                    if localhundoCount != levelTotalMonkeys:
+                        writes += [(RAM.requiredApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.hundoApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.hundoCoinsAddress, levelTotalCoins.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.currentApesAddress, levelTotalCoins.to_bytes(1, "little"), "MainRAM")]
 
             # Training Room Unlock state:
             # Due to a Bug with Gadget Training, will lock the gadget training ONLY when going into the room
@@ -1893,29 +1922,32 @@ class ApeEscapeClient(BizHawkClient):
                 for x in range(0, 308):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
-            if gameState == RAM.gameState["LevelSelect"] or gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
+            DEBUGENTRANCE = True
+            if gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
                 firstroomids = ctx.slot_data["firstrooms"]
                 entranceorder = ctx.slot_data["entranceids"]
                 # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
                 levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), firstroomids))
-                if gameState == RAM.gameState["LevelSelect"]:
-                    selectedWorld = LS_currentWorld
-                    selectedLevel = LS_currentLevel
-                else:
-                    selectedWorld = status_currentWorld
-                    selectedLevel = status_currentLevel
+                selectedWorld = status_currentWorld
+                selectedLevel = status_currentLevel
                 # Use Selected World (0-9) and Selected Level (0-2) to determine the selected level.
                 chosenLevel = 10 * selectedWorld + selectedLevel + 11
                 # Peak Point Matrix doesn't follow the pattern, so manually override if it's that.
                 #print(chosenLevel)
                 if chosenLevel > 100:
                     chosenLevel = 92
+
                 targetRoom = levelidtofirstroom.get(chosenLevel)
                 targetLevel = entranceorder[firstroomids.index(targetRoom)]
+                if DEBUGENTRANCE:
+                    # If debug is set, make the rooms vanilla and ignore slot_data
+                    levelrooms = list(RAM.roomsperlevel[targetLevel])
+                    levelrooms.sort()
+                    targetRoom = levelrooms[0]
                 # Actually send Spike to the desired level!
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
-                writes += [(RAM.currentLevelAddress, targetLevel.to_bytes(1, "little"), "MainRAM")]
+                #writes += [(RAM.currentLevelAddress, targetLevel.to_bytes(1, "little"), "MainRAM")]
 
             # Unlock levels
             writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], temp_SA_Completed, temp_GA_Completed, Specter2CompleteAddress)
