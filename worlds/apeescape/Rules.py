@@ -2622,7 +2622,7 @@ def CanHitWheel(state, world):
         return CanHitMultiple(state, world) or HasFlyer(state, world) or HasRC(state, world)
 
 
-def SuperFlyer(state, world, region):
+def SuperFlyer(state, world, region) -> bool:
     # If the option is off, Super Flyer is not in logic.
     if world.options.superflyer == "false":
         return False
@@ -2636,9 +2636,23 @@ def SuperFlyer(state, world, region):
         return False
 
     # If the player can reach this location without activating the Flyer, Super Flyer is available. To check for this, we check for the ability to access this region on a modified CollectionState. The Radar conveniently has the same ground pound properties as the Flyer while introducing no new access, and so replacing the Flyer with the Radar in this state serves as a valid check.
-    teststate = CollectionState(world.multiworld)
+    teststate = state
+    print(f"Name:{world.get_region(region).name}")
+    print("[BEFORE COLLECTIONSTATE]")
+    print(teststate.prog_items)
+    print(f"CanReach \"{world.get_region(AEDoor.CC_CASTLEMAINTHRONEROOM.value).name}\":{world.get_region(AEDoor.CC_CASTLEMAINTHRONEROOM.value).can_reach(teststate)}")
     teststate.remove(world.create_item(AEItem.Flyer.value))
     teststate.collect(world.create_item(AEItem.Radar.value), prevent_sweep = True)
+    print("[AFTER COLLECTIONSTATE]")
+    print(teststate.prog_items)
+    #print(f"CanReach \"{world.get_region(AEDoor.CC_CASTLEMAIN_ELEVATOR.value).name}\":{world.get_region(AEDoor.CC_CASTLEMAIN_ELEVATOR.value).can_reach(teststate)}")
+    print(f"CanReach \"{world.get_region(AEDoor.CC_BASEMENT_ELEVATOR.value).name}\":{world.get_region(AEDoor.CC_BASEMENT_ELEVATOR.value).can_reach(teststate)}")
+    print(f"CanReach \"{world.get_region(AEDoor.CC_ELEVATOR_CASTLEMAIN.value).name}\":{world.get_region(AEDoor.CC_ELEVATOR_CASTLEMAIN.value).can_reach(teststate)}")
+    print(f"CanReach \"{world.get_region(AEDoor.CC_CASTLEMAINTHRONEROOM.value).name}\":{world.get_region(AEDoor.CC_CASTLEMAINTHRONEROOM.value).can_reach(teststate)}")
+    print(f"CanReach \"{world.get_region(AELocation.W7L3Gustav.value).name}\":{world.get_region(AELocation.W7L3Gustav.value).can_reach(teststate)}")
+    print(f"CanReach \"{world.get_region(AELocation.W7L3Wilhelm.value).name}\":{world.get_region(AELocation.W7L3Wilhelm.value).can_reach(teststate)}")
+    print(f"CanReachRegion \"{world.get_region(region).name}\":{world.get_region(region).can_reach(teststate)}")
+    print("=======================================================")
     return world.get_region(region).can_reach(teststate)
 
 
