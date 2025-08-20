@@ -1665,9 +1665,9 @@ class RAM:
     spike_LavaOrIceTimer = 0x0EC2D0 # 0100 means Spike is being launched in the air
 
     colortable = {
-        "vanilla": 0xFFFFFF,
+        "vanilla": 0, #This value is not important as the value is overwritten in the client
         "dark": 0x000000,
-        "white": 0xFFFFFE, # White is one off intentionally since we use 0xFFFFFF for vanilla skin
+        "white": 0xFFFFFF,
         "red": 0x0000FF,
         "green": 0x00FF00,
         "blue": 0xFF0000,

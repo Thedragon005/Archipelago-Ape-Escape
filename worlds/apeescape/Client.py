@@ -2479,89 +2479,71 @@ class ApeEscapeClient(BizHawkClient):
         if (gameState not in validgamestates):
             return None
 
+        # Check if you got a skin in Slot_data/Datastorage
         if self.DS_spikecolor != -2 and self.DS_spikecolor is not None:
             # If it is a tuple,convert it back to string
             if type(self.DS_spikecolor) is tuple:
-                #print(f"Changed datastorage:{self.DS_spikecolor[0]}")
+                # Transfer from tuple to other types
                 self.DS_spikecolor = self.DS_spikecolor[0]
             if type(self.DS_spikecolor) is str:
                 if str(self.DS_spikecolor).lower() in presetskins:
-                    #print(f"str_SpikeSkin#: {str(self.DS_spikecolor)}")
-                    #print (f"str_SpikeSkin#: {presetskins.index(str(self.DS_spikecolor).lower())}")
                     spikecolor = presetskins.index(str(self.DS_spikecolor).lower())
-                    customspikecolor = presetskinsvalues[presetskins.index(str(self.DS_spikecolor).lower())]
+                    if self.DS_spikecolor == "vanilla":
+                        customspikecolor = "vanilla"
+                    else:
+                        customspikecolor = presetskinsvalues[presetskins.index(str(self.DS_spikecolor).lower())]
                 else:
-                    # Not in vanilla skins, treat as custom
-                    #print("CUSTOM SKIN")
+                    # Not in preset skins, treat as custom
                     spikecolor = -1
-                    #print(int(self.DS_spikecolor,16))
                     customspikecolor = int(self.DS_spikecolor,16)
             elif type(self.DS_spikecolor) is int:
-                #print(int(self.DS_spikecolor))
+                # If the value is of type "int", it is a preset number from Slot_data or Hex RGB value
                 if int(self.DS_spikecolor) in presetskinsvalues:
                     colorindex = presetskinsvalues.index(int(self.DS_spikecolor))
-                    #print (f"int_SpikeSkin#: {presetskins[colorindex]}")
-                    #print (f"colorindex#: {colorindex}")
                     spikecolor = colorindex
                     customspikecolor = presetskinsvalues[colorindex]
                 else:
                     # Not in vanilla skins, treat as custom
                     spikecolor = -1
-                    #print(self.DS_spikecolor)
                     customspikecolor = self.DS_spikecolor
             else:
                 #Non-valid type, treat as "Vanilla"
-                #print("Non valid, take vanilla")
-                #print(self.DS_spikecolor)
                 spikecolor = 0
-                customspikecolor = 0xFFFFFF
+                customspikecolor = "vanilla"
         else:
             #No Datastorage yet,use slotdata
-            #print("SlotdataSkin")
-            #print(ctx.slot_data["spikecolor"])
             spikecolor = ctx.slot_data["spikecolor"]
             customspikecolor = ctx.slot_data["customspikecolor"]
 
         # Check which skin to choose from the list
-        #print(f"{customspikecolor}")
-        #print(spikecolor)
-        if spikecolor != -1:
+        if spikecolor == 0:
+            customspikecolor = "vanilla"
+            skin_to_bytes = 0xFFFFFF.to_bytes(3, "big")
+        elif spikecolor != -1:
             # Preset Skin
-            #print(f"P_SpikeSkin#: {presetskinsvalues[spikeskin]}")
-            #spikeskin = presetskins[spikeskin]
             customspikecolor = presetskinsvalues[spikecolor]
-            #print(f"P_customspikeskin#: {customspikeskin}")
             skin_to_bytes = customspikecolor.to_bytes(3, "little")
-
         else:
             # Check for a Custom Skin
-            #print(f"SpikeSkin#: {presetskins[spikeskin]}")
-
             error = False
             try:
                 #Custom Skin validation
-                #print(f"Value:{bytes.fromhex(customspikeskin)}")
-                skin_to_bytes = bytes.fromhex(customspikecolor)
                 # If it passes this check, it's safe to say it's at least Hexadecimal
+                skin_to_bytes = bytes.fromhex(customspikecolor)
                 customspikecolor = int.from_bytes(skin_to_bytes, "big")
-                #print(f"SkinPassed: {skin_to_bytes}")
             except:
                 error = True
             if error:
                 try:
                     #Custom Skin validation (int)
-                    #print(f"Value:{format(customspikecolor, 'x')}")
-                    #skin_to_bytes = bytes.fromhex(hex(customspikeskin).replace("0x", ""))
-                    skin_to_bytes = customspikecolor.to_bytes(3, "big")
                     # If it passes this check, it's safe to say it's at least Hexadecimal
+                    skin_to_bytes = customspikecolor.to_bytes(3, "big")
                     customspikecolor = format(customspikecolor, 'X')
-                    #print(f"SkinPassed2: {customspikeskin}")
                 except:
-                    #print("Value not in Hex format,applying vanilla skin")
-                    #print(f"Value:{int(customspikeskin)}")
                     spikecolor = 0
-                    customspikecolor = 0xFFFFFF
+                    customspikecolor = "vanilla"
                     skin_to_bytes = 0xFFFFFF.to_bytes(3, "big")
+
         if self.changeSkin == True:
             await ctx.send_msgs([{
                 "cmd": "Set",
@@ -2572,9 +2554,10 @@ class ApeEscapeClient(BizHawkClient):
                 "operations": [{"operation": "replace", "value": customspikecolor}]
             }])
             self.changeSkin = False
-        #print(f"P_spikecolor#: {spikecolor} customspikeskin: {customspikecolor}")
-        if customspikecolor != 0xFFFFFF:
-            # Prevent color updates
+
+        # Prevent color updates if value is not vanilla
+        if customspikecolor != "vanilla":
+
             Color_Writes += [(RAM.spike_RedColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             Color_Writes += [(RAM.spike_GreenColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
             Color_Writes += [(RAM.spike_BlueColorUpdate, 0x00000000.to_bytes(4, "little"), "MainRAM")]
