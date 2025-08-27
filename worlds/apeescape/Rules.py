@@ -467,12 +467,12 @@ def set_transitions(self, logic):
     # Entry Room
     connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_MUSHROOM.value,
                         lambda state: True)
-    if logic == "normal" or logic == "hard":
+    if logic == "normal":
         connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_BOULDER.value, 
                         lambda state: CanSwim(state, self))
     else:
         connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_BOULDER.value, 
-                        lambda state: CanSwim(state, self) or ((IJ(state, self) or HasHoop(state, self)) and HasFlyer(state, self)))
+                        lambda state: CanSwim(state, self) or HasFlyer(state, self))
     if logic == "normal":
         connect_regions(self, AEDoor.TJ_ENTRY.value, AEDoor.TJ_ENTRY_FISH.value, 
                         lambda state: CanSwim(state, self))
