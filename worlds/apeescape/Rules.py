@@ -14,6 +14,7 @@ def set_rules(world: "ApeEscapeWorld"):
     if hasattr(world.multiworld, "re_gen_passthrough"):
         levelids = world.passthrough["entranceids"]
         firstroomids = world.passthrough["firstrooms"]
+        print(f"FirstRoomsIDs:{firstroomids}")
         world.levellist = initialize_level_list(levelids)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel, levelids, firstroomids)
     else:
@@ -25,7 +26,6 @@ def set_rules(world: "ApeEscapeWorld"):
             # Some levels need to be kept at a specific entrance - put those back.
             world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin, world.options.goal)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
-    print(f"Rooms:{world.firstrooms}")
     print(f"RULES_FirstRooms{world.firstrooms}")
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
 
@@ -63,7 +63,7 @@ def set_entrances(self, logic):
             roomperlevelsKeys[[roomperlevelsValues[x].__contains__(y) for x in range(0, 22)].index(True)])
         RoomRegion.append(RAM.roomstostring[y])
     SortedEntries = [x for _, x in sorted(zip(LevelperFirstRooms, RoomRegion))]
-    print(SortedEntries)
+    print(f"SortedEntries{SortedEntries}")
     connect_regions(self, "Menu", SortedEntries[0], lambda state: Keys(state, self, self.levellist[0].keys))
     connect_regions(self, "Menu", SortedEntries[1], lambda state: Keys(state, self, self.levellist[1].keys))
     connect_regions(self, "Menu", SortedEntries[2], lambda state: Keys(state, self, self.levellist[2].keys))
@@ -2875,32 +2875,33 @@ def initialize_room_list(world, roomsperlevel, setlevelids = None, setroomids = 
     firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
     firstroomlist = []
 
-    if setlevelids is None:
-        levelids = [world.levellist[x].entrance for x in range(0, 22)]
     # Using UT, will replace the vanilla list with the already shuffled one
-    else:
+    if world.using_ut == True:
         levelids = setlevelids
+        orderedfirstroomids = setroomids
+    else:
+        levelids = [world.levellist[x].entrance for x in range(0, 22)]
 
-    orderedfirstroomids = []
-    excludedrooms_LampsOff = [27] # Exclude certain rooms if LampShuffle is off
-    excludedrooms = []
-    for x in range (0, 22):
+        orderedfirstroomids = []
+        excludedrooms_LampsOff = [27] # Exclude certain rooms if LampShuffle is off
+        excludedrooms = []
+        for x in range (0, 22):
 
-        levelrooms = list(RAM.roomsperlevel[levelids[x]])
-        # Rooms exclusion
-        levelrooms = [item for item in levelrooms if item not in excludedrooms]
-        # Exclude some rooms if Lamps are not shuffled, to prevent getting stuck
-        if world.options.lamp == 0x00:
-            levelrooms = [item for item in levelrooms if item not in excludedrooms_LampsOff]
-        levelrooms.sort()
-        if world.options.randomizestartingroom == 0x00: # Option off
-            orderedfirstroomids.append(levelrooms[0])
-        else:
-            if setroomids:
-                orderedfirstroomids.append(levelids[x])
+            levelrooms = list(roomsperlevel[levelids[x]])
+            # Rooms exclusion
+            levelrooms = [item for item in levelrooms if item not in excludedrooms]
+            # Exclude some rooms if Lamps are not shuffled, to prevent getting stuck
+            if world.options.lamp == 0x00:
+                levelrooms = [item for item in levelrooms if item not in excludedrooms_LampsOff]
+            levelrooms.sort()
+            if world.options.randomizestartingroom == 0x00: # Option off
+                orderedfirstroomids.append(levelrooms[0])
             else:
-                randomroom = world.random.randint(0, len(levelrooms) - 1)
-                orderedfirstroomids.append(levelrooms[randomroom])
+                if setroomids:
+                    orderedfirstroomids.append(levelids[x])
+                else:
+                    randomroom = world.random.randint(0, len(levelrooms) - 1)
+                    orderedfirstroomids.append(levelrooms[randomroom])
 
     return orderedfirstroomids
 

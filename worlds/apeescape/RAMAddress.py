@@ -875,6 +875,12 @@ class RAM:
         }
     }
 
+    timeStationMailboxStart = 0x0C1798
+    gotMailAddress = 0x0BBD99
+    # Seems to be shared with other variables,
+    # Detect when readingMail = 2 then check what mailbox it is
+    mailboxIDAddress = 0x0A6CD2
+    # Associate by room just to be sure, since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
 
     mailboxListLocal = {
         1: {  # 1-1: Entry
@@ -1181,6 +1187,32 @@ class RAM:
 
     # Array order: bytesToWrite, OpenValue, ClosedValue
     doors_addresses = {
+        41:{ # WSW_GongRoom
+            0x0BFCCB: [1, 0xF7, 0xFB], # WSW_Gong_BackDoorVisual1
+            0x0BFCCE: [1, 0x00, 0xFF], # WSW_Gong_CoinDoorVisual1
+            0x0BFCCF: [1, 0x00, 0xFF], # WSW_Gong_CoinDoorVisual2
+            0x0BFCEB: [1, 0xF7, 0xFB], # WSW_Gong_CoinDoorVisual3
+            0x0BFBCE: [1, 0xFF, 0x00], # WSW_Gong_StairVisual1
+            0x0BFBCF: [1, 0xFF, 0x00], # WSW_Gong_StairVisual2
+            0x0BFBEE: [1, 0xFF, 0x00], # WSW_Gong_StairVisual3
+            0x0BFBEF: [1, 0xFF, 0x00], # WSW_Gong_StairVisual4
+            0x15F7DB: [1, 0xF7, 0xFB], # WSW_Gong_BackDoorHitBox
+            0x15FAEB: [1, 0xF7, 0xFB], # WSW_Gong_CoinDoorHitBox
+            0x15FC7B: [1, 0x02, 0x00], # WSW_Gong_Stair1HitBox
+            0x15FCB3: [1, 0x01, 0x00], # WSW_Gong_Stair2HitBox
+
+        },
+        44: {  # WSW_BarrelRoom
+            0x0C040A: [2, 0xE5E9, 0xE200], # WSW_Barrel_DoorVisual
+            0x170FCA: [2, 0xE5E9, 0xE200], # WSW_Barrel_DoorHitbox
+        },
+        67: {  # TVT_FanRoom
+            0x0C028A: [2, 0xF3F2, 0xF000],  # TVT_FanDoorVisual
+            0x1648C6: [2, 0xF3F2, 0xF000],  # TVT_FanDoorHitBox
+            #0x0BFFAE: [2, 0xFFFF, 0x0000],  # TVT_GlassDoorVisual1
+            #0x0BFFCE: [2, 0xFFFF, 0x0000],  # TVT_GlassDoorVisual2
+
+        },
         69: { # MM_DoubleDoor
             0x0E7901: [1,0x00,0x10],  # MM_DoubleDoorVisualL1
             0x0E7905: [1,0x10,0x00],  # MM_DoubleDoorVisualL2
@@ -1198,6 +1230,12 @@ class RAM:
             0x170B70: [2,0x1680,0x18D0],  # MM_DoubleDoorHitboxR2
             0x170B72: [2,0x0050,0x0200],  # MM_DoubleDoorHitboxR3
             0x170B76: [2,0x0200,0x0050],  # MM_DoubleDoorHitboxR4
+        },
+        75: {  # Haunted Mansion
+            #Nothing to activate there
+        },
+        76:{
+            #Nothing, event is triggering even after the monkeys are manually set
         }
     }
 
@@ -1207,6 +1245,7 @@ class RAM:
     #globalLamp_globalUpdate = 0x097568  # 0x097568 Default: 1444000F. Set this to 0 to disable
 
     # More precise addresses for local monkeys/events
+
     localLamp_MonkeyDetect = 0x097464
     globalLamp_MonkeyDetect1 = 0x097564
     globalLamp_MonkeyDetect2 = 0x097560
@@ -1359,6 +1398,8 @@ class RAM:
 
     GOLDEN_ON_VALUE = 0x01      # Value to write to SPIKE_GOLDEN_FORM_ADDR to activate golden form
     GOLDEN_OFF_VALUE = 0x00     # Value to write to SPIKE_GOLDEN_FORM_ADDR to revert form
+
+    lockCamera = 0x162057 # Lock Camera (WsW Gong Room) Locked = 0x80, Free = 0x60
 
     isUnderwater = 0x0F4DCA
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
@@ -1714,16 +1755,6 @@ class RAM:
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
 
-    timeStationMailboxStart = 0x0C1798
-    gotMailAddress = 0x0BBD99
-    gotMailAddress_PAL = 0x0BBE59
-    # DIFF = NTSC + C0
-    # Seems to be shared with other variables,
-    # Detect when readingMail = 2 then check what mailbox it is
-    mailboxIDAddress = 0x0A6CD2
-    mailboxIDAddress_PAL = 0x0A6DB2
-    #DIFF = NTSC + E0
-    # Associate by room just to be sure, since some of them have the same ID (Ex.: Thick Jungle have 2 IDs = 71)
     levels = {
         "Fossil": 0x01,
         "Primordial": 0x02,
@@ -1756,3 +1787,5 @@ class RAM:
         "Training": 0x20
     }
 
+    baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
+    firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
