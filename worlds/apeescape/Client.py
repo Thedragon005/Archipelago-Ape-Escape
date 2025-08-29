@@ -1551,8 +1551,8 @@ class ApeEscapeClient(BizHawkClient):
 
                 for i in range(len(localmonkeys)):
                     globalIndex = key_list[i]
-                    localMonkeyaddress = val_list[i]
-
+                    localMonkeyAddress = val_list[i]
+                    localMonkeyHitBoxAddress = RAM.localMonkeyHitbox.get(localMonkeyAddress)
                     # Detect when the current monkey is caught
                     if int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
                         # If the Monkey is not already in the sent locations list, add it to an array to send location
@@ -1566,8 +1566,12 @@ class ApeEscapeClient(BizHawkClient):
                         firstrooms = firstroomids.copy()
                         firstrooms.sort()
                         currentlevelidtofirstroom = dict(zip(RAM.baselevelids, firstrooms))
-
-                        if baselevelidtofirstroom.get(currentLevel) == currentlevelidtofirstroom[currentLevel]:
+                        # For all of the Monkey Madness room, treat it as Monkey Madness
+                        if 0x18 < currentLevel < 0x1E:
+                            level = 0x18
+                        else:
+                            level = currentLevel
+                        if baselevelidtofirstroom.get(level) == currentlevelidtofirstroom[level]:
                             VanillaRoom = True
                         else:
                             VanillaRoom = False
@@ -1581,7 +1585,10 @@ class ApeEscapeClient(BizHawkClient):
 
                             # If monkey is already caught Globaly but not Localy, set Local address to "Already Caught"
                             if (not LocalPrevCaughtState) and GlobalPrevCaughtState:
-                                locationWrites += (localMonkeyaddress, 0x02.to_bytes(1, "little"), "MainRAM"),
+                                locationWrites += (localMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM"),
+                                # And update the collision value to make it despawn
+                                #print(format(localMonkeyHitBoxAddress,"x"))
+                                locationWrites += (localMonkeyHitBoxAddress, 0x07.to_bytes(1, "little"), "MainRAM"),
                             # TODO==============================================================
                             # WSW events (Possibly all of them) seems to be correctly registering at least !!
                             # Some monkeys don't spawn : Check what values some monkeys have and set them according to the same state as global value(or state 4 if global value is 0)
@@ -1589,14 +1596,15 @@ class ApeEscapeClient(BizHawkClient):
                             # Monkey Count is not accurate, maybe because of monkey states
                             # TODO==============================================================
                             # If the monkey is in a "Caught" state, we update the Global value
-                            print(f"Local/GlobalCaughtState condition : {LocalCaughtState} / {not GlobalPrevCaughtState}")
+                            #print(f"Local/GlobalCaughtState condition : {LocalCaughtState} / {not GlobalPrevCaughtState}")
                             if LocalCaughtState and (not GlobalPrevCaughtState):
                                 # Put the monkey to "Caught" state globaly when you are in a "Glitched" level
                                 locationWrites += (RAM.monkeyListGlobal.get(key_list[i]), 0x03.to_bytes(1, "little"), "MainRAM"),
-                            # If the Monkey is not already caught (And that the state
+
+                            # If the Monkey is not already caught, make it spawn
                             if not GlobalPrevCaughtState and not LocalCaughtState:
                                 # Spawn the monkey if it is not Caught
-                                locationWrites += (localMonkeyaddress, 0x04.to_bytes(1, "little"), "MainRAM"),
+                                locationWrites += (localMonkeyAddress, 0x04.to_bytes(1, "little"), "MainRAM"),
 
                 if monkeys_to_send is not None:
                     await ctx.send_msgs([{
@@ -1798,12 +1806,12 @@ class ApeEscapeClient(BizHawkClient):
                     else:
                         level = currentLevel
                     # Check if the spawn room for the current level is vanilla
-                    if baselevelidtofirstroom.get(currentLevel) == currentlevelidtofirstroom[currentLevel]:
+                    if baselevelidtofirstroom.get(level) == currentlevelidtofirstroom[level]:
                         VanillaRoom = True
                     else:
                         VanillaRoom = False
 
-                    LevelStartRoom = currentlevelidtofirstroom[currentLevel]
+                    LevelStartRoom = currentlevelidtofirstroom[level]
 
                     # If the level's first room is not vanilla, apply the Counts corrections and Door corrections
                     if VanillaRoom == False:

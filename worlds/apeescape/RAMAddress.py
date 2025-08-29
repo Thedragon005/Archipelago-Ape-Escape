@@ -1341,6 +1341,15 @@ class RAM:
         },
     }
 
+    localMonkeyHitbox ={
+        0x0E557A : 0x0E5525,
+        0x0E57CA : 0x0E5775,
+        0x0E5A1A : 0x0E59C5,
+        0x0E5C6A : 0x0E5C15,
+        0x0E5EBA : 0x0E5E65,
+        0x0E610A : 0x0E60B5
+
+    }
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
     unlockedGadgetsAddress = 0x0F51C4
     # the gadgets on triangle, square, circle, X on successive bytes
