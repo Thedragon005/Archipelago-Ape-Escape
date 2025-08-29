@@ -1953,8 +1953,7 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
-            #print(PPM_Completed)
-            if PPM_Completed == True and Specter2CompleteAddress == 0x00.to_bytes(1, "little"):
+            if PPM_Completed == True and Specter2CompleteAddress == 0:
                 writes += [(RAM.Specter2CompleteAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
             # If there is messages waiting in the queue, print them to Bizhawk
