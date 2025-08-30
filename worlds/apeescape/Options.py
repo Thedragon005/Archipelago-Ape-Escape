@@ -134,7 +134,8 @@ class EntranceOption(Choice):
 
 
 class RandomizeStartingRoomOption(Choice):
-    """Choose if the starting room for each level should be randomized.
+    """**CURRENTLY DISABLED FOR TOO MANY ISSUES**
+    Choose if the starting room for each level should be randomized.
 
         off: The starting room for each level is the original starting room.
         on: The starting room for each level is a random room from within that level.
