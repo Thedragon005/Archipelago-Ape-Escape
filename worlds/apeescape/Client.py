@@ -363,7 +363,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     # TODO Remove when doing official PR
-    client_version = "0.9.0"
+    client_version = "0.9.0a"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
