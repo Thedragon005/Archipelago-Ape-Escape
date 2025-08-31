@@ -37,7 +37,7 @@ import worlds._bizhawk as bizhawk
 
 from worlds._bizhawk.client import BizHawkClient
 from worlds.apeescape.RAMAddress import RAM
-from worlds.apeescape.Locations import hundoMonkeysCount, hundoCoinsCount
+from worlds.apeescape.Locations import hundoMonkeysCount, hundoCoinsCount, doorTransitions
 from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, ItemDisplayOption, KickoutPreventionOption, DeathLink
 
 
@@ -363,7 +363,7 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     # TODO Remove when doing official PR
-    client_version = "0.9.0a"
+    client_version = "0.9.1"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -1025,6 +1025,9 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
                 (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
                 (RAM.spikeColor, 3, "MainRAM"),
+                (RAM.Spike_X_PosAddress, 4, "MainRAM"),
+                (RAM.Spike_Y_PosAddress, 4, "MainRAM"),
+                (RAM.Spike_Z_PosAddress, 4, "MainRAM"),
                 #(RAM.spikeColor2, 1, "MainRAM"),
             ]
 
@@ -1076,6 +1079,9 @@ class ApeEscapeClient(BizHawkClient):
             S2_Cutscene_Redirection = int.from_bytes(reads[39], byteorder = "little")
             S1_P1_FightTrigger = int.from_bytes(reads[40], byteorder = "little")
             spikeColor = int.from_bytes(reads[41], byteorder = "little")
+            Spike_X_Pos = int.from_bytes(reads[42], byteorder = "little")
+            Spike_Y_Pos = int.from_bytes(reads[43], byteorder = "little")
+            Spike_Z_Pos = int.from_bytes(reads[44], byteorder = "little")
 
             # Related to Gadgets
             gadgetTuples = [
@@ -1449,7 +1455,7 @@ class ApeEscapeClient(BizHawkClient):
                         # Not needed anymore, will see if this impacts something then remove it later
                         # Send message of received item - Victory has a special message above
                         #if item.item - self.offset != RAM.items["Victory"]:
-                            #await self.send_bizhawk_message(ctx, "", "Item", item)
+                        #await self.send_bizhawk_message(ctx, "", "Item", item)
 
                 # Writes to memory if there is a new item, after the loop
                 itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
@@ -1552,59 +1558,11 @@ class ApeEscapeClient(BizHawkClient):
                 for i in range(len(localmonkeys)):
                     globalIndex = key_list[i]
                     localMonkeyAddress = val_list[i]
-                    localMonkeyHitBoxAddress = RAM.localMonkeyHitbox.get(localMonkeyAddress)
                     # Detect when the current monkey is caught
                     if int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"]:
                         # If the Monkey is not already in the sent locations list, add it to an array to send location
                         if (key_list[i] + self.offset) not in self.locations_list:
                             monkeys_to_send.add(key_list[i] + self.offset)
-
-                    if ctx.slot_data["randomizestartingroom"] == 0x01:
-                        baselevelidtofirstroom = dict(zip(RAM.baselevelids, RAM.firstroomids))
-                        firstroomids = ctx.slot_data["firstrooms"]
-                        # List of current rooms per level
-                        firstrooms = firstroomids.copy()
-                        firstrooms.sort()
-                        currentlevelidtofirstroom = dict(zip(RAM.baselevelids, firstrooms))
-                        # For all of the Monkey Madness room, treat it as Monkey Madness
-                        if 0x18 < currentLevel < 0x1E:
-                            level = 0x18
-                        else:
-                            level = currentLevel
-                        if baselevelidtofirstroom.get(level) == currentlevelidtofirstroom[level]:
-                            VanillaRoom = True
-                        else:
-                            VanillaRoom = False
-
-                        # Correct the monkey values only if the First Room is not vanilla
-                        if not VanillaRoom:
-                            globalMonkeyValue = globalMonkeys[keyList.index(globalIndex)]
-                            LocalCaughtState = (int.from_bytes(localmonkeys[i], byteorder='little') == RAM.caughtStatus["Caught"])
-                            LocalPrevCaughtState = (int.from_bytes(localmonkeys[i], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"]))
-                            GlobalPrevCaughtState = (int.from_bytes(globalMonkeyValue, byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"]))
-
-                            # If monkey is already caught Globaly but not Localy, set Local address to "Already Caught"
-                            if (not LocalPrevCaughtState) and GlobalPrevCaughtState:
-                                locationWrites += (localMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM"),
-                                # And update the collision value to make it despawn
-                                #print(format(localMonkeyHitBoxAddress,"x"))
-                                locationWrites += (localMonkeyHitBoxAddress, 0x07.to_bytes(1, "little"), "MainRAM"),
-                            # TODO==============================================================
-                            # WSW events (Possibly all of them) seems to be correctly registering at least !!
-                            # Some monkeys don't spawn : Check what values some monkeys have and set them according to the same state as global value(or state 4 if global value is 0)
-                            # Graphical bugs with WSW, may need to check for transition and only replace the door values on transition
-                            # Monkey Count is not accurate, maybe because of monkey states
-                            # TODO==============================================================
-                            # If the monkey is in a "Caught" state, we update the Global value
-                            #print(f"Local/GlobalCaughtState condition : {LocalCaughtState} / {not GlobalPrevCaughtState}")
-                            if LocalCaughtState and (not GlobalPrevCaughtState):
-                                # Put the monkey to "Caught" state globaly when you are in a "Glitched" level
-                                locationWrites += (RAM.monkeyListGlobal.get(key_list[i]), 0x03.to_bytes(1, "little"), "MainRAM"),
-
-                            # If the Monkey is not already caught, make it spawn
-                            if not GlobalPrevCaughtState and not LocalCaughtState:
-                                # Spawn the monkey if it is not Caught
-                                locationWrites += (localMonkeyAddress, 0x04.to_bytes(1, "little"), "MainRAM"),
 
                 if monkeys_to_send is not None:
                     await ctx.send_msgs([{
@@ -1775,125 +1733,8 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
-
-            # List of vanilla rooms per level
-            baselevelidtofirstroom = dict(zip(RAM.baselevelids, RAM.firstroomids))
-            firstroomids = ctx.slot_data["firstrooms"]
-            # List of current rooms per level
-            firstrooms = firstroomids.copy()
-            firstrooms.sort()
-            currentlevelidtofirstroom = dict(zip(RAM.baselevelids, firstrooms))
-
-            # First Room Randomization broke the status menu counter in game.
-            # I'm putting it back together
-            if ctx.slot_data["randomizestartingroom"] == 0x01:
-
-                door_addresses = RAM.doors_addresses
-
-                Door_writes = []
-                Door_guards = []
-                specialrooms = [41, 44, 67, 75, 76]
-                roomsLocalRequirements = [3,1,2,0,0]
-
-                specialRoomsRequirements = dict(zip(specialrooms, roomsLocalRequirements))
-
-                baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
-                if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
-
-                    # For all of the Monkey Madness room, treat it as Monkey Madness
-                    if 0x18 < currentLevel < 0x1E:
-                        level = 0x18
-                    else:
-                        level = currentLevel
-                    # Check if the spawn room for the current level is vanilla
-                    if baselevelidtofirstroom.get(level) == currentlevelidtofirstroom[level]:
-                        VanillaRoom = True
-                    else:
-                        VanillaRoom = False
-
-                    LevelStartRoom = currentlevelidtofirstroom[level]
-
-                    # If the level's first room is not vanilla, apply the Counts corrections and Door corrections
-                    if VanillaRoom == False:
-                        levelTotalMonkeys = hundoMonkeysCount[level]
-                        levelMonkeyCount = monkeylevelcounts[baselevelids.index(level)]
-                        levelTotalCoins = hundoCoinsCount[level]
-                        if localhundoCount != levelTotalMonkeys:
-                            writes += [(RAM.requiredApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
-                            writes += [(RAM.hundoApesAddress, levelTotalMonkeys.to_bytes(1, "little"), "MainRAM")]
-                            writes += [(RAM.hundoCoinsAddress, levelTotalCoins.to_bytes(1, "little"), "MainRAM")]
-                            writes += [(RAM.currentApesAddress, levelMonkeyCount, "MainRAM")]
-
-                        #print("===========================================")
-                        #print(f"currentLevel:{currentLevel}, LevelStartRoom:{LevelStartRoom}, LobbyButton:{self.TVT_Lobby_Button}, ")
-
-                        # Special code handling for TVT Water Room Spawn
-                        if currentLevel == 22 and LevelStartRoom == 64:
-                            # Drain the water if you are starting in the TVT - Water Room as part of Randomize First Rooms
-                            if self.TVT_Lobby_Button != 1:
-                                await ctx.send_msgs([{
-                                    "cmd": "Get",
-                                    "keys": [f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}"]
-                                }])
-                            if self.TVT_Lobby_Button != 1:
-                                await ctx.send_msgs([{
-                                    "cmd": "Set",
-                                    # "key": str(ctx.player_names[ctx.slot]) + "_TVT_Lobby_Button",
-                                    "key": f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}",
-                                    "default": 0,
-                                    "want_reply": False,
-                                    "operations": [{"operation": "replace", "value": 1}]
-                                }])
-
-                        if currentRoom in specialrooms:
-                            currentRoomRequirements = specialRoomsRequirements.get(currentRoom)
-                            monkeyaddrs = RAM.monkeyListLocal[currentRoom]
-                            key_list = list(monkeyaddrs.keys())
-                            val_list = list(monkeyaddrs.values())
-                            addresses = []
-
-                            for val in val_list:
-                                tuple1 = (val, 1, "MainRAM")
-                                addresses.append(tuple1)
-
-                            localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
-                            if currentRoom in door_addresses.keys() and currentRoomRequirements != 0:
-                                doorlist_keys = list(door_addresses[currentRoom].keys())
-                                doorlist_values = list(door_addresses[currentRoom].values())
-                                currentRoomCount = sum(1 for monkeystate in localmonkeys if int.from_bytes(monkeystate) in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"]))
-
-
-                                for x in range(len(doorlist_keys)):
-                                    Door_writes = []
-                                    Door_guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
-                                    Door_writes2 = []
-                                    Door_guards2 = []
-
-                                    door_values = list(doorlist_values[x])
-                                    door_bytes = door_values[0]
-                                    door_openvalue = door_values[1].to_bytes(door_bytes, "little")
-                                    door_closedvalue = door_values[2].to_bytes(door_bytes, "little")
-                                    door_address = (doorlist_keys[x])
-
-                                    if currentRoomCount >= currentRoomRequirements and transitionPhase != 0x06:
-                                        # Unlock Cam for WSW - Gong Room
-                                        if currentRoom == 41:
-                                            Door_guards2 += [(RAM.lockCamera, 0x80.to_bytes(1, "little"),"MainRAM")]
-                                            Door_writes2 += [(RAM.lockCamera, 0x60.to_bytes(1, "little"), "MainRAM")]
-                                        # Open the door if it's closed
-                                        Door_guards += [(door_address, door_closedvalue, "MainRAM")]
-                                        Door_writes += [(door_address, door_openvalue, "MainRAM")]
-                                    else:
-                                        # Lock Cam for WSW - Gong Room
-                                        if currentRoom == 41:
-                                            Door_guards2 += [(RAM.lockCamera, 0x60.to_bytes(1, "little"), "MainRAM")]
-                                            Door_writes2 += [(RAM.lockCamera, 0x80.to_bytes(1, "little"), "MainRAM")]
-                                        # Close the door if opened
-                                        Door_writes += [(door_address, door_closedvalue, "MainRAM")]
-                                        Door_guards += [(door_address, door_openvalue, "MainRAM")]
-
-                                    await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes, Door_guards)
-                                    await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes2, Door_guards2)
+            TR_guards = []
+            TR_writes = []
             # Training Room Unlock state:
             # Due to a Bug with Gadget Training, will lock the gadget training ONLY when going into the room
             if (transitionPhase == 0x06 and NearbyRoom == 90) or currentRoom == 90:
@@ -2038,6 +1879,14 @@ class ApeEscapeClient(BizHawkClient):
             await self.level_select_optimization(ctx, LSO_Reads)
             # ================================
 
+            # List of vanilla rooms per level
+            baselevelidtofirstroom = dict(zip(RAM.baselevelids, RAM.firstroomids))
+            firstroomids = ctx.slot_data["firstrooms"]
+            # List of current rooms per level
+            firstrooms = firstroomids.copy()
+            firstrooms.sort()
+            currentlevelidtofirstroom = dict(zip(RAM.baselevelids, firstrooms))
+
             if gameState == RAM.gameState["LevelSelect"]:
                 #writes += [(RAM.preventRoomOverride, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                 writes += [(RAM.localApeStartAddress, 0x0.to_bytes(8, "little"), "MainRAM")]
@@ -2048,12 +1897,12 @@ class ApeEscapeClient(BizHawkClient):
                 for x in range(0, 308):
                     writes += [(RAM.startOfLevelNames + x, bytestowrite[x].to_bytes(1, "little"), "MainRAM")]
             # Reroute the player to the correct level. Technically only needed for entrance shuffle, vanilla entrances are just a special case of entrance shuffle so this works perfectly fine for that case, too.
-            DEBUGENTRANCE = False
             if gameState == RAM.gameState["LevelIntro"] or gameState == RAM.gameState["LevelIntroTT"]:
                 # Pull the order of first rooms from slot data. This is a List sorted by the order of entrances in the level select - so the first value is the room being entered from Fossil Field.
-                #firstroomids = ctx.slot_data["firstrooms"]
+                firstroomids = ctx.slot_data["firstrooms"]
                 entranceorder = ctx.slot_data["entranceids"]
                 # Match these room ids to the internal identifiers - 11, 12, 13, 21, ... 83, 91, 92
+                #levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), RAM.firstroomids))
                 levelidtofirstroom = dict(zip(RAM.levelAddresses.keys(), firstroomids))
                 selectedWorld = status_currentWorld
                 selectedLevel = status_currentLevel
@@ -2066,18 +1915,89 @@ class ApeEscapeClient(BizHawkClient):
 
                 targetRoom = levelidtofirstroom.get(chosenLevel)
                 targetLevel = entranceorder[firstroomids.index(targetRoom)]
-                if DEBUGENTRANCE:
-                    # If debug is set, make the rooms vanilla and ignore slot_data
-                    levelrooms = list(RAM.roomsperlevel[targetLevel])
-                    levelrooms.sort()
-                    targetRoom = levelrooms[0]
+                levelrooms = list(RAM.roomsperlevel[targetLevel])
+                levelrooms.sort()
+
+                # Put the vanilla entrance for the level, we will redirect it later if RandomizeFirstRoom is on
+                targetRoom = levelrooms[0]
+
                 # Actually send Spike to the desired level!
                 writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
                 writes += [(RAM.currentLevelAddress, targetLevel.to_bytes(1, "little"), "MainRAM")]
 
+            # Code to send Spike to the right transition (If needed)
+            if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
+
+                # For all of the Monkey Madness levels, treat it as Monkey Madness
+                if 0x18 < currentLevel < 0x1E:
+                    level = 0x18
+                else:
+                    level = currentLevel
+                # Check if the spawn room for the current level is vanilla
+                if baselevelidtofirstroom.get(level) == currentlevelidtofirstroom[level]:
+                    VanillaRoom = True
+                else:
+                    VanillaRoom = False
+
+                LevelStartRoom = currentlevelidtofirstroom[level]
+
+                # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
+                if VanillaRoom == False:
+                    if transitionPhase == 1:
+                    #if transitionPhase in (3,4) and spikeState2 == 48:
+                    #if spikeState2 == 48:
+                        # Change TR1_Position to overlap Spike, and change targetRoom/targetDoor
+                        targetRoom = currentlevelidtofirstroom.get(currentLevel)
+                        targetRoomName = RAM.roomstostring.get(targetRoom)
+                        targetDoor = list(doorTransitions.get(targetRoomName))[1]
+                        TR1_Adresses = list(RAM.transitionAddresses.get(1))
+                        #TR1_Adresses.sort()
+                        #print(f"DebugStatus\n"
+                        #      f"  -targetRoom:{targetRoom}\n"
+                        #      f"  -targetRoomName{targetRoomName}\n"
+                        #      f"  -targetDoor{targetDoor}")
+                        #print(f"DebugStatus2\n"
+                        #      f"  -targetRoomAddress:{TR1_Adresses}\n"
+                        #      f"  -targetRoomAddress:{format(TR1_Adresses[0],'x')}\n"
+                        #      f"  -targetDoorAddress{format(TR1_Adresses[1],'x')}")
+                        #TR1_New_YPos = Spike_Y_Pos + 0x300
+                        writes += [(TR1_Adresses[0], targetRoom.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(TR1_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
+                        # Move the first transition
+                        writes += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
+                        writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
+                        writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
+                        writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
+                    #if spikeState2 == 48 and transitionPhase not in (4,5,6):
+                    if spikeState2 in (0x24,0x25) and transitionPhase == 4:
+                        # Trigger the transition early,to warp Spike
+                        #TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
+                        TR_writes += [(RAM.transitionPhase, 0x06.to_bytes(1, "little"), "MainRAM")]
+                        #TR_writes += [(RAM.currentRoomIdAddress, LevelStartRoom.to_bytes(1, "little"), "MainRAM")]
+                        TR_writes += [(RAM.spikeStateAddress, 0x13.to_bytes(1, "little"), "MainRAM")]
+                        TR_writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+                        await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
+                    # Special code handling for TVT Water Room Spawn
+                    if currentLevel == 22 and LevelStartRoom == 64:
+                        # Drain the water if you are starting in the TVT - Water Room as part of Randomize First Rooms
+                        if self.TVT_Lobby_Button != 1:
+                            await ctx.send_msgs([{
+                                "cmd": "Get",
+                                "keys": [f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}"]
+                            }])
+                        if self.TVT_Lobby_Button != 1:
+                            await ctx.send_msgs([{
+                                "cmd": "Set",
+                                # "key": str(ctx.player_names[ctx.slot]) + "_TVT_Lobby_Button",
+                                "key": f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}",
+                                "default": 0,
+                                "want_reply": False,
+                                "operations": [{"operation": "replace", "value": 1}]
+                            }])
+
             # Unlock levels
             writes += self.unlockLevels(ctx, monkeylevelcounts, gameState, hundoMonkeysCount, ctx.slot_data["reqkeys"], ctx.slot_data["newpositions"], temp_SA_Completed, temp_GA_Completed, Specter2CompleteAddress)
-
             # ===== Text Replacements ======
             # Replace text Time Station mailbox here.
             # ==============================
@@ -2260,7 +2180,7 @@ class ApeEscapeClient(BizHawkClient):
                 mailboxbytes += [13]
                 # TODO: Door shuffle status goes here
                 mailboxbytes += [13]
-                
+
                 # Add door and lamp statuses to mailbox text
                 mailboxbytes += text_to_bytes("MM Double Door: ")
                 if MM_Lobby_DoubleDoor == 0: # Don't have item
@@ -2331,7 +2251,7 @@ class ApeEscapeClient(BizHawkClient):
                     else:
                         mailboxbytes += [10] # O button icon
                         mailboxbytes += [1]
-            
+
                 # End mailbox text
                 mailboxbytes += [13]
                 # Pad the text with zeroes to overwrite all pre-existing text
@@ -2342,6 +2262,7 @@ class ApeEscapeClient(BizHawkClient):
                     writes += [(RAM.timeStationMailboxStart + x, mailboxbytes[x].to_bytes(1, "little"), "MainRAM")]
 
             await bizhawk.write(ctx.bizhawk_ctx, writes)
+            #await bizhawk.guarded_write(ctx.bizhawk_ctx, TR_writes, TR_guards)
             await bizhawk.write(ctx.bizhawk_ctx, itemsWrites)
 
             self.levelglobal = currentLevel

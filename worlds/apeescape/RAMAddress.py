@@ -1632,24 +1632,30 @@ class RAM:
     startOfEraNames = 0x139B20
 
     # Rooms ER values here
-    Spike_X_PosAddress = 0x0EC204
-    Spike_Y_PosAddress = 0x0EC208
-    Spike_Z_PosAddress = 0x0EC20C
+    Spike_X_PosAddress = 0x0EC204 #4 bytes
+    Spike_Y_PosAddress = 0x0EC208 #4 bytes
+    Spike_Z_PosAddress = 0x0EC20C #4 bytes
+    Transition1_X = 0x154248 #4 bytes
+    Transition1_Y = 0x15424C #4 bytes
+    Transition1_Z = 0x154250 #4 bytes
+
     Nearby_RoomIDAddress = 0x0E38B4
     Nearby_DoorIDAddress   = 0x0E38A4
+
+    TransitionFlag = 0x0E3893 # Different stage of processing the transitions
 
     # To translate Transition ID from doorTransitions Table to which address we need to change for the room
     transitionAddresses = {
         # --Array content--
         # TR_ID: {TargetRoomAddress,TargetDoorAddress}
-        1: {0x154264,0x154268},
-        2: {0x15428C,0x154290},
-        3: {0x1542B4, 0x1542B8},
-        4: {0x1542DC, 0x1542E0},
-        5: {0x154304, 0x154308},
-        6: {0x15432C, 0x154330},
-        7: {0x154354, 0x154358},
-        8: {0x15437C, 0x154380},
+        1: [0x154264,0x154268],
+        2: [0x15428C,0x154290],
+        3: [0x1542B4, 0x1542B8],
+        4: [0x1542DC, 0x1542E0],
+        5: [0x154304, 0x154308],
+        6: [0x15432C, 0x154330],
+        7: [0x154354, 0x154358],
+        8: [0x15437C, 0x154380],
     }
 
     #TargetRoomID1Address = 0x154264
