@@ -2935,12 +2935,8 @@ def character_lookup(byte):
 
 def fixed_levels(levellist, entoption, coinoption, goaloption):
     # Reset position of Peak Point Matrix for mm (postgame), ppm and ppm token (endgame)
-    if goaloption == 0x00 or goaloption == 0x01 or goaloption == 0x04:
-        for x in range (0, 22):
-            if levellist[x].entrance == 0x1E:
-                levellist[x], levellist[21] = levellist[21], levellist[x]
     # If MM is locked and mmtoken is the goal, then place PPM at the end anyway
-    if entoption == 0x02 and goaloption == 0x03:
+    if goaloption == 0x00 or goaloption == 0x01 or goaloption == 0x04 or (entoption == 0x02 and goaloption == 0x03):
         for x in range (0, 22):
             if levellist[x].entrance == 0x1E:
                 levellist[x], levellist[21] = levellist[21], levellist[x]
