@@ -1642,6 +1642,8 @@ class RAM:
     Nearby_RoomIDAddress = 0x0E38B4
     Nearby_DoorIDAddress   = 0x0E38A4
 
+    Warp_State = 0x0F4480 #0x01 Spawning, 0x02 = Warping back to Hub, 0x03 ??, 0x04 Exiting Transition
+    Transition_Screen_Progress = 0x0F4482 #0x18 = Full black screen, 0x00 is normal
     TransitionFlag = 0x0E3893 # Different stage of processing the transitions
 
     # To translate Transition ID from doorTransitions Table to which address we need to change for the room

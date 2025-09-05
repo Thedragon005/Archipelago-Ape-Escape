@@ -74,7 +74,6 @@ class ApeEscapeMemoryInput:
 
         # --- MonkeyMashHandler class ---
 
-
 class MonkeyMashHandler:
     MAX_TRAP_DURATION = 30  # Maximum duration for the trap in seconds
 
@@ -92,7 +91,7 @@ class MonkeyMashHandler:
         self.input_controller = ApeEscapeMemoryInput(
             self.bizhawk_client_context) if self.bizhawk_client_context else None
 
-        self.input_frequency = 0.5  # Time between NEW random inputs (e.g., generate new input every 0.5s)
+        self.input_frequency = 0.7  # Time between NEW random inputs (e.g., generate new input every 0.5s)
         self.last_input_time = 0
 
         self.input_hold_time = 0.5  # How long the inputs will be pressed
@@ -114,8 +113,7 @@ class MonkeyMashHandler:
             new_remaining_time = self.remaining_time + duration_seconds
             self.remaining_time = min(new_remaining_time, self.MAX_TRAP_DURATION)
             self.duration = self.remaining_time
-            print(
-                f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_TRAP_DURATION}s)")
+            print(f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_TRAP_DURATION}s)")
 
     async def send_monkey_inputs(self):
         if self.input_controller is None or self.bizhawk_client_context.bizhawk_ctx.connection_status != bizhawk.ConnectionStatus.CONNECTED:
