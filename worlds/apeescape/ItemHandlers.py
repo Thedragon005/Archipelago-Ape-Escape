@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Uni
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
 
-
+# TODO : For Stun/Freeze Trap : SpikeState2 set to 0x58 freeze the movement of Spike, if I find a way to stop position update could be good
+# TODO : For Spin Trap : SpikeState2 set to 0x66
 class ApeEscapeMemoryInput:
     def __init__(self, bizhawk_client_context: "BizHawkClientContext"):
         self.bizhawk_client_context = bizhawk_client_context
@@ -51,7 +52,7 @@ class ApeEscapeMemoryInput:
         writes_list.append((RAM.BUTTON_BYTE_ADDR_LOW, [byte_low_value], "MainRAM"))
         writes_list.append((RAM.BUTTON_BYTE_ADDR_HIGH, [byte_high_value], "MainRAM"))
 
-        # --- 2. Construct Analog Stick Bytes (ONLY for specified axes) ---
+        # --- 2. Construct Analog Stick Bytes ---
         analog_axis_addresses = {
             "P1 R_Y": RAM.ANALOG_START_ADDR,
             "P1 R_X": RAM.ANALOG_START_ADDR + 1,
@@ -91,13 +92,14 @@ class MonkeyMashHandler:
         self.input_controller = ApeEscapeMemoryInput(
             self.bizhawk_client_context) if self.bizhawk_client_context else None
 
-        self.input_frequency = 0.7  # Time between NEW random inputs (e.g., generate new input every 0.5s)
+        self.input_frequency = 0.7      # Time between NEW random inputs (e.g., generate new input every 0.7s)
         self.last_input_time = 0
 
-        self.input_hold_time = 0.5  # How long the inputs will be pressed
+        self.input_hold_time = 0.5      # How long the inputs will be pressed
 
-        self.current_held_inputs = {}  # Stores inputs that are currently being pressed
-        self.press_start_time = None  # Timestamp when the current brief press started
+        self.current_held_inputs = {}   # Stores inputs that are currently being pressed
+        self.press_start_time = None    # Timestamp when the current brief press started
+        self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
 
     def activate_monkey(self, duration_seconds: int):
         if not self.is_active:
@@ -114,7 +116,7 @@ class MonkeyMashHandler:
             self.remaining_time = min(new_remaining_time, self.MAX_TRAP_DURATION)
             self.duration = self.remaining_time
             print(f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_TRAP_DURATION}s)")
-
+        self.sentMessage = False
     async def send_monkey_inputs(self):
         if self.input_controller is None or self.bizhawk_client_context.bizhawk_ctx.connection_status != bizhawk.ConnectionStatus.CONNECTED:
             print("Error: BizHawk connection not ready for inputs. Cannot send inputs.")
@@ -139,7 +141,7 @@ class MonkeyMashHandler:
             if self.remaining_time <= 0:
                 self.remaining_time = 0
 
-                # State 1: It's time to generate a NEW input sequence (press for hold_time)
+            # State 1: It's time to generate a NEW input sequence (press for hold_time)
             if current_time - self.last_input_time >= self.input_frequency:
                 newly_generated_inputs = {}
 
@@ -194,7 +196,7 @@ class MonkeyMashHandler:
             self.remaining_time = 0
             self.current_held_inputs = {}
             self.press_start_time = None
-            print("Monkey Button Mash finished. Client-controlled inputs released (relying on game reset).")
+            print("Monkey Button Mash finished.")
 
 class RainbowCookieHandler:
     """
@@ -212,7 +214,7 @@ class RainbowCookieHandler:
         self.remaining_time = 0         # How much time is left for the effects
         self.last_update = 0            # Timestamp of the last update, for calculating elapsed time
         self.pause = False              # Flag to pause the cookie's timer/effects
-
+        self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
     async def activate_rainbow_cookie(self, duration_seconds: int):
         """
         Activates the Rainbow Cookie effects (invincibility and golden form).
@@ -236,7 +238,7 @@ class RainbowCookieHandler:
             self.duration = self.remaining_time # Update current duration if extended
             print(
                 f"Rainbow Cookie extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
-
+        self.sentMessage = False
     async def _apply_effects(self, enable: bool):
         """
         Internal method to apply or remove the Rainbow Cookie's effects
