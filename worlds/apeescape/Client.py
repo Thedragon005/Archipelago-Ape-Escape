@@ -3154,7 +3154,7 @@ class ApeEscapeClient(BizHawkClient):
                     SpecialItems_Writes += [(RAM.spikeState2Address, 0x4D.to_bytes(1, "little"), "MainRAM")]
                     SpecialItems_Writes += [(RAM.spike_LavaOrIceTimer, 0x0100.to_bytes(2, "little"), "MainRAM")]
                     # If the chosen spikecolor is "Vanilla", choose an effect at random between Burn/Frost
-                    if DS_spikeColor == 0xFFFFFF:
+                    if DS_spikeColor == "vanilla":
                         randomEffect = int(round(random.random() * (2-1), None))
                         if randomEffect == 0:
                             # Burn Effect
