@@ -64,6 +64,7 @@ item_table = {
     AEItem.GadgetShuffleTrap.value: RAM.items["GadgetShuffleTrap"],
     AEItem.MonkeyMashTrap.value: RAM.items["MonkeyMashTrap"],
     AEItem.IcyHotPantsTrap.value: RAM.items["IcyHotPantsTrap"],
+    AEItem.StunTrap.value: RAM.items["StunTrap"],
 
     # SpecialItems
     AEItem.RainbowCookie.value: RAM.items["RainbowCookie"],

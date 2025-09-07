@@ -310,16 +310,17 @@ class ApeEscapeWorld(World):
         # This is where creating items for increasing special pellet maximums would go.
 
         # Trap item fill: randomly pick items according to a set of weights.
-        # Trap weights: Banana Peel, Gadget Shuffle (Disabled), Monkey Mash, Icy Hot Pants
+        # Trap weights: Banana Peel, Gadget Shuffle (Disabled), Monkey Mash, Icy Hot Pants, Stun Trap
         if self.options.trappercentage != 0:
             custom_trapweights = [
                 self.options.trapweights[AEItem.BananaPeelTrap.value],
                 self.options.trapweights[AEItem.MonkeyMashTrap.value],
-                self.options.trapweights[AEItem.IcyHotPantsTrap.value]
+                self.options.trapweights[AEItem.IcyHotPantsTrap.value],
+                self.options.trapweights[AEItem.StunTrap.value]
             ]
             # If custom_trapweights are all zeros, reset to default values
             if not any(y > 0 for y in custom_trapweights):
-                trap_weights = [15, 5, 10]
+                trap_weights = [15, 5, 10, 7]
             else:
                 trap_weights = list(custom_trapweights)
 
@@ -335,8 +336,10 @@ class ApeEscapeWorld(World):
                     self.itempool += [self.create_item_trap(AEItem.BananaPeelTrap.value)]
                 elif trap_weights[0] < randomTrap <= trap_weights[1]:
                     self.itempool += [self.create_item_trap(AEItem.MonkeyMashTrap.value)]
-                else:
+                elif trap_weights[1] < randomTrap <= trap_weights[2]:
                     self.itempool += [self.create_item_trap(AEItem.IcyHotPantsTrap.value)]
+                else:
+                    self.itempool += [self.create_item_trap(AEItem.StunTrap.value)]
 
         # Junk item fill: randomly pick items according to a set of weights.
         # Filler item weights are for 1 Jacket, 1/5 Cookies, 1/5/25 Energy Chips, 1/3 Explosive/Guided Pellets, Rainbow Cookie and Nothing, respectively.

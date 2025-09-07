@@ -384,6 +384,7 @@ class ApeEscapeClient(BizHawkClient):
         super().__init__()
         self.ape_handler = MonkeyMashHandler(None)
         self.rainbow_cookie = RainbowCookieHandler(None)
+        self.stun_trap = StunTrapHandler(None)
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
@@ -936,10 +937,13 @@ class ApeEscapeClient(BizHawkClient):
             self.locations_list = ctx.checked_locations
 
             if self.ape_handler.bizhawk_context is None:
-                self.ape_handler = MonkeyMashHandler(ctx)  # Pass the full BizHawkClientContext
+                self.ape_handler = MonkeyMashHandler(ctx)
 
             if self.rainbow_cookie.bizhawk_context is None:
-                self.rainbow_cookie = RainbowCookieHandler(ctx)  # Pass the full BizHawkClientContext
+                self.rainbow_cookie = RainbowCookieHandler(ctx)
+
+            if self.stun_trap.bizhawk_context is None:
+                self.stun_trap = StunTrapHandler(ctx)
 
             # Game state, locations and items read
             readTuples = [
@@ -976,7 +980,6 @@ class ApeEscapeClient(BizHawkClient):
                 (RAM.kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.kickoutofLevelAddress2, 4, "MainRAM"),
                 (RAM.CrC_BossPhaseAddress, 1, "MainRAM"),
-                (RAM.CrC_DoorVisual, 1, "MainRAM"),
                 (RAM.CrC_BossLife, 1, "MainRAM"),
                 (RAM.CrC_kickoutofLevelAddress, 4, "MainRAM"),
                 (RAM.TVT_kickoutofLevelAddress, 4, "MainRAM"),
@@ -1238,9 +1241,10 @@ class ApeEscapeClient(BizHawkClient):
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
-                # Set gadgetStateFromServer if it is default
-                if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
-                    gadgetStateFromServer = 0
+
+            # Set gadgetStateFromServer if it is default
+            if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
+                gadgetStateFromServer = 0
 
             if keyCountFromServer == 0xFF:
                 # Get items from server
@@ -1305,7 +1309,7 @@ class ApeEscapeClient(BizHawkClient):
                 waternetState,watercatchState,
                 MM_Lobby_DoubleDoor,
                 CBLampState,DILampState,CrCLampState,CPLampState,SFLampState,TVTLobbyLampState,TVTTankLampState,MMLampState,
-                energyChips,totalLives, cookies, flashAmmo, rocketAmmo,
+                energyChips, cookies, totalLives,flashAmmo, rocketAmmo
             ]
             # Prevent sending items when connecting early (Sony, Menu or Intro Cutscene)
             firstBootStates = {RAM.gameState["Sony"], RAM.gameState["Menu"], RAM.gameState["Cutscene2"], RAM.gameState["Demo"], RAM.gameState["Save/Load"], RAM.gameState["Memory"]}
@@ -1401,7 +1405,7 @@ class ApeEscapeClient(BizHawkClient):
                                 rocketAmmo += 3
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
-                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["IcyHotPantsTrap"]:
+                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["StunTrap"]:
                             if itemName in ctx.slot_data["trapsonreconnect"]:
                                 self.specialitem_queue.append((item.item - self.offset))
                         elif (item.item - self.offset) == RAM.items["RainbowCookie"]:
@@ -1415,11 +1419,11 @@ class ApeEscapeClient(BizHawkClient):
                     MM_Lobby_DoubleDoor,
                     CBLampState, DILampState, CrCLampState, CPLampState, SFLampState, TVTLobbyLampState,
                     TVTTankLampState, MMLampState,
-                    energyChips, totalLives, cookies, flashAmmo, rocketAmmo,
+                    energyChips, cookies, totalLives,flashAmmo, rocketAmmo,
                 ]
-
                 # Writes to memory if there is a new item, after the loop
-                if START_recv_index != recv_index:
+                #If the increment is different from recv_index this means we received items
+                if increment != recv_index:
                     itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                     itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                 if initialitemValueslist[0] != itemValueslist[0]:
@@ -1590,6 +1594,15 @@ class ApeEscapeClient(BizHawkClient):
                     self.rainbow_cookie.sentMessage = True
             # ================================
 
+            # ======== Stun Trap =========
+            if self.stun_trap.is_active:
+                await self.stun_trap.update_state_and_deactivate()
+            else:
+                if self.stun_trap.sentMessage == False:
+                    message = "Stun Trap finished"
+                    await self.send_bizhawk_message(ctx, message, "Passthrough", "")
+                    self.stun_trap.sentMessage = True
+            # ================================
             # ======= Credits skipping =======
             # Credits skipping function for S1 and S2
             Credits_Reads = [currentRoom, gameState, S1_Cutscene_Redirection, S2_Cutscene_Redirection]
@@ -3031,6 +3044,7 @@ class ApeEscapeClient(BizHawkClient):
         is_idle = (spikeState == 0x12) and (spikeState2 in {0x80, 0x81, 0x82, 0x83, 0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
         cannot_control = (gameRunning == 0)
+        stunned = (spikeState2 == {0x58})
 
         if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle or cannot_control):
             self.ape_handler.pause = True
@@ -3044,7 +3058,7 @@ class ApeEscapeClient(BizHawkClient):
             return None
         else:
             # Does not send the traps in these states
-            if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race or is_idle or cannot_control):
+            if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race or is_idle or cannot_control or stunned):
                 if is_idle:
                     # Trigger a Wake Up for spike. Banana Peel is deadly while Idle
                     SpecialItems_Writes += [(RAM.spikeIdleTimer, 0x0000.to_bytes(2, "little"), "MainRAM")]
@@ -3154,11 +3168,23 @@ class ApeEscapeClient(BizHawkClient):
                 self.specialitem_queue.pop(0)
                 item_duration = 20  # Example: 20 seconds per powerup item
                 if self.rainbow_cookie.is_active:
-                    message = f"Rainbow Cookie extended by {item_duration}seconds! (Current: {round(self.rainbow_cookie.duration, 0)} seconds)"
+                    message = f"Rainbow Cookie extended by {item_duration} seconds! (Current: {round(self.rainbow_cookie.duration, 0)} seconds)"
                 else:
                     message = f"Rainbow Cookie activated for {item_duration} seconds!"
                 await self.send_bizhawk_message(ctx, message, "Passthrough", "")
                 await self.rainbow_cookie.activate_rainbow_cookie(item_duration)
+            #Stun Trap handling
+            elif self.specialitem_queue[0] == RAM.items['StunTrap']:
+                self.specialitem_queue.pop(0)
+                item_duration = 2  # Example: 2 seconds per powerup item
+                #if self.stun_trap.is_active:
+                #    message = f"Stun Trap extended by {item_duration} seconds! (Current: {round(self.stun_trap.duration, 0)} seconds)"
+                #else:
+                #    message = f"Stun Trap activated for {item_duration} seconds!"
+                message = f"Stun Trap activated for {item_duration} seconds!"
+                await self.send_bizhawk_message(ctx, message, "Passthrough", "")
+                await self.stun_trap.activate_StunTrap(item_duration,spikeState2)
+
             await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
 
     async def ER_Handling(self, ctx: "BizHawkClientContext", ER_Reads) -> None:
@@ -3238,9 +3264,12 @@ class ApeEscapeClient(BizHawkClient):
 
             LevelStartRoom = currentlevelidtofirstroom[level]
 
+            TR_writes = []
             # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
             if VanillaRoom == False:
+
                 if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level):
+                    print("Phase 1")
                     # if transitionPhase in (3,4) and spikeState2 == 48:
                     # if spikeState2 == 48:
                     # Change TR1_Position to overlap Spike, and change targetRoom/targetDoor
@@ -3252,11 +3281,14 @@ class ApeEscapeClient(BizHawkClient):
                     ER_writes += [(TR1_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
                     # Move the first transition into Spike's position
                     ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"), "MainRAM")]
-                    ER_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
-                    ER_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
-                    ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
+
+                    TR_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
+                    TR_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
+                    TR_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
+                    await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
                 if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"]:
+                    print("Phase 2")
                     # Trigger the transition early,to warp Spike
                     # TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
                     ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["InTransition"].to_bytes(1, "little"), "MainRAM")]

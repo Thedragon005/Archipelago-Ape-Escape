@@ -1034,6 +1034,7 @@ class RAM:
         "GadgetShuffleTrap": 0x251,
         "MonkeyMashTrap": 0x252,
         "IcyHotPantsTrap": 0x253,
+        "StunTrap": 0x254,
         "RainbowCookie": 0x270,
         "FAKE_OOL_ITEM": 0x999,
 
@@ -1759,6 +1760,44 @@ class RAM:
     Spike_X_PosAddress = 0x0EC204 #4 bytes
     Spike_Y_PosAddress = 0x0EC208 #4 bytes
     Spike_Z_PosAddress = 0x0EC20C #4 bytes
+
+    Spike_Velocity_Value = 0x0EC214     # 1 byte  : Max Speed -> Up : 0x01, Down : 0x80
+    Spike_Velocity_BitFlag = 0x0EC215   # 3 bytes : 0xFFFFFF = Up | 0x000000 = Down
+
+    # Velocity Update addresses
+    # These addresses are responsible for updating velocity
+    # Setting them to 0 prevents velocity from changing.
+    # *It will still stay at the value it was BEFORE setting these addresses to 0*
+    Spike_VelocityUpdates = {
+        0x0728A8: [4, 0xAE030000, 0x00000000],  # SpikeX_VelocityLock1
+        0x0734D4: [4, 0xAE620000, 0x00000000],  # SpikeX_VelocityLock1
+        0x0738B0: [4, 0xAE620000, 0x00000000],  # SpikeX_VelocityLock1
+
+        0x06343C: [4, 0xAE090034, 0x00000000],  # SpikeY_VelocityLock1
+        0x072DAC: [4, 0xAE300010, 0x00000000],  # SpikeY_VelocityLock2
+        0x072E74: [4, 0xAE020010, 0x00000000],  # SpikeY_VelocityLock3
+
+        0x0728E4: [4, 0xAE030008, 0x00000000],  # SpikeZ_VelocityLock1
+        0x0734CC: [4, 0xAE630008, 0x00000000],  # SpikeZ_VelocityLock1
+        0x0738C8: [4, 0xAE620008, 0x00000000],  # SpikeZ_VelocityLock1
+
+    }
+
+    #Postion Update addresses
+    #These addresses lock the ability for the game to update the XYZ values of Spike
+    # When set to 0 Spike cannot move
+    Spike_PosUpdates = {
+        0x0728A8 : [4,0xAE030000,0x00000000],  # SpikeX_PosLock1
+        0x0734D4 : [4,0xAE620000,0x00000000],  # SpikeX_PosLock2
+        0x0738B0 : [4,0xAE620000,0x00000000],  # SpikeX_PosLock3
+
+        0x072E80 : [4,0xAE020004,0x00000000],  # SpikeY_PosLock1
+        0x072E8C : [4,0xAE020004,0x00000000],  # SpikeY_PosLock2
+
+        0x0728E4 : [4,0xAE030008,0x00000000],  # SpikeZ_PosLock1
+        0x0734CC : [4,0xAE630008,0x00000000],  # SpikeZ_PosLock2
+        0x0738C8 : [4,0xAE620008,0x00000000],  # SpikeZ_PosLock3
+    }
 
     SPIKE_INVINCIBILITY_ADDR = 0x05E748 # Address for Spike's invincibility flag/state
     SPIKE_GOLDEN_FORM_ADDR = 0x0EC2E2    # Address for Spike's golden visual state flag/model ID
