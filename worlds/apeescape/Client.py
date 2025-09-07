@@ -1238,13 +1238,13 @@ class ApeEscapeClient(BizHawkClient):
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
                 Menuwrites += [(RAM.cookieAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
                 await bizhawk.write(ctx.bizhawk_ctx, Menuwrites)
+
             # Set Initial received_ID when in first level ever OR in first hub ever
             if (recv_index == 0xFFFFFFFF) or (recv_index == 0x00FF00FF):
                 recv_index = 0
-
-            # Set gadgetStateFromServer if it is default
-            if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
-                gadgetStateFromServer = 0
+                # Set gadgetStateFromServer if it is default
+                if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
+                    gadgetStateFromServer = 0
 
             if keyCountFromServer == 0xFF:
                 # Get items from server
@@ -1267,7 +1267,7 @@ class ApeEscapeClient(BizHawkClient):
                 MM_Natalie_Rescued = 0
 
             #print(Specter2CompleteAddress)
-            if Specter2CompleteAddress == 0x00.to_bytes(1, "little") and Specter2CompleteAddress != 255:
+            if Specter2CompleteAddress != 0x01.to_bytes(1, "little") and Specter2CompleteAddress != 255:
                 PPM_Completed = False
             else:
                 PPM_Completed = True
@@ -1659,7 +1659,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # == Entrance Randomization Handling ===
             # For all things related to ER and Room Rando
-            ER_Reads = [gameState, status_currentWorld, status_currentLevel, currentLevel, transitionPhase, Spike_X_Pos, Spike_Y_Pos, Spike_Z_Pos, spikeState2, currentRoom]
+            ER_Reads = [gameState, status_currentWorld, status_currentLevel, currentLevel, transitionPhase, Spike_X_Pos, Spike_Y_Pos, Spike_Z_Pos, spikeState2, currentRoom,gameRunning]
             await self.ER_Handling(ctx, ER_Reads)
 
 
@@ -3040,7 +3040,7 @@ class ApeEscapeClient(BizHawkClient):
         grounded = [0x00, 0x01, 0x02, 0x05, 0x07]
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
-        is_sliding = (spikeState2 == 0x2F)
+        is_sliding = (spikeState2 in (0x2F,0x30))
         is_idle = (spikeState == 0x12) and (spikeState2 in {0x80, 0x81, 0x82, 0x83, 0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
         cannot_control = (gameRunning == 0)
@@ -3198,6 +3198,7 @@ class ApeEscapeClient(BizHawkClient):
         Spike_Z_Pos = ER_Reads[7]
         spikeState2 = ER_Reads[8]
         currentRoom = ER_Reads[9]
+        gameRunning = ER_Reads[10]
         
         
         ER_writes = []
@@ -3268,7 +3269,7 @@ class ApeEscapeClient(BizHawkClient):
             # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
             if VanillaRoom == False:
 
-                if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level):
+                if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00:
                     print("Phase 1")
                     # if transitionPhase in (3,4) and spikeState2 == 48:
                     # if spikeState2 == 48:
@@ -3287,7 +3288,7 @@ class ApeEscapeClient(BizHawkClient):
                     TR_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
-                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"]:
+                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"] and gameRunning == 0x00:
                     print("Phase 2")
                     # Trigger the transition early,to warp Spike
                     # TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
