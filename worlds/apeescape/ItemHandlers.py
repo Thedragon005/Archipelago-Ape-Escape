@@ -398,11 +398,14 @@ class StunTrapHandler:
 
         LastState = self.lastspikestate
 
+        InvalidLastStates = [0x80, 0x81, 0x82, 0x83, 0x84,0x2F,0x30,0x58]
         # If enabling the Trap set it to 0x58, else set it to the last saved state
         if enable:
             Spikestate2_value = 0x58
         else:
-            Spikestate2_value = LastState
+            #If LastState is invalid,
+            Spikestate2_value = 0x00 if LastState in InvalidLastStates else LastState
+
             self.lastspikestate = 0x00
         Spikestate2_bytes = list(Spikestate2_value.to_bytes(1, "little"))
 

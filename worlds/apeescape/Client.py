@@ -1,10 +1,11 @@
 import logging
 
+import Utils
 from BaseClasses import ItemClassification
 from NetUtils import ClientStatus, NetworkItem
 from .ItemHandlers import *
 from .Strings import AEItem
-from .Items import gadgetsValues
+from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
 
 import worlds._bizhawk as bizhawk
 
@@ -14,7 +15,7 @@ from worlds.apeescape.Locations import hundoMonkeysCount, hundoCoinsCount, doorT
 from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, \
     LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, \
     MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, \
-    ItemDisplayOption, KickoutPreventionOption, DeathLink, RandomizeStartingRoomOption
+    ItemDisplayOption, KickoutPreventionOption, DeathLink, RandomizeStartingRoomOption, TrapLink
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
@@ -533,8 +534,40 @@ class ApeEscapeClient(BizHawkClient):
         if cmd == "Bounced":
             if "tags" in args:
                 assert ctx.slot is not None
+                source_name = args["data"]["source"]
                 if "DeathLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
                     self.on_deathlink(ctx)
+                if "TrapLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
+                    trap_name: str = args["data"]["trap_name"]
+                    print(trap_name)
+
+                    if trap_name not in trap_to_local_traps:
+                        # We don't know how to handle this trap, ignore it
+                        return
+
+                    local_trap_name: str = trap_to_local_traps.get(trap_name)
+                    print(local_trap_name)
+                    trap_value: int = trap_name_to_value.get(local_trap_name)
+
+                    if "trapweights" not in ctx.slot_data:
+                        print("option not in slotdata")
+                        return
+
+                    if local_trap_name not in ctx.slot_data["trapweights"]:
+                        # This trap is not in the list, ignore it
+                        # *Version mismatch or partial YAML*
+                        print("Not in list")
+                        return
+
+                    if ctx.slot_data["trapweights"][f"{local_trap_name}"] == 0:
+                        # The player disabled this trap type
+                        print("Trap disabled by the player")
+                        return
+
+                    message = f"Received linked {trap_name} from {source_name}"
+                    logger.info(message)
+                    self.specialitem_queue.insert(0,trap_value)
+                    Utils.async_start(self.send_bizhawk_message(ctx,message,"Passthrough", ""))
 
         if cmd in {"PrintJSON"} and "type" in args:
             # When a message is received
@@ -546,9 +579,9 @@ class ApeEscapeClient(BizHawkClient):
                 locationID = networkItem.location
                 relevant = (recieverID == ctx.slot or senderID == ctx.slot)
                 message = ""
+                itemName = ctx.item_names.lookup_in_slot(networkItem.item, recieverID)
+                itemCategory = networkItem.flags
                 if relevant:
-                    itemName = ctx.item_names.lookup_in_slot(networkItem.item, recieverID)
-                    itemCategory = networkItem.flags
                     if itemCategory == ItemClassification.progression + ItemClassification.useful:
                         itemClass = "Prog. Useful"
                     elif itemCategory == ItemClassification.progression + ItemClassification.trap:
@@ -580,7 +613,9 @@ class ApeEscapeClient(BizHawkClient):
                         message =  f"You found your own '{itemName}' ({itemClass})"
 
                     self.messagequeue.append(message)
-
+                # If there is a PRINTJSON which is sent by the player
+                if "TrapLink" in ctx.tags and recieverID == ctx.slot:
+                    Utils.async_start(self.send_trap_link(ctx, itemName))
         if cmd == "Retrieved":
             if "keys" not in args:
                 print(f"invalid Retrieved packet to ApeEscapeClient: {args}")
@@ -1557,9 +1592,12 @@ class ApeEscapeClient(BizHawkClient):
             if self.messagequeue is not None and self.messagequeue != []:
                 await self.process_bizhawk_messages(ctx)
 
-            # ======== Handle death link =========
+            # ======== Handle Death Link =========
             DL_Reads = [cookies, gameRunning, gameState, menuState2, spikeState2]
             await self.handle_death_link(ctx, DL_Reads)
+
+            # ======== Handle Trap Link =========
+            await self.handle_trap_link(ctx)
 
             # ======== Spike Color handling =========
             # For checking if the chosen color currently needs to be applied.
@@ -3506,6 +3544,17 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx,WN_writes)
 
 
+
+    async def handle_trap_link(self, ctx: "BizHawkClientContext") -> None:
+        if ctx.slot_data["trap_link"] == TrapLink.option_true:
+            if "TrapLink" not in ctx.tags:
+                ctx.tags.add("TrapLink")
+                await ctx.send_msgs([{"cmd": "ConnectUpdate", "tags": ctx.tags}])
+        else:
+            if "TrapLink" in ctx.tags:
+                ctx.tags.remove("TrapLink")
+                await ctx.send_msgs([{"cmd": "ConnectUpdate", "tags": ctx.tags}])
+
     async def handle_death_link(self, ctx: "BizHawkClientContext", DL_Reads) -> None:
         """
         Checks whether the player has died while connected and sends a death link if so.
@@ -3552,6 +3601,20 @@ class ApeEscapeClient(BizHawkClient):
         DeathText = ctx.player_names[ctx.slot] + " says: " + DeathMessage + " (Died)"
         await ctx.send_death(DeathText)
 
+    async def send_trap_link(self, ctx: "BizHawkClientContext", trap_name: str):
+
+        if "TrapLink" not in ctx.tags or ctx.slot == None:
+            return
+
+        await ctx.send_msgs([{
+            "cmd": "Bounce", "tags": ["TrapLink"],
+            "data": {
+                "time": time.time(),
+                "source": ctx.player_names[ctx.slot],
+                "trap_name": trap_name
+            }
+        }])
+        logger.info(f"Sent linked {trap_name}")
 
     def on_deathlink(self, ctx: "BizHawkClientContext") -> None:
         ctx.last_death_link = time.time()

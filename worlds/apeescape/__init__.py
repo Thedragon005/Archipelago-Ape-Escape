@@ -453,6 +453,7 @@ class ApeEscapeWorld(World):
             "trappercentage": self.options.trappercentage.value,
             "trapweights": self.options.trapweights.value,
             "trapsonreconnect": self.options.trapsonreconnect.value,
+            "trap_link": self.options.trap_link.value,
             "itemdisplay": self.options.itemdisplay.value,
             "kickoutprevention": self.options.kickoutprevention.value,
             "autoequip": self.options.autoequip.value,

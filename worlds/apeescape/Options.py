@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter
+from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter, \
+    Toggle
 from .Items import AEItem
 
 class GoalOption(Choice):
@@ -424,6 +425,15 @@ class TrapsOnReconnect(OptionSet):
         AEItem.BananaPeelTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value
     })
 
+class TrapLink(Toggle):
+    """
+    Whether your received traps are linked to other players
+
+    You will also receive any linked traps from other players with Trap Link enabled,
+    if you have a weight above "none" set for that trap
+    """
+    display_name = "Trap Link"
+
 
 class ItemDisplayOption(Choice):
     """Set the default for the Bizhawk item display command. This can be changed in the client at any time. The position and duration of these messages can be changed in Bizhawk config at any time.
@@ -528,6 +538,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     trappercentage: TrapPercentage
     trapweights: TrapWeights
     trapsonreconnect: TrapsOnReconnect
+    trap_link: TrapLink
     itemdisplay: ItemDisplayOption
     kickoutprevention: KickoutPreventionOption
     autoequip: AutoEquipOption
