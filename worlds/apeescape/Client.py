@@ -984,287 +984,287 @@ class ApeEscapeClient(BizHawkClient):
                 self.stun_trap = StunTrapHandler(ctx)
 
             # Game state, locations and items read
-            readTuples = [
-                # GameStates
-                (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
-                (RAM.gameStateAddress, 1, "MainRAM"),
-                (RAM.currentRoomIdAddress, 1, "MainRAM"),  # Current Room
-                (RAM.Nearby_RoomIDAddress, 1, "MainRAM"),  # Nearby Room
-                (RAM.currentLevelAddress, 1, "MainRAM"),  # Current Level
-                (RAM.gameRunningAddress, 1, "MainRAM"),
-                (RAM.jakeVictoryAddress, 1, "MainRAM"),  # Jake Races Victory state
-                (RAM.transitionPhaseAddress, 1, "MainRAM"),  # Jake Races Victory state
-                (RAM.localLevelState, 1, "MainRAM"),  # Jake Races Victory state
+            readsDict = {
+                "recv_index": (RAM.lastReceivedArchipelagoID, 4, "MainRAM"),
+                "gameState": (RAM.gameStateAddress, 1, "MainRAM"),
+                "currentRoom": (RAM.currentRoomIdAddress, 1, "MainRAM"),  # Current Room
+                "NearbyRoom": (RAM.Nearby_RoomIDAddress, 1, "MainRAM"),  # Nearby Room
+                "currentLevel": (RAM.currentLevelAddress, 1, "MainRAM"),  # Current Level
+                "gameRunning": (RAM.gameRunningAddress, 1, "MainRAM"),
+                "jakeVictory": (RAM.jakeVictoryAddress, 1, "MainRAM"), # Jake Races Victory state
+                "transitionPhase": (RAM.transitionPhaseAddress, 1, "MainRAM"),  # Jake Races Victory state
+                "localLevelState": (RAM.localLevelState, 1, "MainRAM"),  # Jake Races Victory state
                 # Locations (Coins, Monkeys, Mailboxes)
-                (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
-                (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
-                (RAM.totalCoinsAddress, 1, "MainRAM"),  # Coin Count
-                (RAM.hundoApesAddress, 1, "MainRAM"),  # Hundo monkey count, to write to required count
-                (RAM.requiredApesAddress, 1, "MainRAM"),
-                (RAM.currentApesAddress, 1, "MainRAM"),
-                (RAM.gotMailAddress, 1, "MainRAM"),
-                (RAM.mailboxIDAddress, 1, "MainRAM"),
+                "previousCoinStateRoom": (self.currentCoinAddress - 2, 1, "MainRAM"),  # Previous Coin State Room
+                "currentCoinStateRoom": (self.currentCoinAddress, 1, "MainRAM"),  # Current New Coin State Room
+                "coinCount": (RAM.totalCoinsAddress, 1, "MainRAM"),  # Coin Count
+                "localhundoCount": (RAM.hundoApesAddress, 1, "MainRAM"),  # Hundo monkey count, to write to required count
+                "requiredApes": (RAM.requiredApesAddress, 1, "MainRAM"),
+                "currentApes": (RAM.currentApesAddress, 1, "MainRAM"),
+                "gotMail": (RAM.gotMailAddress, 1, "MainRAM"),
+                "mailboxID": (RAM.mailboxIDAddress, 1, "MainRAM"),
                 # Items
-                (RAM.energyChipsAddress, 1, "MainRAM"),
-                (RAM.cookieAddress, 1, "MainRAM"),
-                (RAM.livesAddress, 1, "MainRAM"),
-                (RAM.flashAddress, 1, "MainRAM"),
-                (RAM.rocketAddress, 1, "MainRAM"),
-                (RAM.keyCountFromServer, 1, "MainRAM"),
-                (RAM.tokenCountFromServer, 1, "MainRAM"),
+                "energyChips": (RAM.energyChipsAddress, 1, "MainRAM"),
+                "cookies": (RAM.cookieAddress, 1, "MainRAM"),
+                "totalLives": (RAM.livesAddress, 1, "MainRAM"),
+                "flashAmmo": (RAM.flashAddress, 1, "MainRAM"),
+                "rocketAmmo": (RAM.rocketAddress, 1, "MainRAM"),
+                "keyCountFromServer": (RAM.keyCountFromServer, 1, "MainRAM"),
+                "tokenCountFromServer": (RAM.tokenCountFromServer, 1, "MainRAM"),
                 # Misc
-                (RAM.spikeStateAddress, 1, "MainRAM"),
-                (RAM.spikeState2Address, 1, "MainRAM"),
-                (RAM.kickoutofLevelAddress, 4, "MainRAM"),
-                (RAM.kickoutofLevelAddress2, 4, "MainRAM"),
-                (RAM.CrC_BossPhaseAddress, 1, "MainRAM"),
-                (RAM.CrC_BossLife, 1, "MainRAM"),
-                (RAM.CrC_kickoutofLevelAddress, 4, "MainRAM"),
-                (RAM.TVT_kickoutofLevelAddress, 4, "MainRAM"),
-                (RAM.TVT_BossPhase, 1, "MainRAM"),
-                (RAM.TVT_BossLife, 1, "MainRAM"),
-                (RAM.S1_P2_State, 1, "MainRAM"),
-                (RAM.S1_P2_Life, 1, "MainRAM"),
-                (RAM.S2_isCaptured, 1, "MainRAM"),
-                (RAM.S1_Cutscene_Redirection, 4, "MainRAM"),
-                (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
-                (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
-                (RAM.spikeColor, 3, "MainRAM"),
-                (RAM.Spike_X_PosAddress, 4, "MainRAM"),
-                (RAM.Spike_Y_PosAddress, 4, "MainRAM"),
-                (RAM.Spike_Z_PosAddress, 4, "MainRAM"),
-                #(RAM.spikeColor2, 1, "MainRAM"),
-            ]
+                "spikeState": (RAM.spikeStateAddress, 1, "MainRAM"),
+                "spikeState2": (RAM.spikeState2Address, 1, "MainRAM"),
+                "kickoutofLevel": (RAM.kickoutofLevelAddress, 4, "MainRAM"),
+                "kickoutofLevel2": (RAM.kickoutofLevelAddress2, 4, "MainRAM"),
+                "CrC_BossPhase": (RAM.CrC_BossPhaseAddress, 1, "MainRAM"),
+                "CrC_BossLife": (RAM.CrC_BossLife, 1, "MainRAM"),
+                "CrC_kickoutofLevel": (RAM.CrC_kickoutofLevelAddress, 4, "MainRAM"),
+                "TVT_kickoutofLevel": (RAM.TVT_kickoutofLevelAddress, 4, "MainRAM"),
+                "TVT_BossPhase": (RAM.TVT_BossPhase, 1, "MainRAM"),
+                "TVT_BossLife": (RAM.TVT_BossLife, 1, "MainRAM"),
+                "S1_P2_State": (RAM.S1_P2_State, 1, "MainRAM"),
+                "S1_P2_Life": (RAM.S1_P2_Life, 1, "MainRAM"),
+                "S2_isCaptured": (RAM.S2_isCaptured, 1, "MainRAM"),
+                "S1_Cutscene_Redirection": (RAM.S1_Cutscene_Redirection, 4, "MainRAM"),
+                "S2_Cutscene_Redirection": (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
+                "S1_P1_FightTrigger": (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
+                "spikeColor": (RAM.spikeColor, 3, "MainRAM"),
+                "Spike_X_Pos": (RAM.Spike_X_PosAddress, 4, "MainRAM"),
+                "Spike_Y_Pos": (RAM.Spike_Y_PosAddress, 4, "MainRAM"),
+                "Spike_Z_Pos": (RAM.Spike_Z_PosAddress, 4, "MainRAM"),
+                # Gadgets
+                "gadgets": (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
+                "gadgetStateFromServer": (RAM.gadgetStateFromServer, 2, "MainRAM"),
+                "heldGadget": (RAM.heldGadgetAddress, 1, "MainRAM"),  # Currently held gadget
+                "triangleGadget": (RAM.triangleGadgetAddress, 1, "MainRAM"),  # Gadget equipped to each face button
+                "squareGadget": (RAM.squareGadgetAddress, 1, "MainRAM"),
+                "circleGadget": (RAM.circleGadgetAddress, 1, "MainRAM"),
+                "crossGadget": (RAM.crossGadgetAddress, 1, "MainRAM"),
+                "gadgetUseState": (RAM.gadgetUseStateAddress, 1, "MainRAM"),  # Which gadget is used in what way. **Not used at the moment
+                "punchVisualAddress": (RAM.punchVisualAddress, 32, "MainRAM"),
+                # Level Select/Menu data
+                "LS_currentWorld": (RAM.selectedWorldAddress, 1, "MainRAM"),  # In level select, the current world
+                "LS_currentLevel": (RAM.selectedLevelAddress, 1, "MainRAM"),  # In level select, the current level
+                "status_currentWorld": (RAM.enteredWorldAddress, 1, "MainRAM"),  # After selecting a level, the entered world
+                "status_currentLevel": (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
+                "menuState": (RAM.menuStateAddress, 1, "MainRAM"),
+                "menuState2": (RAM.menuState2Address, 1, "MainRAM"),
+                "newGameAddress": (RAM.newGameAddress, 1, "MainRAM"),
+                # Level Select Coin hiding
+                "CoinTable": (RAM.startingCoinAddress, 100, "MainRAM"),
+                "TempCoinTable": (RAM.temp_startingCoinAddress, 100, "MainRAM"),
+                "SA_Completed": (RAM.SA_CompletedAddress, 1, "MainRAM"),
+                "temp_SA_Completed": (RAM.temp_SA_CompletedAddress, 1, "MainRAM"),
+                "GA_Completed": (RAM.GA_CompletedAddress, 1, "MainRAM"),
+                "temp_GA_Completed": (RAM.temp_GA_CompletedAddress, 1, "MainRAM"),
+                "worldIsScrollingRight": (RAM.worldIsScrollingRight, 2, "MainRAM"),
+                "Specter2CompleteAddress": (RAM.Specter2CompleteAddress, 1, "MainRAM"),
+                # Water Net
+                "canDive": (RAM.canDiveAddress, 4, "MainRAM"),
+                "canWaterCatch": (RAM.canWaterCatchAddress, 1, "MainRAM"),
+                "WaterNetStateFromServer": (RAM.tempWaterNetAddress, 1, "MainRAM"),
+                "WaterCatchStateFromServer": (RAM.tempWaterCatchAddress, 1, "MainRAM"),
+                "isUnderwater": (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
+                "swim_oxygenLevel": (RAM.swim_oxygenLevelAddress, 2, "MainRAM"),
+                # Lamp Reads
+                "CBLampStateFromServer": (RAM.tempCB_LampAddress, 1, "MainRAM"),
+                "DILampStateFromServer": (RAM.tempDI_LampAddress, 1, "MainRAM"),
+                "CrCLampStateFromServer": (RAM.tempCrC_LampAddress, 1, "MainRAM"),
+                "CPLampStateFromServer": (RAM.tempCP_LampAddress, 1, "MainRAM"),
+                "SFLampStateFromServer": (RAM.tempSF_LampAddress, 1, "MainRAM"),
+                "TVTLobbyLampStateFromServer": (RAM.tempTVT_Lobby_LampAddress, 1, "MainRAM"),
+                "TVTTankLampStateFromServer": (RAM.tempTVT_Tank_LampAddress, 1, "MainRAM"),
+                "MMLampStateFromServer": (RAM.tempMM_LampAddress, 1, "MainRAM"),
+                # Doors
+                "MM_Lobby_DoubleDoor": (RAM.temp_MMLobbyDoorAddress, 1, "MainRAM"),
+                "MM_Lobby_DoubleDoor_Open": (RAM.MM_Lobby_DoubleDoor_OpenAddress, 1, "MainRAM"),
+                "MM_Jake_DefeatedAddress": (RAM.MM_Jake_DefeatedAddress, 1, "MainRAM"),
+                "MM_Professor_RescuedAddress": (RAM.MM_Professor_RescuedAddress, 1, "MainRAM"),
+                "MM_Clown_State": (RAM.MM_Clown_State, 1, "MainRAM"),
+                "MM_Natalie_RescuedAddress": (RAM.MM_Natalie_RescuedAddress, 1, "MainRAM"),
+                "MM_Jake_Defeated": (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
+                "MM_Professor_Rescued": (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
+                "MM_Natalie_Rescued": (RAM.temp_MM_Natalie_RescuedAddress, 1, "MainRAM"),
+                "MM_Natalie_Rescued_Local": (RAM.MM_Natalie_Rescued_Local, 1, "MainRAM"),
+                "MM_Lobby_DoorDetection": (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
+                # Buttons
+                "DI_Button_Pressed": (RAM.DI_Button_Pressed, 1, "MainRAM"),
+                "CrC_Water_ButtonPressed": (RAM.CrC_Water_ButtonPressed, 1, "MainRAM"),
+                "CrC_Basement_ButtonPressed": (RAM.CrC_Basement_ButtonPressed, 1, "MainRAM"),
+                "TVT_Lobby_ButtonPressed": (RAM.TVT_Lobby_Button, 1, "MainRAM"),
+                "MM_MonkeyHead_ButtonPressed": (RAM.MM_MonkeyHead_Button, 1, "MainRAM"),
+                "MM_Painting_ButtonPressed": (RAM.MM_Painting_Button, 1, "MainRAM"),
+                "DR_Block_Pushed": (RAM.DR_Block_Pushed, 1, "MainRAM"),
+                # MonkeyCounts
+                "FF_MonkeyCount": (RAM.levelMonkeyCount[11], 1, "MainRAM"),
+                "PO_MonkeyCount": (RAM.levelMonkeyCount[12], 1, "MainRAM"),
+                "ML_MonkeyCount": (RAM.levelMonkeyCount[13], 1, "MainRAM"),
+                "TJ_MonkeyCount": (RAM.levelMonkeyCount[21], 1, "MainRAM"),
+                "DR_MonkeyCount": (RAM.levelMonkeyCount[22], 1, "MainRAM"),
+                "CR_MonkeyCount": (RAM.levelMonkeyCount[23], 1, "MainRAM"),
+                "SA_MonkeyCount": (RAM.levelMonkeyCount[31], 1, "MainRAM"),
+                "CB_MonkeyCount": (RAM.levelMonkeyCount[41], 1, "MainRAM"),
+                "CC_MonkeyCount": (RAM.levelMonkeyCount[42], 1, "MainRAM"),
+                "DI_MonkeyCount": (RAM.levelMonkeyCount[43], 1, "MainRAM"),
+                "SM_MonkeyCount": (RAM.levelMonkeyCount[51], 1, "MainRAM"),
+                "FR_MonkeyCount": (RAM.levelMonkeyCount[52], 1, "MainRAM"),
+                "HS_MonkeyCount": (RAM.levelMonkeyCount[53], 1, "MainRAM"),
+                "GA_MonkeyCount": (RAM.levelMonkeyCount[61], 1, "MainRAM"),
+                "ST_MonkeyCount": (RAM.levelMonkeyCount[71], 1, "MainRAM"),
+                "WSW_MonkeyCount": (RAM.levelMonkeyCount[72], 1, "MainRAM"),
+                "CRC_MonkeyCount": (RAM.levelMonkeyCount[73], 1, "MainRAM"),
+                "CP_MonkeyCount": (RAM.levelMonkeyCount[81], 1, "MainRAM"),
+                "SF_MonkeyCount": (RAM.levelMonkeyCount[82], 1, "MainRAM"),
+                "TVT_MonkeyCount": (RAM.levelMonkeyCount[83], 1, "MainRAM"),
+                "MM_MonkeyCount": (RAM.levelMonkeyCount[91], 1, "MainRAM")
+            }
+
+            readTuples = [Value for Value in readsDict.values()]
 
             reads = await bizhawk.read(ctx.bizhawk_ctx, readTuples)
+            reads = [int.from_bytes(reads[i], byteorder = "little") for i,x in enumerate(reads)]
+            readValues = dict(zip(readsDict.keys(), reads))
 
             # GameStates
-            recv_index = int.from_bytes(reads[0], byteorder = "little")
-            gameState = int.from_bytes(reads[1], byteorder = "little")
-            currentRoom = int.from_bytes(reads[2], byteorder = "little")
-            NearbyRoom = int.from_bytes(reads[3], byteorder = "little")
-            currentLevel = int.from_bytes(reads[4], byteorder = "little")
-            gameRunning = int.from_bytes(reads[5], byteorder = "little")
-            jakeVictory = int.from_bytes(reads[6], byteorder = "little")
-            transitionPhase = int.from_bytes(reads[7], byteorder ="little")
-            localLevelState = int.from_bytes(reads[8], byteorder = "little")
+            recv_index = readValues["recv_index"]
+            gameState = readValues["gameState"]
+            currentRoom = readValues["currentRoom"]
+            NearbyRoom = readValues["NearbyRoom"]
+            currentLevel = readValues["currentLevel"]
+            gameRunning = readValues["gameRunning"]
+            jakeVictory = readValues["jakeVictory"]
+            transitionPhase = readValues["transitionPhase"]
+            localLevelState = readValues["localLevelState"]
             # Locations
-            previousCoinStateRoom = int.from_bytes(reads[9], byteorder = "little")
-            currentCoinStateRoom = int.from_bytes(reads[10], byteorder = "little")
-            coinCount = int.from_bytes(reads[11], byteorder = "little")
-            localhundoCount = int.from_bytes(reads[12], byteorder = "little")
-            requiredApes = int.from_bytes(reads[13], byteorder = "little")
-            currentApes = int.from_bytes(reads[14], byteorder = "little")
-            gotMail = int.from_bytes(reads[15], byteorder = "little")
-            mailboxID = int.from_bytes(reads[16], byteorder = "little")
+            previousCoinStateRoom = readValues["previousCoinStateRoom"]
+            currentCoinStateRoom = readValues["currentCoinStateRoom"]
+            coinCount = readValues["coinCount"]
+            localhundoCount = readValues["localhundoCount"]
+            requiredApes = readValues["requiredApes"]
+            currentApes = readValues["currentApes"]
+            gotMail = readValues["gotMail"]
+            mailboxID = readValues["mailboxID"]
             # Items
-            energyChips = int.from_bytes(reads[17], byteorder = "little")
-            cookies = int.from_bytes(reads[18], byteorder = "little")
-            totalLives = int.from_bytes(reads[19], byteorder = "little")
-            flashAmmo = int.from_bytes(reads[20], byteorder = "little")
-            rocketAmmo = int.from_bytes(reads[21], byteorder = "little")
-            keyCountFromServer = int.from_bytes(reads[22], byteorder = "little")
-            tokenCountFromServer = int.from_bytes(reads[23], byteorder = "little")
+            energyChips = readValues["energyChips"]
+            cookies = readValues["cookies"]
+            totalLives = readValues["totalLives"]
+            flashAmmo = readValues["flashAmmo"]
+            rocketAmmo = readValues["rocketAmmo"]
+            keyCountFromServer = readValues["keyCountFromServer"]
+            tokenCountFromServer = readValues["tokenCountFromServer"]
             # Misc
-            spikeState = int.from_bytes(reads[24], byteorder = "little")
-            spikeState2 = int.from_bytes(reads[25], byteorder = "little")
-            kickoutofLevel = int.from_bytes(reads[26], byteorder = "little")
-            kickoutofLevel2 = int.from_bytes(reads[27], byteorder="little")
-            CrC_BossPhase = int.from_bytes(reads[28], byteorder = "little")
-            CrC_BossLife = int.from_bytes(reads[29], byteorder = "little")
-            CrC_kickoutofLevel = int.from_bytes(reads[30], byteorder = "little")
-            TVT_kickoutofLevel = int.from_bytes(reads[31], byteorder = "little")
-            TVT_BossPhase = int.from_bytes(reads[32], byteorder = "little")
-            TVT_BossLife = int.from_bytes(reads[33], byteorder = "little")
-            S1_P2_State = int.from_bytes(reads[34], byteorder = "little")
-            S1_P2_Life = int.from_bytes(reads[35], byteorder = "little")
-            S2_isCaptured = int.from_bytes(reads[36], byteorder = "little")
-            S1_Cutscene_Redirection = int.from_bytes(reads[37], byteorder = "little")
-            S2_Cutscene_Redirection = int.from_bytes(reads[38], byteorder = "little")
-            S1_P1_FightTrigger = int.from_bytes(reads[39], byteorder = "little")
-            spikeColor = int.from_bytes(reads[40], byteorder = "little")
-            Spike_X_Pos = int.from_bytes(reads[41], byteorder = "little")
-            Spike_Y_Pos = int.from_bytes(reads[42], byteorder = "little")
-            Spike_Z_Pos = int.from_bytes(reads[43], byteorder = "little")
+            spikeState = readValues["spikeState"]
+            spikeState2 = readValues["spikeState2"]
+            kickoutofLevel = readValues["kickoutofLevel"]
+            kickoutofLevel2 = readValues["kickoutofLevel2"]
+            CrC_BossPhase = readValues["CrC_BossPhase"]
+            CrC_BossLife = readValues["CrC_BossLife"]
+            CrC_kickoutofLevel = readValues["CrC_kickoutofLevel"]
+            TVT_kickoutofLevel = readValues["TVT_kickoutofLevel"]
+            TVT_BossPhase = readValues["TVT_BossPhase"]
+            TVT_BossLife = readValues["TVT_BossLife"]
+            S1_P2_State = readValues["S1_P2_State"]
+            S1_P2_Life = readValues["S1_P2_Life"]
+            S2_isCaptured = readValues["S2_isCaptured"]
+            S1_Cutscene_Redirection = readValues["S1_Cutscene_Redirection"]
+            S2_Cutscene_Redirection = readValues["S2_Cutscene_Redirection"]
+            S1_P1_FightTrigger = readValues["S1_P1_FightTrigger"]
+            spikeColor = readValues["spikeColor"]
+            Spike_X_Pos = readValues["Spike_X_Pos"]
+            Spike_Y_Pos = readValues["Spike_Y_Pos"]
+            Spike_Z_Pos = readValues["Spike_Z_Pos"]
 
-            # Related to Gadgets
-            gadgetTuples = [
-                (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
-                (RAM.gadgetStateFromServer, 2, "MainRAM"),
-                (RAM.heldGadgetAddress, 1, "MainRAM"),  # Currently held gadget
-                (RAM.triangleGadgetAddress, 1, "MainRAM"),  # Gadget equipped to each face button
-                (RAM.squareGadgetAddress, 1, "MainRAM"),
-                (RAM.circleGadgetAddress, 1, "MainRAM"),
-                (RAM.crossGadgetAddress, 1, "MainRAM"),
-                (RAM.gadgetUseStateAddress, 1, "MainRAM"),  # Which gadget is used in what way. **Not used at the moment
-                (RAM.punchVisualAddress, 32, "MainRAM"),
-            ]
-
-            gadgetReads = await bizhawk.read(ctx.bizhawk_ctx, gadgetTuples)
-
-            gadgets = int.from_bytes(gadgetReads[0], byteorder = "little")
-            gadgetStateFromServer = int.from_bytes(gadgetReads[1], byteorder = "little")
-            heldGadget = int.from_bytes(gadgetReads[2], byteorder = "little")
-            triangleGadget = int.from_bytes(gadgetReads[3], byteorder = "little")
-            squareGadget = int.from_bytes(gadgetReads[4], byteorder = "little")
-            circleGadget = int.from_bytes(gadgetReads[5], byteorder = "little")
-            crossGadget = int.from_bytes(gadgetReads[6], byteorder = "little")
-            gadgetUseState = int.from_bytes(gadgetReads[7], byteorder = "little")
-            punchVisualAddress = int.from_bytes(gadgetReads[8], byteorder = "little")
-
-            # Menu and level select reads
-            menuTuples = [
-                (RAM.selectedWorldAddress, 1, "MainRAM"),  # In level select, the current world
-                (RAM.selectedLevelAddress, 1, "MainRAM"),  # In level select, the current level
-                (RAM.enteredWorldAddress, 1, "MainRAM"),  # After selecting a level, the entered world
-                (RAM.enteredLevelAddress, 1, "MainRAM"),  # After selecting a level, the entered level
-                (RAM.menuStateAddress, 1, "MainRAM"),
-                (RAM.menuState2Address, 1, "MainRAM"),
-                (RAM.newGameAddress, 1, "MainRAM"),
-                (RAM.startingCoinAddress, 100, "MainRAM"),
-                (RAM.temp_startingCoinAddress, 100, "MainRAM"),
-                (RAM.SA_CompletedAddress, 1, "MainRAM"),
-                (RAM.temp_SA_CompletedAddress, 1, "MainRAM"),
-                (RAM.GA_CompletedAddress, 1, "MainRAM"),
-                (RAM.temp_GA_CompletedAddress, 1, "MainRAM"),
-                (RAM.worldIsScrollingRight, 2, "MainRAM"),
-                (RAM.Specter2CompleteAddress, 1, "MainRAM")
-
-            ]
-
-            menuReads = await bizhawk.read(ctx.bizhawk_ctx, menuTuples)
+            # Gadgets
+            gadgets = readValues["gadgets"]
+            gadgetStateFromServer = readValues["gadgetStateFromServer"]
+            heldGadget = readValues["heldGadget"]
+            triangleGadget = readValues["triangleGadget"]
+            squareGadget = readValues["squareGadget"]
+            circleGadget = readValues["circleGadget"]
+            crossGadget = readValues["crossGadget"]
+            gadgetUseState = readValues["gadgetUseState"]
+            punchVisualAddress = readValues["punchVisualAddress"]
 
             # Level Select/Menu data
-            LS_currentWorld = int.from_bytes(menuReads[0], byteorder = "little")
-            LS_currentLevel = int.from_bytes(menuReads[1], byteorder = "little")
-            status_currentWorld = int.from_bytes(menuReads[2], byteorder = "little")
-            status_currentLevel = int.from_bytes(menuReads[3], byteorder = "little")
-            menuState = int.from_bytes(menuReads[4], byteorder = "little")
-            menuState2 = int.from_bytes(menuReads[5], byteorder = "little")
-            newGameAddress = int.from_bytes(menuReads[6], byteorder = "little")
+            LS_currentWorld = readValues["LS_currentWorld"]
+            LS_currentLevel = readValues["LS_currentLevel"]
+            status_currentWorld = readValues["status_currentWorld"]
+            status_currentLevel = readValues["status_currentLevel"]
+            menuState = readValues["menuState"]
+            menuState2 = readValues["menuState2"]
+            newGameAddress = readValues["newGameAddress"]
             # Level Select Coin hiding
-            CoinTable = int.from_bytes(menuReads[7], byteorder = "little")
-            TempCoinTable = int.from_bytes(menuReads[8], byteorder = "little")
-            SA_Completed = int.from_bytes(menuReads[9], byteorder = "little")
-            temp_SA_Completed = int.from_bytes(menuReads[10], byteorder = "little")
-            GA_Completed = int.from_bytes(menuReads[11], byteorder = "little")
-            temp_GA_Completed = int.from_bytes(menuReads[12], byteorder = "little")
-            worldIsScrollingRight = int.from_bytes(menuReads[13], byteorder = "little")
-            Specter2CompleteAddress = int.from_bytes(menuReads[14], byteorder = "little")
+            CoinTable = readValues["CoinTable"]
+            TempCoinTable = readValues["TempCoinTable"]
+            SA_Completed = readValues["SA_Completed"]
+            temp_SA_Completed = readValues["temp_SA_Completed"]
+            GA_Completed = readValues["GA_Completed"]
+            temp_GA_Completed = readValues["temp_GA_Completed"]
+            worldIsScrollingRight = readValues["worldIsScrollingRight"]
+            Specter2CompleteAddress = readValues["Specter2CompleteAddress"]
 
-            # Water net shuffle Reads
-            swimTuples = [
-                (RAM.canDiveAddress, 4, "MainRAM"),
-                (RAM.canWaterCatchAddress, 1, "MainRAM"),
-                (RAM.tempWaterNetAddress, 1, "MainRAM"),
-                (RAM.tempWaterCatchAddress, 1, "MainRAM"),
-                (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
-                (RAM.swim_oxygenLevelAddress, 2, "MainRAM"),
-            ]
+            # Water net shuffle
+            canDive = readValues["canDive"]
+            canWaterCatch = readValues["canWaterCatch"]
+            WaterNetStateFromServer = readValues["WaterNetStateFromServer"]
+            WaterCatchStateFromServer = readValues["WaterCatchStateFromServer"]
+            isUnderwater = readValues["isUnderwater"]
+            swim_oxygenLevel = readValues["swim_oxygenLevel"]
 
-            swimReads = await bizhawk.read(ctx.bizhawk_ctx, swimTuples)
+            CBLampStateFromServer = readValues["CBLampStateFromServer"]
+            DILampStateFromServer = readValues["DILampStateFromServer"]
+            CrCLampStateFromServer = readValues["CrCLampStateFromServer"]
+            CPLampStateFromServer = readValues["CPLampStateFromServer"]
+            SFLampStateFromServer = readValues["SFLampStateFromServer"]
+            TVTLobbyLampStateFromServer = readValues["TVTLobbyLampStateFromServer"]
+            TVTTankLampStateFromServer = readValues["TVTTankLampStateFromServer"]
+            MMLampStateFromServer = readValues["MMLampStateFromServer"]
 
-            canDive = int.from_bytes(swimReads[0], byteorder = "little")
-            canWaterCatch = int.from_bytes(swimReads[1], byteorder = "little")
-            WaterNetStateFromServer = int.from_bytes(swimReads[2], byteorder = "little")
-            WaterCatchStateFromServer = int.from_bytes(swimReads[3], byteorder = "little")
-            isUnderwater = int.from_bytes(swimReads[4], byteorder = "little")
-            swim_oxygenLevel = int.from_bytes(swimReads[5], byteorder = "little")
-
-            lampTuples = [
-                (RAM.tempCB_LampAddress, 1, "MainRAM"),
-                (RAM.tempDI_LampAddress, 1, "MainRAM"),
-                (RAM.tempCrC_LampAddress, 1, "MainRAM"),
-                (RAM.tempCP_LampAddress, 1, "MainRAM"),
-                (RAM.tempSF_LampAddress, 1, "MainRAM"),
-                (RAM.tempTVT_Lobby_LampAddress, 1, "MainRAM"),
-                (RAM.tempTVT_Tank_LampAddress, 1, "MainRAM"),
-                (RAM.tempMM_LampAddress, 1, "MainRAM"),
-            ]
-
-            lampReads = await bizhawk.read(ctx.bizhawk_ctx, lampTuples)
-
-            CBLampStateFromServer = int.from_bytes(lampReads[0], byteorder = "little")
-            DILampStateFromServer = int.from_bytes(lampReads[1], byteorder = "little")
-            CrCLampStateFromServer = int.from_bytes(lampReads[2], byteorder = "little")
-            CPLampStateFromServer = int.from_bytes(lampReads[3], byteorder = "little")
-            SFLampStateFromServer = int.from_bytes(lampReads[4], byteorder = "little")
-            TVTLobbyLampStateFromServer = int.from_bytes(lampReads[5], byteorder = "little")
-            TVTTankLampStateFromServer = int.from_bytes(lampReads[6], byteorder = "little")
-            MMLampStateFromServer = int.from_bytes(lampReads[7], byteorder = "little")
-
-            locksTuples = [
-                # Doors
-                (RAM.temp_MMLobbyDoorAddress, 1, "MainRAM"),
-                (RAM.MM_Lobby_DoubleDoor_OpenAddress, 1, "MainRAM"),
-                (RAM.MM_Jake_DefeatedAddress, 1, "MainRAM"),
-                (RAM.MM_Professor_RescuedAddress, 1, "MainRAM"),
-                (RAM.MM_Clown_State, 1, "MainRAM"),
-                (RAM.MM_Natalie_RescuedAddress, 1, "MainRAM"),
-                (RAM.temp_MM_Jake_DefeatedAddress, 1, "MainRAM"),
-                (RAM.temp_MM_Professor_RescuedAddress, 1, "MainRAM"),
-                (RAM.temp_MM_Natalie_RescuedAddress, 1, "MainRAM"),
-                (RAM.MM_Natalie_Rescued_Local, 1, "MainRAM"),
-                (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
-
-                # Buttons
-                (RAM.DI_Button_Pressed, 1, "MainRAM"),
-                (RAM.CrC_Water_ButtonPressed, 1, "MainRAM"),
-                (RAM.CrC_Basement_ButtonPressed, 1, "MainRAM"),
-                (RAM.TVT_Lobby_Button, 1, "MainRAM"),
-                (RAM.MM_MonkeyHead_Button, 1, "MainRAM"),
-                (RAM.MM_Painting_Button, 1, "MainRAM"),
-                (RAM.DR_Block_Pushed, 1, "MainRAM"),
-
-            ]
-
-            locksReads = await bizhawk.read(ctx.bizhawk_ctx, locksTuples)
             # Doors
-            MM_Lobby_DoubleDoor = int.from_bytes(locksReads[0], byteorder = "little")
-            MM_Lobby_DoubleDoor_Open = int.from_bytes(locksReads[1], byteorder = "little")
-            MM_Jake_DefeatedAddress = int.from_bytes(locksReads[2], byteorder = "little")
-            MM_Professor_RescuedAddress = int.from_bytes(locksReads[3], byteorder = "little")
-            MM_Clown_State = int.from_bytes(locksReads[4], byteorder = "little")
-            MM_Natalie_RescuedAddress = int.from_bytes(locksReads[5], byteorder = "little")
-            MM_Jake_Defeated = int.from_bytes(locksReads[6], byteorder = "little")
-            MM_Professor_Rescued = int.from_bytes(locksReads[7], byteorder = "little")
-            MM_Natalie_Rescued = int.from_bytes(locksReads[8], byteorder = "little")
-            MM_Natalie_Rescued_Local = int.from_bytes(locksReads[9], byteorder = "little")
-            MM_Lobby_DoorDetection = int.from_bytes(locksReads[10], byteorder = "little")
+            MM_Lobby_DoubleDoor = readValues["MM_Lobby_DoubleDoor"]
+            MM_Lobby_DoubleDoor_Open = readValues["MM_Lobby_DoubleDoor_Open"]
+            MM_Jake_DefeatedAddress = readValues["MM_Jake_DefeatedAddress"]
+            MM_Professor_RescuedAddress = readValues["MM_Professor_RescuedAddress"]
+            MM_Clown_State = readValues["MM_Clown_State"]
+            MM_Natalie_RescuedAddress = readValues["MM_Natalie_RescuedAddress"]
+            MM_Jake_Defeated = readValues["MM_Jake_Defeated"]
+            MM_Professor_Rescued = readValues["MM_Professor_Rescued"]
+            MM_Natalie_Rescued = readValues["MM_Natalie_Rescued"]
+            MM_Natalie_Rescued_Local = readValues["MM_Natalie_Rescued_Local"]
+            MM_Lobby_DoorDetection = readValues["MM_Lobby_DoorDetection"]
 
             # Buttons
-            DI_Button_Pressed = int.from_bytes(locksReads[11], byteorder = "little")
-            CrC_Water_ButtonPressed = int.from_bytes(locksReads[12], byteorder = "little")
-            CrC_Basement_ButtonPressed = int.from_bytes(locksReads[13], byteorder = "little")
-            TVT_Lobby_ButtonPressed = int.from_bytes(locksReads[14], byteorder = "little")
-            MM_MonkeyHead_ButtonPressed = int.from_bytes(locksReads[15], byteorder = "little")
-            MM_Painting_ButtonPressed = int.from_bytes(locksReads[16], byteorder = "little")
-            DR_Block_Pushed = int.from_bytes(locksReads[17], byteorder="little")
+            DI_Button_Pressed = readValues["DI_Button_Pressed"]
+            CrC_Water_ButtonPressed = readValues["CrC_Water_ButtonPressed"]
+            CrC_Basement_ButtonPressed = readValues["CrC_Basement_ButtonPressed"]
+            TVT_Lobby_ButtonPressed = readValues["TVT_Lobby_ButtonPressed"]
+            MM_MonkeyHead_ButtonPressed = readValues["MM_MonkeyHead_ButtonPressed"]
+            MM_Painting_ButtonPressed = readValues["MM_Painting_ButtonPressed"]
+            DR_Block_Pushed = readValues["DR_Block_Pushed"]
 
-            levelCountTuples = [
-                (RAM.levelMonkeyCount[11], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[12], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[13], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[21], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[22], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[23], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[31], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[41], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[42], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[43], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[51], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[52], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[53], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[61], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[71], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[72], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[73], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[81], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[82], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[83], 1, "MainRAM"),
-                (RAM.levelMonkeyCount[91], 1, "MainRAM")
+            monkeylevelcounts = [
+                readValues["FF_MonkeyCount"],
+                readValues["PO_MonkeyCount"],
+                readValues["ML_MonkeyCount"],
+                readValues["TJ_MonkeyCount"],
+                readValues["DR_MonkeyCount"],
+                readValues["CR_MonkeyCount"],
+                readValues["SA_MonkeyCount"],
+                readValues["CB_MonkeyCount"],
+                readValues["CC_MonkeyCount"],
+                readValues["DI_MonkeyCount"],
+                readValues["SM_MonkeyCount"],
+                readValues["FR_MonkeyCount"],
+                readValues["HS_MonkeyCount"],
+                readValues["GA_MonkeyCount"],
+                readValues["ST_MonkeyCount"],
+                readValues["WSW_MonkeyCount"],
+                readValues["CRC_MonkeyCount"],
+                readValues["CP_MonkeyCount"],
+                readValues["SF_MonkeyCount"],
+                readValues["TVT_MonkeyCount"],
+                readValues["MM_MonkeyCount"],
             ]
-            monkeylevelcounts = await bizhawk.read(ctx.bizhawk_ctx, levelCountTuples)
 
             # Write tables
             itemsWrites = []
@@ -2271,7 +2271,7 @@ class ApeEscapeClient(BizHawkClient):
             levelindex  = list(RAM.levels.values())
             monkeycountsAddresses = list(RAM.levelMonkeyCount.values())
             localcount = 0
-            RAMMonkeycount = int.from_bytes(monkeylevelCounts[levelindex.index(self.lastenteredLevel)], "little")
+            RAMMonkeycount = monkeylevelCounts[levelindex.index(self.lastenteredLevel)],
 
             # Check each values if monkeys are caught and increment a local counter
             for x in range(len(level_MonkeyStates)):
@@ -3650,7 +3650,7 @@ class ApeEscapeClient(BizHawkClient):
         levels_list = list(levels_keys)
         if gameState == RAM.gameState["LevelSelect"] or debug:
             for x in range(len(levels_list)):
-                if int.from_bytes(monkeylevelCounts[x], byteorder = "little") < hundoMonkeysCount[levels_list[x]]:
+                if monkeylevelCounts[x] < hundoMonkeysCount[levels_list[x]]:
                     # print("Level " + str(x) + " not completed" + str(int.from_bytes(monkeylevelCounts[x])) + "/" + str(hundoMonkeysCount[levels_list[x]]))
                     allCompleted = False
                     break
@@ -3708,7 +3708,7 @@ class ApeEscapeClient(BizHawkClient):
                     # Check if all monkeys of the indexed level are caught.
                     # If yes, set the state to hundo. If no, do nothing, the state is correct.
                     # (Index 0) If Fossil Field is at Dark Ruins, set the Dark Ruins entrance (index 4) to hundo.
-                    if int.from_bytes(monkeylevelCounts[index], byteorder = "little") >= hundoMonkeysCount[levels_list[index]]:
+                    if monkeylevelCounts[index] >= hundoMonkeysCount[levels_list[index]]:
                         levelstates[newpositions[index]] = (RAM.levelAddresses[list(RAM.levelAddresses.keys())[newpositions[index]]], levelhundo, "MainRAM")
 
         # Monkey Madness entrance must be set to locked if Peak Point Matrix should be locked
