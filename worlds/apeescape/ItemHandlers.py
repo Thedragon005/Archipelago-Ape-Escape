@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Uni
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
 
-
+# TODO : For Stun/Freeze Trap : SpikeState2 set to 0x58 freeze the movement of Spike, if I find a way to stop position update could be good
+# TODO : For Spin Trap : SpikeState2 set to 0x66
 class ApeEscapeMemoryInput:
     def __init__(self, bizhawk_client_context: "BizHawkClientContext"):
         self.bizhawk_client_context = bizhawk_client_context
@@ -51,7 +52,7 @@ class ApeEscapeMemoryInput:
         writes_list.append((RAM.BUTTON_BYTE_ADDR_LOW, [byte_low_value], "MainRAM"))
         writes_list.append((RAM.BUTTON_BYTE_ADDR_HIGH, [byte_high_value], "MainRAM"))
 
-        # --- 2. Construct Analog Stick Bytes (ONLY for specified axes) ---
+        # --- 2. Construct Analog Stick Bytes ---
         analog_axis_addresses = {
             "P1 R_Y": RAM.ANALOG_START_ADDR,
             "P1 R_X": RAM.ANALOG_START_ADDR + 1,
@@ -91,13 +92,14 @@ class MonkeyMashHandler:
         self.input_controller = ApeEscapeMemoryInput(
             self.bizhawk_client_context) if self.bizhawk_client_context else None
 
-        self.input_frequency = 0.7  # Time between NEW random inputs (e.g., generate new input every 0.5s)
+        self.input_frequency = 0.7      # Time between NEW random inputs (e.g., generate new input every 0.7s)
         self.last_input_time = 0
 
-        self.input_hold_time = 0.5  # How long the inputs will be pressed
+        self.input_hold_time = 0.5      # How long the inputs will be pressed
 
-        self.current_held_inputs = {}  # Stores inputs that are currently being pressed
-        self.press_start_time = None  # Timestamp when the current brief press started
+        self.current_held_inputs = {}   # Stores inputs that are currently being pressed
+        self.press_start_time = None    # Timestamp when the current brief press started
+        self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
 
     def activate_monkey(self, duration_seconds: int):
         if not self.is_active:
@@ -114,7 +116,7 @@ class MonkeyMashHandler:
             self.remaining_time = min(new_remaining_time, self.MAX_TRAP_DURATION)
             self.duration = self.remaining_time
             print(f"Monkey Button Mash extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_TRAP_DURATION}s)")
-
+        self.sentMessage = False
     async def send_monkey_inputs(self):
         if self.input_controller is None or self.bizhawk_client_context.bizhawk_ctx.connection_status != bizhawk.ConnectionStatus.CONNECTED:
             print("Error: BizHawk connection not ready for inputs. Cannot send inputs.")
@@ -139,7 +141,7 @@ class MonkeyMashHandler:
             if self.remaining_time <= 0:
                 self.remaining_time = 0
 
-                # State 1: It's time to generate a NEW input sequence (press for hold_time)
+            # State 1: It's time to generate a NEW input sequence (press for hold_time)
             if current_time - self.last_input_time >= self.input_frequency:
                 newly_generated_inputs = {}
 
@@ -194,7 +196,7 @@ class MonkeyMashHandler:
             self.remaining_time = 0
             self.current_held_inputs = {}
             self.press_start_time = None
-            print("Monkey Button Mash finished. Client-controlled inputs released (relying on game reset).")
+            print("Monkey Button Mash finished.")
 
 class RainbowCookieHandler:
     """
@@ -212,7 +214,7 @@ class RainbowCookieHandler:
         self.remaining_time = 0         # How much time is left for the effects
         self.last_update = 0            # Timestamp of the last update, for calculating elapsed time
         self.pause = False              # Flag to pause the cookie's timer/effects
-
+        self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
     async def activate_rainbow_cookie(self, duration_seconds: int):
         """
         Activates the Rainbow Cookie effects (invincibility and golden form).
@@ -236,7 +238,7 @@ class RainbowCookieHandler:
             self.duration = self.remaining_time # Update current duration if extended
             print(
                 f"Rainbow Cookie extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
-
+        self.sentMessage = False
     async def _apply_effects(self, enable: bool):
         """
         Internal method to apply or remove the Rainbow Cookie's effects
@@ -304,4 +306,141 @@ class RainbowCookieHandler:
             self.remaining_time = 0
             self.is_active = False
             print("Rainbow Cookie duration finished. Deactivating effects.")
+            await self._apply_effects(False) # Remove effects
+
+class StunTrapHandler:
+    """
+    Manages the state and effects of the Stun Trap.
+    When active, makes Spike invincible and activates his golden form.
+    """
+    MAX_DURATION = 2
+
+    def __init__(self, bizhawk_client_context: Union["BizHawkClientContext", None]):
+        self.bizhawk_client_context = bizhawk_client_context
+        self.bizhawk_context = bizhawk_client_context.bizhawk_ctx if bizhawk_client_context else None
+
+        self.is_active = False          # True if Rainbow Cookie effects are currently active
+        self.duration = 0               # The initial or current duration set for the cookie
+        self.remaining_time = 0         # How much time is left for the effects
+        self.last_update = 0            # Timestamp of the last update, for calculating elapsed time
+        self.pause = False              # Flag to pause the cookie's timer/effects
+        self.lastspikestate = 0x00      # To store last SpikeState on activation
+        self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
+    async def activate_StunTrap(self, duration_seconds: int,lastspikestate):
+        """
+        Activates the Stun Trap effects.
+        If already active, extends the duration up to MAX_DURATION.
+
+        Args:
+            duration_seconds (int): The number of seconds to activate/extend the cookie's effects.
+        """
+        # Only store a new lastspikestate if the trap is not activated
+        # (Since if it's already active we already have the last spike state)
+        if not self.is_active:
+            self.lastspikestate = lastspikestate
+        # First activation
+        self.is_active = True
+        self.duration = duration_seconds
+        self.remaining_time = duration_seconds
+        self.last_update = time.time()
+        print(f"Stun Trap activated for {duration_seconds} seconds.")
+        await self._apply_effects(True) # Apply effects immediately
+        #else:
+        # Activate it each time, do not extend it
+        # Extend existing duration
+        #new_remaining_time = self.remaining_time + duration_seconds
+        #self.remaining_time = min(new_remaining_time, self.MAX_DURATION)
+        #self.duration = self.remaining_time # Update current duration if extended
+        #print(f"Stun Trap extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
+        #self.sentMessage = False
+    async def _apply_effects(self, enable: bool):
+        """
+        Internal method to apply or remove the Rainbow Cookie's effects
+        by writing to BizHawk memory addresses.
+
+        Args:
+            enable (bool): If True, enables effects; if False, disables them.
+        """
+        if self.bizhawk_context is None or self.bizhawk_context.connection_status != bizhawk.ConnectionStatus.CONNECTED:
+            print("Warning: BizHawk not connected. Cannot apply/remove Stun Trap effects.")
+            return
+
+        writes_list = []
+        Spike_PosUpdatesAddress = RAM.Spike_PosUpdates
+        Spike_PosUpdates_keys = list(Spike_PosUpdatesAddress.keys())
+        Spike_PosUpdates_values = list(Spike_PosUpdatesAddress.values())
+
+        for x in range(len(Spike_PosUpdates_keys)):
+            PosUpdates_values = list(Spike_PosUpdates_values[x])
+            PosUpdates_bytes = PosUpdates_values[0]
+            PosUpdates_onvalue = PosUpdates_values[1].to_bytes(PosUpdates_bytes, "little")
+            PosUpdates_offvalue = PosUpdates_values[2].to_bytes(PosUpdates_bytes, "little")
+            PosUpdates_address = (Spike_PosUpdates_keys[x])
+            if enable:
+                writes_list += [(PosUpdates_address, PosUpdates_offvalue, "MainRAM")]
+            else:
+                writes_list += [(PosUpdates_address, PosUpdates_onvalue, "MainRAM")]
+
+        Spike_VelocityUpdatesAddress = RAM.Spike_VelocityUpdates
+        Spike_VelocityUpdates_keys = list(Spike_VelocityUpdatesAddress.keys())
+        Spike_VelocityUpdates_values = list(Spike_VelocityUpdatesAddress.values())
+
+        for x in range(len(Spike_VelocityUpdates_keys)):
+            VelocityUpdates_values = list(Spike_VelocityUpdates_values[x])
+            VelocityUpdates_bytes = VelocityUpdates_values[0]
+            VelocityUpdates_onvalue = VelocityUpdates_values[1].to_bytes(VelocityUpdates_bytes, "little")
+            VelocityUpdates_offvalue = VelocityUpdates_values[2].to_bytes(VelocityUpdates_bytes, "little")
+            VelocityUpdates_address = (Spike_VelocityUpdates_keys[x])
+            if enable:
+                writes_list += [(VelocityUpdates_address, VelocityUpdates_offvalue, "MainRAM")]
+            else:
+                writes_list += [(VelocityUpdates_address, VelocityUpdates_onvalue, "MainRAM")]
+
+        LastState = self.lastspikestate
+
+        InvalidLastStates = [0x80, 0x81, 0x82, 0x83, 0x84,0x2F,0x30,0x58]
+        # If enabling the Trap set it to 0x58, else set it to the last saved state
+        if enable:
+            Spikestate2_value = 0x58
+        else:
+            #If LastState is invalid,
+            Spikestate2_value = 0x00 if LastState in InvalidLastStates else LastState
+
+            self.lastspikestate = 0x00
+        Spikestate2_bytes = list(Spikestate2_value.to_bytes(1, "little"))
+
+        writes_list.append((RAM.spikeState2Address, Spikestate2_bytes, "MainRAM"))
+
+        try:
+            await bizhawk.write(self.bizhawk_context, writes_list)
+            print(f"Stun Trap effects {'applied' if enable else 'removed'}.")
+        except Exception as e:
+            print(f"ERROR: Failed to {'apply' if enable else 'remove'} Stun Trap effects: {e}")
+            raise
+
+    async def update_state_and_deactivate(self):
+        """
+        Updates the remaining time for the Rainbow Cookie.
+        If the duration runs out, deactivates the effects.
+        This method should be called periodically in the main loop of the client.
+        It also re-applies the golden visual effect if it's lost and the cookie is active.
+        """
+        if not self.is_active:
+            return
+
+        if self.pause:
+            # If paused, don't decrement remaining_time, but update last_update
+            # to prevent a large time jump when unpaused.
+            self.last_update = time.time()
+            return
+
+        current_time = time.time()
+        elapsed_time_since_last_update = current_time - self.last_update
+        self.remaining_time -= elapsed_time_since_last_update
+        self.last_update = current_time
+
+        if self.remaining_time <= 0:
+            self.remaining_time = 0
+            self.is_active = False
+            print("Stun Trap duration finished. Deactivating effects.")
             await self._apply_effects(False) # Remove effects
