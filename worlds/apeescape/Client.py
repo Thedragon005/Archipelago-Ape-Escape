@@ -539,7 +539,6 @@ class ApeEscapeClient(BizHawkClient):
                     self.on_deathlink(ctx)
                 if "TrapLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
                     trap_name: str = args["data"]["trap_name"]
-                    print(trap_name)
 
                     if trap_name not in trap_to_local_traps:
                         # We don't know how to handle this trap, ignore it
@@ -1608,7 +1607,7 @@ class ApeEscapeClient(BizHawkClient):
             # ======== Special Items Handling =========
             # For Traps and Special Items.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning, self.DS_spikecolor]
+            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning, self.DS_spikecolor,heldGadget]
             await self.specialitems_handling(ctx, SpecialItems_Reads)
             # ================================
 
@@ -3070,6 +3069,7 @@ class ApeEscapeClient(BizHawkClient):
         currentRoom = SpecialItems_Reads[7]
         gameRunning = SpecialItems_Reads[8]
         DS_spikeColor = SpecialItems_Reads[9]
+        heldGadget = SpecialItems_Reads[10]
         SpecialItems_Writes = []
         SpecialItems_Guards = []
 
@@ -3117,6 +3117,12 @@ class ApeEscapeClient(BizHawkClient):
                 chosen_gadgets = []
                 chosen_values = [0, 0, 0, 0]
                 faces = [0, 1, 2, 3]
+                facesNames = ["P1 X","P1 Square","P1 Circle","P1 Triangle"]
+                faceValues = [0xBF,0x7F,0xDF,0xEF]
+                Trap_writes = []
+                Trap_writes2 = []
+                Trap_guards = []
+
                 # Exit if no gadgets has been unlocked yet
                 if currentGadgets == []:
                     return None
@@ -3140,37 +3146,36 @@ class ApeEscapeClient(BizHawkClient):
                         faces.pop(randomFace)
                 # print(chosen_gadgets)
 
-                SpecialItems_Writes += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
-                SpecialItems_Writes += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
-                SpecialItems_Writes += [(RAM.circleGadgetAddress, chosen_values[2].to_bytes(1, "little"), "MainRAM")]
-                SpecialItems_Writes += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
+                Trap_writes += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
+                Trap_writes += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
+                Trap_writes += [(RAM.circleGadgetAddress, chosen_values[2].to_bytes(1, "little"), "MainRAM")]
+                Trap_writes += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
+
+                await bizhawk.write(ctx.bizhawk_ctx, Trap_writes)
 
                 # Select a gadget slot
                 randomSelect = int(round(random.random() * (len(chosen_values) - 1), None))
-                # print("random:" + str(randomSelect))
-                # print(chosen_values)
-                # Attempt to correct the radar being weird on shuffle sometimes
-                # TODO Maybe the key for this is to reset joystick position?
-                Analog_values = {}
-                await self.ape_handler.input_controller.set_inputs(Analog_values)
-                if chosen_values[randomSelect] == 0x02:
-                    Trap_Writes1 = []
-                    Trap_Writes1 += [(RAM.radarFixAddress, 0x30.to_bytes(1, "little"), "MainRAM")]
-                    Trap_Writes1 += [(RAM.ANALOG_START_ADDR, 0x00008080.to_bytes(2, "little"), "MainRAM")]
-                    await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
-                elif chosen_values[randomSelect] == 0x04:
-                    Trap_Writes1 = []
-                    Trap_Writes1 += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                    Trap_Writes1 += [(RAM.hoopFixAddress, 0x0000000000000000.to_bytes(14, "little"), "MainRAM")]
-                    await bizhawk.write(ctx.bizhawk_ctx, Trap_Writes1)
-                if spikeState2 in (128, 129, 131):
-                    SpecialItems_Writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
-                SpecialItems_Writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
-                # if chosen_values[randomSelect] != 0xFF:
-                    # print(chosen_values[randomSelect])
-                    # print("Selected gadget: " + chosen_gadgets[randomSelect])
-                # else:
-                    # print("Selected gadget: NONE")
+
+                Trap_writes2 += [(RAM.Controls_TriggersShapes, faceValues[randomSelect].to_bytes(1, "little"), "MainRAM")]
+
+                Trap_guards += [(RAM.crossGadgetAddress, chosen_values[0].to_bytes(1, "little"), "MainRAM")]
+                Trap_guards += [(RAM.squareGadgetAddress, chosen_values[1].to_bytes(1, "little"), "MainRAM")]
+                Trap_guards += [(RAM.circleGadgetAddress, chosen_values[2].to_bytes(1, "little"), "MainRAM")]
+                Trap_guards += [(RAM.triangleGadgetAddress, chosen_values[3].to_bytes(1, "little"), "MainRAM")]
+
+                #Analog_values = {}
+                #await self.ape_handler.input_controller.set_inputs(Analog_values)
+
+                #if spikeState2 in (128, 129, 131, 132):
+                #Trap_writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
+                #Trap_writes += [(RAM.heldGadgetAddress, chosen_values[randomSelect].to_bytes(1, "little"), "MainRAM")]
+                #Trap_writes += [(RAM.Controls_TriggersShapes, faceValues[randomSelect].to_bytes(1, "little"), "MainRAM")]
+                if heldGadget != chosen_values[randomSelect]:
+                    timeout_count = 0
+                    while timeout_count < 10:
+                        timeout_count += 1
+                        #print(timeout_count)
+                        await bizhawk.guarded_write(ctx.bizhawk_ctx, Trap_writes2, Trap_guards)
 
             # Monkey Mash Trap handling
             elif self.specialitem_queue[0] == RAM.items['MonkeyMashTrap']:
@@ -3211,6 +3216,7 @@ class ApeEscapeClient(BizHawkClient):
                     message = f"Rainbow Cookie activated for {item_duration} seconds!"
                 await self.send_bizhawk_message(ctx, message, "Passthrough", "")
                 await self.rainbow_cookie.activate_rainbow_cookie(item_duration)
+
             #Stun Trap handling
             elif self.specialitem_queue[0] == RAM.items['StunTrap']:
                 self.specialitem_queue.pop(0)
@@ -3223,7 +3229,8 @@ class ApeEscapeClient(BizHawkClient):
                 await self.send_bizhawk_message(ctx, message, "Passthrough", "")
                 await self.stun_trap.activate_StunTrap(item_duration,spikeState2)
 
-            await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
+            if SpecialItems_Writes:
+                await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
 
     async def ER_Handling(self, ctx: "BizHawkClientContext", ER_Reads) -> None:
         gameState = ER_Reads[0]

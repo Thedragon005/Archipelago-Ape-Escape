@@ -109,6 +109,7 @@ trap_to_local_traps: typing.Dict[str, str] = {
     "Paralyze Trap":        AEItem.StunTrap.value,
     "Push Trap":            AEItem.BananaPeelTrap.value,
     "Spring Trap":          AEItem.IcyHotPantsTrap.value,
+    "Swap Trap" :           AEItem.GadgetShuffleTrap.value,
 
     # Traps idea :
     # Fast Trap (Depending on direction always set to max velocity?)

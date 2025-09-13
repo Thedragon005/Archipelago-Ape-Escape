@@ -1597,8 +1597,94 @@ class RAM:
     crossGadgetAddress = 0x0F51AB
     # which gadget is currently selected for use
     heldGadgetAddress = 0x0EC2D2
-    radarFixAddress = 0x0F5125
-    hoopFixAddress = 0x0F5124  # 2 bytes
+
+    GadgetValues = 0x0F5124 #32 bytes
+    GadgetValues2 = 0x0F5154 #32 bytes
+
+    # Notes:
+    # Club  : GadgetValues can be anything,it's fine
+    # Net   : GadgetValues can be the last value,it's fine
+    # Radar :
+    #
+
+    gadgetValue1 = 0x0F5124
+    # Radar: ALWAYS equal to Spike_X_Orientation
+    # Hoop :
+    #   Off = 0x0000, On = 0x0001
+    # Punch :
+    #   Punch extension 1: (Default) 0x0400
+    gadgetValue2 = 0x0F5126
+    # Radar: 0x0000 (Not used)
+    # Hoop :
+    #   hoop_activated : standby = 0x0001, moving = 0x0000
+    # Punch :
+    #   Punch extension 2: (Default) 0x0400
+    gadgetValue3 = 0x0F5128
+    # Radar: ALWAYS equal to Spike_Z_Orientation
+    # Hoop:
+    #   Continuous spin timer (If the joystick spin is fast enough,this value goes up)
+    # Punch:
+    #   PunchState : (Default) 0x0000
+
+    RadarValues = {
+        #0x0F5124 : 0x0000,  #Radar_Orientation1 **Goes with Spike_X_Orientation
+        0x0F5126 : 0x0000,  #Radar_Orientation2 **Not used,maybe Spike_Y_Orientation
+        #0x0F5128 : 0x0000,  #Radar_Orientation3 **Goes with Spike_Z_Orientation
+        0x0F512A : 0x0001,  #Radar_Orientation4
+
+        0x0F5134 : 0xFFFF,  #Radar_SoundChannel1
+        0x0F5136 : 0xFFFF,  #Radar_SoundChannel2
+        0x0F5138 : 0xE5A3,  #Radar_SoundVariant
+        0x0F513A : 0x0000,  #Radar_Scanned?
+        0x0F513C : 0x0000,  #Radar_R2Flashing
+
+        }
+
+    # When sling is selected, string position is stored in these:
+    SlingValues = {
+        0x0F5124 : 0xFF9B,  #SlingRope1_1
+        0x0F5126 : 0xFF55,  #SlingRope1_2
+        0x0F5128 : 0xE5B9,  #SlingRope1_3
+
+        0x0F512C : 0xFF5C,  #SlingRope2_1
+        0x0F512E : 0xFF6B,  #SlingRope2_2
+        0x0F5130 : 0xE595,  #SlingRope2_3
+
+        0x0F5134 : 0xFF7B,  #SlingRope3_1
+        0x0F5136 : 0xFF7F,  #SlingRope3_2
+        0x0F5138 : 0xE5A3,  #SlingRope3_3
+
+    }
+
+    HoopValues = {
+        0x0F5124: 0x0000,      # Hoop_Activated
+        0x0F5126: 0x0000,      # Hoop_Standby
+        0x0F5128: 0x0000,      # Hoop_SpinProgress
+
+        0x0F512A: 0x0000,      # Hoop_AnimationReset
+        0x0F512C: 0x00000000,  # Hoop_AnimationState1
+        0x0F5130: 0x00000000,  # Hoop_AnimationState2
+        0x0F5134: 0x00000000,  # Hoop_AnimationState3
+
+        0x0F5138: 0x00000000,  # Hoop_Orientation_X (Relative)
+        0x0F513C: 0x00000000,  # Hoop_Orientation_Z (Relative)
+
+        0x0F5140: 0xFFFFFFFF,  # Hoop_SoundChannel (Might need to reset it to last value)
+
+    }
+
+
+    PunchValues = {
+        0x0F5124: 0x04000400,  # Punch_GlovePosition? (Relative)
+        0x0F5128: 0x0000,  # Punch_ExtensionState
+
+        0x0F5134: 0x0000000,  # Punch_Extend2
+        0x0F5138: 0x00000000,  # Hoop_AnimationReset
+    }
+
+
+    #radarFixAddress = 0x0F5125
+    #hoopFixAddress = 0x0F5124  # 2 bytes
 
     gadgetUseStateAddress = 0x0B20CC
     # 1 = "Net down"
@@ -1761,26 +1847,20 @@ class RAM:
     Spike_Y_PosAddress = 0x0EC208 #4 bytes
     Spike_Z_PosAddress = 0x0EC20C #4 bytes
 
-    Spike_Velocity_Value = 0x0EC214     # 1 byte  : Max Speed -> Up : 0x01, Down : 0x80
-    Spike_Velocity_BitFlag = 0x0EC215   # 3 bytes : 0xFFFFFF = Up | 0x000000 = Down
+    Spike_X_Orientation = 0x0EC240 #4 bytes
+    Spike_Z_Orientation = 0x0EC244 #4 bytes
+
+    Spike_Y_Velocity_Value = 0x0EC214     # 1 byte  : Max Speed -> Up : 0x01, Down : 0x80
+    Spike_Y_Velocity_BitFlag = 0x0EC215   # 3 bytes : 0xFFFFFF = Up | 0x000000 = Down
 
     # Velocity Update addresses
     # These addresses are responsible for updating velocity
     # Setting them to 0 prevents velocity from changing.
     # *It will still stay at the value it was BEFORE setting these addresses to 0*
     Spike_VelocityUpdates = {
-        0x0728A8: [4, 0xAE030000, 0x00000000],  # SpikeX_VelocityLock1
-        0x0734D4: [4, 0xAE620000, 0x00000000],  # SpikeX_VelocityLock1
-        0x0738B0: [4, 0xAE620000, 0x00000000],  # SpikeX_VelocityLock1
-
-        0x06343C: [4, 0xAE090034, 0x00000000],  # SpikeY_VelocityLock1
-        0x072DAC: [4, 0xAE300010, 0x00000000],  # SpikeY_VelocityLock2
-        0x072E74: [4, 0xAE020010, 0x00000000],  # SpikeY_VelocityLock3
-
-        0x0728E4: [4, 0xAE030008, 0x00000000],  # SpikeZ_VelocityLock1
-        0x0734CC: [4, 0xAE630008, 0x00000000],  # SpikeZ_VelocityLock1
-        0x0738C8: [4, 0xAE620008, 0x00000000],  # SpikeZ_VelocityLock1
-
+        0x063424: [4, 0xAE0A0030, 0x00000000],  # SpikeX_VelocityUpdate
+        0x06343C: [4, 0xAE090034, 0x00000000],  # SpikeY_VelocityUpdate
+        0x063480: [4, 0xAE040038, 0x00000000],  # SpikeZ_VelocityUpdate
     }
 
     #Postion Update addresses
