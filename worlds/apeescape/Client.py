@@ -1,11 +1,15 @@
 import logging
-
+import random
 import Utils
+import time
+
 from BaseClasses import ItemClassification
 from NetUtils import ClientStatus, NetworkItem
-from .ItemHandlers import *
+from .ItemHandlers import ApeEscapeMemoryInput,StunTrapHandler,MonkeyMashHandler,RainbowCookieHandler
 from .Strings import AEItem
 from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
+
+from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Union
 
 import worlds._bizhawk as bizhawk
 
