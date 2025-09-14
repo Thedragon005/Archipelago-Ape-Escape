@@ -3366,6 +3366,7 @@ class ApeEscapeClient(BizHawkClient):
                     TR_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
                     TR_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
                     TR_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
+                    TR_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
                 if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"] and gameRunning == 0x00:
@@ -3375,7 +3376,7 @@ class ApeEscapeClient(BizHawkClient):
                     # TR_writes += [(RAM.currentRoomIdAddress, LevelStartRoom.to_bytes(1, "little"), "MainRAM")]
                     ER_writes += [(RAM.spikeStateAddress, 0x13.to_bytes(1, "little"), "MainRAM")]
                     ER_writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
-
+                    ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
                     # await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # Special code handling for TVT Water Room Spawn
                 if currentLevel == 22 and LevelStartRoom == 64:

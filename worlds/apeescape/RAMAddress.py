@@ -1583,8 +1583,10 @@ class RAM:
     ANALOG_CENTER_VALUE = 0x80  # Default center value for 8-bit analog sticks (128 decimal)
     RIGHT_JOYSTICK_PSEUDO_INPUT = "Right Joystick"
 
+    ControlsUpdate_DPAD_STARTSELECT_L3R3 = 0x02CA00 # Enabled : A0720000 Disabled : 00000000
     Controls_DPAD_STARTSELECT_L3R3 = 0x0B87A2
     Controls_TriggersShapes = 0x0B87A3
+
 
 #===================== Gadget Related =====================
     # A bit is 1 if the gadget is unlocked. First bit is club, second is net, etc.
