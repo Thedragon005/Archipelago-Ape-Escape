@@ -549,22 +549,22 @@ class ApeEscapeClient(BizHawkClient):
                         return
 
                     local_trap_name: str = trap_to_local_traps.get(trap_name)
-                    print(local_trap_name)
+                    #print(local_trap_name)
                     trap_value: int = trap_name_to_value.get(local_trap_name)
 
                     if "trapweights" not in ctx.slot_data:
-                        print("option not in slotdata")
+                        #print("option not in slotdata")
                         return
 
                     if local_trap_name not in ctx.slot_data["trapweights"]:
                         # This trap is not in the list, ignore it
                         # *Version mismatch or partial YAML*
-                        print("Not in list")
+                        #print("Not in list")
                         return
 
                     if ctx.slot_data["trapweights"][f"{local_trap_name}"] == 0:
                         # The player disabled this trap type
-                        print("Trap disabled by the player")
+                        #print("Trap disabled by the player")
                         return
 
                     message = f"Received linked {trap_name} from {source_name}"
@@ -1028,6 +1028,8 @@ class ApeEscapeClient(BizHawkClient):
                 "S1_Cutscene_Redirection": (RAM.S1_Cutscene_Redirection, 4, "MainRAM"),
                 "S2_Cutscene_Redirection": (RAM.S2_Cutscene_Redirection, 4, "MainRAM"),
                 "S1_P1_FightTrigger": (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
+                "S2_CutsceneState": (RAM.S2_CutsceneState, 1, "MainRAM"),
+                "S2_GlobalCutsceneState": (RAM.S2_GlobalCutsceneState, 1, "MainRAM"),
                 "spikeColor": (RAM.spikeColor, 3, "MainRAM"),
                 "Spike_X_Pos": (RAM.Spike_X_PosAddress, 4, "MainRAM"),
                 "Spike_Y_Pos": (RAM.Spike_Y_PosAddress, 4, "MainRAM"),
@@ -1169,6 +1171,8 @@ class ApeEscapeClient(BizHawkClient):
             S1_Cutscene_Redirection = readValues["S1_Cutscene_Redirection"]
             S2_Cutscene_Redirection = readValues["S2_Cutscene_Redirection"]
             S1_P1_FightTrigger = readValues["S1_P1_FightTrigger"]
+            S2_CutsceneState = readValues["S2_CutsceneState"]
+            S2_GlobalCutsceneState = readValues["S2_GlobalCutsceneState"]
             spikeColor = readValues["spikeColor"]
             Spike_X_Pos = readValues["Spike_X_Pos"]
             Spike_Y_Pos = readValues["Spike_Y_Pos"]
@@ -1283,7 +1287,6 @@ class ApeEscapeClient(BizHawkClient):
                 # Set gadgetStateFromServer if it is default
                 if gadgetStateFromServer == 0xFFFF or gadgetStateFromServer == 0x00FF:
                     gadgetStateFromServer = 0
-
             if keyCountFromServer == 0xFF:
                 # Get items from server
                 keyCountFromServer = 0
@@ -1464,7 +1467,7 @@ class ApeEscapeClient(BizHawkClient):
                 if increment != recv_index:
                     itemsWrites += [(RAM.lastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
                     itemsWrites += [(RAM.tempLastReceivedArchipelagoID, recv_index.to_bytes(4, "little"), "MainRAM")]
-                if initialitemValueslist[0] != itemValueslist[0]:
+                if initialitemValueslist[0] != itemValueslist[0] or increment == 0:
                     itemsWrites += [(RAM.gadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                     itemsWrites += [(RAM.tempGadgetStateFromServer, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM")]
                 if initialitemValueslist[1] != itemValueslist[1]:
@@ -1648,6 +1651,12 @@ class ApeEscapeClient(BizHawkClient):
             # Credits skipping function for S1 and S2
             Credits_Reads = [currentRoom, gameState, S1_Cutscene_Redirection, S2_Cutscene_Redirection]
             await self.Credits_handling(ctx, Credits_Reads)
+            # ================================
+
+            # ======= PPM Optimizations =======
+            # Execute the code segment for PPM fight locking
+            PPM_Reads = [currentRoom, currentLevel, gameState,S2_CutsceneState,S2_GlobalCutsceneState]
+            await self.PPM_Optimizations(ctx, PPM_Reads)
             # ================================
 
             # ======= MM Optimizations =======
@@ -2589,6 +2598,36 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx, Credits_Writes)
 
 
+    async def PPM_Optimizations(self, ctx: "BizHawkClientContext", PPM_Reads) -> None:
+        currentRoom = PPM_Reads[0]
+        currentLevel = PPM_Reads[1]
+        gameState = PPM_Reads[2]
+        S2_CutsceneState = PPM_Reads[3]
+        S2_GlobalCutsceneState = PPM_Reads[4]
+        token = self.tokencount
+
+
+        PPM_Writes = []
+
+        # print("Current/Next Room is Specter 1 room")
+        if ctx.slot_data["goal"] == GoalOption.option_ppmtoken and gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"],RAM.gameState["TimeStation"],RAM.gameState["LevelSelect"]):
+            # print("with the correct goal")
+            if token < min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
+                if currentRoom == 87 and gameState == RAM.gameState["InLevel"]:
+                    # Prevent the fight if not enough tokens
+                    if S2_CutsceneState != 0x05:
+                        PPM_Writes += [(RAM.S2_CutsceneState, 0x05.to_bytes(1, "little"), "MainRAM")]
+                if S2_GlobalCutsceneState != 0x05:
+                    PPM_Writes += [(RAM.S2_GlobalCutsceneState, 0x05.to_bytes(1, "little"), "MainRAM")]
+            else:
+                # Allow the fight if not already completed
+                if self.PPM_Completed == False:
+                    if S2_CutsceneState == 0x05:
+                        PPM_Writes += [(RAM.S2_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    if S2_GlobalCutsceneState == 0x05:
+                        PPM_Writes += [(RAM.S2_GlobalCutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
+        await bizhawk.write(ctx.bizhawk_ctx, PPM_Writes)
+
     async def MM_Optimizations(self, ctx: "BizHawkClientContext", MM_Reads) -> None:
         currentRoom = MM_Reads[0]
         currentLevel = MM_Reads[1]
@@ -2663,12 +2702,6 @@ class ApeEscapeClient(BizHawkClient):
         elif (NearbyRoom != 69 and transitionPhase == RAM.transitionPhase["InTransition"]):
             if MM_Lobby_DoorDetection != 0x8C820000:
                 MM_Writes += [(RAM.MM_Lobby_DoorDetection, 0x8C820000.to_bytes(4, "little"), "MainRAM")]
-
-        # Same detection address needed to check if Jake is supposed to spawn or not.
-        # Put it back to "ON" when transitioning to the Go Karz room or Clown Room
-        # if (NearbyRoom == 71) and transitionPhase == RAM.transitionPhase["InTransition"]:
-            # MM_Writes += [(RAM.MM_Jake_DefeatedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-            # print("Changed room Detection for Jake")
 
         # MM_Lobby door handling
         if currentRoom == 69 and transitionPhase != RAM.transitionPhase["InTransition"]:
@@ -3062,7 +3095,6 @@ class ApeEscapeClient(BizHawkClient):
 
 
     async def specialitems_handling(self, ctx: "BizHawkClientContext", SpecialItems_Reads) -> None:
-        # TODO: GadgetShuffle Trap is very unstable right now, it had been deactivated
         gameState = SpecialItems_Reads[0]
         gotMail = SpecialItems_Reads[1]
         spikeState = SpecialItems_Reads[2]
@@ -3319,7 +3351,6 @@ class ApeEscapeClient(BizHawkClient):
             if VanillaRoom == False:
 
                 if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00:
-                    print("Phase 1")
                     # if transitionPhase in (3,4) and spikeState2 == 48:
                     # if spikeState2 == 48:
                     # Change TR1_Position to overlap Spike, and change targetRoom/targetDoor
@@ -3338,7 +3369,6 @@ class ApeEscapeClient(BizHawkClient):
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
                 if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"] and gameRunning == 0x00:
-                    print("Phase 2")
                     # Trigger the transition early,to warp Spike
                     # TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
                     ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["InTransition"].to_bytes(1, "little"), "MainRAM")]

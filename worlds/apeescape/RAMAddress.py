@@ -1936,6 +1936,8 @@ class RAM:
     S1_Cutscene_Redirection = 0x137C28  # 4 bytes. When GameState is 0A, change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
     S2_isCaptured = 0x142328
     S2_Cutscene_Redirection = 0x05C5F0  # 4 bytes. Change the last 2 bytes to redirect another gamestate after the cutscene (Redirect to time station = 2403000D)
+    S2_CutsceneState = 0x163272
+    S2_GlobalCutsceneState = 0x0DFDE4 # 0x05 means you beat Specter previously
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
     Specter2CompleteAddress = 0x0E00FD
