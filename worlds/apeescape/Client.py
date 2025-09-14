@@ -2613,17 +2613,17 @@ class ApeEscapeClient(BizHawkClient):
         if ctx.slot_data["goal"] == GoalOption.option_ppmtoken and gameState in (RAM.gameState["InLevel"],RAM.gameState["InLevelTT"],RAM.gameState["TimeStation"],RAM.gameState["LevelSelect"]):
             # print("with the correct goal")
             if token < min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]):
-                if currentRoom == 87 and gameState == RAM.gameState["InLevel"]:
+                #if currentRoom == 87 and gameState == RAM.gameState["InLevel"]:
                     # Prevent the fight if not enough tokens
-                    if S2_CutsceneState != 0x05:
-                        PPM_Writes += [(RAM.S2_CutsceneState, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    #if S2_CutsceneState != 0x05:
+                        #PPM_Writes += [(RAM.S2_CutsceneState, 0x05.to_bytes(1, "little"), "MainRAM")]
                 if S2_GlobalCutsceneState != 0x05:
                     PPM_Writes += [(RAM.S2_GlobalCutsceneState, 0x05.to_bytes(1, "little"), "MainRAM")]
             else:
                 # Allow the fight if not already completed
                 if self.PPM_Completed == False:
-                    if S2_CutsceneState == 0x05:
-                        PPM_Writes += [(RAM.S2_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    #if S2_CutsceneState == 0x05:
+                        #PPM_Writes += [(RAM.S2_CutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
                     if S2_GlobalCutsceneState == 0x05:
                         PPM_Writes += [(RAM.S2_GlobalCutsceneState, 0x00.to_bytes(1, "little"), "MainRAM")]
         await bizhawk.write(ctx.bizhawk_ctx, PPM_Writes)
