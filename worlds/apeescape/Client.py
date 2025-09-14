@@ -3118,7 +3118,7 @@ class ApeEscapeClient(BizHawkClient):
         is_idle = (spikeState == 0x12) and (spikeState2 in {0x80, 0x81, 0x82, 0x83, 0x84})
         in_race = (currentRoom == 19 or currentRoom == 36)
         cannot_control = (gameRunning == 0)
-        stunned = (spikeState2 == {0x58})
+        stunned = (spikeState2 == 0x58)
 
         if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle or cannot_control):
             self.ape_handler.pause = True
