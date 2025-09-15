@@ -1030,6 +1030,7 @@ class ApeEscapeClient(BizHawkClient):
                 "S1_P1_FightTrigger": (RAM.S1_P1_FightTrigger, 1, "MainRAM"),
                 "S2_CutsceneState": (RAM.S2_CutsceneState, 1, "MainRAM"),
                 "S2_GlobalCutsceneState": (RAM.S2_GlobalCutsceneState, 1, "MainRAM"),
+                "InputListener" : (RAM.InputListener, 1, "MainRAM"),
                 "spikeColor": (RAM.spikeColor, 3, "MainRAM"),
                 "Spike_X_Pos": (RAM.Spike_X_PosAddress, 4, "MainRAM"),
                 "Spike_Y_Pos": (RAM.Spike_Y_PosAddress, 4, "MainRAM"),
@@ -1173,6 +1174,7 @@ class ApeEscapeClient(BizHawkClient):
             S1_P1_FightTrigger = readValues["S1_P1_FightTrigger"]
             S2_CutsceneState = readValues["S2_CutsceneState"]
             S2_GlobalCutsceneState = readValues["S2_GlobalCutsceneState"]
+            InputListener = readValues["InputListener"]
             spikeColor = readValues["spikeColor"]
             Spike_X_Pos = readValues["Spike_X_Pos"]
             Spike_Y_Pos = readValues["Spike_Y_Pos"]
@@ -1709,7 +1711,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # == Entrance Randomization Handling ===
             # For all things related to ER and Room Rando
-            ER_Reads = [gameState, status_currentWorld, status_currentLevel, currentLevel, transitionPhase, Spike_X_Pos, Spike_Y_Pos, Spike_Z_Pos, spikeState2, currentRoom,gameRunning]
+            ER_Reads = [gameState, status_currentWorld, status_currentLevel, currentLevel, transitionPhase, Spike_X_Pos, Spike_Y_Pos, Spike_Z_Pos, spikeState2, currentRoom,gameRunning, InputListener]
             await self.ER_Handling(ctx, ER_Reads)
 
 
@@ -3280,7 +3282,7 @@ class ApeEscapeClient(BizHawkClient):
         spikeState2 = ER_Reads[8]
         currentRoom = ER_Reads[9]
         gameRunning = ER_Reads[10]
-        
+        InputListener = ER_Reads[11]
         
         ER_writes = []
 
@@ -3319,9 +3321,20 @@ class ApeEscapeClient(BizHawkClient):
                 chosenLevel = 92
 
             targetRoom = levelidtofirstroom.get(chosenLevel)
+
             targetLevel = entranceorder[firstroomids.index(targetRoom)]
             levelrooms = list(RAM.roomsperlevel[targetLevel])
             levelrooms.sort()
+
+            if baselevelidtofirstroom.get(targetLevel) == currentlevelidtofirstroom[targetLevel]:
+                VanillaRoom = True
+            else:
+                VanillaRoom = False
+
+            if VanillaRoom == False:
+                if transitionPhase == RAM.transitionPhase["NotSpawned"] and gameState == RAM.gameState["LevelIntro"] and InputListener == 0x02:
+                    # Deactivate the Start/Select input to prevent player from messing with ER teleportation
+                    ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
 
             # Put the vanilla entrance for the level, we will redirect it later if RandomizeFirstRoom is on
             targetRoom = levelrooms[0]
@@ -3339,6 +3352,7 @@ class ApeEscapeClient(BizHawkClient):
             else:
                 level = currentLevel
             # Check if the spawn room for the current level is vanilla
+
             if baselevelidtofirstroom.get(level) == currentlevelidtofirstroom[level]:
                 VanillaRoom = True
             else:
@@ -3349,6 +3363,7 @@ class ApeEscapeClient(BizHawkClient):
             TR_writes = []
             # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
             if VanillaRoom == False:
+                # TODO return here
 
                 if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00:
                     # if transitionPhase in (3,4) and spikeState2 == 48:
@@ -3358,15 +3373,14 @@ class ApeEscapeClient(BizHawkClient):
                     targetRoomName = RAM.roomstostring.get(targetRoom)
                     targetDoor = list(doorTransitions.get(targetRoomName))[1]
                     TR1_Adresses = list(RAM.transitionAddresses.get(1))
-                    ER_writes += [(TR1_Adresses[0], targetRoom.to_bytes(1, "little"), "MainRAM")]
-                    ER_writes += [(TR1_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
-                    # Move the first transition into Spike's position
-                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
+                    TR_writes += [(TR1_Adresses[0], targetRoom.to_bytes(1, "little"), "MainRAM")]
+                    TR_writes += [(TR1_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
 
-                    TR_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
-                    TR_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
-                    TR_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
-                    TR_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    # Move the first transition into Spike's position (And apply transition)
+                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
+                    ER_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
+                    ER_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
+                    ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
                 if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"] and gameRunning == 0x00:

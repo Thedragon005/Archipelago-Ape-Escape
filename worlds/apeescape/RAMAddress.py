@@ -1578,6 +1578,9 @@ class RAM:
     }
     #ANALOG_STICK_ORDER = ["P1 R_Y", "P1 R_X", "P1 L_Y", "P1 L_X"]
 
+    InputListener = 0x0A9A38
+    # When in Nathalie's Intro, will be at 2 when the player pressed something
+    # Not sure yet, but this value seems to react to inputs depending of actions.
 
     ANALOG_STICK_ORDER = ["P1 R_Y", "P1 R_X"]
     ANALOG_CENTER_VALUE = 0x80  # Default center value for 8-bit analog sticks (128 decimal)
@@ -1740,6 +1743,7 @@ class RAM:
         "Nearby" : 0x04,        # 0x04 or 0x05 = near a transition
         "Loaded" : 0x05,
         "InTransition" : 0x06,  # 0x06 = Starting transition
+        "NotSpawned" : 0x07, # 0x07 = When in LevelSelect or not spawned?
         "InitialSpawn" : 0x19   # 0x19 = Spawning in air
 
     }

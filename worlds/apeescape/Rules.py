@@ -14,7 +14,6 @@ def set_rules(world: "ApeEscapeWorld"):
     if hasattr(world.multiworld, "re_gen_passthrough"):
         levelids = world.passthrough["entranceids"]
         firstroomids = world.passthrough["firstrooms"]
-        print(f"FirstRoomsIDs:{firstroomids}")
         world.levellist = initialize_level_list(levelids)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel, levelids, firstroomids)
     else:
@@ -26,7 +25,6 @@ def set_rules(world: "ApeEscapeWorld"):
             # Some levels need to be kept at a specific entrance - put those back.
             world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin, world.options.goal)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
-    print(f"RULES_FirstRooms{world.firstrooms}")
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
 
     # Make a copy of the list for passing to the client for entrance shuffle purposes. We know this list has the levels sorted in the order they'd be presented in-game (so whatever is at the Fossil Field entrance first, etc.)
@@ -63,7 +61,6 @@ def set_entrances(self, logic):
             roomperlevelsKeys[[roomperlevelsValues[x].__contains__(y) for x in range(0, 22)].index(True)])
         RoomRegion.append(RAM.roomstostring[y])
     SortedEntries = [x for _, x in sorted(zip(LevelperFirstRooms, RoomRegion))]
-    print(f"SortedEntries{SortedEntries}")
     connect_regions(self, "Menu", SortedEntries[0], lambda state: Keys(state, self, self.levellist[0].keys))
     connect_regions(self, "Menu", SortedEntries[1], lambda state: Keys(state, self, self.levellist[1].keys))
     connect_regions(self, "Menu", SortedEntries[2], lambda state: Keys(state, self, self.levellist[2].keys))
