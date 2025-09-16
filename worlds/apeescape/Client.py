@@ -1090,6 +1090,8 @@ class ApeEscapeClient(BizHawkClient):
                 "MM_Natalie_Rescued": (RAM.temp_MM_Natalie_RescuedAddress, 1, "MainRAM"),
                 "MM_Natalie_Rescued_Local": (RAM.MM_Natalie_Rescued_Local, 1, "MainRAM"),
                 "MM_Lobby_DoorDetection": (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
+                "WSW_RoomState": (RAM.WSW_RoomState, 1, "MainRAM"),
+                "lockCamera": (RAM.lockCamera, 1, "MainRAM"),
                 # Buttons
                 "DI_Button_Pressed": (RAM.DI_Button_Pressed, 1, "MainRAM"),
                 "CrC_Water_ButtonPressed": (RAM.CrC_Water_ButtonPressed, 1, "MainRAM"),
@@ -1238,6 +1240,8 @@ class ApeEscapeClient(BizHawkClient):
             MM_Natalie_Rescued = readValues["MM_Natalie_Rescued"]
             MM_Natalie_Rescued_Local = readValues["MM_Natalie_Rescued_Local"]
             MM_Lobby_DoorDetection = readValues["MM_Lobby_DoorDetection"]
+            WSW_RoomState = readValues["WSW_RoomState"]
+            lockCamera = readValues["lockCamera"]
 
             # Buttons
             DI_Button_Pressed = readValues["DI_Button_Pressed"]
@@ -1679,7 +1683,7 @@ class ApeEscapeClient(BizHawkClient):
             # ========= Lamp Unlocks =========
             # Tables for Lamp updates
             # Execute the Lamp unlocking code segment
-            Lamps_Reads = [gameState, currentRoom, NearbyRoom, localLampsUpdate, globalLampsUpdate, transitionPhase]
+            Lamps_Reads = [gameState, currentRoom, NearbyRoom, localLampsUpdate, globalLampsUpdate, transitionPhase,WSW_RoomState,lockCamera]
             await self.lamps_unlocks_handling(ctx, Lamps_Reads)
             # ================================
 
@@ -3015,6 +3019,8 @@ class ApeEscapeClient(BizHawkClient):
         localLampsUpdate = Lamps_Reads[3]
         globalLampsUpdate = Lamps_Reads[4]
         transitionPhase = Lamps_Reads[5]
+        WSW_RoomState = Lamps_Reads[6]
+        lockCamera = Lamps_Reads[7]
 
         # Deactivate Monkeys detection for lamps and switch to manual door opening if lamp shuffle is activated
         # Condition for some rooms that require the same addresses to function properly
@@ -3057,7 +3063,9 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_ON'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoom in specialrooms and transitionPhase == RAM.transitionPhase["InTransition"]) or (currentRoom in specialrooms):
-                # print("SpecialRoom")
+                #print("SpecialRoom")
+                if currentRoom == 41 and WSW_RoomState == 0x00 and lockCamera == 0x80:
+                    Lamps_writes += [(RAM.WSW_RoomState, 0x01.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
@@ -3069,6 +3077,8 @@ class ApeEscapeClient(BizHawkClient):
         else:
             if (NearbyRoom in specialrooms and transitionPhase == RAM.transitionPhase["InTransition"]) or currentRoom in specialrooms:
                 # print("SpecialRoom")
+                if currentRoom == 41 and WSW_RoomState == 0x00 and lockCamera == 0x80:
+                    Lamps_writes += [(RAM.WSW_RoomState, 0x01.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]

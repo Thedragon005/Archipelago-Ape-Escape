@@ -1298,6 +1298,7 @@ class RAM:
 # ========================= Lamps / Doors =========================
 
     lockCamera = 0x162057  # Lock Camera (WsW Gong Room) Locked = 0x80, Free = 0x60
+    WSW_RoomState = 0x161F9E # Set to 1 to allow for the last caught monkey event to trigger the Stairs/Doors
 
     # Array order: bytesToWrite, OpenValue, ClosedValue
     doors_addresses = {
