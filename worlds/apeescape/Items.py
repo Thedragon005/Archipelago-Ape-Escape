@@ -104,10 +104,12 @@ trap_to_local_traps: typing.Dict[str, str] = {
     "Freeze Trap":          AEItem.StunTrap.value,
     "Frozen Trap":          AEItem.StunTrap.value,
     "Hiccup Trap":          AEItem.IcyHotPantsTrap.value,
+    "Ice Floor Trap":       AEItem.BananaPeelTrap.value,
     "Jump Trap":            AEItem.IcyHotPantsTrap.value,
     "Jumping Jacks Trap":   AEItem.IcyHotPantsTrap.value,
     "Paralyze Trap":        AEItem.StunTrap.value,
     "Push Trap":            AEItem.BananaPeelTrap.value,
+    "Slip Trap":            AEItem.BananaPeelTrap.value,
     "Spring Trap":          AEItem.IcyHotPantsTrap.value,
     "Swap Trap" :           AEItem.GadgetShuffleTrap.value,
 
@@ -115,6 +117,7 @@ trap_to_local_traps: typing.Dict[str, str] = {
     # Fast Trap (Depending on direction always set to max velocity?)
     # Home Trap (Time Hub Trap? or maybe only warp to level entry?)
     # Ice Trap (Slipery Floor?)
+    # Zoop Trap
     # Mailbox Trap (Tells a message to the player in a mailbox
 }
 
