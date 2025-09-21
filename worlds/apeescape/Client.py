@@ -2330,7 +2330,7 @@ class ApeEscapeClient(BizHawkClient):
             # Check each values if monkeys are caught and increment a local counter
             for y in range(len(level_MonkeyStates)):
                 MonkeyState = int.from_bytes(level_MonkeyStates[y], "little")
-                if MonkeyState == 0x02:
+                if MonkeyState == 0x02 or MonkeyState == 0x03:
                     localcount += 1
 
             # Correct the value in the RAM for the level
