@@ -3383,11 +3383,13 @@ class ApeEscapeClient(BizHawkClient):
             LevelStartRoom = currentlevelidtofirstroom[level]
 
             TR_writes = []
+            TR_guards = []
             # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
             if VanillaRoom == False:
                 # TODO return here
 
                 if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00:
+                    print("Phase1")
                     # if transitionPhase in (3,4) and spikeState2 == 48:
                     # if spikeState2 == 48:
                     # Change TR1_Position to overlap Spike, and change targetRoom/targetDoor
@@ -3399,24 +3401,22 @@ class ApeEscapeClient(BizHawkClient):
                     TR_writes += [(TR1_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
 
                     # Move the first transition into Spike's position (And apply transition)
-                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"), "MainRAM")]
+
                     ER_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
                     ER_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
                     ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
+                    #ER_writes += [(RAM.gameRunningAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
+                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Spawning"] and gameRunning == 0x00:
+                    print("Phase 2")
+                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
-                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"]:
-                    if gameRunning == 0x00:
-                        # Trigger the transition early,to warp Spike
-                        # TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
-                        ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["InTransition"].to_bytes(1, "little"), "MainRAM")]
-                        # TR_writes += [(RAM.currentRoomIdAddress, LevelStartRoom.to_bytes(1, "little"), "MainRAM")]
-                        ER_writes += [(RAM.spikeStateAddress, 0x13.to_bytes(1, "little"), "MainRAM")]
-                        ER_writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
-                        ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
-                        # await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 elif gameRunning == 0x01:
-                    ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
+                    TR_writes.clear()
+                    TR_guards.clear()
+                    TR_guards += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                    TR_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
+                    await bizhawk.guarded_write(ctx.bizhawk_ctx,TR_writes,TR_guards)
 
                 # Special code handling for TVT Water Room Spawn
                 if currentLevel == 22 and LevelStartRoom == 64:
