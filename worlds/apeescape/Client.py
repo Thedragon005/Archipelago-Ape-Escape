@@ -3399,7 +3399,7 @@ class ApeEscapeClient(BizHawkClient):
                     TR_writes += [(TR1_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
 
                     # Move the first transition into Spike's position (And apply transition)
-                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
+                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"), "MainRAM")]
                     ER_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
                     ER_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
                     ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
