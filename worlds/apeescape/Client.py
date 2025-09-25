@@ -3405,15 +3405,19 @@ class ApeEscapeClient(BizHawkClient):
                     ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
-                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"] and gameRunning == 0x00:
-                    # Trigger the transition early,to warp Spike
-                    # TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
-                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["InTransition"].to_bytes(1, "little"), "MainRAM")]
-                    # TR_writes += [(RAM.currentRoomIdAddress, LevelStartRoom.to_bytes(1, "little"), "MainRAM")]
-                    ER_writes += [(RAM.spikeStateAddress, 0x13.to_bytes(1, "little"), "MainRAM")]
-                    ER_writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
+                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Nearby"]:
+                    if gameRunning == 0x00:
+                        # Trigger the transition early,to warp Spike
+                        # TR_guards += [(RAM.transitionPhase, 0x04.to_bytes(1, "little"), "MainRAM")]
+                        ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["InTransition"].to_bytes(1, "little"), "MainRAM")]
+                        # TR_writes += [(RAM.currentRoomIdAddress, LevelStartRoom.to_bytes(1, "little"), "MainRAM")]
+                        ER_writes += [(RAM.spikeStateAddress, 0x13.to_bytes(1, "little"), "MainRAM")]
+                        ER_writes += [(RAM.spikeState2Address, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
+                        # await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
+                elif gameRunning == 0x01:
                     ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
-                    # await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
+
                 # Special code handling for TVT Water Room Spawn
                 if currentLevel == 22 and LevelStartRoom == 64:
                     # Drain the water if you are starting in the TVT - Water Room as part of Randomize First Rooms
