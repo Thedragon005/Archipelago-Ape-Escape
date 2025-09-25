@@ -13,7 +13,7 @@ class GoalOption(Choice):
         ppmtoken: Second Specter fight in Peak Point Matrix, after collecting enough Specter Token items.
 
         Supported values: mm, ppm, tokenhunt, mmtoken, ppmtoken
-        Default value: first
+        Default value: mm
     """
 
     display_name = "Goal"

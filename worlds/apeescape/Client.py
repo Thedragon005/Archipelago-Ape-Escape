@@ -1278,9 +1278,8 @@ class ApeEscapeClient(BizHawkClient):
 
             # Write tables
             itemsWrites = []
-            TrapWrites = []
             Menuwrites = []
-
+            S2_writes = []
             # When in Menu, change the behavior of "NewGame" to warp you to time station instead
             if gameState == RAM.gameState["Menu"] and newGameAddress == 0xAC:
                 Menuwrites += [(RAM.newGameAddress, 0x98.to_bytes(1, "little"), "MainRAM")]
@@ -1313,11 +1312,16 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Natalie_Rescued > 0x01:
                 MM_Natalie_Rescued = 0
 
-            #print(Specter2CompleteAddress)
-            if Specter2CompleteAddress != 0x01.to_bytes(1, "little") and Specter2CompleteAddress != 255:
-                PPM_Completed = False
+            if Specter2CompleteAddress == 255:
+                Specter2CompleteAddress = 0
+                S2_writes += [(RAM.Specter2CompleteAddress, Specter2CompleteAddress.to_bytes(1, "little"), "MainRAM")]
+                S2_writes += [(RAM.tempSpecter2CompleteAddress, Specter2CompleteAddress.to_bytes(1, "little"), "MainRAM")]
+                await bizhawk.write(ctx.bizhawk_ctx, S2_writes)
+
+            if Specter2CompleteAddress == 0:
+                self.PPM_Completed = False
             else:
-                PPM_Completed = True
+                self.PPM_Completed = True
 
             # Get WaterNet state from memory
             waternetState = 0
@@ -1597,8 +1601,13 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
-            if PPM_Completed == True and Specter2CompleteAddress == 0:
-                writes += [(RAM.Specter2CompleteAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+
+            # PPM_Completed flag for "100% Complete" label on PPM level
+            if self.PPM_Completed == True and Specter2CompleteAddress == 0:
+                Specter2CompleteAddress = 1
+                print(f"Wrote value to Specter2CompleteAddress : 1")
+                writes += [(RAM.Specter2CompleteAddress, Specter2CompleteAddress.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.tempSpecter2CompleteAddress, Specter2CompleteAddress.to_bytes(1, "little"), "MainRAM")]
 
             # If there is messages waiting in the queue, print them to Bizhawk
             if self.messagequeue is not None and self.messagequeue != []:
@@ -2296,9 +2305,8 @@ class ApeEscapeClient(BizHawkClient):
             # Check each values if monkeys are caught and increment a local counter
             for x in range(len(level_MonkeyStates)):
                 MonkeyState = int.from_bytes(level_MonkeyStates[x], "little")
-                if MonkeyState == 0x02 or MonkeyState == 0x03:
+                if MonkeyState == 0x02:
                     localcount += 1
-            print(localcount)
             # If there is a missmatch, correct the value in the RAM for the level
             if localcount != RAMMonkeycount:
                 MonkeyCountWrites += [(monkeycountsAddresses[levelindex.index(self.lastenteredLevel)], localcount.to_bytes(1, "little"), "MainRAM")]
@@ -2335,9 +2343,8 @@ class ApeEscapeClient(BizHawkClient):
             # Check each values if monkeys are caught and increment a local counter
             for y in range(len(level_MonkeyStates)):
                 MonkeyState = int.from_bytes(level_MonkeyStates[y], "little")
-                if MonkeyState == 0x02 or MonkeyState == 0x03:
+                if MonkeyState == 0x02:
                     localcount += 1
-
             # Correct the value in the RAM for the level
             MonkeyCountWrites += [(monkeycountsAddresses[x],localcount.to_bytes(1, "little"), "MainRAM")]
 
@@ -3235,7 +3242,7 @@ class ApeEscapeClient(BizHawkClient):
                 self.specialitem_queue.pop(0)
                 mash_duration = 15  # Example: 15 seconds per powerup item
                 if self.ape_handler.is_active:
-                    message = f"Monkey Mash trap extended by {mash_duration}seconds! (Current: {round(self.ape_handler.duration, 0)} seconds)"
+                    message = f"Monkey Mash trap extended by {mash_duration} seconds! (Current: {round(self.ape_handler.duration, 0)} seconds)"
                 else:
                     message = f"Monkey Mash trap activated for {mash_duration} seconds!"
                 await self.send_bizhawk_message(ctx, message, "Passthrough", "")

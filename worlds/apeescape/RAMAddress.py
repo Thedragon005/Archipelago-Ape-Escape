@@ -631,7 +631,7 @@ class RAM:
             32, 33, 34, 37, 42, 35, 36, 38, 41, 43, 39, 40, 44
         },
         6: {
-            49, 51, 45, 47, 50, 46, 52
+            49, 51, 45, 47, 50, 46,48, 52
         },
         7: {
 
@@ -646,10 +646,10 @@ class RAM:
             69, 70, 71, 77, 78, 72, 73, 74, 75, 76, 79
         },
         11: {
-            80, 81, 84, 85, 82
+            80, 81, 84, 83, 85, 82
         },
         12: {
-            91, 92, 93, 94, 88, 90, 89
+            86, 87, 91, 92, 93, 94, 88, 90, 89
         },
         13: {
             95, 96, 99, 100, 101, 102, 103, 98, 97
@@ -944,6 +944,7 @@ class RAM:
 
     tempLastReceivedArchipelagoID = 0x0DFBD8  # 4 bytes
     tempKeyCountFromServer = 0x0DFBDC
+
     # Unused 0DFBDD to 0DFBDF
     tempGadgetStateFromServer = 0x0DFBE0  # 2 bytes - 0DFBE1
 
@@ -1947,4 +1948,5 @@ class RAM:
     S2_GlobalCutsceneState = 0x0DFDE4 # 0x05 means you beat Specter previously
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
-    Specter2CompleteAddress = 0x0E00FD
+    tempSpecter2CompleteAddress = 0x0DFBEE
+    Specter2CompleteAddress = 0x0E00FE
