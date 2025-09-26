@@ -407,7 +407,7 @@ class TrapsOnReconnect(OptionSet):
     """Determine which traps are sent when reconnecting.
 
         This option determines which traps will be sent when reconnecting to the client.
-        Removing a trap from this list means it will only activate if received while playing/connected.
+        Traps that are not in this list will only activate when connected
 
         Supported values: "Banana Peel Trap", "Gadget Shuffle Trap", "Monkey Mash Trap", "Icy Hot Pants Trap", "Stun Trap"
     """
@@ -421,9 +421,7 @@ class TrapsOnReconnect(OptionSet):
     preset_none = frozenset()
     preset_all = valid_keys
 
-    default = frozenset({
-        AEItem.BananaPeelTrap.value,AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value
-    })
+    default = {}
 
 class TrapLink(Toggle):
     """
@@ -503,7 +501,7 @@ class SpikeColor(Choice):
 
 class CustomSpikeColor(FreeText):
     """Use a custom color for Spike by choosing "Custom" in the "Spike Color" option.
-        Enter an RGB hexadecimal value for the desired color. Note that a value of FFFFFF will result in the default Spike color.
+        Enter an RGB hexadecimal value for the desired color.
         **Note: If an invalid color is entered, it will be set to the "Vanilla" preset!
 
         Range: 000000 to FFFFFF
