@@ -1549,6 +1549,7 @@ class RAM:
     MM_NatalieDoor_Visual2 = 0x0BFE0F  # Open 0x00
     MM_NatalieDoor_Hitbox = 0x167965  # Open 0x80
 
+    MM_AlertRoom_ButtonPressed = 0x172832 #Not pressed = 0x00, Pressed = 0x01
 # ===================== Input Related =====================
     BUTTON_BYTE_ADDR_HIGH = 0x0B87A3  # Triggers and Face Buttons (contains bits 8-15 of the 16-bit word)
     BUTTON_BYTE_ADDR_LOW = 0x0B87A2  # D-Pad, Start/Select, L3/R3 (contains bits 0-7 of the 16-bit word)

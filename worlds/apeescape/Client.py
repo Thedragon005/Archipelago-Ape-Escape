@@ -851,9 +851,6 @@ class ApeEscapeClient(BizHawkClient):
         for x in range(len(keys_globalMonkeys)):
             monkeyID = self.offset + keys_globalMonkeys[x]
             monkeyAddress = values_globalMonkeys[x]
-            # Skip MM Monkey BG to ensure it does not softlock the MM Lamp Door when Lamps are not shuffled.
-            if keys_globalMonkeys[x] == 204:
-                continue
             Monkey_Reads += [(monkeyAddress, 1, "MainRAM")]
             Monkey_IDs += [monkeyID]
             Monkey_Addresses += [monkeyAddress]
@@ -1092,6 +1089,7 @@ class ApeEscapeClient(BizHawkClient):
                 "MM_Lobby_DoorDetection": (RAM.MM_Lobby_DoorDetection, 4, "MainRAM"),
                 "WSW_RoomState": (RAM.WSW_RoomState, 1, "MainRAM"),
                 "lockCamera": (RAM.lockCamera, 1, "MainRAM"),
+                "MM_AlertRoom_ButtonPressed": (RAM.MM_AlertRoom_ButtonPressed, 1, "MainRAM"),
                 # Buttons
                 "DI_Button_Pressed": (RAM.DI_Button_Pressed, 1, "MainRAM"),
                 "CrC_Water_ButtonPressed": (RAM.CrC_Water_ButtonPressed, 1, "MainRAM"),
@@ -1242,6 +1240,7 @@ class ApeEscapeClient(BizHawkClient):
             MM_Lobby_DoorDetection = readValues["MM_Lobby_DoorDetection"]
             WSW_RoomState = readValues["WSW_RoomState"]
             lockCamera = readValues["lockCamera"]
+            MM_AlertRoom_ButtonPressed = readValues["MM_AlertRoom_ButtonPressed"]
 
             # Buttons
             DI_Button_Pressed = readValues["DI_Button_Pressed"]
@@ -1676,7 +1675,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ======= MM Optimizations =======
             # Execute the code segment for MM Double Door and related optimizations
-            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger, MM_Clown_State]
+            MM_Reads = [currentRoom, currentLevel, gameState, NearbyRoom, transitionPhase, MM_Jake_Defeated, MM_Lobby_DoubleDoor, MM_Lobby_DoorDetection, MM_Lobby_DoubleDoor_Open, MM_Jake_DefeatedAddress, MM_Natalie_RescuedAddress, MM_Natalie_Rescued, MM_Natalie_Rescued_Local, MM_Professor_Rescued, S1_P1_FightTrigger, MM_Clown_State,MM_AlertRoom_ButtonPressed]
             await self.MM_Optimizations(ctx, MM_Reads)
             # ================================
 
@@ -2663,6 +2662,7 @@ class ApeEscapeClient(BizHawkClient):
         MM_Professor_Rescued = MM_Reads[13]
         S1_P1_FightTrigger = MM_Reads[14]
         MM_Clown_State = MM_Reads[15]
+        MM_AlertRoom_ButtonPressed = MM_Reads[16]
 
         MM_Writes = []
         SpecterLevels = (RAM.levels['Specter'], RAM.levels['S_Jake'], RAM.levels['S_Circus'], RAM.levels['S_Coaster'], RAM.levels['S_Western Land'], RAM.levels['S_Castle'])
@@ -2756,6 +2756,21 @@ class ApeEscapeClient(BizHawkClient):
                         Door_guards += [(door_address, door_closedvalue, "MainRAM")]
 
                     await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes, Door_guards)
+        # Push the "Alert" button if BG is already caught and the button is not pressed (From /syncprogress or !collect)
+        if currentRoom == 85 and MM_AlertRoom_ButtonPressed == 0x00 and transitionPhase != 6:
+            BG_address = RAM.monkeyListGlobal.get(204)
+            localBG_address = RAM.monkeyListLocal.get(currentRoom).get(204)
+            Monkey_Reads = []
+
+            Monkey_Reads += [(BG_address, 1, "MainRAM")]
+            Monkey_Reads += [(localBG_address, 1, "MainRAM")]
+            Monkey_Values = await bizhawk.read(ctx.bizhawk_ctx, Monkey_Reads)
+
+            BG_caught = int.from_bytes(Monkey_Values[0], "little")
+            local_BG_caught = int.from_bytes(Monkey_Values[1], "little")
+            # This means BG is set as caught and the button is not pressed
+            if BG_caught in (0x02,0x03) or local_BG_caught in (0x02,0x03):
+                MM_Writes += [(RAM.MM_AlertRoom_ButtonPressed, 0x01.to_bytes(1, "little"), "MainRAM")]
 
         # Prevent Specter 1 fight for Specter 1 token goal when not having enough tokens.
         token = self.tokencount
