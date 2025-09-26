@@ -617,7 +617,7 @@ class ApeEscapeClient(BizHawkClient):
 
                     self.messagequeue.append(message)
                 # If there is a PRINTJSON which is sent by the player
-                if "TrapLink" in ctx.tags and recieverID == ctx.slot:
+                if "TrapLink" in ctx.tags and recieverID == ctx.slot and itemName in trap_name_to_value:
                     Utils.async_start(self.send_trap_link(ctx, itemName))
         if cmd == "Retrieved":
             if "keys" not in args:
