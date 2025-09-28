@@ -633,27 +633,36 @@ class ApeEscapeClient(BizHawkClient):
                 self.gotDatastorage = True
             if f"AE_deathlink_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DeathLink_DS = keys.get(f"AE_deathlink_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_autoequip_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.AutoEquip_DS = keys.get(f"AE_autoequip_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_bhdisplay_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.BHDisplay_DS = keys.get(f"AE_bhdisplay_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_DIButton_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DIButton = keys.get(f"AE_DIButton_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_CrCWaterButton_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.CrCWaterButton = keys.get(f"AE_CrCWaterButton_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             # if f"AE_CrCBasementButton_{ctx.team}_{ctx.slot}" in args["keys"]:
                 # self.CrCBasementButton = keys.get(f"AE_CrCBasementButton_{ctx.team}_{ctx.slot}", None)
             if f"AE_MM_Painting_Button_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.MM_Painting_Button = keys.get(f"AE_MM_Painting_Button_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_MM_MonkeyHead_Button_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.MM_MonkeyHead_Button = keys.get(f"AE_MM_MonkeyHead_Button_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.TVT_Lobby_Button = keys.get(f"AE_TVT_Lobby_Button_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_DR_Block_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DR_Block_Pushed = keys.get(f"AE_DR_Block_{ctx.team}_{ctx.slot}", None)
+                self.gotDatastorage = True
             if f"AE_spikecolor_{ctx.team}_{ctx.slot}" in args["keys"]:
                 self.DS_spikecolor = keys.get(f"AE_spikecolor_{ctx.team}_{ctx.slot}", None)
-
+                self.gotDatastorage = True
 
     async def check_gadgets(self, ctx: "BizHawkClientContext",gadgetStateFromServer) -> list[str]:
         gadgets = []
@@ -679,12 +688,15 @@ class ApeEscapeClient(BizHawkClient):
     async def kickout_prevention_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
+                self.initDatastorage = False
                 return
 
             await ctx.send_msgs([{"cmd": "Get","keys": [f"AE_kickoutprevention_{ctx.team}_{ctx.slot}"]}])
 
             if not self.gotDatastorage:
                 return
+
+            self.initDatastorage = True
 
             if self.KickoutPrevention_DS is None:
                 #Used slotdata
@@ -951,7 +963,6 @@ class ApeEscapeClient(BizHawkClient):
                     await self.autoequip_option_handling(ctx, "init")
                     await self.bh_display_option_handling(ctx, "init")
                     await self.Spike_Color_handling(ctx, "", "init")
-                    self.initDatastorage = True
 
                 if self.changeKickout == True:
                     self.changeKickout = False
@@ -970,6 +981,12 @@ class ApeEscapeClient(BizHawkClient):
                     await self.syncprogress(ctx)
             else:
                 # Not send anything before having the options set
+                await self.kickout_prevention_handling(ctx, "init")
+                await self.deathlink_option_handling(ctx, "init")
+                await self.autoequip_option_handling(ctx, "init")
+                await self.bh_display_option_handling(ctx, "init")
+                await self.Spike_Color_handling(ctx, "", "init")
+
                 return
 
             # Set locations list to use within functions
