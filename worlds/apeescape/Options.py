@@ -389,7 +389,13 @@ class TrapWeights(OptionCounter):
         **This option is ignored when "TrapPercentage" option is set to an other value than "custom"
 
         Range: 0 - 100
-        Default values: 15, 13, 5, 10, 7, 10
+        Default values:
+          Banana Peel Trap: 15
+          Gadget Shuffle Trap: 13
+          Monkey Mash Trap: 5
+          Icy Hot Pants Trap: 10
+          Stun Trap: 7
+          Camera Tilt Trap: 10
     """
     internal_name = "customtrapweights"
     display_name = "Custom Trap Weights"
