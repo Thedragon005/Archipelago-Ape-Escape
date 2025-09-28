@@ -586,5 +586,6 @@ class AEItem(Enum):
     MonkeyMashTrap = "Monkey Mash Trap"
     IcyHotPantsTrap = "Icy Hot Pants Trap"
     StunTrap = "Stun Trap"
+    CameraTiltTrap = "Camera Tilt Trap"
     RainbowCookie = "Rainbow Cookie"
     FAKE_OOL_ITEM = "Fake OOL Item"

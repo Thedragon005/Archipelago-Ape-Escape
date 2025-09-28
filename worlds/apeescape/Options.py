@@ -389,17 +389,17 @@ class TrapWeights(OptionCounter):
         **This option is ignored when "TrapPercentage" option is set to an other value than "custom"
 
         Range: 0 - 100
-        Default values: 15, 13, 5, 10,7
+        Default values: 15, 13, 5, 10, 7, 10
     """
     internal_name = "customtrapweights"
     display_name = "Custom Trap Weights"
     min = 0
     max = 100
     valid_keys = frozenset({
-        AEItem.BananaPeelTrap.value, AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value
+        AEItem.BananaPeelTrap.value, AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraTiltTrap.value
     })
     default = {
-        AEItem.BananaPeelTrap.value: 15,  AEItem.GadgetShuffleTrap.value : 13, AEItem.MonkeyMashTrap.value: 5, AEItem.IcyHotPantsTrap.value: 10, AEItem.StunTrap.value: 7
+        AEItem.BananaPeelTrap.value: 15,  AEItem.GadgetShuffleTrap.value : 13, AEItem.MonkeyMashTrap.value: 5, AEItem.IcyHotPantsTrap.value: 10, AEItem.StunTrap.value: 7, AEItem.CameraTiltTrap.value: 10
     }
 
 
@@ -409,19 +409,14 @@ class TrapsOnReconnect(OptionSet):
         This option determines which traps will be sent when reconnecting to the client.
         Traps that are not in this list will only activate when connected
 
-        Supported values: "Banana Peel Trap", "Gadget Shuffle Trap", "Monkey Mash Trap", "Icy Hot Pants Trap", "Stun Trap"
+        Supported values: "Banana Peel Trap", "Gadget Shuffle Trap", "Monkey Mash Trap", "Icy Hot Pants Trap", "Stun Trap", "Camera Tilt Trap"
     """
     internal_name = "trapsonreconnect"
     display_name = "Traps On Reconnect"
     supports_weighting = False
     valid_keys = frozenset({
-        AEItem.BananaPeelTrap.value,AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value
+        AEItem.BananaPeelTrap.value,AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraTiltTrap.value
     })
-
-    preset_none = frozenset()
-    preset_all = valid_keys
-
-    default = {}
 
 class TrapLink(Toggle):
     """

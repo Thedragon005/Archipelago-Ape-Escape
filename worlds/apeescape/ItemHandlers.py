@@ -7,8 +7,6 @@ from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Uni
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
 
-# TODO : For Stun/Freeze Trap : SpikeState2 set to 0x58 freeze the movement of Spike, if I find a way to stop position update could be good
-# TODO : For Spin Trap : SpikeState2 set to 0x66
 class ApeEscapeMemoryInput:
     def __init__(self, bizhawk_client_context: "BizHawkClientContext"):
         self.bizhawk_client_context = bizhawk_client_context
@@ -76,7 +74,7 @@ class ApeEscapeMemoryInput:
         # --- MonkeyMashHandler class ---
 
 class MonkeyMashHandler:
-    MAX_TRAP_DURATION = 30  # Maximum duration for the trap in seconds
+    MAX_TRAP_DURATION = 20  # Maximum duration for the trap in seconds
 
     def __init__(self, bizhawk_client_context: Union["BizHawkClientContext", None]):
         self.bizhawk_client_context = bizhawk_client_context
@@ -92,7 +90,7 @@ class MonkeyMashHandler:
         self.input_controller = ApeEscapeMemoryInput(
             self.bizhawk_client_context) if self.bizhawk_client_context else None
 
-        self.input_frequency = 0.7      # Time between NEW random inputs (e.g., generate new input every 0.7s)
+        self.input_frequency = 1      # Time between NEW random inputs (e.g., generate new input every 1s)
         self.last_input_time = 0
 
         self.input_hold_time = 0.5      # How long the inputs will be pressed
@@ -319,6 +317,7 @@ class StunTrapHandler:
         self.bizhawk_client_context = bizhawk_client_context
         self.bizhawk_context = bizhawk_client_context.bizhawk_ctx if bizhawk_client_context else None
 
+        self.is_inside = True
         self.is_active = False          # True if Rainbow Cookie effects are currently active
         self.duration = 0               # The initial or current duration set for the cookie
         self.remaining_time = 0         # How much time is left for the effects
@@ -326,7 +325,7 @@ class StunTrapHandler:
         self.pause = False              # Flag to pause the cookie's timer/effects
         self.lastspikestate = 0x00      # To store last SpikeState on activation
         self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
-    async def activate_StunTrap(self, duration_seconds: int,lastspikestate):
+    async def activate_StunTrap(self, duration_seconds: int,lastspikestate,currentRoom):
         """
         Activates the Stun Trap effects.
         If already active, extends the duration up to MAX_DURATION.
@@ -340,11 +339,16 @@ class StunTrapHandler:
             self.lastspikestate = lastspikestate
         # First activation
         self.is_active = True
+
+        read_list = []
+        read_list += [(RAM.Inside_CameraMode, 1, "MainRAM")]
+        InsideCamera_read = await bizhawk.read(self.bizhawk_context, read_list)
+        self.isInside = int.from_bytes(InsideCamera_read[0], byteorder="little") == 0x01
         self.duration = duration_seconds
         self.remaining_time = duration_seconds
         self.last_update = time.time()
         print(f"Stun Trap activated for {duration_seconds} seconds.")
-        await self._apply_effects(True) # Apply effects immediately
+        await self._apply_effects(True,currentRoom) # Apply effects immediately
         #else:
         # Activate it each time, do not extend it
         # Extend existing duration
@@ -353,7 +357,7 @@ class StunTrapHandler:
         #self.duration = self.remaining_time # Update current duration if extended
         #print(f"Stun Trap extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
         #self.sentMessage = False
-    async def _apply_effects(self, enable: bool):
+    async def _apply_effects(self, enable: bool,currentRoom):
         """
         Internal method to apply or remove the Rainbow Cookie's effects
         by writing to BizHawk memory addresses.
@@ -402,14 +406,33 @@ class StunTrapHandler:
         # If enabling the Trap set it to 0x58, else set it to the last saved state
         if enable:
             Spikestate2_value = 0x58
+            CameraMode = 0x00
         else:
             #If LastState is invalid,
             Spikestate2_value = 0x00 if LastState in InvalidLastStates else LastState
-
+            CameraMode = 0x01
             self.lastspikestate = 0x00
+
+        SpecialRooms = [83, 84, 87, 88, 90, 91]
+        BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
+
+        if currentRoom in SpecialRooms:
+            CameraModeAddress = RAM.SpecialRoom_CameraMode
+        elif currentRoom in BossRooms:
+            CameraModeAddress = RAM.Boss_CameraMode
+        else:
+            if self.isInside:
+                print("Inside")
+                CameraModeAddress = RAM.Inside_CameraMode
+            else:
+                print("Outside")
+                CameraModeAddress = RAM.Outside_CameraMode
+
         Spikestate2_bytes = list(Spikestate2_value.to_bytes(1, "little"))
+        CameraMode_bytes = list(CameraMode.to_bytes(1, "little"))
 
         writes_list.append((RAM.spikeState2Address, Spikestate2_bytes, "MainRAM"))
+        writes_list.append((CameraModeAddress, CameraMode_bytes, "MainRAM"))
 
         try:
             await bizhawk.write(self.bizhawk_context, writes_list)
@@ -418,7 +441,7 @@ class StunTrapHandler:
             print(f"ERROR: Failed to {'apply' if enable else 'remove'} Stun Trap effects: {e}")
             raise
 
-    async def update_state_and_deactivate(self):
+    async def update_state_and_deactivate(self,currentRoom):
         """
         Updates the remaining time for the Rainbow Cookie.
         If the duration runs out, deactivates the effects.
@@ -443,4 +466,175 @@ class StunTrapHandler:
             self.remaining_time = 0
             self.is_active = False
             print("Stun Trap duration finished. Deactivating effects.")
-            await self._apply_effects(False) # Remove effects
+            await self._apply_effects(False,currentRoom) # Remove effects
+
+class CameraTiltHandler:
+    """
+    Manages the state and effects of the Rainbow Cookie power-up.
+    When active, makes Spike invincible and activates his golden form.
+    """
+    MAX_DURATION = 30  # Maximum duration for the Rainbow Cookie in seconds
+
+    def __init__(self, bizhawk_client_context: Union["BizHawkClientContext", None]):
+        self.bizhawk_client_context = bizhawk_client_context
+        self.bizhawk_context = bizhawk_client_context.bizhawk_ctx if bizhawk_client_context else None
+        self.chosen_side = "Left"       # Store which side the Camera Tilt is currently on
+        self.is_active = False          # True if effects are currently active
+        self.duration = 0               # The initial or current duration set
+        self.remaining_time = 0         # How much time is left for the effects
+        self.last_update = 0            # Timestamp of the last update, for calculating elapsed time
+        self.pause = False              # Flag to pause the timer/effects
+        self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
+    async def activate_camera_tilt(self, duration_seconds: int,currentRoom):
+        """
+        Activates the Rainbow Cookie effects (invincibility and golden form).
+        If already active, extends the duration up to MAX_DURATION.
+
+        Args:
+            duration_seconds (int): The number of seconds to activate/extend the cookie's effects.
+        """
+        #if not self.is_active:
+            # First activation
+
+        self.is_active = True
+        self.duration = duration_seconds
+        self.remaining_time = duration_seconds
+        self.last_update = time.time()
+        possibleSides = ["Left","Right"]
+        self.chosen_side = possibleSides[random.randint(0,1)]
+        print(f"Camera Tilt activated for {duration_seconds} seconds.")
+        await self._apply_effects(True,currentRoom) # Apply effects immediately
+        #else:
+            ## Extend existing duration
+            #new_remaining_time = self.remaining_time + duration_seconds
+            #self.remaining_time = min(new_remaining_time, self.MAX_DURATION)
+            #self.duration = self.remaining_time # Update current duration if extended
+            #print(
+                #f"Camera Tilt extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
+        self.sentMessage = False
+    async def _apply_effects(self, enable: bool,currentRoom):
+        """
+        Internal method to apply or remove the Rainbow Cookie's effects
+        by writing to BizHawk memory addresses.
+
+        Args:
+            enable (bool): If True, enables effects; if False, disables them.
+        """
+        if self.bizhawk_context is None or self.bizhawk_context.connection_status != bizhawk.ConnectionStatus.CONNECTED:
+            print("Warning: BizHawk not connected. Cannot apply/remove Rainbow Cookie effects.")
+            return
+        read_list = []
+        read_list += [(RAM.Inside_CameraMode, 1, "MainRAM")]
+        InsideCamera_read = await bizhawk.read(self.bizhawk_context, read_list)
+        isInside = int.from_bytes(InsideCamera_read[0], byteorder="little") == 0x01
+        writes_list = []
+        SpecialRooms = [83, 84, 87, 88, 90, 91]
+        BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
+
+        InABossRoom = False
+
+        CameraTilt_value = 0xFF if enable else 0x00
+        CameraTilt_bytes = list(CameraTilt_value.to_bytes(1, "little"))
+
+        LeftTiltAddress2 = ""
+        LeftTiltAddress = ""
+        RightTiltAddress = ""
+        RightTiltAddress2 = ""
+
+        if currentRoom in SpecialRooms:
+            LeftTiltAddress = RAM.SpecialRoom_CameraTiltLeft
+            RightTiltAddress = RAM.SpecialRoom_CameraTiltRight
+        elif currentRoom in BossRooms:
+            LeftTiltAddress = RAM.Boss_CameraTiltLeft
+            RightTiltAddress = RAM.Boss_CameraTiltRight
+        else:
+            if isInside:
+                LeftTiltAddress = RAM.Inside_CameraTiltLeft
+                RightTiltAddress = RAM.Inside_CameraTiltLeft
+            else:
+                LeftTiltAddress = RAM.Outside_CameraTiltLeft
+                RightTiltAddress = RAM.Outside_CameraTiltRight
+        if self.chosen_side == "Left":
+            writes_list.append((LeftTiltAddress, CameraTilt_bytes, "MainRAM"))
+        else:
+            writes_list.append((RightTiltAddress, CameraTilt_bytes, "MainRAM"))
+
+        try:
+            await bizhawk.write(self.bizhawk_context, writes_list)
+            print(f"Camera Tilt effects {'applied' if enable else 'removed'}.")
+        except Exception as e:
+            print(f"ERROR: Failed to {'apply' if enable else 'remove'} Rainbow Cookie effects: {e}")
+            raise
+
+    async def update_state_and_deactivate(self,currentRoom):
+        """
+        Updates the remaining time for the Camera Tilt.
+        If the duration runs out, deactivates the effects.
+        This method should be called periodically in the main loop of the client.
+        It also re-applies the camera tilt effect if it's lost and the cookie is active.
+        """
+        if not self.is_active:
+            return
+
+        if self.pause:
+            # If paused, don't decrement remaining_time, but update last_update
+            # to prevent a large time jump when unpaused.
+            self.last_update = time.time()
+            return
+
+        current_time = time.time()
+        elapsed_time_since_last_update = current_time - self.last_update
+        self.remaining_time -= elapsed_time_since_last_update
+        self.last_update = current_time
+
+        # Check and re-apply tilt effect if it's not active but the effect is
+        if self.bizhawk_context and self.bizhawk_context.connection_status == bizhawk.ConnectionStatus.CONNECTED:
+            try:
+                SpecialRooms = [83, 84, 87, 88, 90, 91]
+                BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
+                InABossRoom = False
+
+                CameraTilt_value = 0xFF
+                CameraTilt_bytes = list(CameraTilt_value.to_bytes(1, "little"))
+
+                LeftTiltAddress = ""
+                LeftTiltAddress2 = ""
+                RightTiltAddress = ""
+                RightTiltAddress2 = ""
+
+                if currentRoom in SpecialRooms:
+                    LeftTiltAddress = RAM.SpecialRoom_CameraTiltLeft
+                    RightTiltAddress = RAM.SpecialRoom_CameraTiltRight
+                    InABossRoom = True
+                elif currentRoom in BossRooms:
+                    LeftTiltAddress = RAM.Boss_CameraTiltLeft
+                    RightTiltAddress = RAM.Boss_CameraTiltRight
+                    InABossRoom = True
+                else:
+                    LeftTiltAddress = RAM.Inside_CameraTiltLeft
+                    RightTiltAddress = RAM.Inside_CameraTiltLeft
+                    LeftTiltAddress2 = RAM.Outside_CameraTiltLeft
+                    RightTiltAddress2 = RAM.Outside_CameraTiltRight
+                    InABossRoom = False
+
+                if self.chosen_side == "Left":
+                    CameraTiltAddress = LeftTiltAddress
+                else:
+                    CameraTiltAddress = RightTiltAddress
+
+                # Read the current value of the chosen CameraTilt address
+                current_camera_tilt_bytes = await bizhawk.read(self.bizhawk_context, [(CameraTiltAddress, 1, "MainRAM")])
+                current_camera_tilt = int.from_bytes(current_camera_tilt_bytes[0], byteorder="little")
+
+                if current_camera_tilt is not None and current_camera_tilt != 0xFF:
+                    print("Camera Tilt active, but tilt effect lost. Reapplying...")
+                    await self._apply_effects(True,currentRoom)
+            except Exception as e:
+                print(f"ERROR: Failed to read tilt form address for reapplication: {e}")
+                # Log error but don't stop the loop for this non-critical re-application check
+
+        if self.remaining_time <= 0:
+            self.remaining_time = 0
+            self.is_active = False
+            print("Camera Tilt duration finished. Deactivating effects.")
+            await self._apply_effects(False,currentRoom) # Remove effects

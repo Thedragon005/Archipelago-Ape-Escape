@@ -5,7 +5,8 @@ import time
 
 from BaseClasses import ItemClassification
 from NetUtils import ClientStatus, NetworkItem
-from .ItemHandlers import ApeEscapeMemoryInput,StunTrapHandler,MonkeyMashHandler,RainbowCookieHandler
+from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
+    CameraTiltHandler
 from .Strings import AEItem
 from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
 
@@ -390,6 +391,7 @@ class ApeEscapeClient(BizHawkClient):
         self.ape_handler = MonkeyMashHandler(None)
         self.rainbow_cookie = RainbowCookieHandler(None)
         self.stun_trap = StunTrapHandler(None)
+        self.camera_tilt_trap = CameraTiltHandler(None)
         self.local_checked_locations = set()
         self.local_set_events = {}
         self.local_found_key_items = {}
@@ -569,7 +571,7 @@ class ApeEscapeClient(BizHawkClient):
 
                     message = f"Received linked {trap_name} from {source_name}"
                     logger.info(message)
-                    self.specialitem_queue.insert(0,trap_value)
+                    self.specialitem_queue.insert(0,[trap_value,0])
                     Utils.async_start(self.send_bizhawk_message(ctx,message,"Passthrough", ""))
 
         if cmd in {"PrintJSON"} and "type" in args:
@@ -598,7 +600,7 @@ class ApeEscapeClient(BizHawkClient):
                     elif itemCategory == ItemClassification.trap:
                         itemClass = "Trap"
                         if itemName not in ctx.slot_data["trapsonreconnect"] and recieverID == ctx.slot:
-                            self.specialitem_queue.append((networkItem.item - self.offset))
+                            self.specialitem_queue.append([(networkItem.item - self.offset),0])
                     elif itemCategory == ItemClassification.filler:
                         itemClass = "Filler"
                     else:
@@ -979,6 +981,9 @@ class ApeEscapeClient(BizHawkClient):
 
             if self.stun_trap.bizhawk_context is None:
                 self.stun_trap = StunTrapHandler(ctx)
+
+            if self.camera_tilt_trap.bizhawk_context is None:
+                self.camera_tilt_trap = CameraTiltHandler(ctx)
 
             # Game state, locations and items read
             readsDict = {
@@ -1455,11 +1460,11 @@ class ApeEscapeClient(BizHawkClient):
                                 rocketAmmo += 3
                                 if rocketAmmo > 9:
                                     rocketAmmo = 9
-                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["StunTrap"]:
+                        elif RAM.items["BananaPeelTrap"] <= (item.item - self.offset) <= RAM.items["CameraTiltTrap"]:
                             if itemName in ctx.slot_data["trapsonreconnect"]:
-                                self.specialitem_queue.append((item.item - self.offset))
+                                self.specialitem_queue.append([(item.item - self.offset),0])
                         elif (item.item - self.offset) == RAM.items["RainbowCookie"]:
-                            self.specialitem_queue.append((item.item - self.offset))
+                            self.specialitem_queue.append([(item.item - self.offset),0])
 
                 itemValueslist = [
                     gadgetStateFromServer,
@@ -1654,12 +1659,22 @@ class ApeEscapeClient(BizHawkClient):
 
             # ======== Stun Trap =========
             if self.stun_trap.is_active:
-                await self.stun_trap.update_state_and_deactivate()
+                await self.stun_trap.update_state_and_deactivate(currentRoom)
             else:
                 if self.stun_trap.sentMessage == False:
                     message = "Stun Trap finished"
                     await self.send_bizhawk_message(ctx, message, "Passthrough", "")
                     self.stun_trap.sentMessage = True
+            # ================================
+
+            # ======== Camera Tilt Trap =========
+            if self.camera_tilt_trap.is_active:
+                await self.camera_tilt_trap.update_state_and_deactivate(currentRoom)
+            else:
+                if self.camera_tilt_trap.sentMessage == False:
+                    message = "Camera Tilt Trap finished"
+                    await self.send_bizhawk_message(ctx, message, "Passthrough", "")
+                    self.camera_tilt_trap.sentMessage = True
             # ================================
             # ======= Credits skipping =======
             # Credits skipping function for S1 and S2
@@ -3158,34 +3173,48 @@ class ApeEscapeClient(BizHawkClient):
         in_race = (currentRoom == 19 or currentRoom == 36)
         cannot_control = (gameRunning == 0)
         stunned = (spikeState2 == 0x58)
+        StunTrap_incompatible_list = [RAM.items["IcyHotPantsTrap"],RAM.items["StunTrap"],RAM.items["BananaPeelTrap"],RAM.items["MonkeyMashTrap"]]
 
         if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle or cannot_control):
             self.ape_handler.pause = True
             self.rainbow_cookie.pause = True
+            self.camera_tilt_trap.pause = True
         else:
             self.ape_handler.pause = False
             self.rainbow_cookie.pause = False
+            self.camera_tilt_trap.pause = False
 
-        if self.specialitem_queue == []:
+        if not self.specialitem_queue:
             #Exit if no traps
             return None
+
         else:
+
+            StunTrap_incompatible = self.stun_trap.is_active and (self.specialitem_queue[0][0] in StunTrap_incompatible_list)
             # Does not send the traps in these states
             if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or in_race or is_idle or cannot_control or stunned):
                 if is_idle:
                     # Trigger a Wake Up for spike. Banana Peel is deadly while Idle
                     SpecialItems_Writes += [(RAM.spikeIdleTimer, 0x0000.to_bytes(2, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
+                if self.specialitem_queue[0][1] >= 15:
+                    print(f"Trap Removed for incompatibility(15 passes): {self.specialitem_queue[0][0]}")
+                    self.specialitem_queue.pop(0)
+                if StunTrap_incompatible:
+                    print(f"Trap moved to the end: {self.specialitem_queue[0][0]}")
+                    self.specialitem_queue.insert(len(self.specialitem_queue)-1,[self.specialitem_queue[0][0],self.specialitem_queue[0][1] +1])
+                    self.specialitem_queue.pop(0)
                 return None
                 # Exit without sending trap, keeping it active for the next pass
-
+            print(self.specialitem_queue[0][0])
+            print(self.specialitem_queue[0][1])
             # Banana Peel Trap handling
-            if self.specialitem_queue[0] == RAM.items['BananaPeelTrap']:
+            if self.specialitem_queue[0][0] == RAM.items['BananaPeelTrap']:
                 self.specialitem_queue.pop(0)
                 SpecialItems_Writes += [(RAM.spikeState2Address, 0x2F.to_bytes(1, "little"), "MainRAM")]
 
             # Gadget Shuffle Trap handling
-            elif self.specialitem_queue[0] == RAM.items['GadgetShuffleTrap']:
+            elif self.specialitem_queue[0][0] == RAM.items['GadgetShuffleTrap']:
                 self.specialitem_queue.pop(0)
 
                 # print(self.specialitem_queue)
@@ -3253,9 +3282,9 @@ class ApeEscapeClient(BizHawkClient):
                         await bizhawk.guarded_write(ctx.bizhawk_ctx, Trap_writes2, Trap_guards)
 
             # Monkey Mash Trap handling
-            elif self.specialitem_queue[0] == RAM.items['MonkeyMashTrap']:
+            elif self.specialitem_queue[0][0] == RAM.items['MonkeyMashTrap']:
                 self.specialitem_queue.pop(0)
-                mash_duration = 15  # Example: 15 seconds per powerup item
+                mash_duration = 10  # Example: 10 seconds per powerup item
                 if self.ape_handler.is_active:
                     message = f"Monkey Mash trap extended by {mash_duration} seconds! (Current: {round(self.ape_handler.duration, 0)} seconds)"
                 else:
@@ -3265,7 +3294,7 @@ class ApeEscapeClient(BizHawkClient):
                 #print(message)
 
             # Icy Hot Trap handling
-            elif self.specialitem_queue[0] == RAM.items['IcyHotPantsTrap']:
+            elif self.specialitem_queue[0][0] == RAM.items['IcyHotPantsTrap']:
                 # Does not fire the trap if not grounded in some way
                 if spikeState2 in grounded:
                     self.specialitem_queue.pop(0)
@@ -3282,7 +3311,7 @@ class ApeEscapeClient(BizHawkClient):
                             SpecialItems_Writes += [(RAM.spikeColor, 0x0000FF.to_bytes(3, "big"), "MainRAM")]
 
             # Rainbow Cookie handling
-            elif self.specialitem_queue[0] == RAM.items['RainbowCookie']:
+            elif self.specialitem_queue[0][0] == RAM.items['RainbowCookie']:
                 self.specialitem_queue.pop(0)
                 item_duration = 20  # Example: 20 seconds per powerup item
                 if self.rainbow_cookie.is_active:
@@ -3293,7 +3322,7 @@ class ApeEscapeClient(BizHawkClient):
                 await self.rainbow_cookie.activate_rainbow_cookie(item_duration)
 
             #Stun Trap handling
-            elif self.specialitem_queue[0] == RAM.items['StunTrap']:
+            elif self.specialitem_queue[0][0] == RAM.items['StunTrap']:
                 self.specialitem_queue.pop(0)
                 item_duration = 2  # Example: 2 seconds per powerup item
                 #if self.stun_trap.is_active:
@@ -3302,7 +3331,18 @@ class ApeEscapeClient(BizHawkClient):
                 #    message = f"Stun Trap activated for {item_duration} seconds!"
                 message = f"Stun Trap activated for {item_duration} seconds!"
                 await self.send_bizhawk_message(ctx, message, "Passthrough", "")
-                await self.stun_trap.activate_StunTrap(item_duration,spikeState2)
+                await self.stun_trap.activate_StunTrap(item_duration,spikeState2,currentRoom)
+            #Camera Tilt Trap handling
+            elif self.specialitem_queue[0][0] == RAM.items['CameraTiltTrap']:
+                self.specialitem_queue.pop(0)
+                item_duration = 20  # Example: 2 seconds per powerup item
+                #if self.stun_trap.is_active:
+                #    message = f"Stun Trap extended by {item_duration} seconds! (Current: {round(self.stun_trap.duration, 0)} seconds)"
+                #else:
+                #    message = f"Stun Trap activated for {item_duration} seconds!"
+                message = f"Camera Tilt Trap activated for {item_duration} seconds!"
+                await self.send_bizhawk_message(ctx, message, "Passthrough", "")
+                await self.camera_tilt_trap.activate_camera_tilt(item_duration,currentRoom)
 
             if SpecialItems_Writes:
                 await bizhawk.write(ctx.bizhawk_ctx, SpecialItems_Writes)
