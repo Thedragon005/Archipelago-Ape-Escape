@@ -395,17 +395,17 @@ class TrapWeights(OptionCounter):
           Monkey Mash Trap: 5
           Icy Hot Pants Trap: 10
           Stun Trap: 7
-          Camera Tilt Trap: 10
+          Camera Rotate Trap: 10
     """
     internal_name = "customtrapweights"
     display_name = "Custom Trap Weights"
     min = 0
     max = 100
     valid_keys = frozenset({
-        AEItem.BananaPeelTrap.value, AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraTiltTrap.value
+        AEItem.BananaPeelTrap.value, AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraRotateTrap.value
     })
     default = {
-        AEItem.BananaPeelTrap.value: 15,  AEItem.GadgetShuffleTrap.value : 13, AEItem.MonkeyMashTrap.value: 5, AEItem.IcyHotPantsTrap.value: 10, AEItem.StunTrap.value: 7, AEItem.CameraTiltTrap.value: 10
+        AEItem.BananaPeelTrap.value: 15,  AEItem.GadgetShuffleTrap.value : 13, AEItem.MonkeyMashTrap.value: 5, AEItem.IcyHotPantsTrap.value: 10, AEItem.StunTrap.value: 7, AEItem.CameraRotateTrap.value: 10
     }
 
 
@@ -415,13 +415,13 @@ class TrapsOnReconnect(OptionSet):
         This option determines which traps will be sent when reconnecting to the client.
         Traps that are not in this list will only activate when connected
 
-        Supported values: "Banana Peel Trap", "Gadget Shuffle Trap", "Monkey Mash Trap", "Icy Hot Pants Trap", "Stun Trap", "Camera Tilt Trap"
+        Supported values: "Banana Peel Trap", "Gadget Shuffle Trap", "Monkey Mash Trap", "Icy Hot Pants Trap", "Stun Trap", "Camera Rotate Trap"
     """
     internal_name = "trapsonreconnect"
     display_name = "Traps On Reconnect"
     supports_weighting = False
     valid_keys = frozenset({
-        AEItem.BananaPeelTrap.value,AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraTiltTrap.value
+        AEItem.BananaPeelTrap.value,AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraRotateTrap.value
     })
 
 class TrapLink(Toggle):

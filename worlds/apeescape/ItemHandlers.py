@@ -468,7 +468,7 @@ class StunTrapHandler:
             print("Stun Trap duration finished. Deactivating effects.")
             await self._apply_effects(False,currentRoom) # Remove effects
 
-class CameraTiltHandler:
+class CameraRotateHandler:
     """
     Manages the state and effects of the Rainbow Cookie power-up.
     When active, makes Spike invincible and activates his golden form.
@@ -478,14 +478,14 @@ class CameraTiltHandler:
     def __init__(self, bizhawk_client_context: Union["BizHawkClientContext", None]):
         self.bizhawk_client_context = bizhawk_client_context
         self.bizhawk_context = bizhawk_client_context.bizhawk_ctx if bizhawk_client_context else None
-        self.chosen_side = "Left"       # Store which side the Camera Tilt is currently on
+        self.chosen_side = "Left"       # Store which side the Camera Rotate is currently on
         self.is_active = False          # True if effects are currently active
         self.duration = 0               # The initial or current duration set
         self.remaining_time = 0         # How much time is left for the effects
         self.last_update = 0            # Timestamp of the last update, for calculating elapsed time
         self.pause = False              # Flag to pause the timer/effects
         self.sentMessage = True         # To track if the last activation sent a Bizhawk message on expiration
-    async def activate_camera_tilt(self, duration_seconds: int,currentRoom):
+    async def activate_camera_rotate(self, duration_seconds: int, currentRoom):
         """
         Activates the Rainbow Cookie effects (invincibility and golden form).
         If already active, extends the duration up to MAX_DURATION.
@@ -502,7 +502,7 @@ class CameraTiltHandler:
         self.last_update = time.time()
         possibleSides = ["Left","Right"]
         self.chosen_side = possibleSides[random.randint(0,1)]
-        print(f"Camera Tilt activated for {duration_seconds} seconds.")
+        print(f"Camera Rotate activated for {duration_seconds} seconds.")
         await self._apply_effects(True,currentRoom) # Apply effects immediately
         #else:
             ## Extend existing duration
@@ -510,7 +510,7 @@ class CameraTiltHandler:
             #self.remaining_time = min(new_remaining_time, self.MAX_DURATION)
             #self.duration = self.remaining_time # Update current duration if extended
             #print(
-                #f"Camera Tilt extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
+                #f"Camera Rotate extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
         self.sentMessage = False
     async def _apply_effects(self, enable: bool,currentRoom):
         """
@@ -533,45 +533,45 @@ class CameraTiltHandler:
 
         InABossRoom = False
 
-        CameraTilt_value = 0xFF if enable else 0x00
-        CameraTilt_bytes = list(CameraTilt_value.to_bytes(1, "little"))
+        CameraRotate_value = 0xFF if enable else 0x00
+        CameraRotate_bytes = list(CameraRotate_value.to_bytes(1, "little"))
 
-        LeftTiltAddress2 = ""
-        LeftTiltAddress = ""
-        RightTiltAddress = ""
-        RightTiltAddress2 = ""
+        LeftRotateAddress2 = ""
+        LeftRotateAddress = ""
+        RightRotateAddress = ""
+        RightRotateAddress2 = ""
 
         if currentRoom in SpecialRooms:
-            LeftTiltAddress = RAM.SpecialRoom_CameraTiltLeft
-            RightTiltAddress = RAM.SpecialRoom_CameraTiltRight
+            LeftRotateAddress = RAM.SpecialRoom_CameraRotateLeft
+            RightRotateAddress = RAM.SpecialRoom_CameraRotateRight
         elif currentRoom in BossRooms:
-            LeftTiltAddress = RAM.Boss_CameraTiltLeft
-            RightTiltAddress = RAM.Boss_CameraTiltRight
+            LeftRotateAddress = RAM.Boss_CameraRotateLeft
+            RightRotateAddress = RAM.Boss_CameraRotateRight
         else:
             if isInside:
-                LeftTiltAddress = RAM.Inside_CameraTiltLeft
-                RightTiltAddress = RAM.Inside_CameraTiltLeft
+                LeftRotateAddress = RAM.Inside_CameraRotateLeft
+                RightRotateAddress = RAM.Inside_CameraRotateLeft
             else:
-                LeftTiltAddress = RAM.Outside_CameraTiltLeft
-                RightTiltAddress = RAM.Outside_CameraTiltRight
+                LeftRotateAddress = RAM.Outside_CameraRotateLeft
+                RightRotateAddress = RAM.Outside_CameraRotateRight
         if self.chosen_side == "Left":
-            writes_list.append((LeftTiltAddress, CameraTilt_bytes, "MainRAM"))
+            writes_list.append((LeftRotateAddress, CameraRotate_bytes, "MainRAM"))
         else:
-            writes_list.append((RightTiltAddress, CameraTilt_bytes, "MainRAM"))
+            writes_list.append((RightRotateAddress, CameraRotate_bytes, "MainRAM"))
 
         try:
             await bizhawk.write(self.bizhawk_context, writes_list)
-            print(f"Camera Tilt effects {'applied' if enable else 'removed'}.")
+            print(f"Camera Rotate effects {'applied' if enable else 'removed'}.")
         except Exception as e:
-            print(f"ERROR: Failed to {'apply' if enable else 'remove'} Rainbow Cookie effects: {e}")
+            print(f"ERROR: Failed to {'apply' if enable else 'remove'} Camera Rotate effects: {e}")
             raise
 
     async def update_state_and_deactivate(self,currentRoom):
         """
-        Updates the remaining time for the Camera Tilt.
+        Updates the remaining time for the Camera Rotate.
         If the duration runs out, deactivates the effects.
         This method should be called periodically in the main loop of the client.
-        It also re-applies the camera tilt effect if it's lost and the cookie is active.
+        It also re-applies the camera Rotate effect if it's lost and the cookie is active.
         """
         if not self.is_active:
             return
@@ -587,54 +587,54 @@ class CameraTiltHandler:
         self.remaining_time -= elapsed_time_since_last_update
         self.last_update = current_time
 
-        # Check and re-apply tilt effect if it's not active but the effect is
+        # Check and re-apply Rotate effect if it's not active but the effect is
         if self.bizhawk_context and self.bizhawk_context.connection_status == bizhawk.ConnectionStatus.CONNECTED:
             try:
                 SpecialRooms = [83, 84, 87, 88, 90, 91]
                 BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
                 InABossRoom = False
 
-                CameraTilt_value = 0xFF
-                CameraTilt_bytes = list(CameraTilt_value.to_bytes(1, "little"))
+                CameraRotate_value = 0xFF
+                CameraRotate_bytes = list(CameraRotate_value.to_bytes(1, "little"))
 
-                LeftTiltAddress = ""
-                LeftTiltAddress2 = ""
-                RightTiltAddress = ""
-                RightTiltAddress2 = ""
+                LeftRotateAddress = ""
+                LeftRotateAddress2 = ""
+                RightRotateAddress = ""
+                RightRotateAddress2 = ""
 
                 if currentRoom in SpecialRooms:
-                    LeftTiltAddress = RAM.SpecialRoom_CameraTiltLeft
-                    RightTiltAddress = RAM.SpecialRoom_CameraTiltRight
+                    LeftRotateAddress = RAM.SpecialRoom_CameraRotateLeft
+                    RightRotateAddress = RAM.SpecialRoom_CameraRotateRight
                     InABossRoom = True
                 elif currentRoom in BossRooms:
-                    LeftTiltAddress = RAM.Boss_CameraTiltLeft
-                    RightTiltAddress = RAM.Boss_CameraTiltRight
+                    LeftRotateAddress = RAM.Boss_CameraRotateLeft
+                    RightRotateAddress = RAM.Boss_CameraRotateRight
                     InABossRoom = True
                 else:
-                    LeftTiltAddress = RAM.Inside_CameraTiltLeft
-                    RightTiltAddress = RAM.Inside_CameraTiltLeft
-                    LeftTiltAddress2 = RAM.Outside_CameraTiltLeft
-                    RightTiltAddress2 = RAM.Outside_CameraTiltRight
+                    LeftRotateAddress = RAM.Inside_CameraRotateLeft
+                    RightRotateAddress = RAM.Inside_CameraRotateLeft
+                    LeftRotateAddress2 = RAM.Outside_CameraRotateLeft
+                    RightRotateAddress2 = RAM.Outside_CameraRotateRight
                     InABossRoom = False
 
                 if self.chosen_side == "Left":
-                    CameraTiltAddress = LeftTiltAddress
+                    CameraRotateAddress = LeftRotateAddress
                 else:
-                    CameraTiltAddress = RightTiltAddress
+                    CameraRotateAddress = RightRotateAddress
 
-                # Read the current value of the chosen CameraTilt address
-                current_camera_tilt_bytes = await bizhawk.read(self.bizhawk_context, [(CameraTiltAddress, 1, "MainRAM")])
-                current_camera_tilt = int.from_bytes(current_camera_tilt_bytes[0], byteorder="little")
+                # Read the current value of the chosen CameraRotate address
+                current_camera_rotate_bytes = await bizhawk.read(self.bizhawk_context, [(CameraRotateAddress, 1, "MainRAM")])
+                current_camera_rotate = int.from_bytes(current_camera_rotate_bytes[0], byteorder="little")
 
-                if current_camera_tilt is not None and current_camera_tilt != 0xFF:
-                    print("Camera Tilt active, but tilt effect lost. Reapplying...")
+                if current_camera_rotate is not None and current_camera_rotate != 0xFF:
+                    print("Camera Rotate active, but rotate effect lost. Reapplying...")
                     await self._apply_effects(True,currentRoom)
             except Exception as e:
-                print(f"ERROR: Failed to read tilt form address for reapplication: {e}")
+                print(f"ERROR: Failed to read rotate form address for reapplication: {e}")
                 # Log error but don't stop the loop for this non-critical re-application check
 
         if self.remaining_time <= 0:
             self.remaining_time = 0
             self.is_active = False
-            print("Camera Tilt duration finished. Deactivating effects.")
+            print("Camera Rotate duration finished. Deactivating effects.")
             await self._apply_effects(False,currentRoom) # Remove effects

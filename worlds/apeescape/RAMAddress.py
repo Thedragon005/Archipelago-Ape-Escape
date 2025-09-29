@@ -1036,7 +1036,7 @@ class RAM:
         "MonkeyMashTrap": 0x252,
         "IcyHotPantsTrap": 0x253,
         "StunTrap": 0x254,
-        "CameraTiltTrap": 0x255,
+        "CameraRotateTrap": 0x255,
         "RainbowCookie": 0x270,
         "FAKE_OOL_ITEM": 0x999,
 
@@ -1890,17 +1890,17 @@ class RAM:
     }
 
     SpecialRoom_CameraMode = 0x0C0798 #0x00 = Fixed, 0x01 = Overhead, 0x02 = StrictFollowCam
-    SpecialRoom_CameraTiltLeft = 0x0C07C4 #0x00 = Not tilted, 0xFF = Tilted
-    SpecialRoom_CameraTiltRight = 0x0C07C5 #0x00 = Not tilted, 0xFF = Tilted
+    SpecialRoom_CameraRotateLeft = 0x0C07C4 #0x00 = Not tilted, 0xFF = Tilted
+    SpecialRoom_CameraRotateRight = 0x0C07C5 #0x00 = Not tilted, 0xFF = Tilted
     Inside_CameraMode = 0x0C0F98 #0x00 = Fixed, 0x01 = Overhead, 0x02 = StrictFollowCam
-    Inside_CameraTiltLeft = 0x0C0FC4 #0x00 = Not tilted, 0xFF = Tilted
-    Inside_CameraTiltRight = 0x0C0FC5 #0x00 = Not tilted, 0xFF = Tilted
+    Inside_CameraRotateLeft = 0x0C0FC4 #0x00 = Not tilted, 0xFF = Tilted
+    Inside_CameraRotateRight = 0x0C0FC5 #0x00 = Not tilted, 0xFF = Tilted
     Boss_CameraMode = 0x0C1798 #0x00 = Fixed, 0x01 = Overhead, 0x02 = StrictFollowCam
-    Boss_CameraTiltLeft = 0x0C17C4 #0x00 = Not tilted, 0xFF = Tilted
-    Boss_CameraTiltRight = 0x0C17C5 #0x00 = Not tilted, 0xFF = Tilted
+    Boss_CameraRotateLeft = 0x0C17C4 #0x00 = Not tilted, 0xFF = Tilted
+    Boss_CameraRotateRight = 0x0C17C5 #0x00 = Not tilted, 0xFF = Tilted
     Outside_CameraMode = 0x0C1F98 #0x00 = Fixed, 0x01 = Overhead, 0x02 = StrictFollowCam
-    Outside_CameraTiltLeft = 0x0C1FC4 #0x00 = Not tilted, 0xFF = Tilted
-    Outside_CameraTiltRight = 0x0C1FC5 #0x00 = Not tilted, 0xFF = Tilted
+    Outside_CameraRotateLeft = 0x0C1FC4 #0x00 = Not tilted, 0xFF = Tilted
+    Outside_CameraRotateRight = 0x0C1FC5 #0x00 = Not tilted, 0xFF = Tilted
 
 
 

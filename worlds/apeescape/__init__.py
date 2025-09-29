@@ -318,7 +318,7 @@ class ApeEscapeWorld(World):
                 self.options.trapweights[AEItem.MonkeyMashTrap.value],
                 self.options.trapweights[AEItem.IcyHotPantsTrap.value],
                 self.options.trapweights[AEItem.StunTrap.value],
-                self.options.trapweights[AEItem.CameraTiltTrap.value]
+                self.options.trapweights[AEItem.CameraRotateTrap.value]
             ]
             # If custom_trapweights are all zeros, reset to default values
             if not any(y > 0 for y in custom_trapweights):
@@ -343,7 +343,7 @@ class ApeEscapeWorld(World):
                 elif trap_weights[2] < randomTrap <= trap_weights[3]:
                     self.itempool += [self.create_item_trap(AEItem.IcyHotPantsTrap.value)]
                 elif trap_weights[3] < randomTrap <= trap_weights[4]:
-                    self.itempool += [self.create_item_trap(AEItem.CameraTiltTrap.value)]
+                    self.itempool += [self.create_item_trap(AEItem.CameraRotateTrap.value)]
                 else:
                     self.itempool += [self.create_item_trap(AEItem.StunTrap.value)]
 
