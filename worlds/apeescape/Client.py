@@ -3518,6 +3518,7 @@ class ApeEscapeClient(BizHawkClient):
                     ER_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
                     ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
                     #ER_writes += [(RAM.gameRunningAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+                    ER_writes += [(RAM.spikeSuperFlyerUseState, 0x00.to_bytes(1, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                 if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Spawning"] and gameRunning == 0x00:
                     print("Phase 2")

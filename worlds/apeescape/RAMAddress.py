@@ -1691,10 +1691,6 @@ class RAM:
         0x0F5138: 0x00000000,  # Hoop_AnimationReset
     }
 
-
-    #radarFixAddress = 0x0F5125
-    #hoopFixAddress = 0x0F5124  # 2 bytes
-
     gadgetUseStateAddress = 0x0B20CC
     # 1 = "Net down"
     # 8 = "Net down + can catch"
@@ -1808,7 +1804,7 @@ class RAM:
     startOfLevelNames = 0x1399E8
     startOfEraNames = 0x139B20
 
-    levelselectFonts = 0x139CF6 # 0x36 = Classic One  0x26 = Current One
+    levelselectFonts = 0x139CF6 # 0x36 = Classic One 0x26 = Current One
     time_attack_Times = 0x0DFD44
 
 # ==================== Kickout Prevention ====================
@@ -1844,7 +1840,9 @@ class RAM:
     spikeIdleTimer = 0x0EC328 # Put this to 0x0000 to wake up
     spikeGroundStateAddress = 0x0EC23D
     spikeHittableAddress = 0x0EC227
-    spikeUltraInstinctAddress = 0x0EC2E2
+    spikeSuperFlyerUseState = 0x0EC2E0 # 0x00 = SuperFlyer activated
+    # This value is also shared with the Spawn/Return to hub animations, but we don't have a use for that in the rando
+
     spikeSkinPalette = 0x0EC1E5
     spikeColor = 0x0EC2D4
     #spikeColor2 = 0x0EC1E6
