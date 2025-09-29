@@ -317,8 +317,8 @@ class StunTrapHandler:
         self.bizhawk_client_context = bizhawk_client_context
         self.bizhawk_context = bizhawk_client_context.bizhawk_ctx if bizhawk_client_context else None
 
-        self.is_inside = True
         self.is_active = False          # True if Rainbow Cookie effects are currently active
+        self.RoomType = "Special"
         self.duration = 0               # The initial or current duration set for the cookie
         self.remaining_time = 0         # How much time is left for the effects
         self.last_update = 0            # Timestamp of the last update, for calculating elapsed time
@@ -341,9 +341,20 @@ class StunTrapHandler:
         self.is_active = True
 
         read_list = []
-        read_list += [(RAM.Inside_CameraMode, 1, "MainRAM")]
-        InsideCamera_read = await bizhawk.read(self.bizhawk_context, read_list)
-        self.isInside = int.from_bytes(InsideCamera_read[0], byteorder="little") == 0x01
+        read_list += [(RAM.SpecialRoom_CameraMode, 1, "MainRAM"),(RAM.Boss_CameraMode, 1, "MainRAM"),(RAM.Inside_CameraMode, 1, "MainRAM")]
+        CameraMode_reads = await bizhawk.read(self.bizhawk_context, read_list)
+        isSpecialRoom = int.from_bytes(CameraMode_reads[0], byteorder="little") == 0x01
+        isBossRoom = int.from_bytes(CameraMode_reads[1], byteorder="little") == 0x01
+        isInside  = int.from_bytes(CameraMode_reads[2], byteorder="little") == 0x01
+        if isSpecialRoom:
+            self.RoomType = "Special"
+        elif isBossRoom:
+            self.RoomType = "Boss"
+        elif isInside:
+            self.RoomType = "Inside"
+        else:
+            self.RoomType = "Outside"
+
         self.duration = duration_seconds
         self.remaining_time = duration_seconds
         self.last_update = time.time()
@@ -413,15 +424,15 @@ class StunTrapHandler:
             CameraMode = 0x01
             self.lastspikestate = 0x00
 
-        SpecialRooms = [83, 84, 87, 88, 90, 91]
-        BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
+        #SpecialRooms = [30,83, 84, 87, 88, 90, 91]
+        #BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
 
-        if currentRoom in SpecialRooms:
+        if self.RoomType == "Special":
             CameraModeAddress = RAM.SpecialRoom_CameraMode
-        elif currentRoom in BossRooms:
+        elif self.RoomType == "Boss":
             CameraModeAddress = RAM.Boss_CameraMode
         else:
-            if self.isInside:
+            if self.RoomType == "Inside":
                 print("Inside")
                 CameraModeAddress = RAM.Inside_CameraMode
             else:
@@ -473,12 +484,13 @@ class CameraRotateHandler:
     Manages the state and effects of the Rainbow Cookie power-up.
     When active, makes Spike invincible and activates his golden form.
     """
-    MAX_DURATION = 30  # Maximum duration for the Rainbow Cookie in seconds
+    MAX_DURATION = 40  # Maximum duration for the Rainbow Cookie in seconds
 
     def __init__(self, bizhawk_client_context: Union["BizHawkClientContext", None]):
         self.bizhawk_client_context = bizhawk_client_context
         self.bizhawk_context = bizhawk_client_context.bizhawk_ctx if bizhawk_client_context else None
         self.chosen_side = "Left"       # Store which side the Camera Rotate is currently on
+        self.RoomType = "Special"
         self.is_active = False          # True if effects are currently active
         self.duration = 0               # The initial or current duration set
         self.remaining_time = 0         # How much time is left for the effects
@@ -493,24 +505,24 @@ class CameraRotateHandler:
         Args:
             duration_seconds (int): The number of seconds to activate/extend the cookie's effects.
         """
-        #if not self.is_active:
+        if not self.is_active:
             # First activation
+            self.is_active = True
+            self.duration = duration_seconds
+            self.remaining_time = duration_seconds
+            self.last_update = time.time()
+            possibleSides = ["Left","Right"]
+            self.chosen_side = possibleSides[random.randint(0,1)]
+            print(f"Camera Rotate activated for {duration_seconds} seconds.")
 
-        self.is_active = True
-        self.duration = duration_seconds
-        self.remaining_time = duration_seconds
-        self.last_update = time.time()
-        possibleSides = ["Left","Right"]
-        self.chosen_side = possibleSides[random.randint(0,1)]
-        print(f"Camera Rotate activated for {duration_seconds} seconds.")
-        await self._apply_effects(True,currentRoom) # Apply effects immediately
-        #else:
+        else:
             ## Extend existing duration
-            #new_remaining_time = self.remaining_time + duration_seconds
-            #self.remaining_time = min(new_remaining_time, self.MAX_DURATION)
-            #self.duration = self.remaining_time # Update current duration if extended
-            #print(
-                #f"Camera Rotate extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
+            new_remaining_time = self.remaining_time + duration_seconds
+            self.remaining_time = min(new_remaining_time, self.MAX_DURATION)
+            self.duration = self.remaining_time # Update current duration if extended
+            print(f"Camera Rotate extended by {duration_seconds} seconds. Total remaining: {self.remaining_time:.2f}s (capped at {self.MAX_DURATION}s)")
+
+        await self._apply_effects(True, currentRoom)  # Apply effects immediately
         self.sentMessage = False
     async def _apply_effects(self, enable: bool,currentRoom):
         """
@@ -524,14 +536,24 @@ class CameraRotateHandler:
             print("Warning: BizHawk not connected. Cannot apply/remove Rainbow Cookie effects.")
             return
         read_list = []
-        read_list += [(RAM.Inside_CameraMode, 1, "MainRAM")]
-        InsideCamera_read = await bizhawk.read(self.bizhawk_context, read_list)
-        isInside = int.from_bytes(InsideCamera_read[0], byteorder="little") == 0x01
+        read_list += [(RAM.SpecialRoom_CameraMode, 1, "MainRAM"),(RAM.Boss_CameraMode, 1, "MainRAM"),(RAM.Inside_CameraMode, 1, "MainRAM")]
+        CameraMode_reads = await bizhawk.read(self.bizhawk_context, read_list)
+        isSpecialRoom = int.from_bytes(CameraMode_reads[0], byteorder="little") == 0x01
+        isBossRoom = int.from_bytes(CameraMode_reads[1], byteorder="little") == 0x01
+        isInside  = int.from_bytes(CameraMode_reads[2], byteorder="little") == 0x01
+        if isSpecialRoom:
+            self.RoomType = "Special"
+        elif isBossRoom:
+            self.RoomType = "Boss"
+        elif isInside:
+            self.RoomType = "Inside"
+        else:
+            self.RoomType = "Outside"
         writes_list = []
-        SpecialRooms = [83, 84, 87, 88, 90, 91]
-        BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
+        #SpecialRooms = [83, 84, 87, 88, 90, 91]
+        #BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
 
-        InABossRoom = False
+        #InABossRoom = False
 
         CameraRotate_value = 0xFF if enable else 0x00
         CameraRotate_bytes = list(CameraRotate_value.to_bytes(1, "little"))
@@ -541,19 +563,20 @@ class CameraRotateHandler:
         RightRotateAddress = ""
         RightRotateAddress2 = ""
 
-        if currentRoom in SpecialRooms:
+        if self.RoomType == "Special":
             LeftRotateAddress = RAM.SpecialRoom_CameraRotateLeft
             RightRotateAddress = RAM.SpecialRoom_CameraRotateRight
-        elif currentRoom in BossRooms:
+        elif self.RoomType == "Boss":
             LeftRotateAddress = RAM.Boss_CameraRotateLeft
             RightRotateAddress = RAM.Boss_CameraRotateRight
         else:
-            if isInside:
+            if self.RoomType == "Inside":
                 LeftRotateAddress = RAM.Inside_CameraRotateLeft
                 RightRotateAddress = RAM.Inside_CameraRotateLeft
             else:
                 LeftRotateAddress = RAM.Outside_CameraRotateLeft
                 RightRotateAddress = RAM.Outside_CameraRotateRight
+
         if self.chosen_side == "Left":
             writes_list.append((LeftRotateAddress, CameraRotate_bytes, "MainRAM"))
         else:
@@ -590,32 +613,39 @@ class CameraRotateHandler:
         # Check and re-apply Rotate effect if it's not active but the effect is
         if self.bizhawk_context and self.bizhawk_context.connection_status == bizhawk.ConnectionStatus.CONNECTED:
             try:
-                SpecialRooms = [83, 84, 87, 88, 90, 91]
-                BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
-                InABossRoom = False
-
+                #SpecialRooms = [83, 84, 87, 88, 90, 91]
+                #BossRooms = [item for item in RAM.bossListLocal.keys() if item not in SpecialRooms]
+                #InABossRoom = False
+                read_list = []
+                read_list += [(RAM.SpecialRoom_CameraMode, 1, "MainRAM"), (RAM.Boss_CameraMode, 1, "MainRAM"),(RAM.Inside_CameraMode, 1, "MainRAM")]
+                CameraMode_reads = await bizhawk.read(self.bizhawk_context, read_list)
+                isSpecialRoom = int.from_bytes(CameraMode_reads[0], byteorder="little") == 0x01
+                isBossRoom = int.from_bytes(CameraMode_reads[1], byteorder="little") == 0x01
+                isInside = int.from_bytes(CameraMode_reads[2], byteorder="little") == 0x01
+                if isSpecialRoom:
+                    self.RoomType = "Special"
+                elif isBossRoom:
+                    self.RoomType = "Boss"
+                elif isInside:
+                    self.RoomType = "Inside"
+                else:
+                    self.RoomType = "Outside"
                 CameraRotate_value = 0xFF
-                CameraRotate_bytes = list(CameraRotate_value.to_bytes(1, "little"))
-
-                LeftRotateAddress = ""
-                LeftRotateAddress2 = ""
-                RightRotateAddress = ""
-                RightRotateAddress2 = ""
-
-                if currentRoom in SpecialRooms:
+                print(self.RoomType)
+                print(self.RoomType == "Special")
+                if self.RoomType == "Special":
                     LeftRotateAddress = RAM.SpecialRoom_CameraRotateLeft
                     RightRotateAddress = RAM.SpecialRoom_CameraRotateRight
-                    InABossRoom = True
-                elif currentRoom in BossRooms:
+                elif self.RoomType == "Boss":
                     LeftRotateAddress = RAM.Boss_CameraRotateLeft
                     RightRotateAddress = RAM.Boss_CameraRotateRight
-                    InABossRoom = True
                 else:
-                    LeftRotateAddress = RAM.Inside_CameraRotateLeft
-                    RightRotateAddress = RAM.Inside_CameraRotateLeft
-                    LeftRotateAddress2 = RAM.Outside_CameraRotateLeft
-                    RightRotateAddress2 = RAM.Outside_CameraRotateRight
-                    InABossRoom = False
+                    if self.RoomType == "Inside":
+                        LeftRotateAddress = RAM.Inside_CameraRotateLeft
+                        RightRotateAddress = RAM.Inside_CameraRotateLeft
+                    else:
+                        LeftRotateAddress = RAM.Outside_CameraRotateLeft
+                        RightRotateAddress = RAM.Outside_CameraRotateRight
 
                 if self.chosen_side == "Left":
                     CameraRotateAddress = LeftRotateAddress
