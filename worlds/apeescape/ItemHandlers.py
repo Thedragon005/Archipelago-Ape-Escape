@@ -433,10 +433,8 @@ class StunTrapHandler:
             CameraModeAddress = RAM.Boss_CameraMode
         else:
             if self.RoomType == "Inside":
-                print("Inside")
                 CameraModeAddress = RAM.Inside_CameraMode
             else:
-                print("Outside")
                 CameraModeAddress = RAM.Outside_CameraMode
 
         Spikestate2_bytes = list(Spikestate2_value.to_bytes(1, "little"))
@@ -631,8 +629,6 @@ class CameraRotateHandler:
                 else:
                     self.RoomType = "Outside"
                 CameraRotate_value = 0xFF
-                print(self.RoomType)
-                print(self.RoomType == "Special")
                 if self.RoomType == "Special":
                     LeftRotateAddress = RAM.SpecialRoom_CameraRotateLeft
                     RightRotateAddress = RAM.SpecialRoom_CameraRotateRight

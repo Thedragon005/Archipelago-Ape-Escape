@@ -1066,6 +1066,7 @@ class ApeEscapeClient(BizHawkClient):
                 "crossGadget": (RAM.crossGadgetAddress, 1, "MainRAM"),
                 "gadgetUseState": (RAM.gadgetUseStateAddress, 1, "MainRAM"),  # Which gadget is used in what way. **Not used at the moment
                 "punchVisualAddress": (RAM.punchVisualAddress, 32, "MainRAM"),
+                "CatchingState": (RAM.CatchingState, 1, "MainRAM"),
                 # Level Select/Menu data
                 "LS_currentWorld": (RAM.selectedWorldAddress, 1, "MainRAM"),  # In level select, the current world
                 "LS_currentLevel": (RAM.selectedLevelAddress, 1, "MainRAM"),  # In level select, the current level
@@ -1214,6 +1215,7 @@ class ApeEscapeClient(BizHawkClient):
             crossGadget = readValues["crossGadget"]
             gadgetUseState = readValues["gadgetUseState"]
             punchVisualAddress = readValues["punchVisualAddress"]
+            CatchingState = readValues["CatchingState"]
 
             # Level Select/Menu data
             LS_currentWorld = readValues["LS_currentWorld"]
@@ -1652,7 +1654,7 @@ class ApeEscapeClient(BizHawkClient):
             # ======== Special Items Handling =========
             # For Traps and Special Items.
             currentGadgets = await self.check_gadgets(ctx, gadgetStateFromServer)
-            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning, self.DS_spikecolor,heldGadget]
+            SpecialItems_Reads = [gameState, gotMail, spikeState, spikeState2, menuState, menuState2, currentGadgets, currentRoom, gameRunning, self.DS_spikecolor,heldGadget,CatchingState,cookies]
             await self.specialitems_handling(ctx, SpecialItems_Reads)
             # ================================
 
@@ -3179,6 +3181,9 @@ class ApeEscapeClient(BizHawkClient):
         gameRunning = SpecialItems_Reads[8]
         DS_spikeColor = SpecialItems_Reads[9]
         heldGadget = SpecialItems_Reads[10]
+        CatchingState = SpecialItems_Reads[11]
+        cookies = SpecialItems_Reads[12]
+
         SpecialItems_Writes = []
         SpecialItems_Guards = []
 
@@ -3186,6 +3191,8 @@ class ApeEscapeClient(BizHawkClient):
         valid_gameStates = (RAM.gameState['InLevel'], RAM.gameState['InLevelTT'], RAM.gameState['TimeStation'], RAM.gameState['Jake'])
         grounded = [0x00, 0x01, 0x02, 0x05, 0x07]
         is_grounded = (spikeState2 in grounded)
+        is_catching = (CatchingState == 0x08)
+        is_dead = (cookies == 0)
         in_menu = (menuState == 0 and menuState2 == 1)
         reading_mail = (gotMail == 0x01) or (gotMail == 0x02)
         is_sliding = (spikeState2 in (0x2F,0x30))
@@ -3195,7 +3202,7 @@ class ApeEscapeClient(BizHawkClient):
         stunned = (spikeState2 == 0x58)
         StunTrap_incompatible_list = [RAM.items["IcyHotPantsTrap"],RAM.items["StunTrap"],RAM.items["BananaPeelTrap"],RAM.items["MonkeyMashTrap"]]
 
-        if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle or cannot_control):
+        if (gameState not in valid_gameStates or in_menu or reading_mail or is_sliding or is_idle or cannot_control or is_catching):
             self.ape_handler.pause = True
             self.rainbow_cookie.pause = True
             self.camera_rotate_trap.pause = True
@@ -3685,12 +3692,13 @@ class ApeEscapeClient(BizHawkClient):
                         if is_grounded:
                             WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
 
-                else:
-                    # Game Not running
-                    if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
-                        # You died while swimming, reset Oxygen to "Limited" value prevent death loops
-                        WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-                        WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
+                #else:
+                # Game Not running
+                #if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
+                if swim_oxygenLevel == 0 and cookies == 0:
+                    # You died while swimming, reset Oxygen to "Limited" value prevent death loops
+                    WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                    WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         if waternetState == 0x01:
 

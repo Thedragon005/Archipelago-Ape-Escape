@@ -1692,6 +1692,7 @@ class RAM:
     }
 
     gadgetUseStateAddress = 0x0B20CC
+    CatchingState = 0x0F44A0 # 0x00 Not catching , 0x08 Catching a Monkey
     # 1 = "Net down"
     # 8 = "Net down + can catch"
 
