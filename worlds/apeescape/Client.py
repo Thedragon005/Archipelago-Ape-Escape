@@ -439,6 +439,7 @@ class ApeEscapeClient(BizHawkClient):
         self.bizhawk_display_set = False
         self.gotDatastorage = False
         self.initDatastorage = False
+        self.ForceTransition = False
 
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         ape_identifier_ram_address: int = 0xA37F0
@@ -3473,12 +3474,22 @@ class ApeEscapeClient(BizHawkClient):
                 VanillaRoom = False
 
             if VanillaRoom == False:
+                # Monkey Madness special rule
+                # This spawns the player in the correct Sub-Level, then the warp will happen (If not already in the right room)
+                if targetLevel == 0x18:
+                    BaseRoom = targetRoom
+                    targetRoom = RAM.MM_SubLevels_Rooms_Spawns.get(targetRoom)
+                    if BaseRoom == targetRoom:
+                        self.ForceTransition = False
+                    else:
+                        self.ForceTransition = True
+                else:
+                    # Put the vanilla entrance for the level, we will redirect it later if RandomizeFirstRoom is on
+                    targetRoom = levelrooms[0]
+                    self.ForceTransition = False
                 if transitionPhase == RAM.transitionPhase["NotSpawned"] and gameState == RAM.gameState["LevelIntro"] and InputListener == 0x02:
                     # Deactivate the Start/Select input to prevent player from messing with ER teleportation
                     ER_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-
-            # Put the vanilla entrance for the level, we will redirect it later if RandomizeFirstRoom is on
-            targetRoom = levelrooms[0]
 
             # Actually send Spike to the desired level!
             ER_writes += [(RAM.currentRoomIdAddress, targetRoom.to_bytes(1, "little"), "MainRAM")]
@@ -3505,14 +3516,12 @@ class ApeEscapeClient(BizHawkClient):
             TR_guards = []
             # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
             if VanillaRoom == False:
-                # TODO return here
-
-                if transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00:
+                if (transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00) or (self.ForceTransition and currentRoom != LevelStartRoom and transitionPhase <= RAM.transitionPhase["Playing"]):
                     print("Phase1")
                     # if transitionPhase in (3,4) and spikeState2 == 48:
                     # if spikeState2 == 48:
                     # Change TR1_Position to overlap Spike, and change targetRoom/targetDoor
-                    targetRoom = currentlevelidtofirstroom.get(currentLevel)
+                    targetRoom = currentlevelidtofirstroom.get(level)
                     targetRoomName = RAM.roomstostring.get(targetRoom)
                     targetDoor = list(doorTransitions.get(targetRoomName))[1]
                     TR1_Adresses = list(RAM.transitionAddresses.get(1))
@@ -3526,10 +3535,17 @@ class ApeEscapeClient(BizHawkClient):
                     ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
                     #ER_writes += [(RAM.gameRunningAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
                     ER_writes += [(RAM.spikeSuperFlyerUseState, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    ER_writes += [(RAM.spikeState2Address, 0x25.to_bytes(1, "little"), "MainRAM")]
                     await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
-                if spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Spawning"] and gameRunning == 0x00:
-                    print("Phase 2")
-                    ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
+                if (spikeState2 in (0x24, 0x25) and transitionPhase == RAM.transitionPhase["Spawning"] and gameRunning == 0x00) or (self.ForceTransition):
+                    if (level != 0x18):
+                        print("Phase 2")
+                        ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
+                    else:
+                        if self.ForceTransition == True:
+                            print("Phase 2")
+                            ER_writes += [(RAM.transitionPhaseAddress,RAM.transitionPhase["Playing"].to_bytes(1, "little"), "MainRAM")]
+                            self.ForceTransition = False
                 # if spikeState2 == 48 and transitionPhase not in (4,5,6):
                 elif gameRunning == 0x01:
                     TR_writes.clear()

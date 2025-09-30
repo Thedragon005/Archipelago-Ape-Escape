@@ -1091,6 +1091,33 @@ class RAM:
         "Training": 0x20
     }
 
+    MM_SubLevels_Rooms_Spawns = {
+        #Should spawn you in these rooms,depending on RSR
+        #Take the possible room and warps you to the base Sub-Level Room
+        # "Specter": 0x18,
+        69 : 69,
+        # "S_Jake": 0x19,
+        70 : 70,
+        # "S_Circus": 0x1A,
+        71 : 71,
+        # "S_Coaster": 0x1B,
+        72: 72,
+        73: 72,
+        74: 72,
+        75: 72,
+        76 : 72,
+        # "S_Western Land": 0x1C,
+        77 : 77,
+        # "S_Castle": 0x1D,
+        78 : 78,
+        79 : 78,
+        80 : 78,
+        81 : 78,
+        82 : 78,
+        84 : 78,
+        85 : 78,
+    }
+
     levelAddresses = {
         11: 0xdfc71,
         12: 0xdfc72,
@@ -1277,7 +1304,7 @@ class RAM:
         61: AEDoor.SF_CONVEYOR_LAVA.value,
         62: AEDoor.SF_MECH_FACTORY.value,
         63: AEDoor.TVT_ENTRY.value,
-        64: AEDoor.TVT_WATER_LOBBY.value,  # This starting room may currently be a softlock.
+        64: AEDoor.TVT_WATER_LOBBY.value,
         65: AEDoor.TVT_LOBBY_OUTSIDE.value,
         66: AEDoor.TVT_TANK_LOBBY.value,
         67: AEDoor.TVT_FAN_TANK.value,
