@@ -2808,7 +2808,8 @@ class ApeEscapeClient(BizHawkClient):
             # This means BG is set as caught and the button is not pressed
             if BG_caught in (0x02,0x03) or local_BG_caught in (0x02,0x03):
                 MM_Writes += [(RAM.MM_AlertRoom_ButtonPressed, 0x01.to_bytes(1, "little"), "MainRAM")]
-
+                MM_Writes += [(RAM.MM_AlertRoom_CutsceneTrigger1, 0x02.to_bytes(1, "little"), "MainRAM")]
+                MM_Writes += [(RAM.MM_AlertRoom_BGCanPushButton, 0x00.to_bytes(1, "little"), "MainRAM")]
         # Prevent Specter 1 fight for Specter 1 token goal when not having enough tokens.
         token = self.tokencount
         if (NearbyRoom == 83 and transitionPhase == RAM.transitionPhase["InTransition"]) or (currentRoom == 83 and transitionPhase != RAM.transitionPhase["InTransition"]):
