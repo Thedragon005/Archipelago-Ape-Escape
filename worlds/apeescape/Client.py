@@ -1,10 +1,14 @@
 import logging
+import pkgutil
 import random
+
+import orjson
 
 import Utils
 import time
 
 from BaseClasses import ItemClassification
+from ModuleUpdate import update
 from NetUtils import ClientStatus, NetworkItem
 from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
     CameraRotateHandler
@@ -180,12 +184,15 @@ def cmd_deathlink(self: "BizHawkClientCommandProcessor", status = "") -> None:
     #client.change_kickout_prevention(ctx)
     client.changeDeathlink = True
     if client.deathlink == 1:
+        Utils.async_start(ctx.update_death_link(True))
         msg = "ON"
         #client.send_bizhawk_message(ctx, "Deathlink Enabled", "Custom", "")
     else:
+        Utils.async_start(ctx.update_death_link(False))
         msg = "OFF"
         #client.send_bizhawk_message(ctx, "Deathlink Disabled", "Custom", "")
     client.DeathLink_DS = client.deathlink
+
     logger.info(f"Deathlink is now {msg}\n")
 
 
@@ -343,7 +350,9 @@ class ApeEscapeClient(BizHawkClient):
     system = "PSX"
 
     # TODO Remove when doing official PR
-    client_version = "0.9.1"
+    apworld_manifest = orjson.loads(pkgutil.get_data(__name__, "archipelago.json").decode("utf-8"))
+    client_version = apworld_manifest["world_version"]
+    #client_version = "0.9.1"
 
     local_checked_locations: Set[int]
     local_set_events: Dict[str, bool]
@@ -1643,8 +1652,11 @@ class ApeEscapeClient(BizHawkClient):
             DL_Reads = [cookies, gameRunning, gameState, menuState2, spikeState2]
             await self.handle_death_link(ctx, DL_Reads)
 
+            # ======== Update tags (DeathLink and TrapLink) =========
+            await self.update_tags(ctx)
+
             # ======== Handle Trap Link =========
-            await self.handle_trap_link(ctx)
+            #await self.handle_trap_link(ctx)
 
             # ======== Spike Color handling =========
             # For checking if the chosen color currently needs to be applied.
@@ -3517,6 +3529,11 @@ class ApeEscapeClient(BizHawkClient):
             TR_guards = []
             # If the level's first room is not vanilla, check for where Spike should be warped to after initial spawn.
             if VanillaRoom == False:
+                # TODO IDEA : 3 Phases ->
+                #  1: Set Transition Above Spike
+                #  2: Validate a state (Transition = 0x06) and change a variable
+                #  3: Change the state variable to get control, then regive control?
+
                 if (transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level) and gameRunning == 0x00) or (self.ForceTransition and currentRoom != LevelStartRoom and transitionPhase <= RAM.transitionPhase["Playing"]):
                     print("Phase1")
                     # if transitionPhase in (3,4) and spikeState2 == 48:
@@ -3766,6 +3783,26 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx,WN_writes)
 
 
+    async def update_tags (self, ctx: "BizHawkClientContext") -> None:
+        updateTags = False
+        if ctx.slot_data["death_link"] == DeathLink.option_true and self.deathlink == 1:
+            if "DeathLink" not in ctx.tags:
+                ctx.tags.add("DeathLink")
+                updateTags = True
+        else:
+            if "DeathLink" in ctx.tags:
+                ctx.tags.remove("DeathLink")
+                updateTags = True
+        if ctx.slot_data["trap_link"] == TrapLink.option_true:
+            if "TrapLink" not in ctx.tags:
+                ctx.tags.add("TrapLink")
+                updateTags = True
+        else:
+            if "TrapLink" in ctx.tags:
+                ctx.tags.remove("TrapLink")
+                updateTags = True
+        if updateTags:
+            await ctx.send_msgs([{"cmd": "ConnectUpdate", "tags": ctx.tags}])
 
     async def handle_trap_link(self, ctx: "BizHawkClientContext") -> None:
         if ctx.slot_data["trap_link"] == TrapLink.option_true:
@@ -3793,7 +3830,7 @@ class ApeEscapeClient(BizHawkClient):
         DL_writes2 = []
         if self.deathlink == 1:
             if "DeathLink" not in ctx.tags:
-                await ctx.update_death_link(True)
+                #await ctx.update_death_link(True)
                 self.previous_death_link = ctx.last_death_link
             if "DeathLink" in ctx.tags and ctx.last_death_link + 1 < time.time():
                 if cookies == 0x00 and not self.sending_death_link and gameState in (RAM.gameState["InLevel"],RAM.gameState["TimeStation"]):
@@ -3811,7 +3848,7 @@ class ApeEscapeClient(BizHawkClient):
                 await bizhawk.write(ctx.bizhawk_ctx, DL_writes)
                 await bizhawk.write(ctx.bizhawk_ctx, DL_writes2)
         elif self.deathlink == 0:
-            await ctx.update_death_link(False)
+            #await ctx.update_death_link(False)
             self.previous_death_link = ctx.last_death_link
 
     async def send_deathlink(self, ctx: "BizHawkClientContext") -> None:
