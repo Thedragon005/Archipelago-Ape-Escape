@@ -1109,13 +1109,13 @@ class RAM:
         # "S_Western Land": 0x1C,
         77 : 77,
         # "S_Castle": 0x1D,
-        78 : 78,
-        79 : 78,
-        80 : 78,
-        81 : 78,
-        82 : 78,
-        84 : 78,
-        85 : 78,
+        78 : 79,
+        79 : 79,
+        80 : 79,
+        81 : 79,
+        82 : 79,
+        84 : 79,
+        85 : 79,
     }
 
     levelAddresses = {
@@ -1748,6 +1748,7 @@ class RAM:
     Warp_State = 0x0F4480 #0x01 Spawning, 0x02 = Warping back to Hub, 0x03 ??, 0x04 Exiting Transition
     Transition_Screen_Progress = 0x0F4482 #0x18 = Full black screen, 0x00 is normal
     TransitionFlag = 0x0E3893 # Different stage of processing the transitions
+    Screen_Fading = 0x0E0930
 
     # To translate Transition ID from doorTransitions Table to which address we need to change for the room
     transitionAddresses = {
@@ -1916,6 +1917,7 @@ class RAM:
         0x0734CC : [4,0xAE630008,0x00000000],  # SpikeZ_PosLock2
         0x0738C8 : [4,0xAE620008,0x00000000],  # SpikeZ_PosLock3
     }
+    Spike_CanMove = 0x0F4450 # 0x00 means can move, 0x01 means cannot move (And every odd bit like 0x03)
 
     SpecialRoom_CameraMode = 0x0C0798 #0x00 = Fixed, 0x01 = Overhead, 0x02 = StrictFollowCam
     SpecialRoom_CameraRotateLeft = 0x0C07C4 #0x00 = Not tilted, 0xFF = Tilted
