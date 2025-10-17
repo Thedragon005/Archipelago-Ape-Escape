@@ -3439,6 +3439,7 @@ class ApeEscapeClient(BizHawkClient):
         Transition_Screen_Progress = ER_Reads[13]
 
         ER_writes = []
+        ER_guards = []
 
         # List of vanilla rooms per level
         baselevelidtofirstroom = dict(zip(RAM.baselevelids, RAM.firstroomids))
@@ -3536,23 +3537,39 @@ class ApeEscapeClient(BizHawkClient):
 
                 # If the game is running but ER_Phase is 1, it need to reset the player state
                 if gameRunning == 0x01 and InputListener != 0x02:
-                    #if self.ER_phase == 1:
-                    TR_writes.clear()
-                    TR_guards.clear()
-                    TR_guards += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-                    TR_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
-                    if await bizhawk.guarded_write(ctx.bizhawk_ctx,TR_writes,TR_guards):
-                        print("Give control back to player")
-                    if self.ER_phase != 1:
+                    if self.ER_phase != 3:
+                        TR_writes.clear()
+                        TR_guards.clear()
+                        TR_guards += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+                        TR_writes += [(RAM.ControlsUpdate_DPAD_STARTSELECT_L3R3, 0xA0720000.to_bytes(4, "little"), "MainRAM")]
+                        if await bizhawk.guarded_write(ctx.bizhawk_ctx,TR_writes,TR_guards):
+                            print("Give control back to player")
+                        if self.ER_phase != 1:
+                            self.ER_phase = 1
+                        if self.ForceTransition == True:
+                            self.ForceTransition = False
+                    else:
+                        TR_guards.clear()
+                        TR_writes.clear()
+                        print("Phase 3(Extra)")
+                        TR_guards += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"),"MainRAM")]
+                        TR_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Loaded"].to_bytes(1, "little"),"MainRAM")]
+                        if await bizhawk.guarded_write(ctx.bizhawk_ctx, TR_writes, TR_guards):
+                            print("P3-Fix#1(Extra)")
+                        TR_guards.clear()
+                        TR_writes.clear()
+                        TR_guards += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Loaded"].to_bytes(1, "little"),"MainRAM")]
+                        TR_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"),"MainRAM")]
+                        if await bizhawk.guarded_write(ctx.bizhawk_ctx, TR_writes, TR_guards):
+                            print("P3-Fix#2(Extra)")
+
                         self.ER_phase = 1
-                    if self.ForceTransition == True:
-                        self.ForceTransition = False
+                        if self.ForceTransition == True:
+                            self.ForceTransition = False
                 elif gameRunning == 0x00:
                     if self.ER_phase == 1:
                         if (transitionPhase == RAM.transitionPhase["Spawning"] and currentRoom == baselevelidtofirstroom.get(level)) or (self.ForceTransition and currentRoom != LevelStartRoom and transitionPhase in (RAM.transitionPhase["Spawning"],RAM.transitionPhase["Playing"],RAM.transitionPhase["Nearby"])):
                             print("Phase 1")
-                            # if transitionPhase in (3,4) and spikeState2 == 48:
-                            # if spikeState2 == 48:
                             # Change TR1_Position to overlap Spike, and change targetRoom/targetDoor
                             targetRoom = currentlevelidtofirstroom.get(level)
                             targetRoomName = RAM.roomstostring.get(targetRoom)
@@ -3565,27 +3582,38 @@ class ApeEscapeClient(BizHawkClient):
                             ER_writes += [(RAM.Transition1_X, Spike_X_Pos.to_bytes(4, "little"), "MainRAM")]
                             ER_writes += [(RAM.Transition1_Y, Spike_Y_Pos.to_bytes(4, "little"), "MainRAM")]
                             ER_writes += [(RAM.Transition1_Z, Spike_Z_Pos.to_bytes(4, "little"), "MainRAM")]
-                            #ER_writes += [(RAM.gameRunningAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
                             ER_writes += [(RAM.spikeSuperFlyerUseState, 0x00.to_bytes(1, "little"), "MainRAM")]
-                            #ER_writes += [(RAM.Warp_State, 0x00.to_bytes(1, "little"), "MainRAM")]
-
-                            #if spikeState2 != 0x25:
-                                #ER_writes += [(RAM.spikeState2Address, 0x25.to_bytes(1, "little"), "MainRAM")]
                             await bizhawk.write(ctx.bizhawk_ctx, TR_writes)
                             self.ER_phase = 2
-                    elif (self.ER_phase == 2 and Warp_State == 0x01):
+                    elif (self.ER_phase == 2):
+                        TR_guards.clear()
+                        TR_writes.clear()
                         print("Phase 2")
-                        #if transitionPhase == RAM.transitionPhase["Spawning"]:
-                        #ER_writes += [(RAM.Screen_Fading, 0x18.to_bytes(1, "little"), "MainRAM")]
-                        ER_writes += [(RAM.Warp_State, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        TR_guards += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Spawning"].to_bytes(1, "little"),"MainRAM")]
+                        TR_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"),"MainRAM")]
+                        if await bizhawk.guarded_write(ctx.bizhawk_ctx, TR_writes, TR_guards):
+                            print("Wrote for Phase 2")
                         self.ER_phase = 3
                         #self.ER_phase = 1
 
                     # TODO Detection of error phase is good, but the correction is not good?
-                    elif self.ER_phase == 3 and Warp_State == 0x00:
+                    #elif (self.ER_phase == 3):
+                    elif (self.ER_phase == 3):
+                        TR_guards.clear()
+                        TR_writes.clear()
                         print("Phase 3")
-                        #ER_writes += [(RAM.Warp_State, 0x00.to_bytes(1, "little"), "MainRAM")]
-                        ER_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"), "MainRAM")]
+
+                        TR_guards += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"),"MainRAM")]
+                        TR_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Loaded"].to_bytes(1, "little"),"MainRAM")]
+                        if await bizhawk.guarded_write(ctx.bizhawk_ctx, TR_writes, TR_guards):
+                            print("P3-Fix#1")
+                        TR_guards.clear()
+                        TR_writes.clear()
+                        TR_guards += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Loaded"].to_bytes(1, "little"),"MainRAM")]
+                        TR_writes += [(RAM.transitionPhaseAddress, RAM.transitionPhase["Nearby"].to_bytes(1, "little"),"MainRAM")]
+                        if await bizhawk.guarded_write(ctx.bizhawk_ctx, TR_writes, TR_guards):
+                            ER_writes += [(RAM.gameRunningAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+                            print("P3-Fix#2")
                         self.ER_phase = 1
                         if self.ForceTransition == True:
                             self.ForceTransition = False
