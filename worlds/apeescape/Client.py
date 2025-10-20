@@ -541,7 +541,7 @@ class ApeEscapeClient(BizHawkClient):
                         f"Custom commands are available for this game.    \n"
                         f"Type /ae_commands for the full list.            \n"
                         f"================================================\n")
-
+            self.initialize_client()
         if cmd == "Bounced":
             if "tags" in args:
                 assert ctx.slot is not None
@@ -3832,7 +3832,7 @@ class ApeEscapeClient(BizHawkClient):
 
     async def update_tags (self, ctx: "BizHawkClientContext") -> None:
         updateTags = False
-        if ctx.slot_data["death_link"] == DeathLink.option_true and self.deathlink == 1:
+        if ctx.slot_data["death_link"] == DeathLink.option_true or self.deathlink == 1:
             if "DeathLink" not in ctx.tags:
                 ctx.tags.add("DeathLink")
                 updateTags = True
