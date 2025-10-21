@@ -409,7 +409,7 @@ class TrapWeights(OptionCounter):
     }
 
 
-class TrapsOnReconnect(OptionList):
+class TrapsOnReconnect(OptionSet):
     """Determine which traps are sent when reconnecting.
 
         This option determines which traps will be sent when reconnecting to the client.
