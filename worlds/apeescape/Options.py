@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter, \
-    Toggle
+    Toggle, OptionList
 from .Items import AEItem
 
 class GoalOption(Choice):
@@ -409,7 +409,7 @@ class TrapWeights(OptionCounter):
     }
 
 
-class TrapsOnReconnect(OptionSet):
+class TrapsOnReconnect(OptionList):
     """Determine which traps are sent when reconnecting.
 
         This option determines which traps will be sent when reconnecting to the client.
