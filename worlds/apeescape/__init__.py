@@ -488,21 +488,21 @@ class ApeEscapeWorld(World):
                 spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
             spoiler_handle.write(f"\n")
 
-    def generate_output(self, output_directory: str):
-        data = {
-            "slot_data": self.fill_slot_data(),
-            "location_to_item": {self.location_name_to_id[i.name] : item_table[i.item.name] for i in self.multiworld.get_locations() if not i.is_event},
-            "data_package": {
-                "data": {
-                    "games": {
-                        self.game: {
-                            "item_name_to_id": self.item_name_to_id,
-                            "location_name_to_id": self.location_name_to_id
-                        }
-                    }
-                }
-            }
-        }
-        filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
-        with open(os.path.join(output_directory, filename), 'w') as f:
-            json.dump(data, f)
+    #def generate_output(self, output_directory: str):
+        #data = {
+        #    "slot_data": self.fill_slot_data(),
+        #    "location_to_item": {self.location_name_to_id[i.name] : item_table[i.item.name] for i in self.multiworld.get_locations() if not i.is_event},
+        #    "data_package": {
+        #        "data": {
+        #            "games": {
+        #                self.game: {
+        #                    "item_name_to_id": self.item_name_to_id,
+        #                    "location_name_to_id": self.location_name_to_id
+        #                }
+        #            }
+        #        }
+        #    }
+        #}
+        #filename = f"{self.multiworld.get_out_file_name_base(self.player)}.apae"
+        #with open(os.path.join(output_directory, filename), 'w') as f:
+        #    json.dump(data, f)

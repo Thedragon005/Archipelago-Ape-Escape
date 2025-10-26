@@ -1,4 +1,4 @@
-from worlds.apeescape.Strings import AEDoor
+from .Strings import AEDoor
 
 
 class RAM:

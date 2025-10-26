@@ -10,27 +10,28 @@ import time
 from BaseClasses import ItemClassification
 from ModuleUpdate import update
 from NetUtils import ClientStatus, NetworkItem
-from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
-    CameraRotateHandler
-from .Strings import AEItem,AELocation
-from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
 
 from typing import TYPE_CHECKING, Optional, Dict, Set, ClassVar, Any, Tuple, Union
 
 import worlds._bizhawk as bizhawk
 
 from worlds._bizhawk.client import BizHawkClient
-from worlds.apeescape.RAMAddress import RAM
-from worlds.apeescape.Locations import hundoMonkeysCount, hundoCoinsCount, doorTransitions
-from worlds.apeescape.Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, \
-    LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, \
-    MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, \
-    ItemDisplayOption, KickoutPreventionOption, DeathLink, RandomizeStartingRoomOption, TrapLink
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
 #else:
     #BizHawkClientContext = object
+
+from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
+    CameraRotateHandler
+from .Strings import AEItem,AELocation
+from .Locations import cointable, hundoMonkeysCount, hundoCoinsCount, doorTransitions
+from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
+from .RAMAddress import RAM, append_hex
+from .Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, \
+    LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, \
+    MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, \
+    ItemDisplayOption, KickoutPreventionOption, DeathLink, RandomizeStartingRoomOption, TrapLink
 
 EXPECTED_ROM_NAME = "ape escape / AP 2"
 
@@ -348,6 +349,7 @@ def cmd_syncprogress(self: "BizHawkClientCommandProcessor", status = "") -> None
 class ApeEscapeClient(BizHawkClient):
     game = "Ape Escape"
     system = "PSX"
+    patch_suffix = ".apae"
 
     apworld_manifest = orjson.loads(pkgutil.get_data(__name__, "archipelago.json").decode("utf-8"))
     client_version = apworld_manifest["world_version"]
@@ -861,6 +863,22 @@ class ApeEscapeClient(BizHawkClient):
     async def syncprogress(self, ctx: "BizHawkClientContext") -> None:
         Sync_Writes = []
         logger.info(f"Getting Monkeys state from server...")
+        gameStateRead = await bizhawk.read(ctx.bizhawk_ctx, [(RAM.gameStateAddress, 1, "MainRAM")])
+        gameState = int.from_bytes(gameStateRead[0])
+        #CoinReads = []
+        CoinWrites = []
+        #CoinReads += (RAM.startingCoinAddress, 100, "MainRAM")
+        #CoinReads += (RAM.temp_startingCoinAddress, 100, "MainRAM")
+        #await bizhawk.read(ctx.bizhawk_ctx, CoinReads)
+        CoinsList = list(cointable)
+        #CoinTable = CoinReads[0]
+        #TempCoinTable = CoinReads[1]
+
+        CoinTable = 0x00
+        SA = False
+        GA = False
+
+
         GlobalMonkeys = RAM.monkeyListGlobal
         keys_globalMonkeys = list(GlobalMonkeys.keys())
         values_globalMonkeys = list(GlobalMonkeys.values())
@@ -883,7 +901,6 @@ class ApeEscapeClient(BizHawkClient):
             if (monkeyID) in self.locations_list and monkeyValue != 0x02:
                 Sync_Writes += [(monkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
 
-
         # Write to memory
         if Sync_Writes:
             await bizhawk.write(ctx.bizhawk_ctx, Sync_Writes)
@@ -897,9 +914,49 @@ class ApeEscapeClient(BizHawkClient):
             msg = f"{len(Sync_Writes)} monkey"
         else:
             msg = f"{len(Sync_Writes)} monkeys"
+        logger.info(f"--{msg} updated--")
 
-        logger.info(f"Synced server progress into the game!\n"
-                    f"({msg} updated)")
+        logger.info(f"Getting Coins state from server...")
+        for x in range(len(CoinsList)):
+            coinLocationID = self.offset + CoinsList[x]
+            if (coinLocationID) in self.locations_list:
+                if CoinsList[x] > 300:
+                    CoinID = CoinsList[x] - 300
+                    if CoinTable == 0x00:
+                        CoinTable = f"01{CoinID:02d}"
+                    else:
+                        CoinTable = f"01{CoinID:02d}{CoinTable}"
+
+                else:
+                    if 295 <= CoinsList[x] < 300:
+                        SA = True
+                    elif 290 <= CoinsList[x] < 295:
+                        GA = True
+
+        CoinTableInt = int(f"0x{CoinTable}",16)
+        if CoinTable != 0:
+            if RAM.gameState["LevelSelect"] == gameState:
+                CoinWrites += [(RAM.temp_startingCoinAddress, CoinTableInt.to_bytes(100, "little"), "MainRAM")]
+            else:
+                CoinWrites += [(RAM.startingCoinAddress, CoinTableInt.to_bytes(100, "little"), "MainRAM")]
+        if SA == True:
+            if RAM.gameState["LevelSelect"] == gameState:
+                CoinWrites += [(RAM.temp_SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            else:
+                CoinWrites += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+        if GA == True:
+            if RAM.gameState["LevelSelect"] == gameState:
+                CoinWrites += [(RAM.temp_GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            else:
+                CoinWrites += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+
+        if CoinWrites:
+            await bizhawk.write(ctx.bizhawk_ctx, CoinWrites)
+            UpdateCount = len(CoinWrites)
+            if UpdateCount != 0:
+                logger.info(f"--Coins updated--")
+
+        logger.info(f"Synced server progress into the game!\n")
 
     async def process_bizhawk_messages(self, ctx: "BizHawkClientContext") -> None:
         if self.bhdisplay == 1:
