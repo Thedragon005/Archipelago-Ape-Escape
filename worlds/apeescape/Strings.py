@@ -589,3 +589,6 @@ class AEItem(Enum):
     CameraRotateTrap = "Camera Rotate Trap"
     RainbowCookie = "Rainbow Cookie"
     FAKE_OOL_ITEM = "Fake OOL Item"
+
+DS_Options = ["kickoutprevention","deathlink","autoequip","bhdisplay"]
+DS_ButtonAndDoors = ["DIButton","CrCWaterButton","MM_Painting_Button","MM_MonkeyHead_Button","TVT_Lobby_Button","DR_Block"]

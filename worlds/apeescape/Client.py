@@ -24,10 +24,10 @@ if TYPE_CHECKING:
 
 from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
     CameraRotateHandler
-from .Strings import AEItem,AELocation
+from .Strings import AEItem,AELocation,DS_Options,DS_ButtonAndDoors
 from .Locations import cointable, hundoMonkeysCount, hundoCoinsCount, doorTransitions
 from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
-from .RAMAddress import RAM, append_hex
+from .RAMAddress import RAM
 from .Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, \
     LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, \
     MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, \
@@ -690,175 +690,120 @@ class ApeEscapeClient(BizHawkClient):
     async def set_auth(self, ctx: "BizHawkClientContext") -> None:
         x = 3
 
-    async def kickout_prevention_handling(self, ctx: "BizHawkClientContext", context):
+    async def ds_options_handling(self, ctx: "BizHawkClientContext", context):
         if context == "init":
             if ctx.team is None:
                 self.initDatastorage = False
                 return
-
-            await ctx.send_msgs([{"cmd": "Get","keys": [f"AE_kickoutprevention_{ctx.team}_{ctx.slot}"]}])
+            keys = [f"AE_{Option}_{ctx.team}_{ctx.slot}" for Option in DS_Options]
+            await ctx.send_msgs([{"cmd": "Get", "keys": keys}])
 
             if not self.gotDatastorage:
                 return
 
             self.initDatastorage = True
 
+            # Kickout Prevention
             if self.KickoutPrevention_DS is None:
-                #Used slotdata
+                # Used slotdata
                 self.preventKickOut = int(ctx.slot_data["kickoutprevention"])
             else:
                 # Got valid Datastorage, take this instead of slot_data
                 self.preventKickOut = self.KickoutPrevention_DS
-            if self.preventKickOut == 1:
-                msg = "ON"
-            else:
-                msg = "OFF"
-            logger.info(f"\n--Options Status--")
-            logger.info(f"Kickout Prevention: {msg}")
-        elif context == "change":
-            await ctx.send_msgs(
-                [
-                    {
-                        "cmd": "Set",
-                        "key": f"AE_kickoutprevention_{ctx.team}_{ctx.slot}",
-                        "default": 0,
-                        "want_reply": False,
-                        "operations": [{"operation": "replace", "value": self.preventKickOut}],
-                    }
-                ]
-            )
-            if self.preventKickOut == 1:
-                await self.send_bizhawk_message(ctx, "Kickout Prevention Enabled", "Custom", "")
-            else:
-                await self.send_bizhawk_message(ctx, "Kickout Prevention Disabled", "Custom", "")
-            # self.preventKickOut = self.KickoutPrevention_DS
-            #print(f"set AE_kickoutprevention_{ctx.team}_{ctx.slot} to {self.preventKickOut}")
 
-    async def deathlink_option_handling(self, ctx: "BizHawkClientContext", context):
-        if context == "init":
-            if ctx.team is None:
-                return
-            await ctx.send_msgs([{
-                "cmd": "Get",
-                "keys": [f"AE_deathlink_{ctx.team}_{ctx.slot}"]
-            }])
-
-            if not self.gotDatastorage:
-                return
-            
+            # Deathlink
             if self.DeathLink_DS is None:
                 # Used slotdata
                 self.deathlink = int(ctx.slot_data["death_link"])
             else:
                 # Got valid Datastorage, take this instead of slot_data
                 self.deathlink = self.DeathLink_DS
-            if self.deathlink == 1:
-                msg = "ON"
-            else:
-                msg = "OFF"
-            logger.info(f"DeathLink: {msg}")
-        elif context == "change":
-            await ctx.send_msgs(
-                [
-                    {
-                        "cmd": "Set",
-                        "key": f"AE_deathlink_{ctx.team}_{ctx.slot}",
-                        "default": 0,
-                        "want_reply": False,
-                        "operations": [{"operation": "replace", "value": self.deathlink}],
-                    }
-                ]
-            )
-            if self.deathlink == 1:
-                await self.send_bizhawk_message(ctx, "Deathlink Enabled", "Custom", "")
-            else:
-                await self.send_bizhawk_message(ctx, "Deathlink Disabled", "Custom", "")
-            # self.deathlink = self.DeathLink_DS
-            #print(f"set AE_deathlink_{ctx.team}_{ctx.slot} to {self.deathlink}")
 
-    async def autoequip_option_handling(self, ctx: "BizHawkClientContext", context):
-        if context == "init":
-            if ctx.team is None:
-                return
-            await ctx.send_msgs([{
-                "cmd": "Get",
-                "keys": [f"AE_autoequip_{ctx.team}_{ctx.slot}"]
-            }])
-
-            if not self.gotDatastorage:
-                return
+            # Auto Equip
             if self.AutoEquip_DS is None:
                 # Used slotdata
                 self.autoequip = int(ctx.slot_data["autoequip"])
-                self.AutoEquip_DS = self.autoequip
+                #self.AutoEquip_DS = self.autoequip
             else:
                 # Got valid Datastorage, take this instead of slot_data
                 self.autoequip = self.AutoEquip_DS
-            if self.autoequip == 1:
-                msg = "ON"
-            else:
-                msg = "OFF"
-            logger.info(f"Auto-Equip: {msg}")
-        elif context == "change":
-            await ctx.send_msgs(
-                [
-                    {
-                        "cmd": "Set",
-                        "key": f"AE_autoequip_{ctx.team}_{ctx.slot}",
-                        "default": 0,
-                        "want_reply": False,
-                        "operations": [{"operation": "replace", "value": self.autoequip}],
-                    }
-                ]
-            )
-            if self.autoequip == 1:
-                await self.send_bizhawk_message(ctx, "Auto-Equip Enabled", "Custom", "")
-            else:
-                await self.send_bizhawk_message(ctx, "Auto-Equip Disabled", "Custom", "")
-            # self.autoequip = self.AutoEquip_DS
-            #print(f"set AE_autoequip_{ctx.team}_{ctx.slot} to {self.autoequip}")
 
-    async def bh_display_option_handling(self, ctx: "BizHawkClientContext", context):
-        if context == "init":
-            if ctx.team is None:
-                return
-            await ctx.send_msgs([{
-                "cmd": "Get",
-                "keys": [f"AE_bhdisplay_{ctx.team}_{ctx.slot}"]
-            }])
-
-            if not self.gotDatastorage:
-                return
+            # Bizhawk Item Display
             if self.BHDisplay_DS is None:
                 # Used slotdata
                 self.bhdisplay = int(ctx.slot_data["itemdisplay"])
-                self.BHDisplay_DS = self.bhdisplay
+                #self.BHDisplay_DS = self.bhdisplay
             else:
                 # Got valid Datastorage, take this instead of slot_data
                 self.bhdisplay = self.BHDisplay_DS
-            if self.bhdisplay == 1:
-                msg = "ON"
-            else:
-                msg = "OFF"
-            logger.info(f"Bizhawk Item Display: {msg}")
-        elif context == "change":
-            await ctx.send_msgs(
-                [
-                    {
-                        "cmd": "Set",
-                        "key": f"AE_bhdisplay_{ctx.team}_{ctx.slot}",
-                        "default": 0,
-                        "want_reply": False,
-                        "operations": [{"operation": "replace", "value": self.bhdisplay}],
-                    }
-                ]
-            )
-            if self.bhdisplay == 1:
-                await self.send_bizhawk_message(ctx, "Bizhawk Item Display Enabled", "Passthrough", "")
-            else:
-                await self.send_bizhawk_message(ctx, "Bizhawk Item Display Disabled", "Passthrough", "")
 
-            #print(f"set AE_bhdisplay_{ctx.team}_{ctx.slot} to {self.bhdisplay}")
+            loggermessage = "\n--Options Status--\n"
+            loggermessage += f"Kickout Prevention: {"ON" if self.preventKickOut == 1 else "OFF"}\n"
+            loggermessage += f"DeathLink: {"ON" if self.deathlink == 1 else "OFF"}\n"
+            loggermessage += f"Auto-Equip: {"ON" if self.autoequip == 1 else "OFF"}\n"
+            loggermessage += f"Bizhawk Item Display: {"ON" if self.bhdisplay == 1 else "OFF"}\n"
+            logger.info(loggermessage)
+        elif context == "change":
+            if self.changeKickout:
+                await ctx.send_msgs(
+                    [
+                        {
+                            "cmd": "Set",
+                            "key": f"AE_kickoutprevention_{ctx.team}_{ctx.slot}",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": self.preventKickOut}],
+                        }
+                    ]
+                )
+                msg = f"Kickout Prevention {"Enabled" if self.preventKickOut == 1 else "Disabled"}"
+                await self.send_bizhawk_message(ctx, msg, "Passthrough", "")
+                self.changeKickout = False
+            if self.changeDeathlink:
+                await ctx.send_msgs(
+                    [
+                        {
+                            "cmd": "Set",
+                            "key": f"AE_deathlink_{ctx.team}_{ctx.slot}",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": self.deathlink}],
+                        }
+                    ]
+                )
+                msg = f"Deathlink {"Enabled" if self.deathlink == 1 else "Disabled"}"
+                await self.send_bizhawk_message(ctx, msg, "Passthrough", "")
+                self.changeDeathlink = False
+            if self.changeAutoEquip:
+                await ctx.send_msgs(
+                    [
+                        {
+                            "cmd": "Set",
+                            "key": f"AE_autoequip_{ctx.team}_{ctx.slot}",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": self.autoequip}],
+                        }
+                    ]
+                )
+                msg = f"Auto-Equip {"Enabled" if self.autoequip == 1 else "Disabled"}"
+                await self.send_bizhawk_message(ctx, msg, "Passthrough", "")
+                self.changeAutoEquip = False
+            if self.changeBHDisplay:
+                await ctx.send_msgs(
+                    [
+                        {
+                            "cmd": "Set",
+                            "key": f"AE_bhdisplay_{ctx.team}_{ctx.slot}",
+                            "default": 0,
+                            "want_reply": False,
+                            "operations": [{"operation": "replace", "value": self.bhdisplay}],
+                        }
+                    ]
+                )
+                msg = f"Bizhawk Item Display {"Enabled" if self.bhdisplay == 1 else "Disabled"}"
+                await self.send_bizhawk_message(ctx, msg, "Passthrough", "")
+                self.changeBHDisplay = False
 
     async def syncprogress(self, ctx: "BizHawkClientContext") -> None:
         Sync_Writes = []
@@ -1002,13 +947,7 @@ class ApeEscapeClient(BizHawkClient):
         if self.initClient == False:
             self.initClient = True
             self.initialize_client()
-            # print("========================")
-            #print("INIT")
-            # print("========================")
-            await self.kickout_prevention_handling(ctx, "init")
-            await self.deathlink_option_handling(ctx, "init")
-            await self.autoequip_option_handling(ctx, "init")
-            await self.bh_display_option_handling(ctx, "init")
+            await self.ds_options_handling(ctx,"init")
             await self.Spike_Color_handling(ctx, "", "init")
 
             strMessage = "Connected to Bizhawk Client - Ape Escape Archipelago v " + str(self.client_version)
@@ -1018,33 +957,17 @@ class ApeEscapeClient(BizHawkClient):
             if self.gotDatastorage:
                 # Last init to write the status
                 if not self.initDatastorage:
-                    await self.kickout_prevention_handling(ctx, "init")
-                    await self.deathlink_option_handling(ctx, "init")
-                    await self.autoequip_option_handling(ctx, "init")
-                    await self.bh_display_option_handling(ctx, "init")
+                    await self.ds_options_handling(ctx, "init")
                     await self.Spike_Color_handling(ctx, "", "init")
 
-                if self.changeKickout == True:
-                    self.changeKickout = False
-                    await self.kickout_prevention_handling(ctx, "change")
-                if self.changeDeathlink == True:
-                    self.changeDeathlink = False
-                    await self.deathlink_option_handling(ctx, "change")
-                if self.changeAutoEquip == True:
-                    self.changeAutoEquip = False
-                    await self.autoequip_option_handling(ctx, "change")
-                if self.changeBHDisplay == True:
-                    self.changeBHDisplay = False
-                    await self.bh_display_option_handling(ctx, "change")
+                if  self.changeKickout or self.changeDeathlink or self.changeAutoEquip or self.changeBHDisplay:
+                    await self.ds_options_handling(ctx, "change")
                 if self.boolsyncprogress:
                     self.boolsyncprogress = False
                     await self.syncprogress(ctx)
             else:
                 # Not send anything before having the options set
-                await self.kickout_prevention_handling(ctx, "init")
-                await self.deathlink_option_handling(ctx, "init")
-                await self.autoequip_option_handling(ctx, "init")
-                await self.bh_display_option_handling(ctx, "init")
+                await self.ds_options_handling(ctx, "init")
                 await self.Spike_Color_handling(ctx, "", "init")
 
                 return
