@@ -868,9 +868,9 @@ class ApeEscapeClient(BizHawkClient):
                 if CoinsList[x] > 300:
                     CoinID = CoinsList[x] - 300
                     if CoinTable == 0x00:
-                        CoinTable = f"01{CoinID:02d}"
+                        CoinTable = f"01{CoinID:02x}"
                     else:
-                        CoinTable = f"01{CoinID:02d}{CoinTable}"
+                        CoinTable = f"01{CoinID:02x}{CoinTable}"
 
                 else:
                     if 295 <= CoinsList[x] < 300:
@@ -879,6 +879,7 @@ class ApeEscapeClient(BizHawkClient):
                         GA = True
 
         CoinTableInt = int(f"0x{CoinTable}",16)
+        print(CoinTable)
         if CoinTable != 0:
             if RAM.gameState["LevelSelect"] == gameState:
                 CoinWrites += [(RAM.temp_startingCoinAddress, CoinTableInt.to_bytes(100, "little"), "MainRAM")]
@@ -3618,6 +3619,45 @@ class ApeEscapeClient(BizHawkClient):
                         }])
         await bizhawk.write(ctx.bizhawk_ctx, ER_writes)
 
+    def format_cointable(self,ctx: "BizHawkClientContext",CoinTable):
+        entranceorder = ctx.slot_data["entranceids"]
+        baselevelids = RAM.baselevelids
+        hex_string = format(CoinTable,'X')
+        # Split into byte pairs and reverse the list
+        if len(hex_string) % 2 != 0:
+            hex_string = f"0{hex_string}"
+        byte_pairs = [hex_string[i:i + 2] for i in range(0, len(hex_string), 2)]
+        bytes_coins_list = [hex_string[i:i + 2] for i in range(0, len(hex_string), 4)]
+        coins_reversed_byte_pairs = bytes_coins_list[::-1]
+        reversed_byte_pairs = byte_pairs[::-1]
+        coins_reversed_byte_pairs = reversed_byte_pairs[::2]
+        value_to_remove = 'FF'
+        coins_list = [int(item,16) for item in coins_reversed_byte_pairs if item != value_to_remove]
+        trueCoinsList = []
+        for i in range(len(entranceorder)):
+            entranceID = entranceorder[i]
+            #print(entranceorder.index(entranceID))
+            baseLevelID = baselevelids[entranceorder.index(entranceID)]
+
+            #print(f"BaseLevelID:{baseLevelID}")
+            if RAM.coinsperlevel.get(entranceID) != {}:
+                print(set(RAM.coinsperlevel.get(entranceID)))
+                if set(RAM.coinsperlevel.get(entranceID)).issubset(set(coins_list)):
+                    # Add all of "EntranceID" coins to the list
+                    trueCoinsList += (item for item in RAM.coinsperlevel.get(baseLevelID))
+                    print(f"All coins in level {entranceID} are in the coins list.")
+                    print(trueCoinsList)
+                else:
+                    print(f"Not all elements in level {entranceID} are in the coins list.")
+        #print(coins_list)
+        # Join the reversed byte pairs back into a string
+        #inverted_hex_string = "".join(reversed_byte_pairs)
+        inverted_hex_string = "".join([f"01{int(item):02x}" for item in trueCoinsList])
+
+        print(f"Original: {hex_string}")
+        print(f"Inverted (byte order): {inverted_hex_string}")
+
+        return inverted_hex_string
 
     async def level_select_optimization(self, ctx: "BizHawkClientContext", LSO_Reads) -> None:
         # For coin display to be ignored while in Level Select
@@ -3635,8 +3675,19 @@ class ApeEscapeClient(BizHawkClient):
         LS_Writes = []
 
         if RAM.gameState["LevelSelect"] == gameState:
-            if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
-                LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+
+            #if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
+            if ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
+                #DisplayCoinsTable = int(self.format_cointable(ctx, CoinTable),16)
+                DisplayCoinsTable = self.format_cointable(ctx, CoinTable)
+                print(DisplayCoinsTable)
+                if DisplayCoinsTable == {}:
+                    DisplayCoinsTable = RAM.blank_coinTable
+                else:
+                    DisplayCoinsTable = int(DisplayCoinsTable,16)
+                #print(DisplayCoinsTable)
+                #LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+                LS_Writes += [(RAM.startingCoinAddress, DisplayCoinsTable.to_bytes(100, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
             if Temp_SA_Completed == 0xFF:
                 LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
@@ -3645,7 +3696,9 @@ class ApeEscapeClient(BizHawkClient):
                 LS_Writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
 
         elif RAM.gameState["Cleared"] != gameState:
-            if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
+            #if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
+            if ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
+                #print(hex(TempCoinTable[::-1]))
                 LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
                 LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
 

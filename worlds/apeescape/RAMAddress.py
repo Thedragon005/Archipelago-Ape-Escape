@@ -1838,6 +1838,74 @@ class RAM:
     levelselectFonts = 0x139CF6 # 0x36 = Classic One 0x26 = Current One
     time_attack_Times = 0x0DFD44
 
+    coinsperlevel = {
+        1: {
+            1
+        },
+        2: {
+            2
+        },
+        3: {
+            3
+        },
+        4: {
+            6, 7, 8, 9
+        },
+        5: {
+            11, 12, 13, 14
+        },
+        6: {
+            17
+        },
+        7: { #Stadium Attack
+
+        },
+        8: {
+            21
+        },
+        9: {
+            23
+        },
+        10: {
+            24,25,28
+        },
+        11: {
+            29
+        },
+        12: {
+            30, 31, 32
+        },
+        13: {
+            34, 35
+        },
+        14: { # Gladiator Attack
+
+        },
+        15: {
+            37, 38, 39
+        },
+        16: {
+            40, 41, 44
+        },
+        17: {
+            45, 46, 49, 50
+        },
+        20: {
+            53, 54, 55
+        },
+        21: {
+            58, 59
+        },
+        22: {
+            64, 66
+        },
+        24: {
+            73, 74, 75, 77, 78, 79, 80, 82, 84, 85
+        },
+        30: {
+
+        }
+    }
 # ==================== Kickout Prevention ====================
     localLevelState = 0x0F447E # Same as level state, but can be changed to impact some behaviors (Like Kickout Prevention)
 
