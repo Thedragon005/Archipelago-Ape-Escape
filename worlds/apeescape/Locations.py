@@ -752,7 +752,7 @@ def createLocationGroups():
             GROUPED_LOCATIONS.setdefault("Specter Coins", []).append(locname)
         elif ("Specter" in locname and "Factory" not in locname) or "Boss" in locname or "Jake" in locname or "Professor" in locname:
             GROUPED_LOCATIONS.setdefault("Bosses", []).append(locname)
-        elif "Monkey" in locname and "Madness" not in locname:
+        elif ("Monkey" in locname and "Monkey Madness" not in locname) or ("Monkey Madness Monkey" in locname):
             GROUPED_LOCATIONS.setdefault("Monkeys", []).append(locname)
 
 createLocationGroups()
