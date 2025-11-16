@@ -1324,6 +1324,7 @@ class RAM:
         85: AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value,
         87: AEDoor.PPM_ENTRY.value
     }
+    PPMShowCoins = 0x139966 # 0 = no coin icon, 2 = Have coin
 # ========================= Lamps / Doors =========================
 
     lockCamera = 0x162057  # Lock Camera (WsW Gong Room) Locked = 0x80, Free = 0x60
@@ -1858,7 +1859,7 @@ class RAM:
             17
         },
         7: { #Stadium Attack
-
+            95,96,97,98,99
         },
         8: {
             21
@@ -1879,7 +1880,7 @@ class RAM:
             34, 35
         },
         14: { # Gladiator Attack
-
+            90,91,92,93,94
         },
         15: {
             37, 38, 39
@@ -1902,7 +1903,7 @@ class RAM:
         24: {
             73, 74, 75, 77, 78, 79, 80, 82, 84, 85
         },
-        30: {
+        30: { #PPM
 
         }
     }
