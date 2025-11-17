@@ -3702,59 +3702,59 @@ class ApeEscapeClient(BizHawkClient):
         levelselect_coinlock_Address = LSO_Reads[10]
 
         LS_Writes = []
+        if ctx.slot_data["entrance"] != 0x00:
+            if RAM.gameState["LevelSelect"] == gameState:
+                if levelselect_coinlock_Address == 0xFF:
+                    LS_Writes += [(RAM.levelselect_coinlock_Address, 0x01.to_bytes(1, "little"), "MainRAM")]
+                #if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
+                if ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
+                    #DisplayCoinsTable = int(self.format_cointable(ctx, CoinTable),16)
+                    Formated_Coins = self.format_cointable(ctx, CoinTable,SA_Completed,GA_Completed)
+                    DisplayCoinsTable = Formated_Coins[0]
+                    SA = Formated_Coins[1]
+                    GA = Formated_Coins[2]
+                    PPM = Formated_Coins[3]
 
-        if RAM.gameState["LevelSelect"] == gameState:
-            if levelselect_coinlock_Address == 0xFF:
-                LS_Writes += [(RAM.levelselect_coinlock_Address, 0x01.to_bytes(1, "little"), "MainRAM")]
-            #if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
-            if ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
-                #DisplayCoinsTable = int(self.format_cointable(ctx, CoinTable),16)
-                Formated_Coins = self.format_cointable(ctx, CoinTable,SA_Completed,GA_Completed)
-                DisplayCoinsTable = Formated_Coins[0]
-                SA = Formated_Coins[1]
-                GA = Formated_Coins[2]
-                PPM = Formated_Coins[3]
-
-                if DisplayCoinsTable == {} or DisplayCoinsTable == "":
-                    DisplayCoinsTable = RAM.blank_coinTable
-                else:
-                    DisplayCoinsTable = int(DisplayCoinsTable,16)
+                    if DisplayCoinsTable == {} or DisplayCoinsTable == "":
+                        DisplayCoinsTable = RAM.blank_coinTable
+                    else:
+                        DisplayCoinsTable = int(DisplayCoinsTable,16)
+                        #print(DisplayCoinsTable)
                     #print(DisplayCoinsTable)
-                #print(DisplayCoinsTable)
-                #LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
-                LS_Writes += [(RAM.startingCoinAddress, DisplayCoinsTable.to_bytes(100, "little"), "MainRAM")]
-                LS_Writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
-                if Temp_SA_Completed == 0xFF:
-                    if SA == 1:
-                        LS_Writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+                    #LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.startingCoinAddress, DisplayCoinsTable.to_bytes(100, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
+                    if Temp_SA_Completed == 0xFF:
+                        if SA == 1:
+                            LS_Writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+                        else:
+                            LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        if GA == 1:
+                            LS_Writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+                        else:
+                            LS_Writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
+
+                    if PPM == 1:
+                        LS_Writes += [(RAM.PPMShowCoins, 0x02.to_bytes(1, "little"), "MainRAM")]
                     else:
-                        LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    if GA == 1:
-                        LS_Writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
-                    else:
-                        LS_Writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                LS_Writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
-                LS_Writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
-
-                if PPM == 1:
-                    LS_Writes += [(RAM.PPMShowCoins, 0x02.to_bytes(1, "little"), "MainRAM")]
-                else:
-                    LS_Writes += [(RAM.PPMShowCoins, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        LS_Writes += [(RAM.PPMShowCoins, 0x00.to_bytes(1, "little"), "MainRAM")]
 
 
-        elif RAM.gameState["Cleared"] != gameState:
-            if levelselect_coinlock_Address == 0x01:
-                LS_Writes += [(RAM.levelselect_coinlock_Address, 0xFF.to_bytes(1, "little"), "MainRAM")]
-            #if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
-            if ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
-                #print(hex(TempCoinTable[::-1]))
-                LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
-                LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
-                if Temp_SA_Completed != 0xFF:
-                    LS_Writes += [(RAM.SA_CompletedAddress, Temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.GA_CompletedAddress, Temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            elif RAM.gameState["Cleared"] != gameState:
+                if levelselect_coinlock_Address == 0x01:
+                    LS_Writes += [(RAM.levelselect_coinlock_Address, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                #if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
+                if ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
+                    #print(hex(TempCoinTable[::-1]))
+                    LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+                    if Temp_SA_Completed != 0xFF:
+                        LS_Writes += [(RAM.SA_CompletedAddress, Temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                        LS_Writes += [(RAM.GA_CompletedAddress, Temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
+                        LS_Writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                        LS_Writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # Prevent scrolling past the unlocked ERA/level
         if gameState == RAM.gameState["LevelSelect"]:
