@@ -130,6 +130,8 @@ class ApeEscapeWorld(World):
                 self.using_ut = True
                 self.passthrough = self.multiworld.re_gen_passthrough["Ape Escape"]
                 self.options.goal.value = self.passthrough["goal"]
+                self.options.fastgoal.value = self.passthrough["fastgoal"]
+                self.options.allowcollect.value = self.passthrough["allowcollect"]
                 self.options.requiredtokens.value = self.passthrough["requiredtokens"]
                 self.options.totaltokens.value = self.passthrough["totaltokens"]
                 self.options.tokenlocations.value = self.passthrough["tokenlocations"]
@@ -436,6 +438,8 @@ class ApeEscapeWorld(World):
 
         return {
             "goal": self.options.goal.value,
+            "fastgoal": self.options.fastgoal.value,
+            "allowcollect": self.options.allowcollect.value,
             "requiredtokens": self.options.requiredtokens.value,
             "totaltokens": self.options.totaltokens.value,
             "tokenlocations": self.options.tokenlocations.value,
