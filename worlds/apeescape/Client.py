@@ -1069,6 +1069,7 @@ class ApeEscapeClient(BizHawkClient):
                 # Level Select Coin hiding
                 "CoinTable": (RAM.startingCoinAddress, 100, "MainRAM"),
                 "TempCoinTable": (RAM.temp_startingCoinAddress, 100, "MainRAM"),
+                "levelselect_coinlock_Address": (RAM.levelselect_coinlock_Address, 1, "MainRAM"),
                 "SA_Completed": (RAM.SA_CompletedAddress, 1, "MainRAM"),
                 "temp_SA_Completed": (RAM.temp_SA_CompletedAddress, 1, "MainRAM"),
                 "GA_Completed": (RAM.GA_CompletedAddress, 1, "MainRAM"),
@@ -1221,6 +1222,7 @@ class ApeEscapeClient(BizHawkClient):
             # Level Select Coin hiding
             CoinTable = readValues["CoinTable"]
             TempCoinTable = readValues["TempCoinTable"]
+            levelselect_coinlock_Address = readValues["levelselect_coinlock_Address"]
             SA_Completed = readValues["SA_Completed"]
             temp_SA_Completed = readValues["temp_SA_Completed"]
             GA_Completed = readValues["GA_Completed"]
@@ -1552,7 +1554,7 @@ class ApeEscapeClient(BizHawkClient):
             self.tokencount = tokenCountFromServer
 
             # ======== Locations handling =========
-            Locations_Reads = [currentLevel,gameState,currentRoom,previousCoinStateRoom,currentCoinStateRoom,gameRunning,TVT_BossPhase,gotMail,mailboxID,jakeVictory,S1_P2_State,S1_P2_Life,S2_isCaptured]
+            Locations_Reads = [currentLevel,gameState,currentRoom,previousCoinStateRoom,currentCoinStateRoom,gameRunning,TVT_BossPhase,gotMail,mailboxID,jakeVictory,S1_P2_State,S1_P2_Life,S2_isCaptured,levelselect_coinlock_Address]
             await self.locations_handling(ctx, Locations_Reads)
 
 
@@ -1749,7 +1751,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # == Level Select Optimization ===
             # Execute the Level Select optimization code segment
-            LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, temp_SA_Completed, GA_Completed, temp_GA_Completed, LS_currentLevel, LS_currentWorld, worldIsScrollingRight]
+            LSO_Reads = [gameState, CoinTable, TempCoinTable, SA_Completed, temp_SA_Completed, GA_Completed, temp_GA_Completed, LS_currentLevel, LS_currentWorld, worldIsScrollingRight,levelselect_coinlock_Address]
             await self.level_select_optimization(ctx, LSO_Reads)
             # ================================
 
@@ -2073,6 +2075,7 @@ class ApeEscapeClient(BizHawkClient):
         S1_P2_State = Locations_Reads[10]
         S1_P2_Life = Locations_Reads[11]
         S2_isCaptured = Locations_Reads[12]
+        levelselect_coinlock_Address = Locations_Reads[12]
 
         # Local update conditions
         # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -2142,7 +2145,7 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx, locationWrites)
 
         # Check for Coins
-        if gameState != RAM.gameState["LevelSelect"]:
+        if gameState != RAM.gameState["LevelSelect"] and levelselect_coinlock_Address != 0x01:
             # If the previous address is empty it means you are too far, go back once
             # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
             coins_to_send = set()
@@ -3625,7 +3628,6 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx, ER_writes)
 
     def format_cointable(self,ctx: "BizHawkClientContext",CoinTable,SA_Completed,GA_Completed):
-        CoinsWrite = []
         SA = 0
         GA = 0
         PPM = 0
@@ -3697,11 +3699,13 @@ class ApeEscapeClient(BizHawkClient):
         LS_currentLevel = LSO_Reads[7]
         LS_currentWorld = LSO_Reads[8]
         worldIsScrollingRight = LSO_Reads[9]
+        levelselect_coinlock_Address = LSO_Reads[10]
 
         LS_Writes = []
 
         if RAM.gameState["LevelSelect"] == gameState:
-
+            if levelselect_coinlock_Address == 0xFF:
+                LS_Writes += [(RAM.levelselect_coinlock_Address, 0x01.to_bytes(1, "little"), "MainRAM")]
             #if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
             if ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
                 #DisplayCoinsTable = int(self.format_cointable(ctx, CoinTable),16)
@@ -3739,6 +3743,8 @@ class ApeEscapeClient(BizHawkClient):
 
 
         elif RAM.gameState["Cleared"] != gameState:
+            if levelselect_coinlock_Address == 0x01:
+                LS_Writes += [(RAM.levelselect_coinlock_Address, 0xFF.to_bytes(1, "little"), "MainRAM")]
             #if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
             if ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
                 #print(hex(TempCoinTable[::-1]))
