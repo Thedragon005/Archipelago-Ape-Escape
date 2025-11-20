@@ -24,14 +24,14 @@ if TYPE_CHECKING:
 
 from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
     CameraRotateHandler
-from .Strings import AEItem,AELocation,DS_Options,DS_ButtonAndDoors
+from .Strings import AEItem, AEDoor, AELocation, DS_Options, DS_ButtonAndDoors
 from .Locations import cointable, hundoMonkeysCount, hundoCoinsCount, doorTransitions
 from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
 from .RAMAddress import RAM
 from .Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, \
     LogicOption, InfiniteJumpOption, SuperFlyerOption, EntranceOption, KeyOption, ExtraKeysOption, CoinOption, \
     MailboxOption, LampOption, GadgetOption, ShuffleNetOption, ShuffleWaterNetOption, LowOxygenSounds, TrapPercentage, \
-    ItemDisplayOption, KickoutPreventionOption, DeathLink, RandomizeStartingRoomOption, TrapLink
+    ItemDisplayOption, KickoutPreventionOption, DeathLink, RandomizeStartingRoomOption, TrapLink, FastTokenGoalOption
 
 EXPECTED_ROM_NAME = "ape escape / AP 2"
 
@@ -806,6 +806,11 @@ class ApeEscapeClient(BizHawkClient):
                 self.changeBHDisplay = False
 
     async def syncprogress(self, ctx: "BizHawkClientContext") -> None:
+        # TODO =============================================================
+        # TODO Correct the coins/monkeys being synced in level select that may cause errors
+        # TODO Use the new levelselect_coinlock_Address to check where we put the sync
+        # TODO Prevent or change the sync in levels ? Maybe change in preparation of !allowcollect
+        # TODO =============================================================
         Sync_Writes = []
         logger.info(f"Getting Monkeys state from server...")
         gameStateRead = await bizhawk.read(ctx.bizhawk_ctx, [(RAM.gameStateAddress, 1, "MainRAM")])
@@ -1564,16 +1569,55 @@ class ApeEscapeClient(BizHawkClient):
             # Gadgets unlocked
             # Required apes (to match hundo)
             writes = [
-                (RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
+                #(RAM.trainingRoomProgressAddress, 0xFF.to_bytes(1, "little"), "MainRAM"),
                 (RAM.unlockedGadgetsAddress, gadgetStateFromServer.to_bytes(2, "little"), "MainRAM"),
                 (RAM.requiredApesAddress, localhundoCount.to_bytes(1, "little"), "MainRAM"),
             ]
-
+            GadgetTrainingsUnlock = 0x00000000
+            trainingRoomProgress = 0xFF
             # Training Room Unlock state checkup: Set to 0x00000000 to prevent all buttons from working
-            if (transitionPhase == RAM.transitionPhase["InTransition"] and NearbyRoom == 90) or currentRoom == 90:
-                writes += [(RAM.GadgetTrainingsUnlockAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            varGoal = ctx.slot_data["goal"]
+            varFastTokenGoal = ctx.slot_data["fasttokengoal"]
+            boolActivateFastGoalWarp = (varFastTokenGoal == FastTokenGoalOption.option_on and varGoal in (GoalOption.option_mmtoken,GoalOption.option_ppmtoken) and tokenCountFromServer == min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]))
+            # **Going into the room**
+            if (transitionPhase == RAM.transitionPhase["InTransition"] and NearbyRoom == 90):
+                # If the FastGoal warp needs to be activated,needs to be done in transition
+                if boolActivateFastGoalWarp:
+                    GadgetTrainingsUnlock = 0x8C63FDCC
+                    trainingRoomProgress = 0x01
+                else:
+                    GadgetTrainingsUnlock = 0x00000000
+                    trainingRoomProgress  = 0xFF
+            elif currentRoom == 90:
+                # **After the transition or while in room**
+                # Check for FastTokenGoal + enough tokens
+                if boolActivateFastGoalWarp:
+                    GadgetTrainingsUnlock = 0x8C63FDCC
+                    trainingRoomProgress = 0x01
+                    # Check which door needs to be redirected to
+                    if varGoal == GoalOption.option_mmtoken:
+                        doorTransition = doorTransitions.get(AEDoor.MM_SPECTER1_ROOM.value)
+                        targetRoom = doorTransition[0]
+                        targetDoor = doorTransition[1]
+                    else:
+                        doorTransition = doorTransitions.get(AEDoor.PPM_ENTRY.value)
+                        targetRoom = doorTransition[0]
+                        targetDoor = doorTransition[1]
+                    # Change Transition2 to the desired transitions as needed
+                    TR2_Adresses = list(RAM.transitionAddresses.get(2))
+                    writes += [(TR2_Adresses[0], targetRoom.to_bytes(1, "little"), "MainRAM")]
+                    writes += [(TR2_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    # You are in the room, but FastToken is not on OR you do not have enough tokens
+                    GadgetTrainingsUnlock = 0x00000000
+                    trainingRoomProgress = 0xFF
             else:
-                writes += [(RAM.GadgetTrainingsUnlockAddress, 0x8C63FDCC.to_bytes(4, "little"), "MainRAM")]
+                # Not going into the Training Room NOR being into it, set these values to normal
+                GadgetTrainingsUnlock = 0x8C63FDCC
+                trainingRoomProgress = 0xFF
+
+            writes += [(RAM.GadgetTrainingsUnlockAddress, GadgetTrainingsUnlock.to_bytes(4, "little"), "MainRAM")]
+            writes += [(RAM.trainingRoomProgressAddress, trainingRoomProgress.to_bytes(1, "little"), "MainRAM")]
 
             # Kickout Prevention (Monkey catch + Boss Kills)
             if self.preventKickOut == 1:
