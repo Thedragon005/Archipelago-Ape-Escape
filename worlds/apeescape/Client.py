@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 
 from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
     CameraRotateHandler
-from .Strings import AEItem, AEDoor, AELocation, DS_Options, DS_ButtonAndDoors
+from .Strings import AEItem, AEDoor, AELocation, DS_Options, DS_ButtonAndDoors, Commands_Dict
 from .Locations import cointable, hundoMonkeysCount, hundoCoinsCount, doorTransitions
 from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
 from .RAMAddress import RAM
@@ -312,7 +312,7 @@ def cmd_spikecolor(self: "BizHawkClientCommandProcessor", color = "") -> None:
 
 
 def cmd_syncprogress(self: "BizHawkClientCommandProcessor", status = "") -> None:
-    """Sync the game progress with the server (Monkeys ONLY)"""
+    """Sync the game progress with the server (Monkeys and Coins)"""
     from worlds._bizhawk.context import BizHawkClientContext
     if self.ctx.game != "Ape Escape":
         logger.warning("This command can only be used when playing Ape Escape.")
@@ -458,77 +458,40 @@ class ApeEscapeClient(BizHawkClient):
         # BASCUS-94423SYS in ASCII = Ape Escape
         bytes_expected: bytes = bytes.fromhex("4241534355532D3934343233535953")
         bytes_expected_PAL:bytes = bytes.fromhex("4245534345532D3031353634535953")
+        Commands_List = list(Commands_Dict.keys())
         try:
             bytes_actual: bytes = (await bizhawk.read(ctx.bizhawk_ctx, [(
                 ape_identifier_ram_address, len(bytes_expected), "MainRAM"
             )]))[0]
             if bytes_actual != bytes_expected:
-                if "ae_commands" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("ae_commands")
-                if "bh_itemdisplay" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("bh_itemdisplay")
-                if "prevent_kickout" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("prevent_kickout")
-                if "deathlink" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("deathlink")
-                if "auto_equip" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("auto_equip")
-                if "syncprogress" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("syncprogress")
-                if "spikecolor" in ctx.command_processor.commands:
-                    ctx.command_processor.commands.pop("spikecolor")
+                # Remove commands from client from list in Strings.py
+                for command in Commands_List:
+                    if command in ctx.command_processor.commands:
+                        ctx.command_processor.commands.pop(command)
                 return False
         except Exception:
-            if "ae_commands" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("ae_commands")
-            if "bh_itemdisplay" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("bh_itemdisplay")
-            if "prevent_kickout" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("prevent_kickout")
-            if "deathlink" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("deathlink")
-            if "auto_equip" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("auto_equip")
-            if "syncprogress" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("syncprogress")
-            if "spikecolor" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("spikecolor")
+            # Remove commands from client from list in Strings.py
+            for command in Commands_List:
+                if command in ctx.command_processor.commands:
+                    ctx.command_processor.commands.pop(command)
             return False
 
         if not self.game == "Ape Escape":
-            if "ae_commands" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("ae_commands")
-            if "bh_itemdisplay" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("bh_itemdisplay")
-            if "prevent_kickout" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("prevent_kickout")
-            if "deathlink" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("deathlink")
-            if "auto_equip" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("auto_equip")
-            if "syncprogress" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("syncprogress")
-            if "spikecolor" in ctx.command_processor.commands:
-                ctx.command_processor.commands.pop("spikecolor")
+            # Remove commands from client from list in Strings.py
+            for command in Commands_List:
+                if command in ctx.command_processor.commands:
+                    ctx.command_processor.commands.pop(command)
             return False
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
         ctx.watcher_timeout = 0.125
-        if "ae_commands" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["ae_commands"] = cmd_ae_commands
-        if "bizhawk_itemdisplay" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["bh_itemdisplay"] = cmd_bh_itemdisplay
-        if "prevent_kickout" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["prevent_kickout"] = cmd_prevent_kickout
-        if "deathlink" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["deathlink"] = cmd_deathlink
-        if "auto_equip" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["auto_equip"] = cmd_auto_equip
-        if "syncprogress" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["syncprogress"] = cmd_syncprogress
-        if "spikecolor" not in ctx.command_processor.commands:
-            ctx.command_processor.commands["spikecolor"] = cmd_spikecolor
+        # Add custom commands to client from list in Strings.py
+        for command in Commands_List:
+            if command not in ctx.command_processor.commands:
+                functionName = Commands_Dict[command]
+                linkedfunction = globals()[functionName]
+                ctx.command_processor.commands[command] = linkedfunction
         self.initialize_client()
 
         return True
@@ -813,8 +776,28 @@ class ApeEscapeClient(BizHawkClient):
         # TODO =============================================================
         Sync_Writes = []
         logger.info(f"Getting Monkeys state from server...")
-        gameStateRead = await bizhawk.read(ctx.bizhawk_ctx, [(RAM.gameStateAddress, 1, "MainRAM")])
-        gameState = int.from_bytes(gameStateRead[0])
+        syncprogress_reads = []
+        syncprogress_reads += [(RAM.gameStateAddress, 1, "MainRAM")]
+        syncprogress_reads += [(RAM.levelselect_coinlock_Address, 1, "MainRAM")]
+        syncprogress_reads += [(RAM.SA_CompletedAddress, 1, "MainRAM")]
+        syncprogress_reads += [(RAM.temp_SA_CompletedAddress, 1, "MainRAM")]
+        syncprogress_reads += [(RAM.GA_CompletedAddress, 1, "MainRAM")]
+        syncprogress_reads += [(RAM.temp_GA_CompletedAddress, 1, "MainRAM")]
+        syncprogressValues = await bizhawk.read(ctx.bizhawk_ctx, syncprogress_reads)
+        refresh_Coins = False
+        gameState = int.from_bytes(syncprogressValues[0])
+        coinslock = int.from_bytes(syncprogressValues[1])
+        SA_Completed = int.from_bytes(syncprogressValues[2])
+        Temp_SA_Completed = int.from_bytes(syncprogressValues[3])
+        GA_Completed = int.from_bytes(syncprogressValues[4])
+        Temp_GA_Completed = int.from_bytes(syncprogressValues[5])
+        print(f"gameState{gameState}"
+              f"coinslock {coinslock}"
+              f"SA_Completed{SA_Completed}"
+              f"Temp_SA_Completed{Temp_SA_Completed}"
+              f"GA_Completed{GA_Completed}"
+              f"Temp_GA_Completed{Temp_GA_Completed}")
+
         #CoinReads = []
         CoinWrites = []
         #CoinReads += (RAM.startingCoinAddress, 100, "MainRAM")
@@ -824,10 +807,9 @@ class ApeEscapeClient(BizHawkClient):
         #CoinTable = CoinReads[0]
         #TempCoinTable = CoinReads[1]
 
-        CoinTable = 0x00
+        syncCoinTable = f"00"
         SA = False
         GA = False
-
 
         GlobalMonkeys = RAM.monkeyListGlobal
         keys_globalMonkeys = list(GlobalMonkeys.keys())
@@ -872,46 +854,49 @@ class ApeEscapeClient(BizHawkClient):
             if (coinLocationID) in self.locations_list:
                 if CoinsList[x] > 300:
                     CoinID = CoinsList[x] - 300
-                    if CoinTable == 0x00:
-                        CoinTable = f"01{CoinID:02x}"
+                    if syncCoinTable == f"00":
+                        syncCoinTable = f"01{CoinID:02x}"
                     else:
-                        CoinTable = f"01{CoinID:02x}{CoinTable}"
+                        syncCoinTable = f"01{CoinID:02x}{syncCoinTable}"
 
                 else:
                     if 295 <= CoinsList[x] < 300:
                         SA = True
                     elif 290 <= CoinsList[x] < 295:
                         GA = True
-        TempCoinTable = CoinTable
-        while len(TempCoinTable) < 200:
-            TempCoinTable = f"00FF{TempCoinTable}"
+        finalCoinTable = syncCoinTable
+        print(finalCoinTable)
+        while len(finalCoinTable) < 200:
+            finalCoinTable = f"00FF{finalCoinTable}"
         #CoinTableInt = int(f"0x{CoinTable}",16)
-        CoinTableInt = int(f"0x{TempCoinTable}",16)
+        CoinTableInt = int(f"0x{finalCoinTable}",16)
 
-        CoinTableInt = int(f"0x{CoinTable}",16)
-        print(CoinTable)
-        if CoinTable != 0:
-            if RAM.gameState["LevelSelect"] == gameState:
-                CoinWrites += [(RAM.temp_startingCoinAddress, CoinTableInt.to_bytes(100, "little"), "MainRAM")]
-            else:
-                CoinWrites += [(RAM.startingCoinAddress, CoinTableInt.to_bytes(100, "little"), "MainRAM")]
+        print(syncCoinTable)
+        print(coinslock)
+        if coinslock == 0x01:
+            current_CoinTableAddress = RAM.temp_startingCoinAddress
+            current_SA_CompletedAddress = RAM.temp_SA_CompletedAddress
+            current_GA_CompletedAddress = RAM.temp_GA_CompletedAddress
+        else:
+            current_CoinTableAddress = RAM.startingCoinAddress
+            current_SA_CompletedAddress = RAM.SA_CompletedAddress
+            current_GA_CompletedAddress = RAM.GA_CompletedAddress
+        if syncCoinTable != 0:
+            CoinWrites += [(current_CoinTableAddress, CoinTableInt.to_bytes(100, "little"), "MainRAM")]
         if SA == True:
-            if RAM.gameState["LevelSelect"] == gameState:
-                CoinWrites += [(RAM.temp_SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
-            else:
-                CoinWrites += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            CoinWrites += [(current_SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
         if GA == True:
-            if RAM.gameState["LevelSelect"] == gameState:
-                CoinWrites += [(RAM.temp_GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
-            else:
-                CoinWrites += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            CoinWrites += [(current_GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
 
         if CoinWrites:
             await bizhawk.write(ctx.bizhawk_ctx, CoinWrites)
-            UpdateCount = len(CoinWrites)
-            if UpdateCount != 0:
-                logger.info(f"--Coins updated--")
+        UpdateCount = len(CoinWrites)
+        if UpdateCount == 0:
+            msg = f"No Coins"
+        else:
+            msg = f"Coins"
 
+        logger.info(f"--{msg} updated--\n")
         logger.info(f"Synced server progress into the game!\n")
 
     async def process_bizhawk_messages(self, ctx: "BizHawkClientContext") -> None:
@@ -924,19 +909,8 @@ class ApeEscapeClient(BizHawkClient):
     async def send_bizhawk_message(self, ctx: "BizHawkClientContext", message, msgtype, data) -> None:
         if self.bhdisplay == 1:
             # I'm now using a new message method, passing with ParseJSON instead.
-            # It checks all the sender/receiver info and send a "Custom" message throught this function
+            # It checks all the sender/receiver info and send a "Custom" message through this function
 
-            #if msgtype == "Item":
-            #    sender = ctx.player_names[data.player]
-            #    #itemname = data.item - self.offset
-            #    itemname = ctx.item_names.lookup_in_game(data.item)
-            #
-            #    # Same player as the seed, different message
-            #    if sender == ctx.player_names[ctx.slot]:
-            #        strMessage = "You found your own '" + str(itemname) + "'"
-            #    else:
-            #        strMessage = "You received '" + str(itemname) + "' from " + str(sender)
-            #    await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
             if msgtype == "Custom":
                 strMessage = message
                 await bizhawk.display_message(ctx.bizhawk_ctx, strMessage)
@@ -2119,7 +2093,7 @@ class ApeEscapeClient(BizHawkClient):
         S1_P2_State = Locations_Reads[10]
         S1_P2_Life = Locations_Reads[11]
         S2_isCaptured = Locations_Reads[12]
-        levelselect_coinlock_Address = Locations_Reads[12]
+        levelselect_coinlock_Address = Locations_Reads[13]
 
         # Local update conditions
         # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
@@ -2189,7 +2163,7 @@ class ApeEscapeClient(BizHawkClient):
         await bizhawk.write(ctx.bizhawk_ctx, locationWrites)
 
         # Check for Coins
-        if gameState != RAM.gameState["LevelSelect"] and levelselect_coinlock_Address != 0x01:
+        if gameState != RAM.gameState["LevelSelect"] and levelselect_coinlock_Address == 0xFF:
             # If the previous address is empty it means you are too far, go back once
             # Happens in case of save-states or loading a previous save file that did not collect the same amount of coins
             coins_to_send = set()
@@ -3675,7 +3649,10 @@ class ApeEscapeClient(BizHawkClient):
         SA = 0
         GA = 0
         PPM = 0
-        if CoinTable == RAM.blank_coinTable or CoinTable == RAM.blank_coinTable2:
+        #print(format(CoinTable,'X'))
+        #print(SA_Completed)
+        #print(GA_Completed)
+        if (CoinTable == RAM.blank_coinTable or CoinTable == RAM.blank_coinTable2) and (SA_Completed == 0x00) and (GA_Completed == 0x00):
             return ""
 
         entranceorder = ctx.slot_data["entranceids"]
@@ -3705,7 +3682,7 @@ class ApeEscapeClient(BizHawkClient):
             #print(f"BaseLevelID:{baseLevelID}")
 
             if RAM.coinsperlevel.get(entranceID) != {}:
-                print(set(RAM.coinsperlevel.get(entranceID)))
+                #print(set(RAM.coinsperlevel.get(entranceID)))
                 if set(RAM.coinsperlevel.get(entranceID)).issubset(set(coins_list)):
                     # Add all of "EntranceID" coins to the list
                     if baseLevelID == 7:
@@ -3716,18 +3693,18 @@ class ApeEscapeClient(BizHawkClient):
                         PPM = 1
                     else:
                         trueCoinsList += (item for item in RAM.coinsperlevel.get(baseLevelID))
-                    print(f"All coins in level {entranceID} are in the coins list.")
+                    #print(f"All coins in level {entranceID} are in the coins list.")
                     #print(trueCoinsList)
                     #print(baseLevelID)
-                else:
-                    print(f"Not all elements in level {entranceID} are in the coins list.")
+                #else:
+                    #print(f"Not all elements in level {entranceID} are in the coins list.")
         #print(coins_list)
         # Join the reversed byte pairs back into a string
         #inverted_hex_string = "".join(reversed_byte_pairs)
         inverted_hex_string = "".join([f"01{int(item):02x}" for item in trueCoinsList])
 
-        print(f"Original: {hex_string}")
-        print(f"Inverted (byte order): {inverted_hex_string}")
+        #print(f"Original: {hex_string}")
+        #print(f"Inverted (byte order): {inverted_hex_string}")
 
         return [inverted_hex_string,SA,GA,PPM]
 
@@ -3746,59 +3723,83 @@ class ApeEscapeClient(BizHawkClient):
         levelselect_coinlock_Address = LSO_Reads[10]
 
         LS_Writes = []
-        if ctx.slot_data["entrance"] != 0x00:
-            if RAM.gameState["LevelSelect"] == gameState:
-                if levelselect_coinlock_Address == 0xFF:
-                    LS_Writes += [(RAM.levelselect_coinlock_Address, 0x01.to_bytes(1, "little"), "MainRAM")]
-                #if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
-                if ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
-                    #DisplayCoinsTable = int(self.format_cointable(ctx, CoinTable),16)
-                    Formated_Coins = self.format_cointable(ctx, CoinTable,SA_Completed,GA_Completed)
-                    DisplayCoinsTable = Formated_Coins[0]
-                    SA = Formated_Coins[1]
-                    GA = Formated_Coins[2]
-                    PPM = Formated_Coins[3]
+        if RAM.gameState["LevelSelect"] == gameState:
+            if levelselect_coinlock_Address == 0xFF:
+                LS_Writes += [(RAM.levelselect_coinlock_Address, 0x01.to_bytes(1, "little"), "MainRAM")]
+                currentCoinTable = CoinTable
+                current_SA_Completed = SA_Completed
+                current_GA_Completed = GA_Completed
+            else:
+                currentCoinTable = TempCoinTable
+                current_SA_Completed = Temp_SA_Completed
+                current_GA_Completed = Temp_GA_Completed
+            #if CoinTable != RAM.blank_coinTable and ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
+            #if ((TempCoinTable == RAM.blank_coinTable)) or ((TempCoinTable == RAM.blank_coinTable2)):
+            #DisplayCoinsTable = int(self.format_cointable(ctx, CoinTable),16)
+            Formated_Coins = self.format_cointable(ctx, currentCoinTable,current_SA_Completed,current_GA_Completed)
+            if Formated_Coins != "":
+                DisplayCoinsTable = Formated_Coins[0]
+                SA = Formated_Coins[1]
+                GA = Formated_Coins[2]
+                PPM = Formated_Coins[3]
+            else:
+                DisplayCoinsTable = ""
+                SA = 0
+                GA = 0
+                PPM = 0
+            #print(f"DisplayCoinsTable:{DisplayCoinsTable}"
+                  #f"\nSA:{SA}"
+                  #f"\nGA:{GA}"
+                  #f"\nPPM:{PPM}")
+            if DisplayCoinsTable == {} or DisplayCoinsTable == "":
+                DisplayCoinsTable = RAM.blank_coinTable
+            else:
+                DisplayCoinsTable = int(DisplayCoinsTable,16)
+                #print(DisplayCoinsTable)
+            #print(DisplayCoinsTable)
+            #LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+            if DisplayCoinsTable != CoinTable:
+                print("Wrote DisplayTable")
+                LS_Writes += [(RAM.startingCoinAddress, DisplayCoinsTable.to_bytes(100, "little"), "MainRAM")]
+            if currentCoinTable != TempCoinTable:
+                print("Wrote To TempCoinTable")
+                LS_Writes += [(RAM.temp_startingCoinAddress, currentCoinTable.to_bytes(100, "little"), "MainRAM")]
+            if current_SA_Completed != Temp_SA_Completed:
+                print("Wrote To TempSA")
+                LS_Writes += [(RAM.temp_SA_CompletedAddress, current_SA_Completed.to_bytes(1, "little"), "MainRAM")]
+            if current_GA_Completed != Temp_GA_Completed:
+                print("Wrote To TempGA")
+                LS_Writes += [(RAM.temp_GA_CompletedAddress, current_SA_Completed.to_bytes(1, "little"), "MainRAM")]
 
-                    if DisplayCoinsTable == {} or DisplayCoinsTable == "":
-                        DisplayCoinsTable = RAM.blank_coinTable
-                    else:
-                        DisplayCoinsTable = int(DisplayCoinsTable,16)
-                        #print(DisplayCoinsTable)
-                    #print(DisplayCoinsTable)
-                    #LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.startingCoinAddress, DisplayCoinsTable.to_bytes(100, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.temp_startingCoinAddress, CoinTable.to_bytes(100, "little"), "MainRAM")]
-                    if Temp_SA_Completed == 0xFF:
-                        if SA == 1:
-                            LS_Writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
-                        else:
-                            LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                        if GA == 1:
-                            LS_Writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
-                        else:
-                            LS_Writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
+            if SA == 1:
+                LS_Writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            else:
+                LS_Writes += [(RAM.SA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
-                    if PPM == 1:
-                        LS_Writes += [(RAM.PPMShowCoins, 0x02.to_bytes(1, "little"), "MainRAM")]
-                    else:
-                        LS_Writes += [(RAM.PPMShowCoins, 0x00.to_bytes(1, "little"), "MainRAM")]
+            if GA == 1:
+                LS_Writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            else:
+                LS_Writes += [(RAM.GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
 
-            elif RAM.gameState["Cleared"] != gameState:
-                if levelselect_coinlock_Address == 0x01:
-                    LS_Writes += [(RAM.levelselect_coinlock_Address, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                #if CoinTable == RAM.blank_coinTable and ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
-                if ((TempCoinTable != RAM.blank_coinTable and TempCoinTable != RAM.blank_coinTable2)):
-                    #print(hex(TempCoinTable[::-1]))
-                    LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
-                    LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
-                    if Temp_SA_Completed != 0xFF:
-                        LS_Writes += [(RAM.SA_CompletedAddress, Temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
-                        LS_Writes += [(RAM.GA_CompletedAddress, Temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
-                        LS_Writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                        LS_Writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+            if PPM == 1:
+                LS_Writes += [(RAM.PPMShowCoins, 0x02.to_bytes(1, "little"), "MainRAM")]
+            else:
+                LS_Writes += [(RAM.PPMShowCoins, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+
+
+        elif RAM.gameState["Cleared"] != gameState:
+            if levelselect_coinlock_Address == 0x01:
+                LS_Writes += [(RAM.levelselect_coinlock_Address, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                LS_Writes += [(RAM.startingCoinAddress, TempCoinTable.to_bytes(100, "little"), "MainRAM")]
+                LS_Writes += [(RAM.temp_startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
+                if Temp_SA_Completed != 0xFF:
+                    LS_Writes += [(RAM.SA_CompletedAddress, Temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                if Temp_GA_Completed != 0x00:
+                    LS_Writes += [(RAM.GA_CompletedAddress, Temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    LS_Writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
 
         # Prevent scrolling past the unlocked ERA/level
         if gameState == RAM.gameState["LevelSelect"]:
