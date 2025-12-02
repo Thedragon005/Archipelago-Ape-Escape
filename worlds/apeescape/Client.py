@@ -547,7 +547,6 @@ class ApeEscapeClient(BizHawkClient):
 
         if cmd in {"PrintJSON"} and "type" in args:
             # When a message is received
-            print(args["type"])
             if args["type"] == "ItemSend":
                 item = args["item"]
                 networkItem = NetworkItem(*item)
@@ -867,14 +866,14 @@ class ApeEscapeClient(BizHawkClient):
                     elif 290 <= CoinsList[x] < 295:
                         GA = True
         finalCoinTable = syncCoinTable
-        print(finalCoinTable)
+        #print(finalCoinTable)
         while len(finalCoinTable) < 200:
             finalCoinTable = f"00FF{finalCoinTable}"
         #CoinTableInt = int(f"0x{CoinTable}",16)
         CoinTableInt = int(f"0x{finalCoinTable}",16)
 
-        print(syncCoinTable)
-        print(coinslock)
+        #print(syncCoinTable)
+        #print(coinslock)
         if coinslock == 0x01:
             current_CoinTableAddress = RAM.temp_startingCoinAddress
             current_SA_CompletedAddress = RAM.temp_SA_CompletedAddress
@@ -2111,13 +2110,22 @@ class ApeEscapeClient(BizHawkClient):
         racesToSend = set()
 
         allowcollect = ctx.slot_data["allowcollect"]
-        print(allowcollect)
+        #print(allowcollect)
         LocationsToCollect = set()
+        if 0x18 < currentLevel <= 0x1D:
+            level = 0x18
+        else:
+            level = currentLevel
 
         # Local update conditions
         # Condition to not update on first pass of client (self.roomglobal is 0 on first pass)
+        # TODO : ==============================================
+        # TODO : I don't know why but this code here prevents the local update?
+        # TODO : ==============================================
         if self.roomglobal == 0:
             localcondition = False
+            return # TODO : VALIDATE THAT THIS CODE DID NOT BREAK ANYTHING
+
         else:
             localcondition = (currentLevel == self.levelglobal)
 
@@ -2138,9 +2146,8 @@ class ApeEscapeClient(BizHawkClient):
         # localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
         # Check if in level select or in time hub, then read global monkeys
 
-        if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"]:
-        # TODO Add a clause to include being in PPM and having other sub-level monkeys collected
-        # TODO Don't forget to ass to the local counter in this case?
+        temp_counter = currentApes
+        if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"] or (level == 0x18 and gameState == RAM.gameState["InLevel"]):
             for i in range(len(globalMonkeys)):
                 iscaught = int.from_bytes(globalMonkeys[i], byteorder='little') == RAM.caughtStatus["PrevCaught"]
                 if iscaught:
@@ -2152,20 +2159,19 @@ class ApeEscapeClient(BizHawkClient):
                             MonkeyID = keyList[i]
                             MonkeyAddress = valList[i]
                             levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
-
-                            print(f"Test:{levels_containing_monkey}")
-                            #MonkeyLevel = RAM.monkeysperlevel.keys()[list(RAM.monkeysperlevel.values()).index(MonkeyID)]
-                            #print(MonkeyLevel)
-                            #print(hex(MonkeyAddress))
+                            room_containing_monkey = [room for room, monkeys in RAM.monkeyListTempLocal.items() if MonkeyID in monkeys]
+                            print(f"CurrentRoom:{currentRoom}")
+                            print(f"levels_containing_monkey[0]:{levels_containing_monkey[0]}")
+                            print(room_containing_monkey)
+                            if levels_containing_monkey[0] == 0x18 and currentRoom not in room_containing_monkey:
+                                print(f"TEST:{levels_containing_monkey[0]}")
+                                temp_counter += 1
                             locationWrites += [(MonkeyAddress,0x02.to_bytes(1, "little"), "MainRAM")]
                             if not set(levels_containing_monkey).issubset(set(levelsToSync)):
                                 levelsToSync += levels_containing_monkey
-                                print(levelsToSync)
-
-        # elif being in a level
+        # if being in a level
         # check if NOT in a boss room since there is no monkeys to send there
-        elif gameState == RAM.gameState["InLevel"] and (localcondition) and not (currentRoom in bossRooms):
-
+        if gameState == RAM.gameState["InLevel"] and (localcondition) and not (currentRoom in bossRooms):
             monkeyaddrs = RAM.monkeyListLocal[currentRoom]
             key_list = list(monkeyaddrs.keys())
             val_list = list(monkeyaddrs.values())
@@ -2178,44 +2184,41 @@ class ApeEscapeClient(BizHawkClient):
             localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
 
             # Replace levelID if in Monkey Madness
-            if 0x18 < currentLevel <= 0x1D:
-                level = 0x18
-            else:
-                level = currentLevel
 
             levelRooms = list(RAM.roomsperlevel[level])
 
             for i in range(len(levelRooms)):
                 roomID = levelRooms[i]
+                #print(f"RoomID{roomID}")
                 inRoom = currentRoom == roomID
                 MonkeysInRoom_keys = RAM.monkeyListLocal.get(roomID).keys()
                 MonkeysInRoom_address = RAM.monkeyListLocal.get(roomID).values()
-                temp_counter = currentApes
+
                 for x in range(len(MonkeysInRoom_keys)):
-                    print(f"Len{len(MonkeysInRoom_keys)}")
-                    iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
-                    if iscaughtlocal:
-                        if inRoom:
+                    #iscaughtglobal = int.from_bytes(globalMonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
+                    if inRoom:
+                        iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
+                        if iscaughtlocal:
                             # If the Monkey is not already in the sent locations list, add it to an array to send location
                             if (key_list[x] + self.offset) not in self.locations_list:
                                 monkeysToSend.add(key_list[x] + self.offset)
-                    else:
-                        if allowcollect:
-                            # If the location ID is in the list and they are not caught, sync them
-                            if (key_list[x] + self.offset) in self.locations_list:
-                                MonkeyID = key_list[x]
-                                MonkeyAddress = val_list[x]
-                                levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
-                                MonkeyHitboxUpdateAddress = RAM.localMonkeyHitbox.get(MonkeyAddress)
-                                locationWrites += [(MonkeyHitboxUpdateAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                                locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                                temp_counter += 1
-                                print(f"Synced monkey #{x}")
-                                if not set(levels_containing_monkey).issubset(set(levelsToSync)):
-                                    levelsToSync += levels_containing_monkey
-                                    print(levelsToSync)
-                if temp_counter > currentApes:
-                    locationWrites += [(RAM.currentApesAddress, temp_counter.to_bytes(1, "little"), "MainRAM")]
+                        else:
+                            if allowcollect:
+                                # If the location ID is in the list and they are not caught, sync them
+                                if (key_list[x] + self.offset) in self.locations_list:
+                                    MonkeyID = key_list[x]
+                                    MonkeyAddress = val_list[x]
+                                    levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
+                                    MonkeyHitboxUpdateAddress = RAM.localMonkeyHitbox.get(MonkeyAddress)
+                                    locationWrites += [(MonkeyHitboxUpdateAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                                    locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                    temp_counter += 1
+                                    if not set(levels_containing_monkey).issubset(set(levelsToSync)):
+                                        levelsToSync += levels_containing_monkey
+                                        print(levelsToSync)
+            if temp_counter > currentApes:
+                locationWrites += [(RAM.currentApesAddress, temp_counter.to_bytes(1, "little"), "MainRAM")]
+
         # Check for Coins
 
         # New Coins System !
@@ -2255,6 +2258,18 @@ class ApeEscapeClient(BizHawkClient):
                 locationWrites += [(targetTableAddress, CoinsTableint.to_bytes(100, "little"), "MainRAM")]
         if ClientCoinTable != set() and ClientCoinTable != []:
             [coinsToSend.add((item + self.offset + 300)) for item in ClientCoinTable]
+
+        if currentRoom in FormattedCoinTable:
+            CoinValues = RAM.coinsListLocal.get(currentRoom)
+            CoinVisualSprite = CoinValues[0]
+            CoinHitBoxPosition = CoinValues[1]
+            locationWrites2 = []
+            locationGuards2 = []
+            locationWrites2 += [(CoinVisualSprite, 0x00.to_bytes(1, "little"), "MainRAM")]
+            locationWrites2 += [(CoinHitBoxPosition, RAM.CoinHitBoxPositionOff.to_bytes(2, "little"), "MainRAM")]
+            locationGuards2 += [(CoinVisualSprite,0x04.to_bytes(1, "little"), "MainRAM")]
+            locationGuards2 += [(RAM.currentRoomIdAddress,currentRoom.to_bytes(1, "little"), "MainRAM")]
+            await bizhawk.guarded_write(ctx.bizhawk_ctx, locationWrites2,locationGuards2)
 
         if locationWrites:
             await bizhawk.write(ctx.bizhawk_ctx, locationWrites)
@@ -2438,7 +2453,7 @@ class ApeEscapeClient(BizHawkClient):
 
         for x in range(len(levelindexes)):
             levelID = levelindexes[x]
-            print(f"synched level #{levelID}")
+            #print(f"synched level #{levelID}")
             levelmonkeys = RAM.monkeysperlevel.get(levelID)
             addresses = []
 
@@ -3821,16 +3836,16 @@ class ApeEscapeClient(BizHawkClient):
             #print(DisplayCoinsTable)
             #LS_Writes += [(RAM.startingCoinAddress, RAM.blank_coinTable.to_bytes(100, "little"), "MainRAM")]
             if DisplayCoinsTable != CoinTable:
-                print("Wrote DisplayTable")
+                #print("Wrote DisplayTable")
                 LS_Writes += [(RAM.startingCoinAddress, DisplayCoinsTable.to_bytes(100, "little"), "MainRAM")]
             if currentCoinTable != TempCoinTable:
-                print("Wrote To TempCoinTable")
+                #print("Wrote To TempCoinTable")
                 LS_Writes += [(RAM.temp_startingCoinAddress, currentCoinTable.to_bytes(100, "little"), "MainRAM")]
             if current_SA_Completed != Temp_SA_Completed:
-                print("Wrote To TempSA")
+                #print("Wrote To TempSA")
                 LS_Writes += [(RAM.temp_SA_CompletedAddress, current_SA_Completed.to_bytes(1, "little"), "MainRAM")]
             if current_GA_Completed != Temp_GA_Completed:
-                print("Wrote To TempGA")
+                #print("Wrote To TempGA")
                 LS_Writes += [(RAM.temp_GA_CompletedAddress, current_SA_Completed.to_bytes(1, "little"), "MainRAM")]
 
             if SA == 1:

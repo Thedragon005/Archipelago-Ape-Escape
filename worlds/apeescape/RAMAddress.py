@@ -998,7 +998,6 @@ class RAM:
 
     localMonkeyHitbox = {
         #Array order -> LocalMonkeyAddress : HitboxAddress
-        # Does not get rid of Monkey Catch Hitbox (You can still catch them)
         0x0E557A : 0x0E5525,
         0x0E57CA : 0x0E5775,
         0x0E5A1A : 0x0E59C5,
@@ -1233,8 +1232,64 @@ class RAM:
         203: 0x0DFAC2,
         204: 0x0DFAC8,
     }
+    coinsListLocal = {
+        #Array Order:
+        # CoinNumber : [CoinVisualSprite,CoinHitBoxPosition]
+        # CoinVisualSprite : 4 = Coin Sprite(Not collected),0 = Collected
+        1 : [0x0BF03A,0x0BF03E], # This is the ONLY coin that has an audio bug for w/e reason
+        2 : [0x0BF1D2,0x0BF1D6],
+        3 : [0x0BF15A,0x0BF15E],
+        6 : [0x0BF0CA,0x0BF0CE],
+        7 : [0x0BF1BA,0x0BF1BE],
+        8 : [0x0BF1A2,0x0BF1A6],
+        9 : [0x0BF1EA,0x0BF1EE],
+        11 : [0x0BF172,0x0BF176],
+        12 : [0x0BF09A,0X0BF09E],
+        13 : [0x0BF142,0x0BF146],
+        14 : [0x0BF1A2,0x0BF1A6],
+        17 : [0x0BF142,0x0BF146],
+        21 : [0x0BF15A,0x0BF15E],
+        23 : [0x0BF1A2,0x0BF1A6],
+        24 : [0x0BF052,0x0BF056],
+        25 : [0x0BF142,0x0BF146],
+        28 : [0x0BF0B2,0x0BF0B6],
+        29 : [0x0BF142,0x0BF146],
+        30 : [0x0BF142,0x0BF146],
+        31 : [0x0BF172,0x0BF176],
+        32 : [0x0BF18A,0x0BF18E],
+        34 : [0x0BF112,0x0BF116],
+        35 : [0x0BF232,0x0BF236],
+        37 : [0x0BF0B2,0x0BF0B6],
+        38 : [0x0BF0E2,0x0BF0E6],
+        39 : [0x0BF1EA,0x0BF1EE],
+        40 : [0x0BF15A,0x0BF15E],
+        41 : [0x0BF00A,0x0BF00E],
+        44 : [0x0BF1A2,0x0BF1A6],
+        45 : [0x0BF172,0x0BF176],
+        46 : [0x0BF1BA,0x0BF1BE],
+        49 : [0x0BF142,0x0BF146],
+        50 : [0x0BF1EA,0x0BF1EE],
+        53 : [0x0BF18A,0x0BF18E],
+        54 : [0x0BF1A2,0x0BF1A6],
+        55 : [0x0BF24A,0x0BF24E],
+        58 : [0x0BF082,0x0BF086],
+        59 : [0x0BF18A,0x0BF18E],
+        64 : [0x0BF1EA,0x0BF1EE],
+        66 : [0x0BEFAA,0x0BEFAE],
+        73 : [0x0BF18A,0x0BF18E],
+        74 : [0x0BF09A,0x0BF09E],
+        75 : [0x0BF0E2,0x0BF0E6],
+        77 : [0x0BF12A,0x0BF12E],
+        78 : [0x0BF18A,0x0BF18E],
+        79 : [0x0BF21A,0x0BF21E],
+        80 : [0X0BF142,0X0BF146],
+        82 : [0X0BF1BA,0X0BF1BE],
+        84 : [0x0BF21A,0x0BF21E],
+        85 : [0x0BF0FA,0x0BF0FE],
+    }
 
 
+    CoinHitBoxPositionOff = 0xFFB0
     localMonkeyHitbox1 = 0x0BBDF4
     localMonkeyCatchHitBox1 = 0x0BBDF0 # ? Seems to be indicative of Monkeys Hitboxes FOR THE NET
 
