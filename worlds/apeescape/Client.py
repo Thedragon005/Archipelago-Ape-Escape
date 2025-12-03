@@ -2160,9 +2160,6 @@ class ApeEscapeClient(BizHawkClient):
                             MonkeyAddress = valList[i]
                             levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
                             room_containing_monkey = [room for room, monkeys in RAM.monkeyListTempLocal.items() if MonkeyID in monkeys]
-                            print(f"CurrentRoom:{currentRoom}")
-                            print(f"levels_containing_monkey[0]:{levels_containing_monkey[0]}")
-                            print(room_containing_monkey)
                             if levels_containing_monkey[0] == 0x18 and currentRoom not in room_containing_monkey:
                                 print(f"TEST:{levels_containing_monkey[0]}")
                                 temp_counter += 1
@@ -2189,28 +2186,43 @@ class ApeEscapeClient(BizHawkClient):
 
             for i in range(len(levelRooms)):
                 roomID = levelRooms[i]
-                #print(f"RoomID{roomID}")
                 inRoom = currentRoom == roomID
-                MonkeysInRoom_keys = RAM.monkeyListLocal.get(roomID).keys()
-                MonkeysInRoom_address = RAM.monkeyListLocal.get(roomID).values()
+                MonkeysInRoom_keys = list(RAM.monkeyListLocal.get(roomID).keys())
+                MonkeysInRoom_address = list(RAM.monkeyListLocal.get(roomID).values())
 
                 for x in range(len(MonkeysInRoom_keys)):
-                    #iscaughtglobal = int.from_bytes(globalMonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
+                    MonkeyID = MonkeysInRoom_keys[x]
+                    iscaughtglobal = int.from_bytes(GlobalIDToValueTable[MonkeyID], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
                     if inRoom:
                         iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
                         if iscaughtlocal:
                             # If the Monkey is not already in the sent locations list, add it to an array to send location
-                            if (key_list[x] + self.offset) not in self.locations_list:
+                            if (MonkeyID + self.offset) not in self.locations_list:
                                 monkeysToSend.add(key_list[x] + self.offset)
                         else:
                             if allowcollect:
                                 # If the location ID is in the list and they are not caught, sync them
-                                if (key_list[x] + self.offset) in self.locations_list:
-                                    MonkeyID = key_list[x]
+                                if (MonkeyID + self.offset) in self.locations_list:
+                                    #MonkeyID = key_list[x]
                                     MonkeyAddress = val_list[x]
                                     levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
                                     MonkeyHitboxUpdateAddress = RAM.localMonkeyHitbox.get(MonkeyAddress)
                                     locationWrites += [(MonkeyHitboxUpdateAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                                    locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                    temp_counter += 1
+                                    if not set(levels_containing_monkey).issubset(set(levelsToSync)):
+                                        levelsToSync += levels_containing_monkey
+                                        print(levelsToSync)
+                    else:
+                        if allowcollect:
+                            if level != 0x18:
+                                if (MonkeyID + self.offset) in self.locations_list and iscaughtglobal == False:
+                                    levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
+                                    room_containing_monkey = [room for room, monkeys in RAM.monkeyListTempLocal.items() if MonkeyID in monkeys]
+                                    MonkeyAddress = RAM.monkeyListTempLocal.get(room_containing_monkey[0]).get(MonkeyID)
+                                    GlobalMonkeyAddress = RAM.monkeyListGlobal.get(MonkeyID)
+                                    #MonkeyHitboxUpdateAddress = RAM.localMonkeyHitbox.get(MonkeyAddress)
+                                    locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                                     locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                                     temp_counter += 1
                                     if not set(levels_containing_monkey).issubset(set(levelsToSync)):
