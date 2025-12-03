@@ -2143,6 +2143,7 @@ class ApeEscapeClient(BizHawkClient):
             tuple1 = (val, 1, "MainRAM")
             addresses.append(tuple1)
         globalMonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+        GlobalIDToValueTable  = dict(zip(keyList,globalMonkeys))
         # localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
         # Check if in level select or in time hub, then read global monkeys
 
