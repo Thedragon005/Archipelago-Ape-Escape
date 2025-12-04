@@ -648,9 +648,9 @@ class RAM:
             20: 0x0DFE02
         },
         7: {  # mushroom area
-            29: 0x0DFE08,
-            30: 0x0DFE0A,
-            31: 0x0DFE09
+            29: 0x0DFE18,
+            30: 0x0DFE1A,
+            31: 0x0DFE19
         },
         8: {  # fish room
             23: 0x0DFE32,
@@ -1931,7 +1931,26 @@ class RAM:
             87
         }
     }
+    MM_roomspersublevel = {
+        24: {
 
+        },
+        25: {
+
+        },
+        26: {
+
+        },
+        27: {
+            72, 75, 76
+        },
+        28: {
+            77
+        },
+        29: {
+            78, 79, 80, 81, 82, 84, 85
+        },
+    }
     roomstostring = {
         1: AEDoor.FF_ENTRY.value,
         2: AEDoor.PO_ENTRY.value,
