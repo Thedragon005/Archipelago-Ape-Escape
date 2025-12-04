@@ -26,8 +26,8 @@ class GoalOption(Choice):
 
 class FastTokenGoalOption(Choice):
     """If this is enabled and the chosen Goal is `mmtoken` or `ppmtoken`, provides easy access to the end boss once enough tokens have been obtained.
-       The warp will be available in the Training Room where the first training warp would be.
-       NOTE : Only has an effect when Goal is `mmtoken` or `ppmtoken`.
+       The warp will be available in the Training Room where the first training warp would be (Water Net).
+       NOTE : Music does not change when warping. Using this warp will result in fighting your goal boss with the Time Station music.
 
         off: Depending on goal, MM/PPM will be unlocked with world keys and will need to be accessed through Level Select
         on: When enough tokens have been obtained,a warp taking you directly to your Goal boss in the Training Room will be activated, skipping all other requirements
