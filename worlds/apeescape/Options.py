@@ -41,7 +41,7 @@ class FastTokenGoalOption(Choice):
     option_on = 0x01
     default = option_off
 
-class AllowCollectOption(DefaultOnToggle):
+class AllowCollectOption(Toggle):
         """
         Allows for !collect to catch Monkeys or collect Coins containing items for other players.
         """
