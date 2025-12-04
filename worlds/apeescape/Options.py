@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from Options import Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter, \
-    Toggle, OptionList
+    Toggle, OptionList, DefaultOnToggle
 from .Items import AEItem
 
 class GoalOption(Choice):
@@ -41,9 +41,9 @@ class FastTokenGoalOption(Choice):
     option_on = 0x01
     default = option_off
 
-class AllowCollectOption(Toggle):
+class AllowCollectOption(DefaultOnToggle):
         """
-        Allows for !collect to auto-catch Monkeys or grab Coins containing items for other players.
+        Allows for !collect to catch Monkeys or collect Coins containing items for other players.
         """
         display_name = "Allow Collect"
 
