@@ -1430,7 +1430,7 @@ class ApeEscapeClient(BizHawkClient):
             # Training Room Unlock state checkup: Set to 0x00000000 to prevent all buttons from working
             varGoal = ctx.slot_data["goal"]
             varFastTokenGoal = ctx.slot_data["fasttokengoal"]
-            boolActivateFastGoalWarp = (varFastTokenGoal == FastTokenGoalOption.option_on and varGoal in (GoalOption.option_mmtoken,GoalOption.option_ppmtoken) and tokenCountFromServer == min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]))
+            boolActivateFastGoalWarp = (varFastTokenGoal == FastTokenGoalOption.option_on and varGoal in (GoalOption.option_mmtoken,GoalOption.option_ppmtoken) and tokenCountFromServer >= min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"]))
             # **Going into the room**
             if (transitionPhase == RAM.transitionPhase["InTransition"] and NearbyRoom == 90):
                 # If the FastGoal warp needs to be activated,needs to be done in transition
