@@ -2276,10 +2276,10 @@ class ApeEscapeClient(BizHawkClient):
         specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
         specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
         if RAM.gameState["InLevel"] == gameState and specter1Condition:
-            bossesToSend.add([self.offset + 205])
+            bossesToSend.add(self.offset + 205)
 
         if RAM.gameState["InLevel"] == gameState and specter2Condition:
-            bossesToSend.add([self.offset + 206])
+            bossesToSend.add(self.offset + 206)
             self.PPM_Completed = True
 
         locationsToSend = monkeysToSend | coinsToSend | mailToSend | bossesToSend | racesToSend
