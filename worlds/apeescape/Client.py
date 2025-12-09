@@ -1411,7 +1411,7 @@ class ApeEscapeClient(BizHawkClient):
             self.tokencount = tokenCountFromServer
 
             # ======== Locations handling =========
-            Locations_Reads = [currentLevel,gameState,currentRoom,previousCoinStateRoom,currentCoinStateRoom,gameRunning,TVT_BossPhase,gotMail,mailboxID,jakeVictory,S1_P2_State,S1_P2_Life,S2_isCaptured,levelselect_coinlock_Address,CoinTable,TempCoinTable,monkeylevelcounts,currentApes]
+            Locations_Reads = [currentLevel,gameState,currentRoom,previousCoinStateRoom,currentCoinStateRoom,gameRunning,TVT_BossPhase,gotMail,mailboxID,jakeVictory,S1_P2_State,S1_P2_Life,S2_isCaptured,levelselect_coinlock_Address,CoinTable,TempCoinTable,monkeylevelcounts,currentApes,transitionPhase]
             await self.locations_handling(ctx, Locations_Reads)
 
 
@@ -1976,6 +1976,7 @@ class ApeEscapeClient(BizHawkClient):
         TempCoinTable = Locations_Reads[15]
         monkeylevelcounts = Locations_Reads[16]
         currentApes = Locations_Reads[17]
+        transitionPhase = Locations_Reads[18]
 
         locationsToSend = []
         monkeysToSend = set()
@@ -2074,9 +2075,8 @@ class ApeEscapeClient(BizHawkClient):
                         iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
                         if iscaughtlocal:
                             # If the Monkey is not already in the sent locations list, add it to an array to send location
-                            if (MonkeyID + self.offset) not in self.locations_list:
-                                monkeysToSend.add(key_list[x] + self.offset)
-
+                            if (MonkeyID + self.offset) not in self.locations_list and transitionPhase != 0x06 and currentRoom == self.roomglobal:
+                                monkeysToSend.add(MonkeyID + self.offset)
                                 locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                                 GlobalIDToValueTable[MonkeyID] = 0x02.to_bytes(1, "little")
                                 iscaughtglobal = True
