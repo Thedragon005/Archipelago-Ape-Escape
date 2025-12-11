@@ -2139,7 +2139,7 @@ class ApeEscapeClient(BizHawkClient):
         ClientCoinTable.sort(reverse=True)
 
         # List of coins in the server that the client does not have
-        ServerCoinTable = [(item - self.offset - 300) for item in self.locations_list if (300 < (item - self.offset) <= 382) and (item - self.offset - 300) not in FormattedCoinTable]
+        ServerCoinTable = [(item - self.offset - 300) for item in self.locations_list if (300 < (item - self.offset) <= 385) and (item - self.offset - 300) not in FormattedCoinTable]
         ServerCoinTable.sort(reverse=True)
 
         # Assemble the 2 coin table (Client and MissingFromServer)
