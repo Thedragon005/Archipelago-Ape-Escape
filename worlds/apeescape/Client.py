@@ -2019,7 +2019,7 @@ class ApeEscapeClient(BizHawkClient):
         # Check if in level select or in time hub, then read global monkeys
 
         temp_counter = currentApes
-        if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"] or (level == 0x18 and gameState == RAM.gameState["InLevel"]) or self.forcecollect:
+        if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"] or (level == 0x18 and gameState == RAM.gameState["InLevel"]) or self.forcecollect and transitionPhase != 0x06:
             for i in range(len(globalMonkeys)):
                 MonkeyID = keyList[i]
                 MonkeyAddress = valList[i]
@@ -2072,10 +2072,13 @@ class ApeEscapeClient(BizHawkClient):
                     GlobalMonkeyAddress = RAM.monkeyListGlobal.get(MonkeyID)
                     iscaughtglobal = int.from_bytes(GlobalIDToValueTable[MonkeyID], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
                     if inRoom:
-                        iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
+                        if transitionPhase != 0x06:
+                            iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
+                        else:
+                            iscaughtlocal = False
                         if iscaughtlocal:
                             # If the Monkey is not already in the sent locations list, add it to an array to send location
-                            if (MonkeyID + self.offset) not in self.locations_list and transitionPhase != 0x06 and currentRoom == self.roomglobal:
+                            if (MonkeyID + self.offset) not in self.locations_list and currentRoom == self.roomglobal:
                                 monkeysToSend.add(MonkeyID + self.offset)
                                 locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                                 GlobalIDToValueTable[MonkeyID] = 0x02.to_bytes(1, "little")
@@ -2083,7 +2086,7 @@ class ApeEscapeClient(BizHawkClient):
                         else:
                             if allowcollect:
                                 # If the location ID is in the list and they are not caught, sync them
-                                if (MonkeyID + self.offset) in self.locations_list:
+                                if (MonkeyID + self.offset) in self.locations_list and transitionPhase != 0x06:
                                     #MonkeyID = key_list[x]
                                     MonkeyAddress = val_list[x]
                                     levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
