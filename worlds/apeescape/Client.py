@@ -1468,6 +1468,9 @@ class ApeEscapeClient(BizHawkClient):
                 GadgetTrainingsUnlock = 0x8C63FDCC
                 trainingRoomProgress = 0xFF
 
+            InFastTokenWarp = RAM.gameState["TimeStation"] == gameState and boolActivateFastGoalWarp and currentRoom in {83,86,87}
+            if InFastTokenWarp:
+                writes += [(RAM.gameStateAddress, RAM.gameState["InLevel"].to_bytes(1, "little"), "MainRAM")]
             writes += [(RAM.GadgetTrainingsUnlockAddress, GadgetTrainingsUnlock.to_bytes(4, "little"), "MainRAM")]
             writes += [(RAM.trainingRoomProgressAddress, trainingRoomProgress.to_bytes(1, "little"), "MainRAM")]
 
