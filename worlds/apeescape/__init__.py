@@ -78,6 +78,7 @@ class ApeEscapeWorld(World):
         self.requiredtokens: Optional[int] = 0
         self.totaltokens: Optional[int] = 0
         self.tokenlocations: Optional[int] = 0
+        self.fasttokengoal: Optional[int] = 0
         self.logic: Optional[int] = 0
         self.infinitejump: Optional[int] = 0
         self.superflyer: Optional[int] = 0
@@ -106,6 +107,7 @@ class ApeEscapeWorld(World):
         self.requiredtokens = self.options.requiredtokens.value
         self.totaltokens = self.options.totaltokens.value
         self.tokenlocations = self.options.tokenlocations.value
+        self.fasttokengoal = self.options.fasttokengoal.value
         self.logic = self.options.logic.value
         self.infinitejump = self.options.infinitejump.value
         self.superflyer = self.options.superflyer.value
@@ -201,6 +203,13 @@ class ApeEscapeWorld(World):
         classification = ItemClassification.trap
 
         item = ApeEscapeItem(name, classification, item_id, self.player)
+        return item
+
+    def create_event_item(self, name: str) -> ApeEscapeItem:
+        item_id = item_table[name]
+        classification = ItemClassification.progression
+
+        item = ApeEscapeItem(name, classification, None, self.player)
         return item
 
     def create_items(self):
