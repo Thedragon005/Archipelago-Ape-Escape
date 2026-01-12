@@ -206,7 +206,6 @@ class ApeEscapeWorld(World):
         return item
 
     def create_event_item(self, name: str) -> ApeEscapeItem:
-        item_id = item_table[name]
         classification = ItemClassification.progression
 
         item = ApeEscapeItem(name, classification, None, self.player)
@@ -223,7 +222,7 @@ class ApeEscapeWorld(World):
         flyer = self.create_item(AEItem.Flyer.value)
         car = self.create_item(AEItem.Car.value)
         punch = self.create_item(AEItem.Punch.value)
-        victory = self.create_item(AEItem.Victory.value)
+        victory = self.create_event_item("Victory")
 
         waternet = self.create_item(AEItem.WaterNet.value)
         # progwaternet = self.create_item(AEItem.ProgWaterNet.value)

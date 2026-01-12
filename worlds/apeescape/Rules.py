@@ -91,10 +91,9 @@ def set_entrances(self, logic):
 
     # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
     if self.options.goal != "tokenhunt":
-        if self.options.goal == "mm" or self.options.goal == "mmtoken":
-            self.multiworld.completion_condition[self.player] = lambda state: self.get_region(AELocation.Specter.value).can_reach(state)
-        elif self.options.goal == "ppm" or self.options.goal == "ppmtoken":
-            self.multiworld.completion_condition[self.player] = lambda state: self.get_region(AELocation.Specter2.value).can_reach(state)
+        # Redundant, but maybe relevant if we get more goals in the future
+        if self.options.goal in ("mm","mmtoken","ppm","ppmtoken"):
+            self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
     else:
         self.multiworld.completion_condition[self.player] = lambda state: Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens))
 
