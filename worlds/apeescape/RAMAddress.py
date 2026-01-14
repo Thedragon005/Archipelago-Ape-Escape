@@ -2783,4 +2783,6 @@ class RAM:
     # S1_LArm_Life = 0x14474E
     # S1_RArm_Life = 0x1446B6
     tempSpecter2CompleteAddress = 0x0DFBEE
+    tempSpecter1CompleteAddress = 0x0DFBEF
     Specter2CompleteAddress = 0x0E00FE
+    Specter1CompleteAddress = 0x0E00FF

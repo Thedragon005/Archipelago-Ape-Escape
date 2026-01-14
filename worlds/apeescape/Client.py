@@ -393,6 +393,7 @@ class ApeEscapeClient(BizHawkClient):
     watercatchState = 0
     bizhawk_itemdisplay = False
     bizhawk_display_set = False
+    MM_Completed = False
     PPM_Completed = False
     gotDatastorage = False
     mailboxTextReplaced = False
@@ -935,6 +936,7 @@ class ApeEscapeClient(BizHawkClient):
                 "GA_Completed": (RAM.GA_CompletedAddress, 1, "MainRAM"),
                 "temp_GA_Completed": (RAM.temp_GA_CompletedAddress, 1, "MainRAM"),
                 "worldIsScrollingRight": (RAM.worldIsScrollingRight, 2, "MainRAM"),
+                "Specter1CompleteAddress": (RAM.Specter1CompleteAddress, 1, "MainRAM"),
                 "Specter2CompleteAddress": (RAM.Specter2CompleteAddress, 1, "MainRAM"),
                 # Water Net
                 "canDive": (RAM.canDiveAddress, 4, "MainRAM"),
@@ -1090,6 +1092,7 @@ class ApeEscapeClient(BizHawkClient):
             GA_Completed = readValues["GA_Completed"]
             temp_GA_Completed = readValues["temp_GA_Completed"]
             worldIsScrollingRight = readValues["worldIsScrollingRight"]
+            Specter1CompleteAddress = readValues["Specter1CompleteAddress"]
             Specter2CompleteAddress = readValues["Specter2CompleteAddress"]
 
             # Water net shuffle
@@ -1194,11 +1197,22 @@ class ApeEscapeClient(BizHawkClient):
             if MM_Natalie_Rescued > 0x01:
                 MM_Natalie_Rescued = 0
 
+            #if Specter1CompleteAddress == 0:
+                #Specter1CompleteAddress = 0
+                #S1_writes += [(RAM.Specter1CompleteAddress, Specter1CompleteAddress.to_bytes(1, "little"), "MainRAM")]
+                #S1_writes += [(RAM.tempSpecter1CompleteAddress, Specter1CompleteAddress.to_bytes(1, "little"), "MainRAM")]
+                #await bizhawk.write(ctx.bizhawk_ctx, S1_writes)
+
             if Specter2CompleteAddress == 255:
                 Specter2CompleteAddress = 0
                 S2_writes += [(RAM.Specter2CompleteAddress, Specter2CompleteAddress.to_bytes(1, "little"), "MainRAM")]
                 S2_writes += [(RAM.tempSpecter2CompleteAddress, Specter2CompleteAddress.to_bytes(1, "little"), "MainRAM")]
                 await bizhawk.write(ctx.bizhawk_ctx, S2_writes)
+
+            if Specter1CompleteAddress == 0:
+                self.MM_Completed = False
+            else:
+                self.MM_Completed = True
 
             if Specter2CompleteAddress == 0:
                 self.PPM_Completed = False
@@ -1269,12 +1283,9 @@ class ApeEscapeClient(BizHawkClient):
                                     "status": ClientStatus.CLIENT_GOAL
                                 }])
                                 await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
-                        elif (item.item - self.offset) == RAM.items["Victory"]:
-                            await ctx.send_msgs([{
-                                "cmd": "StatusUpdate",
-                                "status": ClientStatus.CLIENT_GOAL
-                            }])
-                            await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
+                                ctx.finished_game = True
+                        #elif (item.item - self.offset) == ["Victory"]:
+                            #pass
                         elif (item.item - self.offset) == RAM.items["WaterNet"]:
                             waternetState = 2
                             watercatchState = 1
@@ -1525,6 +1536,13 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
                     writes += [(RAM.localLevelState, 0x00.to_bytes(1, "little"), "MainRAM")]
+
+            # Flag to mark MM as completed for goal check if needed
+            if self.MM_Completed == True and Specter1CompleteAddress == 0:
+                Specter1CompleteAddress = 1
+                #print(f"Wrote value to Specter2CompleteAddress : 1")
+                writes += [(RAM.Specter1CompleteAddress, Specter1CompleteAddress.to_bytes(1, "little"), "MainRAM")]
+                writes += [(RAM.tempSpecter1CompleteAddress, Specter1CompleteAddress.to_bytes(1, "little"), "MainRAM")]
 
             # PPM_Completed flag for "100% Complete" label on PPM level
             if self.PPM_Completed == True and Specter2CompleteAddress == 0:
@@ -2286,16 +2304,33 @@ class ApeEscapeClient(BizHawkClient):
         # Check for victory conditions
         specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
         specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
+        currentgoal = ctx.slot_data["goal"]
         if RAM.gameState["InLevel"] == gameState and specter1Condition:
             bossesToSend.add(self.offset + 205)
-
+            if currentgoal in (GoalOption.option_mm, GoalOption.option_mmtoken) and not ctx.finished_game:
+                    await ctx.send_msgs([{
+                        "cmd": "StatusUpdate",
+                        "status": ClientStatus.CLIENT_GOAL
+                    }])
+                    await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
+            self.MM_Completed = True
+            ctx.finished_game = True
         if RAM.gameState["InLevel"] == gameState and specter2Condition:
             bossesToSend.add(self.offset + 206)
+
+            if currentgoal in (GoalOption.option_ppm, GoalOption.option_ppmtoken) and not ctx.finished_game:
+                    await ctx.send_msgs([{
+                        "cmd": "StatusUpdate",
+                        "status": ClientStatus.CLIENT_GOAL
+                    }])
+                    await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
             self.PPM_Completed = True
+            ctx.finished_game = True
 
         locationsToSend = monkeysToSend | coinsToSend | mailToSend | bossesToSend | racesToSend
         if locationsToSend != "" and locationsToSend != set():
             await ctx.check_locations(locationsToSend)
+
         if self.forcecollect == True:
             msg = f"=================================\n"
             msg += f"Synced progress into the game:\n"
