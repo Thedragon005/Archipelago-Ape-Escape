@@ -10,12 +10,13 @@ from worlds.AutoWorld import WebWorld, World
 
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
-from .Regions import create_regions, ApeEscapeLevel
+from .Regions import create_regions, ApeEscapeLevel, connect_entrances
 from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
 from .Options import ApeEscapeOptions
+from .types import *
 
 
 class ApeEscapeWeb(WebWorld):
@@ -51,10 +52,10 @@ class ApeEscapeWorld(World):
     game = "Ape Escape"
     web: ClassVar[WebWorld] = ApeEscapeWeb()
     topology_present = True
-
     options_dataclass = ApeEscapeOptions
     options: ApeEscapeOptions
-
+    connect_entrances = connect_entrances
+    shuffle_data: ApeEscapeShuffleData
     item_name_to_id = item_table
 
     for key, value in item_name_to_id.items():
@@ -99,8 +100,8 @@ class ApeEscapeWorld(World):
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
         self.firstrooms = []
+        self.shuffle_data: ApeEscapeShuffleData
         super(ApeEscapeWorld, self).__init__(multiworld, player)
-
 
     def generate_early(self) -> None:
         self.goal = self.options.goal.value
@@ -455,6 +456,7 @@ class ApeEscapeWorld(World):
             "infinitejump": self.options.infinitejump.value,
             "superflyer": self.options.superflyer.value,
             "entrance": self.options.entrance.value,
+            "transitionshuffle": self.options.transitionshuffle.value,
             "randomizestartingroom": self.options.randomizestartingroom.value,
             "unlocksperkey": self.options.unlocksperkey.value,
             "extrakeys": self.options.extrakeys.value,

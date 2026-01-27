@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from BaseClasses import Region, Item, ItemClassification, CollectionState
+from .Locations import door_map,doorTransitions
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AEDoor, AELocation
 from .RAMAddress import RAM
@@ -25,6 +26,9 @@ def set_rules(world: "ApeEscapeWorld"):
             # Some levels need to be kept at a specific entrance - put those back.
             world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin, world.options.goal)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
+    # 1. Call the function and store the result
+    shuffled_doors = initialize_door_transitions(world, door_map, RAM.roomsperlevel, doorTransitions)
+
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
 
     # Make a copy of the list for passing to the client for entrance shuffle purposes. We know this list has the levels sorted in the order they'd be presented in-game (so whatever is at the Fossil Field entrance first, etc.)
@@ -32,7 +36,6 @@ def set_rules(world: "ApeEscapeWorld"):
     # If entrances weren't shuffled, then this list is already sorted. We sort the list for ease of setting up access rules in the logic files.
     if (world.options.entrance != 0x00):
         world.levellist.sort()
-
     set_entrances(world, world.options.logic)
     set_doors(world, world.options.logic)
     set_transitions(world, world.options.logic)
@@ -100,346 +103,24 @@ def set_entrances(self, logic):
 
 # A door is defined as a connection between rooms, typically bi-directional.
 # For the logic behind door shuffle, this is the section to change.
-def set_doors(self, logic):
-    # I'm not sure if these have to be manually connected in both directions? There are a few one-ways in here, so probably better to be explicit?
-    # Time Station
-    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TIME_MAIN_MINIGAME.value, AEDoor.TIME_MINIGAME_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_MAIN_TRAINING.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TIME_MINIGAME_MAIN.value, AEDoor.TIME_MAIN_MINIGAME.value,
-                        lambda state: True)
+def set_doors(self,logic):
+    """
+    Dynamically connects regions based on the shuffled door map.
+    The shuffle logic handles Pairs (0x01) and Crossed (0x02) modes.
+    """
+    # 1. Generate the shuffled map using door_map
+    # We pass 'self' as the world object to access options and random
+    shuffled_doors = initialize_door_transitions(self, door_map, RAM.roomsperlevel, doorTransitions)
 
-    connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_TRAINING_WATERNET.value,
-                    lambda state: True)
-
-    # Fossil Field (level contains no doors)
-    # Primordial Ooze (level contains no doors)
-    # Molten Lava
-    connect_regions(self, AEDoor.ML_ENTRY_VOLCANO.value, AEDoor.ML_VOLCANO_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.ML_ENTRY_TRICERATOPS.value, AEDoor.ML_TRICERATOPS_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.ML_VOLCANO_ENTRY.value, AEDoor.ML_ENTRY_VOLCANO.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.ML_TRICERATOPS_ENTRY.value, AEDoor.ML_ENTRY_TRICERATOPS.value,
-                        lambda state: True)
-    # Thick Jungle
-    connect_regions(self, AEDoor.TJ_ENTRY_MUSHROOM.value, AEDoor.TJ_MUSHROOM_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_ENTRY_FISH.value, AEDoor.TJ_FISH_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_ENTRY_BOULDER.value, AEDoor.TJ_BOULDER_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_MUSHROOM_ENTRY.value, AEDoor.TJ_ENTRY_MUSHROOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_FISH_ENTRY.value, AEDoor.TJ_ENTRY_FISH.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_FISH_TENT.value, AEDoor.TJ_TENT_FISH.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_TENT_FISH.value, AEDoor.TJ_FISH_TENT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_TENT_BOULDER.value, AEDoor.TJ_BOULDER_TENT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_BOULDER_ENTRY.value, AEDoor.TJ_ENTRY_BOULDER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TJ_BOULDER_TENT.value, AEDoor.TJ_TENT_BOULDER.value,
-                        lambda state: True)
-    # Dark Ruins
-    connect_regions(self, AEDoor.DR_OUTSIDE_FENCE.value, AEDoor.DR_FAN_OUTSIDE_FENCE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OUTSIDE_HOLE.value, AEDoor.DR_FAN_OUTSIDE_HOLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value, AEDoor.DR_OBELISK_BOTTOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OUTSIDE_OBELISK_TOP.value, AEDoor.DR_OBELISK_TOP.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OUTSIDE_WATER_BUTTON.value, AEDoor.DR_WATER_SIDE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OUTSIDE_WATER_LEDGE.value, AEDoor.DR_WATER_LEDGE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_FAN_OUTSIDE_FENCE.value, AEDoor.DR_OUTSIDE_FENCE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_FAN_OUTSIDE_HOLE.value, AEDoor.DR_OUTSIDE_HOLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AEDoor.DR_OUTSIDE_OBELISK_BOTTOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_OBELISK_TOP.value, AEDoor.DR_OUTSIDE_OBELISK_TOP.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_WATER_SIDE.value, AEDoor.DR_OUTSIDE_WATER_BUTTON.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DR_WATER_LEDGE.value, AEDoor.DR_OUTSIDE_WATER_LEDGE.value,
-                        lambda state: True)
-    # Cryptic Relics
-    connect_regions(self, AEDoor.CR_ENTRY_SIDE_ROOM.value, AEDoor.CR_SIDE_ROOM_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CR_ENTRY_MAIN_RUINS.value, AEDoor.CR_MAIN_RUINS_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CR_SIDE_ROOM_ENTRY.value, AEDoor.CR_ENTRY_SIDE_ROOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CR_MAIN_RUINS_ENTRY.value, AEDoor.CR_ENTRY_MAIN_RUINS.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value,
-                        lambda state: True)
-    # Stadium Attack (level contains no doors)
-    # Crabby Beach
-    connect_regions(self, AEDoor.CB_ENTRY_SECOND_ROOM.value, AEDoor.CB_SECOND_ROOM_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CB_SECOND_ROOM_ENTRY.value, AEDoor.CB_ENTRY_SECOND_ROOM.value,
-                        lambda state: True)
-    # Coral Cave
-    connect_regions(self, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CCAVE_SECOND_ROOM_ENTRY.value, AEDoor.CCAVE_ENTRY_SECOND_ROOM.value,
-                        lambda state: True)
-    # Dexter's Island
-    connect_regions(self, AEDoor.DI_ENTRY_STOMACH.value, AEDoor.DI_STOMACH_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_STOMACH_ENTRY.value, AEDoor.DI_ENTRY_STOMACH.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_STOMACH_SLIDE_ROOM.value, AEDoor.DI_SLIDE_ROOM_STOMACH.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_SLIDE_ROOM_STOMACH.value, AEDoor.DI_STOMACH_SLIDE_ROOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY.value, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ROOM_TOP.value, AEDoor.DI_SLIDE_ROOM_GALLERY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_GALLERY_TENTACLE.value, AEDoor.DI_TENTACLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.DI_TENTACLE.value, AEDoor.DI_GALLERY_TENTACLE.value,
-                        lambda state: True)
-    # Snowy Mammoth (level contains no doors)
-    # Frosty Retreat
-    connect_regions(self, AEDoor.FR_ENTRY_CAVERNS.value, AEDoor.FR_CAVERNS_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AEDoor.FR_ENTRY_CAVERNS.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.FR_CAVERNS_WATER.value, AEDoor.FR_WATER_CAVERNS.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.FR_WATER_CAVERNS.value, AEDoor.FR_CAVERNS_WATER.value,
-                        lambda state: True)
-    # Hot Springs
-    connect_regions(self, AEDoor.HS_ENTRY_HOT_SPRING.value, AEDoor.HS_HOT_SPRING.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value, AEDoor.HS_POLAR_BEAR_CAVE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.HS_HOT_SPRING.value, AEDoor.HS_ENTRY_HOT_SPRING.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AEDoor.HS_ENTRY_POLAR_BEAR_CAVE.value,
-                        lambda state: True)
-    # Gladiator Attack (level contains no doors)
-    # Sushi Temple
-    connect_regions(self, AEDoor.ST_ENTRY_TEMPLE.value, AEDoor.ST_TEMPLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.ST_ENTRY_WELL.value, AEDoor.ST_WELL.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.ST_TEMPLE.value, AEDoor.ST_ENTRY_TEMPLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.ST_WELL.value, AEDoor.ST_ENTRY_WELL.value,
-                        lambda state: True)
-    # Wabi Sabi Wall
-    connect_regions(self, AEDoor.WSW_ENTRY_GONG.value, AEDoor.WSW_GONG_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_GONG_ENTRY.value, AEDoor.WSW_ENTRY_GONG.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_GONG_MIDDLE.value, AEDoor.WSW_MIDDLE_GONG.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_MIDDLE_GONG.value, AEDoor.WSW_GONG_MIDDLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_MIDDLE_OBSTACLE.value, AEDoor.WSW_OBSTACLE_MIDDLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AEDoor.WSW_MIDDLE_OBSTACLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_OBSTACLE_BARREL.value, AEDoor.WSW_BARREL_OBSTACLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AEDoor.WSW_OBSTACLE_BARREL.value,
-                        lambda state: True)
-    # Crumbling Castle
-    connect_regions(self, AEDoor.CC_ENTRY_CASTLE.value, AEDoor.CC_CASTLEMAIN_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_ENTRY_BELL.value, AEDoor.CC_BELL_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_ENTRY_BASEMENT.value, AEDoor.CC_BASEMENT_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_ENTRY_BOSS.value, AEDoor.CC_BOSS_ROOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_CASTLEMAIN_ENTRY.value, AEDoor.CC_ENTRY_CASTLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_CASTLEMAIN_BELL.value, AEDoor.CC_BELL_CASTLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_CASTLEMAIN_ELEVATOR.value, AEDoor.CC_ELEVATOR_CASTLEMAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BELL_ENTRY.value, AEDoor.CC_ENTRY_BELL.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BELL_CASTLE.value, AEDoor.CC_CASTLEMAIN_BELL.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_ELEVATOR_CASTLEMAIN.value, AEDoor.CC_CASTLEMAIN_ELEVATOR.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_ELEVATOR_BASEMENT.value, AEDoor.CC_BASEMENT_ELEVATOR.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BASEMENT_ENTRY.value, AEDoor.CC_ENTRY_BASEMENT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BASEMENT_ELEVATOR.value, AEDoor.CC_ELEVATOR_BASEMENT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_DOWN.value, AEDoor.CC_BUTTON_BASEMENT_WATER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_UP.value, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_WATER.value, AEDoor.CC_BASEMENT_BUTTON_DOWN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BUTTON_BASEMENT_LEDGE.value, AEDoor.CC_BASEMENT_BUTTON_UP.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CC_BOSS_ROOM.value, AEDoor.CC_ENTRY_BOSS.value,
-                        lambda state: True)
-    # City Park
-    connect_regions(self, AEDoor.CP_OUTSIDE_SEWERS_FRONT.value, AEDoor.CP_SEWERSFRONT_OUTSIDE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CP_OUTSIDE_BARREL.value, AEDoor.CP_BARREL_OUTSIDE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CP_SEWERSFRONT_OUTSIDE.value, AEDoor.CP_OUTSIDE_SEWERS_FRONT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CP_SEWERSFRONT_BARREL.value, AEDoor.CP_BARREL_SEWERS_FRONT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CP_BARREL_OUTSIDE.value, AEDoor.CP_OUTSIDE_BARREL.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.CP_BARREL_SEWERS_FRONT.value, AEDoor.CP_SEWERSFRONT_BARREL.value,
-                        lambda state: True)
-    # Specter's Factory
-    connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AEDoor.SF_FACTORY_OUTSIDE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_FACTORY_OUTSIDE.value, AEDoor.SF_OUTSIDE_FACTORY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_FACTORY_RC_CAR.value, AEDoor.SF_RC_CAR_FACTORY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_BOTTOM.value, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_FACTORY_WHEEL_TOP.value, AEDoor.SF_WHEEL_FACTORY_TOP.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_FACTORY_MECH.value, AEDoor.SF_MECH_FACTORY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_RC_CAR_FACTORY.value, AEDoor.SF_FACTORY_RC_CAR.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_WHEEL_FACTORY_BOTTOM.value, AEDoor.SF_FACTORY_WHEEL_BOTTOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_WHEEL_FACTORY_TOP.value, AEDoor.SF_FACTORY_WHEEL_TOP.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_MECH_FACTORY.value, AEDoor.SF_FACTORY_MECH.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_MECH_LAVA.value, AEDoor.SF_LAVA_MECH.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_LAVA_MECH.value, AEDoor.SF_MECH_LAVA.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_LAVA_CONVEYOR.value, AEDoor.SF_CONVEYOR_LAVA.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AEDoor.SF_LAVA_CONVEYOR.value,
-                        lambda state: True)
-    # Specter's Factory Conveyor Room
-    connect_regions(self, AEDoor.SF_CONVEYOR1_ENTRY.value, AEDoor.SF_CONVEYOR1_EXIT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR2_ENTRY.value, AEDoor.SF_CONVEYOR1_EXIT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR3_ENTRY.value, AEDoor.SF_CONVEYOR2_EXIT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR4_ENTRY.value, AEDoor.SF_CONVEYOR3_EXIT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR5_ENTRY.value, AEDoor.SF_CONVEYOR4_EXIT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR6_ENTRY.value, AEDoor.SF_CONVEYOR5_EXIT.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.SF_CONVEYOR7_ENTRY.value, AEDoor.SF_CONVEYOR6_EXIT.value,
-                        lambda state: True)
-    # TV Tower
-    connect_regions(self, AEDoor.TVT_OUTSIDE_LOBBY.value, AEDoor.TVT_LOBBY_OUTSIDE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_LOBBY_OUTSIDE.value, AEDoor.TVT_OUTSIDE_LOBBY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_LOBBY_WATER.value, AEDoor.TVT_WATER_LOBBY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_LOBBY_TANK.value, AEDoor.TVT_TANK_LOBBY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_WATER_LOBBY.value, AEDoor.TVT_LOBBY_WATER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_TANK_LOBBY.value, AEDoor.TVT_LOBBY_TANK.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_TANK_FAN.value, AEDoor.TVT_FAN_TANK.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_TANK_BOSS.value, AEDoor.TVT_BOSS_TANK.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_FAN_TANK.value, AEDoor.TVT_TANK_FAN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TVT_BOSS_TANK.value, AEDoor.TVT_TANK_BOSS.value,
-                        lambda state: True)
-    # Monkey Madness
-    connect_regions(self, AEDoor.MM_SL_HUB_WESTERN.value, AEDoor.MM_WESTERN_SL_HUB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_SL_HUB_COASTER.value, AEDoor.MM_COASTER_ENTRY_SL_HUB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_SL_HUB_CIRCUS.value, AEDoor.MM_CIRCUS_SL_HUB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_SL_HUB_GO_KARZ.value, AEDoor.MM_GO_KARZ_SL_HUB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_SL_HUB_CRATER.value, AEDoor.MM_CRATER_SL_HUB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_WESTERN_SL_HUB.value, AEDoor.MM_SL_HUB_WESTERN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AEDoor.MM_SL_HUB_COASTER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_COASTER_ENTRY_COASTER1.value, AEDoor.MM_COASTER1_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CIRCUS_SL_HUB.value, AEDoor.MM_SL_HUB_CIRCUS.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_GO_KARZ_SL_HUB.value, AEDoor.MM_SL_HUB_GO_KARZ.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_COASTER1_COASTER2.value, AEDoor.MM_COASTER2_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_COASTER2_HAUNTED_HOUSE.value, AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_HAUNTED_HOUSE_COFFIN.value, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_COFFIN_COASTER_ENTRY.value, AEDoor.MM_COASTER_ENTRY_DISEMBARK.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_COFFIN_HAUNTED_HOUSE.value, AEDoor.MM_HAUNTED_HOUSE_COFFIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CRATER_SL_HUB.value, AEDoor.MM_SL_HUB_CRATER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_CRATER_OUTSIDE_CASTLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_CASTLE_MAIN_SPECTER1.value, AEDoor.MM_SPECTER1_ROOM.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AEDoor.MM_INSIDE_CLIMB_OUTSIDE_CLIMB.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_CASTLE_MAIN.value, AEDoor.MM_CASTLE_MAIN_FROM_OUTSIDE.value,
-                        lambda state: True)
-
+    # 2. Iterate and connect
+    # This replaces all manual connect_regions calls for doors
+    for source_door_val, destination_door_val in shuffled_doors.items():
+        connect_regions(
+            self,
+            source_door_val,
+            destination_door_val,
+            lambda state: True
+        )
 
 # A transition is defined as navigating between two doors in the same room.
 def set_transitions(self, logic):
@@ -2879,11 +2560,6 @@ def initialize_level_list(setlevelids = None):
 
 
 def initialize_room_list(world, roomsperlevel, setlevelids = None, setroomids = None):
-    # baselevelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
-    baselevelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E]
-    firstroomids = [0x01, 0x02, 0x03, 0x06, 0x0B, 0x0F, 0x13, 0x14, 0x16, 0x18, 0x1D, 0x1E, 0x21, 0x24, 0x25, 0x28, 0x2D, 0x35, 0x38, 0x3F, 0x45, 0x57]
-    firstroomlist = []
-
     # Using UT, will replace the vanilla list with the already shuffled one
     if world.using_ut == True:
         levelids = setlevelids
@@ -2914,7 +2590,172 @@ def initialize_room_list(world, roomsperlevel, setlevelids = None, setroomids = 
 
     return orderedfirstroomids
 
+def build_door_to_room_map(world, roomsperlevel):
+    door_to_room = {}
+    # Iterate through every level, then every room in that level
+    for level_id, rooms in roomsperlevel.items():
+        for room in rooms:
+            # We look at all attributes of the AEDoor class
+            # to find which doors belong to this room
+            for door_name, door_enum in AEDoor.__members__.items():
+                # This assumes your room IDs are part of the door names
+                # or you have a list of doors assigned to rooms
+                if door_enum.room_id == room.id: # Adjust based on your Room object
+                    door_to_room[door_enum.value] = room.id
+    return door_to_room
 
+
+def initialize_door_transitions(world, door_map, roomsperlevel, doorTransitions):
+    if hasattr(world, "shuffled_door_map"):
+        return world.shuffled_door_map
+
+    shuffled_map = door_map.copy()
+    if world.options.transitionshuffle == 0x00:
+        world.shuffled_door_map = shuffled_map
+        return shuffled_map
+
+    EXCLUDED_DOORS = [
+        AEDoor.CC_ENTRY_BOSS.value,
+        AEDoor.MM_SPECTER1_ROOM.value,
+        AEDoor.TVT_TANK_BOSS.value,
+        AEDoor.TVT_BOSS_TANK.value
+    ]
+
+    def get_full_name(val):
+        for name, member in AEDoor.__members__.items():
+            if member.value == val: return name
+        return str(val)
+
+    # 1. Map Reality & Depth
+    door_to_room = {}
+    room_to_doors = {}
+    for src, dst in door_map.items():
+        parent = next((k for k, v in door_map.items() if v == src), None)
+        if parent in doorTransitions:
+            rid = doorTransitions[parent][0]
+            door_to_room[src] = rid
+            if rid not in room_to_doors: room_to_doors[rid] = []
+            room_to_doors[rid].append(src)
+
+    def get_depth_map(start_room, level_rooms):
+        depths = {start_room: 0}
+        queue = [(start_room, 0)]
+        while queue:
+            curr, d = queue.pop(0)
+            for door, loc_room in door_to_room.items():
+                if loc_room == curr:
+                    t_door = door_map.get(door)
+                    if t_door in doorTransitions:
+                        t_room = doorTransitions[t_door][0]
+                        if t_room in level_rooms and t_room not in depths:
+                            depths[t_room] = d + 1
+                            queue.append((t_room, d + 1))
+        return depths
+
+    def get_reachable_set(current_map, start_room, level_rooms):
+        visited = {start_room}
+        queue = [start_room]
+        while queue:
+            curr = queue.pop(0)
+            for door, loc_room in door_to_room.items():
+                if loc_room == curr:
+                    t_door = current_map.get(door)
+                    if t_door and t_door in doorTransitions:
+                        t_room = doorTransitions[t_door][0]
+                        if t_room in level_rooms and t_room not in visited:
+                            visited.add(t_room)
+                            queue.append(t_room)
+        return visited
+
+    # 2. Pool Generation with Precision Protection
+    level_pools = {}
+    for src, dst in door_map.items():
+        if src in EXCLUDED_DOORS or src not in doorTransitions: continue
+        target_room = doorTransitions[src][0]
+        lid = next((l for l, r in roomsperlevel.items() if target_room in r), None)
+        if lid is None: continue
+
+        # --- CRITICAL LOGIC GATE PROTECTIONS ---
+        name = get_full_name(src)
+        # Protect Dark Ruins Obelisk and Thick Jungle Boulder Gate
+        if any(x in name for x in ["Obelisk_Top", "ENTRY_BOULDER", "ENTRY_MUSHROOM"]):
+            continue
+
+        # Standard Bridge Protection (One entrance = Load-bearing)
+        room_id = door_to_room.get(src)
+        if room_id and len(room_to_doors.get(room_id, [])) <= 1:
+            continue
+
+        if lid not in level_pools: level_pools[lid] = []
+        level_pools[lid].append(src)
+
+    print("\n" + "=" * 80)
+    print(f"{'LEVEL NAME':<35} | {'STATUS'}")
+    print("-" * 80)
+
+    # 3. Shuffle Engine
+    for lid in roomsperlevel.keys():
+        level_rooms = roomsperlevel[lid]
+        idx = lid if lid < len(world.firstrooms) else len(world.firstrooms) - 1
+        start_room = world.firstrooms[idx]
+
+        level_label = f"Level {lid}"
+        if lid in level_pools and len(level_pools[lid]) > 0:
+            level_label = get_full_name(level_pools[lid][0]).split(":", 1)[0]
+
+        if lid not in level_pools or len(level_pools[lid]) < 2:
+            print(f"{level_label:<35} | SKIP (Protected)")
+            continue
+
+        sources = sorted(level_pools[lid])
+        destinations = [door_map[s] for s in sources]
+
+        vanilla_reachable = get_reachable_set(door_map, start_room, level_rooms)
+        depth_map = get_depth_map(start_room, level_rooms)
+
+        success = False
+        # High effort for the "Problem Trio"
+        max_attempts = 20000 if any(x in level_label for x in ["Dark Ruins", "Thick Jungle", "Wabi Sabi"]) else 10000
+
+        for attempt in range(max_attempts):
+            shuffled_dests = destinations.copy()
+            world.random.shuffle(shuffled_dests)
+
+            if any(shuffled_dests[i] == destinations[i] for i in range(len(sources))):
+                continue
+
+            temp_map = shuffled_map.copy()
+            valid_structure = True
+            for i in range(len(sources)):
+                src_door, dst_door = sources[i], shuffled_dests[i]
+                src_room = door_to_room.get(src_door)
+
+                if dst_door in doorTransitions:
+                    dst_target_room = doorTransitions[dst_door][0]
+                    # Flexible Depth: Only block extreme logic reversals
+                    if depth_map.get(src_room, 0) > depth_map.get(dst_target_room, 99):
+                        valid_structure = False;
+                        break
+                    if src_room == dst_target_room:
+                        valid_structure = False;
+                        break
+
+                temp_map[src_door] = dst_door
+
+            if not valid_structure: continue
+
+            # VITAL: Shuffled must EXACTLY match Vanilla connectivity
+            if get_reachable_set(temp_map, start_room, level_rooms) == vanilla_reachable:
+                shuffled_map = temp_map
+                success = True
+                break
+
+        status = "SUCCESS" if success else "REVERTED"
+        print(f"{level_label:<35} | {status}")
+
+    print("=" * 80 + "\n")
+    world.shuffled_door_map = shuffled_map
+    return shuffled_map
 def level_to_bytes(name):
     bytelist = []
     for x in name:

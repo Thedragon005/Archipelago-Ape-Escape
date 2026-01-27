@@ -156,6 +156,23 @@ class EntranceOption(Choice):
     option_lockmm = 0x02
     default = option_on
 
+class TransitionShuffleOption(Choice):
+    """Choose which level transitions.
+
+        off: Levels will be in the vanilla order.
+        on: Levels will be in a random order.
+        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entrance.
+
+        Supported values: off, on, lockmm
+        Default value: on
+    """
+
+    display_name = "Transition shuffle"
+    option_off = 0x00
+    option_pairs = 0x01
+    option_crossed = 0x02
+    default = option_pairs
+
 
 class RandomizeStartingRoomOption(Choice):
     """Choose if the starting room for each level should be randomized.
@@ -547,6 +564,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     infinitejump: InfiniteJumpOption
     superflyer: SuperFlyerOption
     entrance: EntranceOption
+    transitionshuffle: TransitionShuffleOption
     randomizestartingroom: RandomizeStartingRoomOption
     unlocksperkey: KeyOption
     extrakeys: ExtraKeysOption
