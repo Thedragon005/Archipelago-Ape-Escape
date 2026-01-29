@@ -10,13 +10,12 @@ from worlds.AutoWorld import WebWorld, World
 
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
 from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
-from .Regions import create_regions, ApeEscapeLevel, connect_entrances
+from .Regions import create_regions, ApeEscapeLevel
 from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
 from .Options import ApeEscapeOptions
-from .types import *
 
 
 class ApeEscapeWeb(WebWorld):
@@ -54,8 +53,6 @@ class ApeEscapeWorld(World):
     topology_present = True
     options_dataclass = ApeEscapeOptions
     options: ApeEscapeOptions
-    connect_entrances = connect_entrances
-    shuffle_data: ApeEscapeShuffleData
     item_name_to_id = item_table
 
     for key, value in item_name_to_id.items():
@@ -68,7 +65,6 @@ class ApeEscapeWorld(World):
 
     item_name_groups = GROUPED_ITEMS
     location_name_groups = GROUPED_LOCATIONS
-
     glitches_item_name = AEItem.FAKE_OOL_ITEM.value
     ut_can_gen_without_yaml = True  # class var that tells it to ignore the player yaml
     using_ut: bool  # so we can check if we're using UT only once
@@ -100,7 +96,6 @@ class ApeEscapeWorld(World):
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
         self.firstrooms = []
-        self.shuffle_data: ApeEscapeShuffleData
         super(ApeEscapeWorld, self).__init__(multiworld, player)
 
     def generate_early(self) -> None:
@@ -161,7 +156,6 @@ class ApeEscapeWorld(World):
 
     def create_regions(self):
         create_regions(self)
-
 
     def set_rules(self):
         set_rules(self)

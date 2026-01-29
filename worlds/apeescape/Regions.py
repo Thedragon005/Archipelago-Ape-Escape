@@ -295,33 +295,6 @@ def create_event_items(self):
 '''
 # I love this trick :) '''
 
-
-def connect_entrances(self):
-    if self.options.entrance or self.options.transitionshuffle:
-        available_shuffle_types: Set[door_map] = set()
-
-        for i in range(APEESCAPE_MAX_GER_ATTEMPTS):
-            try:
-                er_state = randomize_entrances(self, True, door_map)
-                break
-            except EntranceRandomizationError as error:
-                # visualize_regions(self, f"Attempt {i+1}.puml")
-                if i >= APEESCAPE_MAX_GER_ATTEMPTS - 1:
-                    raise EntranceRandomizationError(f"Ape Escape: failed GER after {APEESCAPE_MAX_GER_ATTEMPTS} "
-                                                     f"attempts. Final error here: \n\n{error}")
-                # need to disconnect all entrances that are supposed to be shuffled
-                for region in self.get_regions():
-                    for _exit in region.get_exits():
-                        if (_exit.randomization_group in available_shuffle_types
-                                and _exit.parent_region
-                                and _exit.connected_region
-                                and _exit.name not in self.shuffle_data.er_pairings):
-                            disconnect_entrance_for_randomization(_exit, _exit.randomization_group)
-        for entrance, _exit in sorted(self):
-            self.multiworld.spoiler.set_entrance(entrance, _exit, "both", self.player)
-    if APEESCAPE_DEBUG:
-        visualize_regions(self, "Ape Escape.puml")
-
 def create_regions(world: "ApeEscapeWorld"):
     options = world.options
     player = world.player

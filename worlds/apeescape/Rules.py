@@ -5,6 +5,7 @@ from .Locations import door_map,doorTransitions
 from .Regions import connect_regions, ApeEscapeLevel
 from .Strings import AEItem, AEDoor, AELocation
 from .RAMAddress import RAM
+from .constants import ONEWAY_SHUFFLE_DOOR, BOSSES_SHUFFLE_DOOR
 
 if TYPE_CHECKING:
     from . import ApeEscapeWorld
@@ -27,7 +28,7 @@ def set_rules(world: "ApeEscapeWorld"):
             world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin, world.options.goal)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
     # 1. Call the function and store the result
-    shuffled_doors = initialize_door_transitions(world, door_map, RAM.roomsperlevel, doorTransitions)
+    world.shuffled_doors = initialize_door_transitions(world, door_map, RAM.roomsperlevel, doorTransitions)
 
     world.levellist = set_calculated_level_data(world.levellist, world.options.unlocksperkey, world.options.goal, world.options.coin)
 
@@ -2609,153 +2610,157 @@ def initialize_door_transitions(world, door_map, roomsperlevel, doorTransitions)
     if hasattr(world, "shuffled_door_map"):
         return world.shuffled_door_map
 
+    class LogicProxy:
+        def __init__(self, p): self.player = p
+
+        def has(self, item, player): return True
+
+        def has_group(self, group, player): return True
+
+        def can_reach(self, *args, **kwargs): return True
+
     shuffled_map = door_map.copy()
     if world.options.transitionshuffle == 0x00:
         world.shuffled_door_map = shuffled_map
         return shuffled_map
 
-    EXCLUDED_DOORS = [
-        AEDoor.CC_ENTRY_BOSS.value,
-        AEDoor.MM_SPECTER1_ROOM.value,
-        AEDoor.TVT_TANK_BOSS.value,
-        AEDoor.TVT_BOSS_TANK.value
-    ]
+    BOSSES = BOSSES_SHUFFLE_DOOR
+    SF_CONVEYORS = {
+        AEDoor.SF_CONVEYOR1_ENTRY.value, AEDoor.SF_CONVEYOR2_ENTRY.value,
+        AEDoor.SF_CONVEYOR3_ENTRY.value, AEDoor.SF_CONVEYOR4_ENTRY.value,
+        AEDoor.SF_CONVEYOR5_ENTRY.value, AEDoor.SF_CONVEYOR6_ENTRY.value,
+        AEDoor.SF_CONVEYOR7_ENTRY.value
+    }
+    state_proxy = LogicProxy(world.player)
 
     def get_full_name(val):
         for name, member in AEDoor.__members__.items():
             if member.value == val: return name
         return str(val)
 
-    # 1. Map Reality & Depth
-    door_to_room = {}
-    room_to_doors = {}
-    for src, dst in door_map.items():
-        parent = next((k for k, v in door_map.items() if v == src), None)
-        if parent in doorTransitions:
-            rid = doorTransitions[parent][0]
-            door_to_room[src] = rid
-            if rid not in room_to_doors: room_to_doors[rid] = []
-            room_to_doors[rid].append(src)
+    # 1. Map doors to rooms and calculate room degrees
+    door_to_room = {d: int(data[0]) for d, data in doorTransitions.items()}
+    room_degrees = {}
+    for d, r in door_to_room.items():
+        room_degrees[r] = room_degrees.get(r, 0) + 1
 
-    def get_depth_map(start_room, level_rooms):
-        depths = {start_room: 0}
-        queue = [(start_room, 0)]
-        while queue:
-            curr, d = queue.pop(0)
-            for door, loc_room in door_to_room.items():
-                if loc_room == curr:
-                    t_door = door_map.get(door)
-                    if t_door in doorTransitions:
-                        t_room = doorTransitions[t_door][0]
-                        if t_room in level_rooms and t_room not in depths:
-                            depths[t_room] = d + 1
-                            queue.append((t_room, d + 1))
-        return depths
-
-    def get_reachable_set(current_map, start_room, level_rooms):
-        visited = {start_room}
-        queue = [start_room]
-        while queue:
-            curr = queue.pop(0)
-            for door, loc_room in door_to_room.items():
-                if loc_room == curr:
-                    t_door = current_map.get(door)
-                    if t_door and t_door in doorTransitions:
-                        t_room = doorTransitions[t_door][0]
-                        if t_room in level_rooms and t_room not in visited:
-                            visited.add(t_room)
-                            queue.append(t_room)
-        return visited
-
-    # 2. Pool Generation with Precision Protection
     level_pools = {}
-    for src, dst in door_map.items():
-        if src in EXCLUDED_DOORS or src not in doorTransitions: continue
-        target_room = doorTransitions[src][0]
-        lid = next((l for l, r in roomsperlevel.items() if target_room in r), None)
-        if lid is None: continue
+    for src in door_map.keys():
+        if src not in door_to_room: continue
+        rid = door_to_room[src]
+        lid = next((l for l, r_list in roomsperlevel.items() if rid == l or rid in r_list), None)
+        if lid:
+            if lid not in level_pools: level_pools[lid] = []
+            level_pools[lid].append(src)
 
-        # --- CRITICAL LOGIC GATE PROTECTIONS ---
-        name = get_full_name(src)
-        # Protect Dark Ruins Obelisk and Thick Jungle Boulder Gate
-        if any(x in name for x in ["Obelisk_Top", "ENTRY_BOULDER", "ENTRY_MUSHROOM"]):
-            continue
-
-        # Standard Bridge Protection (One entrance = Load-bearing)
-        room_id = door_to_room.get(src)
-        if room_id and len(room_to_doors.get(room_id, [])) <= 1:
-            continue
-
-        if lid not in level_pools: level_pools[lid] = []
-        level_pools[lid].append(src)
-
-    print("\n" + "=" * 80)
-    print(f"{'LEVEL NAME':<35} | {'STATUS'}")
-    print("-" * 80)
-
-    # 3. Shuffle Engine
-    for lid in roomsperlevel.keys():
-        level_rooms = roomsperlevel[lid]
-        idx = lid if lid < len(world.firstrooms) else len(world.firstrooms) - 1
-        start_room = world.firstrooms[idx]
-
-        level_label = f"Level {lid}"
-        if lid in level_pools and len(level_pools[lid]) > 0:
-            level_label = get_full_name(level_pools[lid][0]).split(":", 1)[0]
-
-        if lid not in level_pools or len(level_pools[lid]) < 2:
-            print(f"{level_label:<35} | SKIP (Protected)")
-            continue
-
+    for lid in sorted(level_pools.keys()):
         sources = sorted(level_pools[lid])
-        destinations = [door_map[s] for s in sources]
+        level_label = get_full_name(sources[0]).split("_")[0]
 
-        vanilla_reachable = get_reachable_set(door_map, start_room, level_rooms)
-        depth_map = get_depth_map(start_room, level_rooms)
+        target_locations = [
+            loc for loc in world.get_locations()
+            if loc.parent_region and any(f"Room {r}" in loc.parent_region.name for r in roomsperlevel.get(lid, []))
+        ]
+
+        start_room = world.firstrooms[lid - 1] if (lid - 1) < len(world.firstrooms) else door_to_room[sources[0]]
 
         success = False
-        # High effort for the "Problem Trio"
-        max_attempts = 20000 if any(x in level_label for x in ["Dark Ruins", "Thick Jungle", "Wabi Sabi"]) else 10000
-
-        for attempt in range(max_attempts):
-            shuffled_dests = destinations.copy()
-            world.random.shuffle(shuffled_dests)
-
-            if any(shuffled_dests[i] == destinations[i] for i in range(len(sources))):
-                continue
-
+        for attempt in range(2000):
             temp_map = shuffled_map.copy()
-            valid_structure = True
-            for i in range(len(sources)):
-                src_door, dst_door = sources[i], shuffled_dests[i]
-                src_room = door_to_room.get(src_door)
+            pool = sources.copy()
+            world.random.shuffle(pool)
+            used = set()
 
-                if dst_door in doorTransitions:
-                    dst_target_room = doorTransitions[dst_door][0]
-                    # Flexible Depth: Only block extreme logic reversals
-                    if depth_map.get(src_room, 0) > depth_map.get(dst_target_room, 99):
-                        valid_structure = False;
-                        break
-                    if src_room == dst_target_room:
-                        valid_structure = False;
-                        break
+            # --- LOCKS ---
+            for s in pool:
+                if s in BOSSES or s in SF_CONVEYORS:
+                    temp_map[s] = door_map[s]
+                    used.add(s)
 
-                temp_map[src_door] = dst_door
+            # --- SHUFFLE WITH ANTI-ISOLATION CHECK ---
+            working = [s for s in pool if s not in used]
+            while len(working) >= 2:
+                s1 = working.pop()
+                s1_room_degree = room_degrees.get(door_to_room[s1], 0)
 
-            if not valid_structure: continue
+                # Filter potential matches to avoid pairing two Degree 1 rooms
+                potential = []
+                for p in working:
+                    # Rule 1: Must be a different room
+                    if door_to_room[s1] == door_to_room[p]: continue
+                    # Rule 2: If s1 is Degree 1, p must be Degree > 1 (unless no other choice)
+                    p_room_degree = room_degrees.get(door_to_room[p], 0)
+                    if s1_room_degree == 1 and p_room_degree == 1: continue
+                    potential.append(p)
 
-            # VITAL: Shuffled must EXACTLY match Vanilla connectivity
-            if get_reachable_set(temp_map, start_room, level_rooms) == vanilla_reachable:
+                if not potential: potential = working  # Fallback if forced
+
+                s2 = world.random.choice(potential)
+                working.remove(s2)
+                temp_map[s1], temp_map[s2] = s2, s1
+                used.update([s1, s2])
+
+            # --- BFS VALIDATION ---
+            world.shuffled_door_map = temp_map
+            visited_rooms = {start_room}
+            queue = [start_room]
+
+            while queue:
+                curr_room = queue.pop(0)
+                exits = [d for d, r in door_to_room.items() if r == curr_room]
+                for src_door in exits:
+                    dst_door = temp_map.get(src_door, door_map.get(src_door))
+                    if dst_door is None: continue
+
+                    target_room = None
+                    if dst_door in door_to_room:
+                        target_room = door_to_room[dst_door]
+                    else:
+                        for d_key, d_data in doorTransitions.items():
+                            if d_key == dst_door:
+                                target_room = int(d_data[0])
+                                break
+
+                    if target_room is None or target_room in visited_rooms: continue
+
+                    try:
+                        ent = world.get_entrance(get_full_name(src_door), world.player)
+                        if ent.access_rule and not ent.access_rule(state_proxy):
+                            continue
+                    except:
+                        pass
+
+                    visited_rooms.add(target_room)
+                    queue.append(target_room)
+
+            reached_count = sum(
+                1 for loc in target_locations if any(f"Room {r}" in loc.parent_region.name for r in visited_rooms))
+
+            if reached_count >= len(target_locations):
                 shuffled_map = temp_map
                 success = True
+                print("-" * 80)
+                print(f"LEVEL: {level_label} | STATUS: PASSED | LOCS: {reached_count}/{len(target_locations)}")
+                print(f"--- DOOR TRANSITIONS FOR {level_label} ---")
+                for s in sorted(sources):
+                    d = temp_map[s]
+                    s_rm = door_to_room.get(s, "??")
+                    d_rm = "??"
+                    for d_key, d_data in doorTransitions.items():
+                        if d_key == d:
+                            d_rm = d_data[0]
+                            break
+                    print(
+                        f"  [Room {s_rm} (Deg {room_degrees.get(s_rm)})] {get_full_name(s):<35} --> [Room {d_rm} (Deg {room_degrees.get(d_rm)})] {get_full_name(d)}")
                 break
 
-        status = "SUCCESS" if success else "REVERTED"
-        print(f"{level_label:<35} | {status}")
+        if not success:
+            print("-" * 80)
+            print(f"LEVEL: {level_label} | STATUS: REVERTED")
 
-    print("=" * 80 + "\n")
     world.shuffled_door_map = shuffled_map
     return shuffled_map
+
 def level_to_bytes(name):
     bytelist = []
     for x in name:
