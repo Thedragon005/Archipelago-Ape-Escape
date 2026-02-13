@@ -95,10 +95,14 @@ def create_level_region(world, name: str, hint: str, shop_locs: list[dict[str, S
 
             if key is not None and loc is not None:
                 assigned_locations.append((key, loc, shop_id))
+                #print (f"Key,Loc: {key, loc}")
                 if key.endswith(" Box"):
                     key2 = key[:-4] + " Pack"
 
                     loc2 = get_sell_loc(key2)
+                    # ======================================
+                    # THIS SEEMS TO FAIL WITH UT, CHECK THIS
+                    # ======================================
                     if loc2 is not None and loc2.code not in level_grouped_locs[shop_id]:
                         # shop_locs[shop_id].pop(key2, None)
                         level_grouped_locs[shop_id][loc2.code] = level_number
@@ -126,7 +130,15 @@ def create_pack_region(world, card_region: CardRegion, hint: str, level):
 def create_regions(world):
     shop_locs: list[dict[str, ShopLocation]] = locations.get_shop_locations(world)
     level_grouped_locs: [list[dict[int, int]]] = [{},{},{},{}]
+    if world.using_ut:
+        print("=====================================")
+        pg1_licenses = {int(k): int(v) for k, v in world.pg1_licenses.items()}
+        pg2_licenses = {int(k): int(v) for k, v in world.pg2_licenses.items()}
+        pg3_licenses = {int(k): int(v) for k, v in world.pg3_licenses.items()}
+        tt_licenses = {int(k): int(v) for k, v in world.tt_licenses.items()}
 
+        level_grouped_locs: [list[dict[int, int]]] = [pg1_licenses,pg2_licenses,pg3_licenses,tt_licenses]
+        print(f"UT_Locs:{level_grouped_locs}")
     create_region(world, "Menu", "Menu Region", {})
     for l in range(0,world.options.max_level.value+5, 5):
         if l == 0:
@@ -155,7 +167,7 @@ def create_regions(world):
     if world.options.sell_card_check_count.value > 0:
         create_region(world, "Sell Tetramon", "Sell Tetramon", locations.get_sell_card_checks(world, False))
         create_region(world, "Sell Destiny", "Sell Destiny", locations.get_sell_card_checks(world, True))
-
+    print(f"level_grouped_locs: {level_grouped_locs}")
     return level_grouped_locs
 
 
@@ -183,6 +195,8 @@ def connect_sell_region(world, region_name, level):
     connect_regions(world, f"Level {level}-{end_level}", region_name, region_name)
 
 def connect_entrances(world):
+    print(f"world.pg1_licenses{world.pg1_licenses}")
+    print(f"world.pg3_licenses{world.pg3_licenses}")
     connect_pack_region(world, CardRegion.BASIC, [item_id for item_id in [190,1] if item_id in world.pg1_licenses])
     connect_pack_region(world, CardRegion.RARE, [item_id for item_id in [2,3] if item_id in world.pg1_licenses])
     connect_pack_region(world, CardRegion.EPIC, [item_id for item_id in [4,5] if item_id in world.pg1_licenses])

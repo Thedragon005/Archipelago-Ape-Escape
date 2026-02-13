@@ -1,4 +1,20 @@
 from worlds.apeescape.Strings import AEDoor
+DOUBLE_EXIT = AEDoor.SF_CONVEYOR1_EXIT.value
+SAME_ROOM_EXCEPTION = frozenset([AEDoor.SF_CONVEYOR1_EXIT.value,
+                                 AEDoor.SF_CONVEYOR2_EXIT.value,
+                                 AEDoor.SF_CONVEYOR3_EXIT.value,
+                                 AEDoor.SF_CONVEYOR4_EXIT.value,
+                                 AEDoor.SF_CONVEYOR5_EXIT.value,
+                                 AEDoor.SF_CONVEYOR6_EXIT.value])
+
+EXITS_ONLY_DOOR = frozenset([AEDoor.SF_CONVEYOR1_EXIT.value,
+                                 AEDoor.SF_CONVEYOR2_EXIT.value,
+                                 AEDoor.SF_CONVEYOR3_EXIT.value,
+                                 AEDoor.SF_CONVEYOR4_EXIT.value,
+                                 AEDoor.SF_CONVEYOR5_EXIT.value,
+                                 AEDoor.SF_CONVEYOR6_EXIT.value,
+                                 AEDoor.MM_COASTER_ENTRY_DISEMBARK.value,
+                                 AEDoor.MM_HAUNTED_HOUSE_DISEMBARK.value])
 
 ONEWAY_SHUFFLE_DOOR = frozenset([AEDoor.SF_CONVEYOR1_ENTRY.value,
                                  AEDoor.SF_CONVEYOR2_ENTRY.value,

@@ -1,4 +1,4 @@
-from typing import ClassVar, Union
+from typing import ClassVar, Union, Any
 
 import settings
 from Options import OptionError
@@ -8,6 +8,7 @@ from BaseClasses import Tutorial
 from .options import *
 from .regions import *
 from .rules import *
+from .locations import get_all_locations
 
 
 class TCGSimulatorWeb(WebWorld):
@@ -52,11 +53,16 @@ class TCGSimulatorWorld(World):
 
 
 
-    location_name_to_id: ClassVar[Dict[str, int]] = {item_name: item_code for item_name, item_code in locations.get_all_locations().items()}
+    location_name_to_id: ClassVar[Dict[str, int]] = {item_name: item_code for item_name, item_code in get_all_locations().items()}
 
     item_name_groups = {
         "licenses": set(item_dict.keys()),
     }
+
+    ut_can_gen_without_yaml = False  # class var that tells it to ignore the player yaml
+    using_ut: bool  # so we can check if we're using UT only once
+    passthrough: Dict[str, Any]
+
 
     def __init__(self, multiworld, player):
         self.itempool = []
@@ -99,15 +105,62 @@ class TCGSimulatorWorld(World):
 
         if self.options.max_level.value % 5 != 0:
             self.options.max_level.value += 5 - (self.options.max_level.value % 5)
+        #print(f"pg1_licenses:{self.pg1_licenses}")
+        if hasattr(self.multiworld, "re_gen_passthrough"):
+            if "TCG Card Shop Simulator" in self.multiworld.re_gen_passthrough:
+                self.using_ut = True
+                self.passthrough = self.multiworld.re_gen_passthrough["TCG Card Shop Simulator"]
+                print(self.passthrough)
+                self.starting_item_ids = self.passthrough["StartingIds"]
+                self.pg1_licenses = self.passthrough["ShopPg1Mapping"]
+                self.pg2_licenses = self.passthrough["ShopPg2Mapping"]
+                self.pg3_licenses = self.passthrough["ShopPg3Mapping"]
+                self.tt_licenses = self.passthrough["ShopTTMapping"]
 
+                self.options.max_level.value = self.passthrough["MaxLevel"]
+                self.options.licenses_per_region.value = self.passthrough["LicensesPerRegion"]
+                self.required_licenses = self.passthrough["RequiredLicenses"]
+                self.options.goal.value = self.passthrough["Goal"]
+                # self.options.collection_goal_percentage.value = self.passthrough["CollectionGoalPercent"]
+                self.options.ghost_goal_amount.value = self.passthrough["GhostGoalAmount"]
+
+                self.options.auto_renovate.value = self.passthrough["AutoRenovate"]
+                self.options.better_trades.value = self.passthrough["BetterTrades"]
+                self.options.extra_starting_item_checks.value = self.passthrough["ExtraStartingItemChecks"]
+                self.options.sell_check_amount.value = self.passthrough["SellCheckAmount"]
+                self.options.checks_per_pack.value = self.passthrough["ChecksPerPack"]
+                self.options.card_collect_percent.value = self.passthrough["CardCollectPercentage"]
+                self.options.play_table_checks.value = self.passthrough["PlayTableChecks"]
+                self.options.games_per_check.value = self.passthrough["GamesPerCheck"]
+                self.options.sell_card_check_count.value = self.passthrough["NumberOfSellCardChecks"]
+                self.options.sell_cards_per_check.value = self.passthrough["SellCardsPerCheck"]
+
+                self.options.card_sanity.value = self.passthrough["CardSanity"]
+                self.options.foil_sanity.value = self.passthrough["FoilInSanity"]
+                self.options.border_sanity.value = self.passthrough["BorderInSanity"]
+
+                self.options.trap_fill.value = self.passthrough["TrapFill"]
+                self.options.deathlink.value = self.passthrough["Deathlink"]
+            else:
+                self.using_ut = False
+        else:
+            self.using_ut = False
 
     def create_regions(self):
         level_grouped_locs = create_regions(self)
-
-        self.pg1_licenses = level_grouped_locs[0]
-        self.pg2_licenses = level_grouped_locs[1]
-        self.pg3_licenses = level_grouped_locs[2]
-        self.tt_licenses = level_grouped_locs[3]
+        print(level_grouped_locs)
+        if self.using_ut:
+            print("Using UT!")
+            self.pg1_licenses = {int(k): int(v) for k, v in self.pg1_licenses.items()}
+            self.pg2_licenses = {int(k): int(v) for k, v in self.pg2_licenses.items()}
+            self.pg3_licenses = {int(k): int(v) for k, v in self.pg3_licenses.items()}
+            self.tt_licenses = {int(k): int(v) for k, v in self.tt_licenses.items()}
+        else:
+            print("NOT USING UT")
+            self.pg1_licenses = level_grouped_locs[0]
+            self.pg2_licenses = level_grouped_locs[1]
+            self.pg3_licenses = level_grouped_locs[2]
+            self.tt_licenses = level_grouped_locs[3]
 
         connect_entrances(self)
 
@@ -132,10 +185,17 @@ class TCGSimulatorWorld(World):
                           show_entrance_names=True,
                           regions_to_highlight=self.multiworld.get_all_state(self.player).reachable_regions[
                               self.player])
+    # for the universal tracker, doesn't get called in standard gen
+    # docs: https://github.com/FarisTheAncient/Archipelago/blob/tracker/worlds/tracker/docs/re-gen-passthrough.md
+    @staticmethod
+    def interpret_slot_data(slot_data: Dict[str, Any]) -> Dict[str, Any]:
+        # returning slot_data so it regens, giving it back in multiworld.re_gen_passthrough
+        # we are using re_gen_passthrough over modifying the world here due to complexities with ER
+        return slot_data
 
     def fill_slot_data(self) -> id:
         return {
-            "ModVersion": "0.6.0",
+            "ModVersion": "0.5.14",
             "StartingIds": self.starting_item_ids,
             "ShopPg1Mapping": self.pg1_licenses,
             "ShopPg2Mapping": self.pg2_licenses,
