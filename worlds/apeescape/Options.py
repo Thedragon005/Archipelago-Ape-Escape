@@ -157,33 +157,33 @@ class EntranceOption(Choice):
     default = option_on
 
 class DoorShuffleOption(Choice):
-    """Choose which level transitions.
+    """Choose how the transitions between rooms (doors) are randomized.
 
-        off: Levels will be in the vanilla order.
-        on: Levels will be in a random order.
-        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entrance.
+    off: Doors will lead to their vanilla destinations.
+    same_level: Doors are shuffled with other doors within the same level.
 
-        Supported values: off, on, lockmm
-        Default value: on
+    Supported values: off, same_level
+    Default value: off
     """
 
     display_name = "Door Shuffle"
     option_off = 0x00
     option_same_level = 0x01
-    option_cross_level = 0x02
-    default = option_same_level
+    #option_cross_level = 0x02
+    default = option_off
 
 class DoorShuffleTypeOption(Choice):
-    """Choose which level transitions.
+    """Determines the logic used when connecting doors.
+    This only applies if Door Shuffle is set to 'same_level'.
 
-        off: Levels will be in the vanilla order.
-        on: Levels will be in a random order.
-        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entrance.
+    pairs: Two-way transitions. If Door A leads to Door B, then Door B
+           will always lead back to Door A.
+    crossed: One-way transitions. Door A might lead to Door B, while Door B
+             leads to Door C.
 
-        Supported values: off, on, lockmm
-        Default value: on
+    Supported values: pairs, crossed
+    Default value: pairs
     """
-
     display_name = "Door Shuffle"
     option_pairs = 0x00
     option_crossed = 0x01
