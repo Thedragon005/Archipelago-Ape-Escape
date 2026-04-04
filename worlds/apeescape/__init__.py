@@ -9,7 +9,7 @@ from Options import OptionError
 from worlds.AutoWorld import WebWorld, World
 
 from .Items import item_table, ApeEscapeItem, GROUPED_ITEMS
-from .Locations import location_table, base_location_id, GROUPED_LOCATIONS
+from .Locations import location_table, base_location_id, GROUPED_LOCATIONS, doorTransitions
 from .Regions import create_regions, ApeEscapeLevel
 from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
@@ -80,6 +80,8 @@ class ApeEscapeWorld(World):
         self.infinitejump: Optional[int] = 0
         self.superflyer: Optional[int] = 0
         self.entrance: Optional[int] = 0
+        self.doorshuffle: Optional[int] = 0
+        self.doorshuffletype: Optional[int] = 0
         self.randomizestartingroom: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.extrakeys: Optional[int] = 0
@@ -96,6 +98,7 @@ class ApeEscapeWorld(World):
         self.levellist: List[ApeEscapeLevel] = []
         self.entranceorder: List[ApeEscapeLevel] = []
         self.firstrooms = []
+        self.shuffled_doors = []
         super(ApeEscapeWorld, self).__init__(multiworld, player)
 
     def generate_early(self) -> None:
@@ -108,6 +111,8 @@ class ApeEscapeWorld(World):
         self.infinitejump = self.options.infinitejump.value
         self.superflyer = self.options.superflyer.value
         self.entrance = self.options.entrance.value
+        self.doorshuffle = self.options.doorshuffle.value
+        self.doorshuffletype = self.options.doorshuffletype.value
         self.randomizestartingroom = self.options.randomizestartingroom.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.extrakeys = self.options.extrakeys.value
@@ -137,6 +142,8 @@ class ApeEscapeWorld(World):
                 self.options.infinitejump.value = self.passthrough["infinitejump"]
                 self.options.superflyer.value = self.passthrough["superflyer"]
                 self.options.entrance.value = self.passthrough["entrance"]
+                self.options.doorshuffle.value = self.passthrough["doorshuffle"]
+                self.options.doorshuffletype.value = self.passthrough["doorshuffletype"]
                 self.options.randomizestartingroom.value = self.passthrough["randomizestartingroom"]
                 self.options.unlocksperkey.value = self.passthrough["unlocksperkey"]
                 self.options.extrakeys.value = self.passthrough["extrakeys"]
@@ -149,6 +156,7 @@ class ApeEscapeWorld(World):
                 self.options.lowoxygensounds.value = self.passthrough["lowoxygensounds"]
                 self.options.trappercentage.value = self.passthrough["trappercentage"]
                 self.options.itemdisplay.value = self.passthrough["itemdisplay"]
+                self.shuffled_doors = self.passthrough["shuffled_doors"]
             else:
                 self.using_ut = False
         else:
@@ -513,6 +521,7 @@ class ApeEscapeWorld(World):
             "entranceids": entranceids,  # Not used by the client. List of level ids in entrance order.
             "newpositions": newpositions,  # List of positions a level is moved to. The position of FF is first.
             "firstrooms": orderedfirstroomids,  # List of first rooms in entrance order.
+            "shuffled_doors": self.shuffled_doors,
             "reqkeys": get_required_keys(self.options.unlocksperkey.value, self.options.goal.value, self.options.coin.value),
             "death_link": self.options.death_link.value
         }
@@ -526,11 +535,72 @@ class ApeEscapeWorld(World):
         return slot_data
 
     def write_spoiler(self, spoiler_handle: TextIO):
-        if self.options.entrance.value != 0x00:
+        if self.options.entrance.value != 0x00 or self.options.doorshuffle.value != 0:
             spoiler_handle.write(
-                f"\n\nApe Escape entrance connections for {self.multiworld.get_player_name(self.player)}:")
+                f"\n\nApe Escape connections for {self.multiworld.get_player_name(self.player)}:")
+
+            def _clean(val):
+                while isinstance(val, (list, tuple, set)):
+                    if not val: return "!!"
+                    val = next(iter(val))
+                return val
+
+            is_pairs = (self.options.doorshuffletype.value == 0x00)
+            door_arrow = " <==> " if is_pairs else " ==> "
+
+            shuffled_map = getattr(self, "shuffled_door_map", {})
+
+            try:
+                from .Locations import doorTransitions as raw_lookup
+            except ImportError:
+                raw_lookup = locals().get('doorTransitions') or \
+                             getattr(self, 'doorTransitions', None) or \
+                             getattr(Locations, 'doorTransitions', {})
+
+            safe_lookup = {str(_clean(k)): v for k, v in raw_lookup.items()}
+
             for x in range(0, 22):
-                spoiler_handle.write(f"\n  {self.levellist[x].name} ==> {self.entranceorder[x].name}")
+                vanilla_level = self.levellist[x]
+                actual_level_content = self.entranceorder[x]
+
+                if self.options.entrance.value != 0x00:
+                    spoiler_handle.write(f"\n      {vanilla_level.name} ==> {actual_level_content.name}:")
+                else:
+                    spoiler_handle.write(f"\n      {vanilla_level.name}:")
+
+                if self.options.doorshuffle.value != 0:
+                    current_level_id = actual_level_content.entrance
+                    level_rooms = [str(r) for r in RAM.roomsperlevel.get(current_level_id, [])]
+
+                    # Identify if this is a 1-room level (common for Bosses/Short levels)
+                    is_one_room_level = (len(level_rooms) == 1)
+
+                    for door_key in raw_lookup:
+                        s_id_str = str(_clean(door_key))
+
+                        # Filter logic:
+                        # 1. If it's a normal level, we still skip base Entries (no hyphen).
+                        # 2. If it's a 1-room level, we ALLOW the base Entry to show.
+                        if " - " not in s_id_str and not is_one_room_level:
+                            continue
+
+                        door_info = safe_lookup.get(s_id_str)
+
+                        if isinstance(door_info, (list, tuple)) and len(door_info) > 0:
+                            room_id_cl = _clean(door_info)
+
+                            if str(room_id_cl) in level_rooms:
+                                # Determine destination
+                                if s_id_str in shuffled_map:
+                                    d_id_str = str(_clean(shuffled_map[s_id_str]))
+                                else:
+                                    # If not shuffled, it's vanilla.
+                                    # We append " (Vanilla)" to the name for clarity.
+                                    vanilla_target = str(_clean(door_info)) if len(door_info) > 3 else "Fixed"
+                                    d_id_str = f"{vanilla_target} (Vanilla)"
+
+                                spoiler_handle.write(f"\n            {s_id_str}{door_arrow}{d_id_str}")
+
             spoiler_handle.write(f"\n")
 
     #def generate_output(self, output_directory: str):

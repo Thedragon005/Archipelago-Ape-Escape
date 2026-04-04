@@ -5,6 +5,9 @@ CONDITIONAL_ROOMS = {28}
 DELAYED_BUTTON_ROOMS = {28}
 BUTTON_ACCESS_DOORS = {AEDoor.DI_SLIDE_ROOM_GALLERY.value}
 LOGIC_RESTRICTED_DOORS = {AEDoor.DI_SLIDE_ROOM_GALLERY_WATER.value}
+LAMP_DEPTH_REQUIREMENTS = {
+    AEDoor.SF_FACTORY_WHEEL_BOTTOM.value: 3,  # Wait until 3 monkeys are found to map this
+}
 HEAVY_GATES = {
         #AEDoor.SF_FACTORY_WHEEL_TOP.value,
         # Add any other doors here that require X monkeys or hard-to-get gadgets
@@ -100,5 +103,5 @@ BOSSES_SHUFFLE_DOOR = frozenset([AEDoor.CC_ENTRY_BOSS.value,
                                  AEDoor.TVT_BOSS_TANK.value
                                  ])
 
-APEESCAPE_MAX_ATTEMPTS: int = 75
+APEESCAPE_MAX_ATTEMPTS: int = 100
 APEESCAPE_DEBUG: bool = True
