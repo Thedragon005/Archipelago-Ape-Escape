@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 from .ItemHandlers import ApeEscapeMemoryInput, StunTrapHandler, MonkeyMashHandler, RainbowCookieHandler, \
     CameraRotateHandler
 from .Strings import AEItem, AEDoor, AELocation, DS_Options, DS_ButtonAndDoors, Commands_Dict
-from .Locations import cointable, hundoMonkeysCount, hundoCoinsCount, doorTransitions
+from .Locations import cointable, hundoMonkeysCount, hundoCoinsCount, doorTransitions,TransitionsPerRoom
 from .Items import gadgetsValues, trap_name_to_value, trap_to_local_traps
 from .RAMAddress import RAM
 from .Options import GoalOption, RequiredTokensOption, TotalTokensOption, TokenLocationsOption, \
@@ -397,6 +397,7 @@ class ApeEscapeClient(BizHawkClient):
     PPM_Completed = False
     gotDatastorage = False
     mailboxTextReplaced = False
+    Doors_shuffled = False
 
     def __init__(self) -> None:
         super().__init__()
@@ -455,6 +456,7 @@ class ApeEscapeClient(BizHawkClient):
         self.ER_phase = 1
         self.allowcollect = 0
         self.forcecollect = False
+        self.Doors_shuffled = False
 
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         ape_identifier_ram_address: int = 0xA37F0
@@ -1472,7 +1474,7 @@ class ApeEscapeClient(BizHawkClient):
                         targetRoom = doorTransition[0]
                         targetDoor = doorTransition[1]
                     # Change Transition2 to the desired transitions as needed
-                    TR2_Adresses = list(RAM.transitionAddresses.get(2))
+                    TR2_Adresses = list(RAM.transitionAddresses.get(1))
                     writes += [(TR2_Adresses[0], targetRoom.to_bytes(1, "little"), "MainRAM")]
                     writes += [(TR2_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
                 else:
@@ -2090,8 +2092,13 @@ class ApeEscapeClient(BizHawkClient):
             for i in range(len(levelRooms)):
                 roomID = levelRooms[i]
                 inRoom = currentRoom == roomID
-                MonkeysInRoom_keys = list(RAM.monkeyListLocal.get(roomID).keys())
-                MonkeysInRoom_address = list(RAM.monkeyListLocal.get(roomID).values())
+                if roomID not in RAM.monkeyListLocal.keys():
+                    # Skips the room if it is not in the list
+                    # Not in the list = no monkeys
+                    continue
+                else:
+                    MonkeysInRoom_keys = list(RAM.monkeyListLocal.get(roomID).keys())
+                    MonkeysInRoom_address = list(RAM.monkeyListLocal.get(roomID).values())
 
                 for x in range(len(MonkeysInRoom_keys)):
                     MonkeyID = MonkeysInRoom_keys[x]
@@ -3540,7 +3547,7 @@ class ApeEscapeClient(BizHawkClient):
         # Code to send Spike to the right transition (If needed)
         if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
 
-            # For all of the Monkey Madness levels, treat it as Monkey Madness
+            # For all the Monkey Madness levels, treat it as Monkey Madness
             if 0x18 < currentLevel < 0x1E:
                 level = 0x18
             else:
@@ -3581,6 +3588,62 @@ class ApeEscapeClient(BizHawkClient):
                             "want_reply": False,
                             "operations": [{"operation": "replace", "value": 1}]
                         }])
+            # TODO ORDER OF OPERATIONS
+            #  - Check the room we are in
+            #  - List all transitions in the room (TransitionsPerRoom)
+            #  - For each transition, go search the Source in the shuffled_map and check TR# info in doorTransitions
+            #  - Take the Destination of each Source and get room/door info in doorTransitions
+            #  - Replace the values with the correct values
+            #  - Profit?
+            #  NOTE : Prevent doing the change while in a transition?
+            # Handling doorshuffle live within the level
+            shuffled_doors = dict(ctx.slot_data["shuffled_doors"])
+            doorshuffle = ctx.slot_data["doorshuffle"]
+            doorshuffletype = ctx.slot_data["doorshuffletype"]
+            DoorWrites = []
+            if doorshuffle == 0x01:
+                roomTransitions = TransitionsPerRoom.get(currentRoom)
+                if roomTransitions:
+                    # Transition is not shuffled or excluded, keep it vanilla
+                    # Prevent applying the changes during a transition
+                    #print(transitionPhase)
+                    if transitionPhase != RAM.transitionPhase["InTransition"]:
+                        if self.Doors_shuffled == False:
+                            print("===============================")
+                            #print(shuffled_doors)
+                            #print(roomTransitions)
+                            for TR in roomTransitions:
+                                dstTR = shuffled_doors.get(TR)
+                                if dstTR is None:
+                                    # Transition is not shuffled or excluded, keep it vanilla
+                                    continue
+                                #print(f"dstTR:{dstTR}")
+                                srcdoorTransition = doorTransitions.get(TR)
+                                src_targetRoom = srcdoorTransition[0]
+                                src_targetDoor = srcdoorTransition[1]
+                                src_TRNum = srcdoorTransition[2]
+
+                                dstdoorTransition = doorTransitions.get(dstTR)
+                                dst_targetRoom = dstdoorTransition[0]
+                                dst_targetDoor = dstdoorTransition[1]
+
+                                print(f"{TR}(TR#{src_TRNum}) <==>{dstTR}(R:{dst_targetRoom},D:{dst_targetDoor})")
+
+                                target_TRDoorAddress = RAM.transitionAddresses.get(src_TRNum)[0]
+                                target_TRRoomAddress = RAM.transitionAddresses.get(src_TRNum)[1]
+                                DoorWrites += [(target_TRDoorAddress, dst_targetRoom.to_bytes(1, "little"), "MainRAM")]
+                                DoorWrites += [(target_TRRoomAddress, dst_targetDoor.to_bytes(1, "little"), "MainRAM")]
+
+                            await bizhawk.write(ctx.bizhawk_ctx, DoorWrites)
+                            self.Doors_shuffled = True
+                            print("===============================")
+                    else:
+                        self.Doors_shuffled = False
+        else:
+            if self.Doors_shuffled == True:
+                self.Doors_shuffled = False
+
+
         await bizhawk.write(ctx.bizhawk_ctx, ER_writes)
 
     def format_cointable(self,ctx: "BizHawkClientContext",CoinTable,SA_Completed,GA_Completed,usage = ""):
