@@ -457,6 +457,8 @@ class ApeEscapeClient(BizHawkClient):
         self.allowcollect = 0
         self.forcecollect = False
         self.Doors_shuffled = False
+        self.MM_Completed = False
+        self.PPM_Completed = False
 
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
         ape_identifier_ram_address: int = 0xA37F0
@@ -910,6 +912,24 @@ class ApeEscapeClient(BizHawkClient):
                 "Spike_Y_Pos": (RAM.Spike_Y_PosAddress, 4, "MainRAM"),
                 "Spike_Z_Pos": (RAM.Spike_Z_PosAddress, 4, "MainRAM"),
                 "Spike_CanMove": (RAM.Spike_CanMove, 1, "MainRAM"),
+
+                "TR1_Room": (list(RAM.transitionAddresses.get(1))[0], 1, "MainRAM"),
+                "TR1_Door": (list(RAM.transitionAddresses.get(1))[1], 1, "MainRAM"),
+                "TR2_Room": (list(RAM.transitionAddresses.get(2))[0], 1, "MainRAM"),
+                "TR2_Door": (list(RAM.transitionAddresses.get(2))[1], 1, "MainRAM"),
+                "TR3_Room": (list(RAM.transitionAddresses.get(3))[0], 1, "MainRAM"),
+                "TR3_Door": (list(RAM.transitionAddresses.get(3))[1], 1, "MainRAM"),
+                "TR4_Room": (list(RAM.transitionAddresses.get(4))[0], 1, "MainRAM"),
+                "TR4_Door": (list(RAM.transitionAddresses.get(4))[1], 1, "MainRAM"),
+                "TR5_Room": (list(RAM.transitionAddresses.get(5))[0], 1, "MainRAM"),
+                "TR5_Door": (list(RAM.transitionAddresses.get(5))[1], 1, "MainRAM"),
+                "TR6_Room": (list(RAM.transitionAddresses.get(6))[0], 1, "MainRAM"),
+                "TR6_Door": (list(RAM.transitionAddresses.get(6))[1], 1, "MainRAM"),
+                "TR7_Room": (list(RAM.transitionAddresses.get(7))[0], 1, "MainRAM"),
+                "TR7_Door": (list(RAM.transitionAddresses.get(7))[1], 1, "MainRAM"),
+                "TR8_Room": (list(RAM.transitionAddresses.get(8))[0], 1, "MainRAM"),
+                "TR8_Door": (list(RAM.transitionAddresses.get(8))[1], 1, "MainRAM"),
+
                 # Gadgets
                 "gadgets": (RAM.unlockedGadgetsAddress, 1, "MainRAM"),  # Gadget unlocked states
                 "gadgetStateFromServer": (RAM.gadgetStateFromServer, 2, "MainRAM"),
@@ -1064,6 +1084,17 @@ class ApeEscapeClient(BizHawkClient):
             Spike_Y_Pos = readValues["Spike_Y_Pos"]
             Spike_Z_Pos = readValues["Spike_Z_Pos"]
             Spike_CanMove = readValues["Spike_CanMove"]
+            transitionAddresses = {
+                1 : [readValues["TR1_Room"],readValues["TR1_Door"]],
+                2 : [readValues["TR2_Room"],readValues["TR2_Door"]],
+                3 : [readValues["TR3_Room"],readValues["TR3_Door"]],
+                4 : [readValues["TR4_Room"],readValues["TR4_Door"]],
+                5 : [readValues["TR5_Room"],readValues["TR5_Door"]],
+                6 : [readValues["TR6_Room"],readValues["TR6_Door"]],
+                7 : [readValues["TR7_Room"],readValues["TR7_Door"]],
+                8 : [readValues["TR8_Room"],readValues["TR8_Door"]],
+
+            }
 
             # Gadgets
             gadgets = readValues["gadgets"]
@@ -1474,7 +1505,7 @@ class ApeEscapeClient(BizHawkClient):
                         targetRoom = doorTransition[0]
                         targetDoor = doorTransition[1]
                     # Change Transition2 to the desired transitions as needed
-                    TR2_Adresses = list(RAM.transitionAddresses.get(1))
+                    TR2_Adresses = list(RAM.transitionAddresses.get(2))
                     writes += [(TR2_Adresses[0], targetRoom.to_bytes(1, "little"), "MainRAM")]
                     writes += [(TR2_Adresses[1], targetDoor.to_bytes(1, "little"), "MainRAM")]
                 else:
@@ -1489,6 +1520,8 @@ class ApeEscapeClient(BizHawkClient):
             InFastTokenWarp = RAM.gameState["TimeStation"] == gameState and boolActivateFastGoalWarp and currentRoom in {83,86,87}
             if InFastTokenWarp:
                 writes += [(RAM.gameStateAddress, RAM.gameState["InLevel"].to_bytes(1, "little"), "MainRAM")]
+            elif currentRoom == 88 and RAM.gameState["InLevel"] == gameState:
+                writes += [(RAM.gameStateAddress, RAM.gameState["TimeStation"].to_bytes(1, "little"), "MainRAM")]
             writes += [(RAM.GadgetTrainingsUnlockAddress, GadgetTrainingsUnlock.to_bytes(4, "little"), "MainRAM")]
             writes += [(RAM.trainingRoomProgressAddress, trainingRoomProgress.to_bytes(1, "little"), "MainRAM")]
 
@@ -1681,7 +1714,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # == Entrance Randomization Handling ===
             # For all things related to ER and Room Rando
-            ER_Reads = [gameState, status_currentWorld, status_currentLevel, currentLevel, transitionPhase, Spike_X_Pos, Spike_Y_Pos, Spike_Z_Pos, spikeState2, currentRoom,gameRunning, InputListener,Warp_State,Transition_Screen_Progress,LoadingState,Spike_CanMove]
+            ER_Reads = [gameState, status_currentWorld, status_currentLevel, currentLevel, transitionPhase, Spike_X_Pos, Spike_Y_Pos, Spike_Z_Pos, spikeState2, currentRoom,gameRunning, InputListener,Warp_State,Transition_Screen_Progress,LoadingState,Spike_CanMove,transitionAddresses]
             await self.ER_Handling(ctx, ER_Reads)
 
 
@@ -2074,84 +2107,85 @@ class ApeEscapeClient(BizHawkClient):
         # if being in a level
         # check if NOT in a boss room since there is no monkeys to send there
         if gameState == RAM.gameState["InLevel"] and (localcondition) and not (currentRoom in bossRooms):
-            monkeyaddrs = RAM.monkeyListLocal[currentRoom]
-            key_list = list(monkeyaddrs.keys())
-            val_list = list(monkeyaddrs.values())
+            if currentRoom in RAM.monkeyListLocal.keys():
+                monkeyaddrs = RAM.monkeyListLocal[currentRoom]
+                key_list = list(monkeyaddrs.keys())
+                val_list = list(monkeyaddrs.values())
 
-            addresses = []
-            for val in val_list:
-                tuple1 = (val, 1, "MainRAM")
-                addresses.append(tuple1)
-            localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+                addresses = []
+                for val in val_list:
+                    tuple1 = (val, 1, "MainRAM")
+                    addresses.append(tuple1)
+                localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
 
-            if level == 0x18:
-                levelRooms = list(RAM.MM_roomspersublevel[currentLevel])
-            else:
-                levelRooms = list(RAM.roomsperlevel[currentLevel])
-
-            for i in range(len(levelRooms)):
-                roomID = levelRooms[i]
-                inRoom = currentRoom == roomID
-                if roomID not in RAM.monkeyListLocal.keys():
-                    # Skips the room if it is not in the list
-                    # Not in the list = no monkeys
-                    continue
+                if level == 0x18:
+                    levelRooms = list(RAM.MM_roomspersublevel[currentLevel])
                 else:
-                    MonkeysInRoom_keys = list(RAM.monkeyListLocal.get(roomID).keys())
-                    MonkeysInRoom_address = list(RAM.monkeyListLocal.get(roomID).values())
+                    levelRooms = list(RAM.roomsperlevel[currentLevel])
 
-                for x in range(len(MonkeysInRoom_keys)):
-                    MonkeyID = MonkeysInRoom_keys[x]
-                    GlobalMonkeyAddress = RAM.monkeyListGlobal.get(MonkeyID)
-                    iscaughtglobal = int.from_bytes(GlobalIDToValueTable[MonkeyID], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
-                    if inRoom:
-                        if transitionPhase != 0x06:
-                            iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
-                        else:
-                            iscaughtlocal = False
-                        if iscaughtlocal:
-                            # If the Monkey is not already in the sent locations list, add it to an array to send location
-                            if (MonkeyID + self.offset) not in self.locations_list and currentRoom == self.roomglobal:
-                                monkeysToSend.add(MonkeyID + self.offset)
-                                locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                                GlobalIDToValueTable[MonkeyID] = 0x02.to_bytes(1, "little")
-                                iscaughtglobal = True
+                for i in range(len(levelRooms)):
+                    roomID = levelRooms[i]
+                    inRoom = currentRoom == roomID
+                    if roomID not in RAM.monkeyListLocal.keys():
+                        # Skips the room if it is not in the list
+                        # Not in the list = no monkeys
+                        continue
+                    else:
+                        MonkeysInRoom_keys = list(RAM.monkeyListLocal.get(roomID).keys())
+                        MonkeysInRoom_address = list(RAM.monkeyListLocal.get(roomID).values())
+
+                    for x in range(len(MonkeysInRoom_keys)):
+                        MonkeyID = MonkeysInRoom_keys[x]
+                        GlobalMonkeyAddress = RAM.monkeyListGlobal.get(MonkeyID)
+                        iscaughtglobal = int.from_bytes(GlobalIDToValueTable[MonkeyID], byteorder='little') in (RAM.caughtStatus["Caught"],RAM.caughtStatus["PrevCaught"])
+                        if inRoom:
+                            if transitionPhase != 0x06:
+                                iscaughtlocal = int.from_bytes(localmonkeys[x], byteorder='little') in (RAM.caughtStatus["Caught"], RAM.caughtStatus["PrevCaught"])
+                            else:
+                                iscaughtlocal = False
+                            if iscaughtlocal:
+                                # If the Monkey is not already in the sent locations list, add it to an array to send location
+                                if (MonkeyID + self.offset) not in self.locations_list and currentRoom == self.roomglobal:
+                                    monkeysToSend.add(MonkeyID + self.offset)
+                                    locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                    GlobalIDToValueTable[MonkeyID] = 0x02.to_bytes(1, "little")
+                                    iscaughtglobal = True
+                            else:
+                                if allowcollect:
+                                    # If the location ID is in the list and they are not caught, sync them
+                                    if (MonkeyID + self.offset) in self.locations_list and transitionPhase != 0x06:
+                                        #MonkeyID = key_list[x]
+                                        MonkeyAddress = val_list[x]
+                                        levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
+                                        MonkeyHitboxUpdateAddress = RAM.localMonkeyHitbox.get(MonkeyAddress)
+                                        locationWrites += [(MonkeyHitboxUpdateAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                                        locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                        locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                        #print(f"+1 for Monkey#{MonkeyID}")
+                                        #print(f"iscaughtglobal:{iscaughtglobal}")
+                                        temp_counter += 1
+                                        if not set(levels_containing_monkey).issubset(set(levelsToSync)):
+                                            levelsToSync += levels_containing_monkey
+                                            #print(levelsToSync)
                         else:
                             if allowcollect:
-                                # If the location ID is in the list and they are not caught, sync them
-                                if (MonkeyID + self.offset) in self.locations_list and transitionPhase != 0x06:
-                                    #MonkeyID = key_list[x]
-                                    MonkeyAddress = val_list[x]
+                                # Supposed to only do a local sync of the current MM_Sub-Level
+                                if (MonkeyID + self.offset) in self.locations_list and iscaughtglobal == False:
+                                    #print(f"Synched monkey #{MonkeyID}")
                                     levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
-                                    MonkeyHitboxUpdateAddress = RAM.localMonkeyHitbox.get(MonkeyAddress)
-                                    locationWrites += [(MonkeyHitboxUpdateAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                                    locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                    room_containing_monkey = [room for room, monkeys in RAM.monkeyListTempLocal.items() if MonkeyID in monkeys]
+                                    MonkeyAddress = RAM.monkeyListTempLocal.get(room_containing_monkey[0]).get(MonkeyID)
                                     locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                                    #print(f"+1 for Monkey#{MonkeyID}")
-                                    #print(f"iscaughtglobal:{iscaughtglobal}")
+                                    locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                                    GlobalIDToValueTable[MonkeyID] = 0x02.to_bytes(1, "little")
+                                    iscaughtglobal = True
+                                    print(f"Local +1 for Monkey#{MonkeyID}")
                                     temp_counter += 1
                                     if not set(levels_containing_monkey).issubset(set(levelsToSync)):
                                         levelsToSync += levels_containing_monkey
                                         #print(levelsToSync)
-                    else:
-                        if allowcollect:
-                            # Supposed to only do a local sync of the current MM_Sub-Level
-                            if (MonkeyID + self.offset) in self.locations_list and iscaughtglobal == False:
-                                #print(f"Synched monkey #{MonkeyID}")
-                                levels_containing_monkey = [level for level, monkeys in RAM.monkeysperlevel.items() if MonkeyID in monkeys]
-                                room_containing_monkey = [room for room, monkeys in RAM.monkeyListTempLocal.items() if MonkeyID in monkeys]
-                                MonkeyAddress = RAM.monkeyListTempLocal.get(room_containing_monkey[0]).get(MonkeyID)
-                                locationWrites += [(GlobalMonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                                locationWrites += [(MonkeyAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                                GlobalIDToValueTable[MonkeyID] = 0x02.to_bytes(1, "little")
-                                iscaughtglobal = True
-                                print(f"Local +1 for Monkey#{MonkeyID}")
-                                temp_counter += 1
-                                if not set(levels_containing_monkey).issubset(set(levelsToSync)):
-                                    levelsToSync += levels_containing_monkey
-                                    #print(levelsToSync)
-            if temp_counter > currentApes:
-                locationWrites += [(RAM.currentApesAddress, temp_counter.to_bytes(1, "little"), "MainRAM")]
+                if temp_counter > currentApes:
+                    locationWrites += [(RAM.currentApesAddress, temp_counter.to_bytes(1, "little"), "MainRAM")]
 
         # Check for Coins
 
@@ -2312,27 +2346,29 @@ class ApeEscapeClient(BizHawkClient):
         specter1Condition = (currentRoom == 86 and S1_P2_State == 1 and S1_P2_Life == 0)
         specter2Condition = (currentRoom == 87 and S2_isCaptured == 1)
         currentgoal = ctx.slot_data["goal"]
-        if RAM.gameState["InLevel"] == gameState and specter1Condition:
+
+        if specter1Condition:
             bossesToSend.add(self.offset + 205)
             if currentgoal in (GoalOption.option_mm, GoalOption.option_mmtoken) and not ctx.finished_game:
-                    await ctx.send_msgs([{
-                        "cmd": "StatusUpdate",
-                        "status": ClientStatus.CLIENT_GOAL
-                    }])
-                    await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
+                await ctx.send_msgs([{
+                    "cmd": "StatusUpdate",
+                    "status": ClientStatus.CLIENT_GOAL
+                }])
+                await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
+                ctx.finished_game = True
             self.MM_Completed = True
-            ctx.finished_game = True
-        if RAM.gameState["InLevel"] == gameState and specter2Condition:
+
+        if specter2Condition:
             bossesToSend.add(self.offset + 206)
 
             if currentgoal in (GoalOption.option_ppm, GoalOption.option_ppmtoken) and not ctx.finished_game:
-                    await ctx.send_msgs([{
-                        "cmd": "StatusUpdate",
-                        "status": ClientStatus.CLIENT_GOAL
-                    }])
-                    await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
+                await ctx.send_msgs([{
+                    "cmd": "StatusUpdate",
+                    "status": ClientStatus.CLIENT_GOAL
+                }])
+                await self.send_bizhawk_message(ctx, "You have completed your goal o[8(|)", "Passthrough", "")
+                ctx.finished_game = True
             self.PPM_Completed = True
-            ctx.finished_game = True
 
         locationsToSend = monkeysToSend | coinsToSend | mailToSend | bossesToSend | racesToSend
         if locationsToSend != "" and locationsToSend != set():
@@ -3187,8 +3223,6 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_ON'].to_bytes(4, "little"), "MainRAM")]
             elif (NearbyRoom in specialrooms and transitionPhase == RAM.transitionPhase["InTransition"]) or (currentRoom in specialrooms):
                 #print("SpecialRoom")
-                if currentRoom == 41 and WSW_RoomState == 0x00 and lockCamera == 0x80:
-                    Lamps_writes += [(RAM.WSW_RoomState, 0x01.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
@@ -3200,8 +3234,6 @@ class ApeEscapeClient(BizHawkClient):
         else:
             if (NearbyRoom in specialrooms and transitionPhase == RAM.transitionPhase["InTransition"]) or currentRoom in specialrooms:
                 # print("SpecialRoom")
-                if currentRoom == 41 and WSW_RoomState == 0x00 and lockCamera == 0x80:
-                    Lamps_writes += [(RAM.WSW_RoomState, 0x01.to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.localLamp_MonkeyDetect, RAM.lampDoors_update['localLamp_MonkeyDetect_ON'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
@@ -3211,6 +3243,56 @@ class ApeEscapeClient(BizHawkClient):
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect1, RAM.lampDoors_update['globalLamp_MonkeyDetect1_OFF'].to_bytes(4, "little"), "MainRAM")]
                 Lamps_writes += [(RAM.globalLamp_MonkeyDetect2, RAM.lampDoors_update['globalLamp_MonkeyDetect2_OFF'].to_bytes(4, "little"), "MainRAM")]
 
+        if currentRoom == 41 and transitionPhase != RAM.transitionPhase["InTransition"]:
+            door_addresses = RAM.doors_addresses
+            # Check if all monkeys from the room are caught
+            monkeyaddrs = RAM.monkeyListLocal[currentRoom]
+            key_list = list(monkeyaddrs.keys())
+            val_list = list(monkeyaddrs.values())
+
+            addresses = []
+            for val in val_list:
+                tuple1 = (val, 1, "MainRAM")
+                addresses.append(tuple1)
+            localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
+            localCounter = 0
+            for monkeyvalue in localmonkeys:
+                #print(f"MonkeyValue:{monkeyvalue}")
+                if int.from_bytes(monkeyvalue, byteorder='little') in (RAM.caughtStatus["PrevCaught"], RAM.caughtStatus["Caught"]):
+                    localCounter += 1
+            AllCaught = localCounter >= 3
+            #print(AllCaught)
+            #print(WSW_RoomState)
+            if currentRoom in door_addresses.keys():
+                doorlist_keys = list(door_addresses[currentRoom].keys())
+                doorlist_values = list(door_addresses[currentRoom].values())
+                # print(doorlist_values)
+                for x in range(len(doorlist_keys)):
+                    Door_writes = []
+                    Door_guards = [(RAM.currentRoomIdAddress, currentRoom.to_bytes(1, "little"), "MainRAM")]
+                    # lamp_values2 = list(lamp_values[x].__str__().replace("[", "").replace("]", "").split(","))
+                    door_values = list(doorlist_values[x])
+                    # print(doorlist_values[x])
+                    door_bytes = door_values[0]
+                    door_openvalue = door_values[1].to_bytes(door_bytes, "little")
+                    door_closedvalue = door_values[2].to_bytes(door_bytes, "little")
+                    door_address = (doorlist_keys[x])
+                    # print(door_address)
+                    if AllCaught == False:
+                        # Close the door if it's open
+                        Door_writes += [(door_address, door_closedvalue, "MainRAM")]
+                        Door_guards += [(door_address, door_openvalue, "MainRAM")]
+                    elif AllCaught and WSW_RoomState == 3:
+                        Door_writes += [(door_address, door_openvalue, "MainRAM")]
+                        Door_guards += [(door_address, door_closedvalue, "MainRAM")]
+                    if Door_writes:
+                        await bizhawk.guarded_write(ctx.bizhawk_ctx, Door_writes, Door_guards)
+            if localCounter <= 2 and WSW_RoomState != 0:
+                Lamps_writes += [(RAM.WSW_RoomState, 0x01.to_bytes(1, "little"), "MainRAM")]
+                if lockCamera == 0x60:
+                    Lamps_writes += [(RAM.lockCamera, 0x80.to_bytes(1, "little"), "MainRAM")]
+            elif localCounter == 3 and WSW_RoomState == 1:
+                Lamps_writes += [(RAM.WSW_RoomState, 0x02.to_bytes(1, "little"), "MainRAM")]
         # You can now have the Lamp Item and bypass the door
         if currentRoom in lampDoors_toggles.keys() and GotLamp:
             lamplist_keys = list(lampDoors_toggles[currentRoom].keys())
@@ -3488,6 +3570,7 @@ class ApeEscapeClient(BizHawkClient):
         Transition_Screen_Progress = ER_Reads[13]
         LoadingState = ER_Reads[14]
         Spike_CanMove = ER_Reads[15]
+        transitionAddresses = ER_Reads[16]
 
         ER_writes = []
         ER_guards = []
@@ -3546,7 +3629,8 @@ class ApeEscapeClient(BizHawkClient):
                     self.ChangeRoom = True
         # Code to send Spike to the right transition (If needed)
         if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
-
+            if currentRoom == 88:
+                return
             # For all the Monkey Madness levels, treat it as Monkey Madness
             if 0x18 < currentLevel < 0x1E:
                 level = 0x18
@@ -3609,9 +3693,10 @@ class ApeEscapeClient(BizHawkClient):
                     #print(transitionPhase)
                     if transitionPhase != RAM.transitionPhase["InTransition"]:
                         if self.Doors_shuffled == False:
-                            print("===============================")
+
                             #print(shuffled_doors)
                             #print(roomTransitions)
+                            Prints = []
                             for TR in roomTransitions:
                                 dstTR = shuffled_doors.get(TR)
                                 if dstTR is None:
@@ -3627,21 +3712,25 @@ class ApeEscapeClient(BizHawkClient):
                                 dst_targetRoom = dstdoorTransition[0]
                                 dst_targetDoor = dstdoorTransition[1]
 
-                                print(f"{TR}(TR#{src_TRNum}) <==>{dstTR}(R:{dst_targetRoom},D:{dst_targetDoor})")
 
-                                target_TRDoorAddress = RAM.transitionAddresses.get(src_TRNum)[0]
-                                target_TRRoomAddress = RAM.transitionAddresses.get(src_TRNum)[1]
-                                DoorWrites += [(target_TRDoorAddress, dst_targetRoom.to_bytes(1, "little"), "MainRAM")]
-                                DoorWrites += [(target_TRRoomAddress, dst_targetDoor.to_bytes(1, "little"), "MainRAM")]
 
+                                target_TRRoomAddress = RAM.transitionAddresses.get(src_TRNum)[0]
+                                target_TRDoorAddress = RAM.transitionAddresses.get(src_TRNum)[1]
+
+                                # Transition detection to see if they are different from original
+                                #print(type(transitionAddresses))
+                                targetTransitionRoom = list(transitionAddresses.get(src_TRNum))[0]
+                                targetTransitionDoor = list(transitionAddresses.get(src_TRNum))[1]
+                                if dst_targetRoom != targetTransitionRoom or dst_targetDoor != targetTransitionDoor:
+                                    Prints += [f"{TR}(TR#{src_TRNum}) <==> {dstTR}(R:{dst_targetRoom},D:{dst_targetDoor})"]
+                                    DoorWrites += [(target_TRRoomAddress, dst_targetRoom.to_bytes(1, "little"), "MainRAM")]
+                                    DoorWrites += [(target_TRDoorAddress, dst_targetDoor.to_bytes(1, "little"), "MainRAM")]
                             await bizhawk.write(ctx.bizhawk_ctx, DoorWrites)
-                            self.Doors_shuffled = True
-                            print("===============================")
-                    else:
-                        self.Doors_shuffled = False
-        else:
-            if self.Doors_shuffled == True:
-                self.Doors_shuffled = False
+                            if DoorWrites:
+                                print("===================ENTRANCES===================")
+                                for p in Prints:
+                                    print(p)
+                                print("===============================================")
 
 
         await bizhawk.write(ctx.bizhawk_ctx, ER_writes)
