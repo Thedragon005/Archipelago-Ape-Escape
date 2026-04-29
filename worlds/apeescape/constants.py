@@ -17,6 +17,7 @@ ZONE_LOCKS = {
     AEDoor.MM_CASTLE_MAIN_SPECTER1.value,
     AEDoor.MM_CASTLE_MAIN_INSIDE_CLIMB.value,
     AEDoor.CC_ENTRY_BOSS.value,
+    AEDoor.TVT_LOBBY_WATER.value
 }
 
 # --- BUTTON & ZONE RELATIONSHIPS ---
@@ -35,7 +36,13 @@ BUTTON_MAPPINGS = {
     ],
     AEDoor.CC_BUTTON_BASEMENT_LEDGE.value: [
         AEDoor.CC_ENTRY_BOSS.value
-    ]
+    ],
+    AEDoor.TVT_LOBBY_OUTSIDE.value: [
+        AEDoor.TVT_LOBBY_WATER.value
+    ],
+    AEDoor.TVT_LOBBY_TANK.value: [
+        AEDoor.TVT_LOBBY_WATER.value
+    ],
 }
 
 ALL_BUTTONS = set(BUTTON_MAPPINGS.keys())

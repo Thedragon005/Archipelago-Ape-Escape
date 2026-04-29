@@ -1299,7 +1299,51 @@ def create_regions(world: "ApeEscapeWorld"):
                     mailbox31, mailbox32, mailbox33, mailbox34, mailbox35, mailbox36, mailbox37, mailbox38, mailbox39, mailbox40,
                     mailbox41, mailbox42, mailbox43, mailbox44, mailbox45, mailbox46, mailbox47, mailbox48, mailbox49, mailbox50,
                     mailbox51, mailbox52, mailbox53, mailbox54, mailbox55, mailbox56, mailbox57, mailbox58, mailbox59]
-
+    if options.jacket == "true":
+        jacket1 = Region(AELocation.Jacket1.value, player, multiworld)
+        jacket1.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket1) for loc_name in get_array([251])]
+        jacket2 = Region(AELocation.Jacket2.value, player, multiworld)
+        jacket2.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket2) for loc_name in get_array([252])]
+        jacket3 = Region(AELocation.Jacket3.value, player, multiworld)
+        jacket3.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket3) for loc_name in get_array([253])]
+        jacket4 = Region(AELocation.Jacket4.value, player, multiworld)
+        jacket4.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket4) for loc_name in get_array([254])]
+        jacket5 = Region(AELocation.Jacket5.value, player, multiworld)
+        jacket5.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket5) for loc_name in get_array([255])]
+        jacket6 = Region(AELocation.Jacket6.value, player, multiworld)
+        jacket6.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket6) for loc_name in get_array([256])]
+        jacket7 = Region(AELocation.Jacket7.value, player, multiworld)
+        jacket7.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket7) for loc_name in get_array([257])]
+        jacket8 = Region(AELocation.Jacket8.value, player, multiworld)
+        jacket8.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket8) for loc_name in get_array([258])]
+        jacket9 = Region(AELocation.Jacket9.value, player, multiworld)
+        jacket9.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket9) for loc_name in get_array([259])]
+        jacket10 = Region(AELocation.Jacket10.value, player, multiworld)
+        jacket10.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket10) for loc_name in get_array([260])]
+        jacket11 = Region(AELocation.Jacket11.value, player, multiworld)
+        jacket11.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket11) for loc_name in get_array([261])]
+        jacket12 = Region(AELocation.Jacket12.value, player, multiworld)
+        jacket12.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket12) for loc_name in get_array([262])]
+        jacket13 = Region(AELocation.Jacket13.value, player, multiworld)
+        jacket13.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket13) for loc_name in get_array([263])]
+        jacket14 = Region(AELocation.Jacket14.value, player, multiworld)
+        jacket14.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket14) for loc_name in get_array([264])]
+        jacket15 = Region(AELocation.Jacket15.value, player, multiworld)
+        jacket15.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket15) for loc_name in get_array([265])]
+        jacket16 = Region(AELocation.Jacket16.value, player, multiworld)
+        jacket16.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket16) for loc_name in get_array([266])]
+        jacket17 = Region(AELocation.Jacket17.value, player, multiworld)
+        jacket17.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket17) for loc_name in get_array([267])]
+        jacket18 = Region(AELocation.Jacket18.value, player, multiworld)
+        jacket18.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket18) for loc_name in get_array([268])]
+        jacket19 = Region(AELocation.Jacket19.value, player, multiworld)
+        jacket19.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket19) for loc_name in get_array([269])]
+        jacket20 = Region(AELocation.Jacket20.value, player, multiworld)
+        jacket20.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket20) for loc_name in get_array([270])]
+        jacket21 = Region(AELocation.Jacket21.value, player, multiworld)
+        jacket21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket21) for loc_name in get_array([271])]
+        regions += [jacket1, jacket2, jacket3, jacket4, jacket5, jacket6, jacket7, jacket8, jacket9, jacket10, jacket11, jacket12, jacket13, jacket14,
+                    jacket15, jacket16, jacket17, jacket18, jacket19, jacket20,jacket21]
     multiworld.regions.extend(regions)
     create_event_items(world)
 

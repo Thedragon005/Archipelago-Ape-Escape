@@ -87,6 +87,7 @@ class ApeEscapeWorld(World):
         self.extrakeys: Optional[int] = 0
         self.coin: Optional[int] = 0
         self.mailbox: Optional[int] = 0
+        self.jacket: Optional[int] = 0
         self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
@@ -118,6 +119,7 @@ class ApeEscapeWorld(World):
         self.extrakeys = self.options.extrakeys.value
         self.coin = self.options.coin.value
         self.mailbox = self.options.mailbox.value
+        self.jacket = self.options.mailbox.value
         self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
         self.shufflenet = self.options.shufflenet.value
@@ -149,6 +151,7 @@ class ApeEscapeWorld(World):
                 self.options.extrakeys.value = self.passthrough["extrakeys"]
                 self.options.coin.value = self.passthrough["coin"]
                 self.options.mailbox.value = self.passthrough["mailbox"]
+                self.options.jacket.value = self.passthrough["mailbox"]
                 self.options.lamp.value = self.passthrough["lamp"]
                 self.options.gadget.value = self.passthrough["gadget"]
                 self.options.shufflenet.value = self.passthrough["shufflenet"]
@@ -172,7 +175,6 @@ class ApeEscapeWorld(World):
     def stage_fill_hook(cls,multiworld: MultiWorld,progitempool,usefulitempool,filleritempool,fill_locations) -> None:
         game_players = multiworld.get_game_players(cls.game)
         # Get all player IDs that have progression classification tokens.
-        print(multiworld.worlds[game_players[0]].goal)
         token_player_ids = {player for player in game_players if multiworld.worlds[player].goal in [2,3,4]}
         # Get the player IDs of those that are using minimal accessibility.
         token_minimal_player_ids = {player for player in game_players
@@ -316,6 +318,7 @@ class ApeEscapeWorld(World):
             self.multiworld.push_precollected(net)
         elif self.options.shufflenet == "true":
             # If net shuffle is on, make sure there are locations that don't require net.
+            # Jacket locations are not enough to make it not fail,not including it in this list
             if self.options.coin == "true" or self.options.mailbox == "true":
                 self.itempool += [net]
             else:
@@ -501,6 +504,7 @@ class ApeEscapeWorld(World):
             "extrakeys": self.options.extrakeys.value,
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
+            "jacket": self.options.mailbox.value,
             "lamp": self.options.lamp.value,
             "gadget": self.options.gadget.value,
             "shufflenet": self.options.shufflenet.value,

@@ -238,6 +238,29 @@ location_table = {
     # 9-2 Peak Point Matrix
     AELocation.Specter2.value: 206,
 
+    # Jackets
+    AELocation.Jacket1.value: 251,
+    AELocation.Jacket2.value: 252,
+    AELocation.Jacket3.value: 253,
+    AELocation.Jacket4.value: 254,
+    AELocation.Jacket5.value: 255,
+    AELocation.Jacket6.value: 256,
+    AELocation.Jacket7.value: 257,
+    AELocation.Jacket8.value: 258,
+    AELocation.Jacket9.value: 259,
+    AELocation.Jacket10.value: 260,
+    AELocation.Jacket11.value: 261,
+    AELocation.Jacket12.value: 262,
+    AELocation.Jacket13.value: 263,
+    AELocation.Jacket14.value: 264,
+    AELocation.Jacket15.value: 265,
+    AELocation.Jacket16.value: 266,
+    AELocation.Jacket17.value: 267,
+    AELocation.Jacket18.value: 268,
+    AELocation.Jacket19.value: 269,
+    AELocation.Jacket20.value: 270,
+    AELocation.Jacket21.value: 271,
+
     # Coins
     AELocation.Coin1.value: 301,
     AELocation.Coin2.value: 302,
@@ -299,6 +322,7 @@ location_table = {
     AELocation.Coin85.value: 385,
     AELocation.Coin84.value: 384,
     AELocation.Coin82.value: 382,
+
 
     # Mailboxes
     AELocation.Mailbox1.value: 401,

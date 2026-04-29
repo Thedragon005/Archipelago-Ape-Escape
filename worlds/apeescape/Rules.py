@@ -115,17 +115,17 @@ def set_doors(self,logic):
     The shuffle logic handles Pairs (0x01) and Crossed (0x02) modes.
     """
     #Time station doors
-    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TIME_MAIN_MINIGAME.value, AEDoor.TIME_MINIGAME_MAIN.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_MAIN_TRAINING.value,
-                        lambda state: True)
-    connect_regions(self, AEDoor.TIME_MINIGAME_MAIN.value, AEDoor.TIME_MAIN_MINIGAME.value,
-                        lambda state: True)
+    #connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_MAIN.value,
+                        #lambda state: True)
+    #connect_regions(self, AEDoor.TIME_MAIN_MINIGAME.value, AEDoor.TIME_MINIGAME_MAIN.value,
+                        #lambda state: True)
+    #connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_MAIN_TRAINING.value,
+                        #lambda state: True)
+    #connect_regions(self, AEDoor.TIME_MINIGAME_MAIN.value, AEDoor.TIME_MAIN_MINIGAME.value,
+                        #lambda state: True)
 
-    connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_TRAINING_WATERNET.value,
-                    lambda state: True)
+    #connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AEDoor.TIME_TRAINING_WATERNET.value,
+                    #lambda state: True)
 
     # 1. Generate the shuffled map using door_map
     # We pass 'self' as the world object to access options and random
@@ -1142,7 +1142,7 @@ def set_locations(self, logic):
     else:
         connect_regions(self, AEDoor.DR_WATER_SIDE.value, AELocation.W2L2Chino.value, 
                         lambda state: HasNet(state, self) or ((HasRC(state, self) or CanDive(state, self)) and HasWaterNet(state, self)))
-    
+
     if self.options.coin == "true":
         if logic == "normal":
             connect_regions(self, AEDoor.DR_ENTRY.value, AELocation.Coin11.value, 
@@ -1180,6 +1180,18 @@ def set_locations(self, logic):
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Mailbox28.value, 
                         lambda state: CanHitOnce(state, self))
+    if self.options.jacket == "true":
+        if logic == "normal":
+            connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Jacket1.value,
+                            lambda state: (HasPunch(state, self)))
+        elif logic == "hard":
+            connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Jacket1.value,
+                            lambda state: (HasPunch(state, self) or IJ(state, self)))
+        else:
+            connect_regions(self, AEDoor.DR_OBELISK_BOTTOM.value, AELocation.Jacket1.value,
+                            lambda state: (HasPunch(state, self) or IJ(state, self) or SuperFlyer(state, self,AEDoor.DR_OBELISK_BOTTOM.value)))
+        connect_regions(self, AEDoor.DR_WATER_SIDE.value, AELocation.Jacket2.value,
+                        lambda state: True)
 
     # Cryptic Relics
     # Entry
@@ -1246,6 +1258,16 @@ def set_locations(self, logic):
                         lambda state: (CanHitWheel(state, self) or HasFlyer(state, self)) and CanSwim(state, self))
         connect_regions(self, AEDoor.CR_PILLAR_ROOM_MAIN_RUINS.value, AELocation.Mailbox33.value, 
                         lambda state: CanHitOnce(state, self))
+    if self.options.jacket == "true":
+        if logic == "normal":
+            connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Jacket3.value,
+                            lambda state: ((CanHitWheel(state, self) or HasFlyer(state, self)) and CanSwim(state, self)))
+        elif logic == "hard":
+            connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Jacket3.value,
+                            lambda state: ((CanHitWheel(state, self) and CanSwim(state, self)) or IJ(state, self) or HasFlyer(state, self)))
+        else:
+            connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Jacket3.value,
+                            lambda state: ((CanHitWheel(state, self) and CanSwim(state, self)) or IJ(state, self) or HasHoop(state,self) or HasFlyer(state, self)))
 
     # Stadium Attack
     if self.options.coin == "true":
@@ -1429,7 +1451,9 @@ def set_locations(self, logic):
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.DI_GALLERY_SLIDE_ELEVATOR.value, AELocation.Mailbox42.value, 
                         lambda state: CanHitOnce(state, self))
-
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.DI_TENTACLE.value, AELocation.Jacket4.value,
+                        lambda state: True)
     # Snowy Mammoth
     connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Popcicle.value, 
                         lambda state: HasNet(state, self))
@@ -1598,6 +1622,21 @@ def set_locations(self, logic):
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Mailbox49.value, 
                         lambda state: True)
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.HS_ENTRY_HOT_SPRING.value, AELocation.Jacket5.value,
+                        lambda state: (CanSwim(state,self)))
+        if logic == "normal":
+            connect_regions(self, AEDoor.HS_HOT_SPRING.value, AELocation.Jacket6.value,
+                            lambda state: (HasFlyer(state, self)))
+        else:
+            connect_regions(self, AEDoor.HS_HOT_SPRING.value, AELocation.Jacket6.value,
+                            lambda state: (HasFlyer(state, self) or IJ(state, self)))
+        if logic == "normal":
+            connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Jacket7.value,
+                            lambda state: (CanHitMultiple(state, self)))
+        else:
+            connect_regions(self, AEDoor.HS_POLAR_BEAR_CAVE.value, AELocation.Jacket7.value,
+                            lambda state: (CanHitMultiple(state, self) or IJ(state, self) or SuperFlyer(state, self,AEDoor.HS_POLAR_BEAR_CAVE.value)))
 
     # Gladiator Attack
     if self.options.coin == "true":
@@ -1727,7 +1766,9 @@ def set_locations(self, logic):
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.WSW_OBSTACLE_MIDDLE.value, AELocation.Mailbox56.value, 
                         lambda state: CanHitWheel(state, self) or HasFlyer(state, self))
-
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.Jacket8.value,
+                        lambda state: True)
     # Crumbling Castle
     # Outside
     connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.W7L3Robart.value, 
@@ -1811,6 +1852,9 @@ def set_locations(self, logic):
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.Mailbox57.value, 
                         lambda state: CanHitOnce(state, self))
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.CC_BASEMENT_BUTTON_UP.value, AELocation.Jacket10.value,
+                        lambda state: True)
 
     # City Park
     # Outside
@@ -1913,6 +1957,9 @@ def set_locations(self, logic):
                             lambda state: (HasRC(state, self) or IJ(state, self) or (HasHoop(state, self) and HasFlyer(state, self))))
         connect_regions(self, AEDoor.CP_BARRELSEWERMIDDLE.value, AELocation.Coin55.value, 
                         lambda state: HasFlyer(state, self) or IJ(state, self))
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.CP_BARREL_SEWERS_FRONT.value, AELocation.Jacket9.value,
+                        lambda state: True)
 
     # Specter's Factory
     # Outside
@@ -1993,7 +2040,11 @@ def set_locations(self, logic):
     if self.options.mailbox == "true":
         connect_regions(self, AEDoor.SF_ENTRY.value, AELocation.Mailbox58.value, 
                         lambda state: True)
-
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.SF_WHEEL_FACTORY_TOP.value, AELocation.Jacket11.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AELocation.Jacket12.value,
+                        lambda state: True)
     # TV Tower
     # Outside
     connect_regions(self, AEDoor.TVT_OUTSIDE_LOBBY.value, AELocation.W8L3Fredo.value,
@@ -2241,19 +2292,49 @@ def set_locations(self, logic):
             connect_regions(self, AEDoor.MM_SIDE_ENTRY_OUTSIDE_CASTLE.value, AELocation.Coin85.value, 
                             lambda state: HasFlyer(state, self) or IJ(state, self))
     if self.options.mailbox == "true":
-        connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AELocation.Mailbox59.value, 
+        connect_regions(self, AEDoor.MM_COASTER_ENTRY_SL_HUB.value, AELocation.Mailbox59.value,
                         lambda state: True)
+    if self.options.jacket == "true":
+        connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Jacket13.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.Jacket14.value,
+                        lambda state: CanHitOnce(state,self))
+        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket15.value,
+                        lambda state: CanHitOnce(state,self))
+        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket16.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket17.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket18.value,
+                        lambda state: CanHitOnce(state,self))
+        if logic == "normal":
+            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
+                            lambda state: HasFlyer(state, self))
+        else:
+            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
+                            lambda state: HasFlyer(state, self) or IJ(state, self) or HasHoop(state,self))
+        if logic == "normal":
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+                            lambda state: HasSling(state, self) and HasFlyer(state, self))
+        elif logic == "hard":
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+                            lambda state: HasClub(state, self) or HasSling(state, self) or HasPunch(state,self) or HasFlyer(state, self))
+        else:
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+                            lambda state: CanHitWheel(state, self) or HasFlyer(state, self))
 
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket21.value,
+                        lambda state: CanHitOnce(state, self))
     # Peak Point Matrix
     if self.options.goal != "mm":
         connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.Specter2.value, 
                         lambda state: HasSling(state, self) and (HasClub(state, self) or HasHoop(state, self) or HasPunch(state, self)) and HasNet(state, self))
     if self.options.fasttokengoal == self.options.fasttokengoal.option_on:
         if self.options.goal == "mmtoken":
-            connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AEDoor.MM_SPECTER1_ROOM.value,
+            connect_regions(self, "Menu", AEDoor.MM_SPECTER1_ROOM.value,
                             lambda state: Tokens(state, self,min(self.options.requiredtokens, self.options.totaltokens)))
         if self.options.goal == "ppmtoken":
-            connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AEDoor.PPM_ENTRY.value,
+            connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value,
                             lambda state: Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens)))
 # Item Checking Helper Functions
 def Keys(state, world, count):
@@ -2623,26 +2704,23 @@ def initialize_room_list(world, roomsperlevel, setlevelids = None, setroomids = 
 # Idea to fix it : If lamps are off, make all the lamps transitions requires 2(?) other rooms to unlock them ?
 
 def initialize_door_transitions(world, door_map, roomsperlevel, doorTransitions):
-    """
-    Orchestrates the shuffling of doors while ensuring logical reachability
-    of buttons and restricted zones. Includes a 100-attempt failsafe.
-    """
+    if world.options.doorshuffle.value == 0x00:
+
+        return door_map
     if hasattr(world, "shuffled_door_map"):
         return world.shuffled_door_map
 
-    shuffled_map, door_labels = {}, {}
+    shuffled_map = {k: v for k, v in door_map.items()}
     already_placed_src, already_placed_dst = set(), set()
-    failsafe_summary = []
-
-    # --- HELPER: NORMALIZE DATA TYPES ---
+    already_genuine_src = set()
+    # ── helpers ───────────────────────────────────────────────────────────────
     def clean(val):
-        """Peels lists/tuples to get the actual ID (int or str)."""
         while isinstance(val, (list, tuple, set)):
             if not val: return "!!"
             val = next(iter(val))
         return val
 
-    # --- ROOM LOOKUP CACHE ---
+    # door → room mapping from doorTransitions
     room_lookup = {clean(dr): clean(info) for dr, info in doorTransitions.items()}
     for s, d in door_map.items():
         s_cl, d_cl = clean(s), clean(d)
@@ -2652,212 +2730,516 @@ def initialize_door_transitions(world, door_map, roomsperlevel, doorTransitions)
     def get_room(door):
         return room_lookup.get(clean(door), "!!")
 
-    # --- CONSTANTS & CONFIG ---
-    exit_only_set = {clean(ex) for ex in EXITS_ONLY_DOOR}
-    oneway_set = {clean(ow) for ow in ONEWAY_SHUFFLE_DOOR}
-    is_pairs = (world.options.doorshuffletype.value == 0x00)
+    # ── options ───────────────────────────────────────────────────────────────
+    is_pairs  = (world.options.doorshuffletype.value == 0x00)
+    is_expert = (world.options.logic.value == 0x02)
+    ij_on     = (world.options.infinitejump.value == 0x01)
 
-    if world.options.doorshuffle.value == 0:
-        for s, d in door_map.items():
-            shuffled_map[s], door_labels[s] = d, "VANILLA"
-        world.shuffled_door_map = shuffled_map
-        return shuffled_map
+    # ── cleaned constant sets ─────────────────────────────────────────────────
+    exit_only_set = {clean(d) for d in EXITS_ONLY_DOOR}
+    oneway_set    = {clean(d) for d in ONEWAY_SHUFFLE_DOOR}
+    boss_set      = {clean(d) for d in BOSSES_SHUFFLE_DOOR}
+    lamp_set      = {clean(d) for d in LAMP_RESTRICTIVE_ROOMS}
+    logic_set     = {clean(d) for d in LOGIC_RESTRICTED_DOORS}
+    same_room_exc = {clean(d) for d in SAME_ROOM_EXCEPTION}
 
-    # --- LOGIC MAPPINGS ---
-    local_zone_locks = {clean(z) for z in ZONE_LOCKS}
-    local_button_mappings = {clean(k): [clean(v_i) for v_i in (v if isinstance(v, list) else [v])]
-                             for k, v in BUTTON_MAPPINGS.items()}
+    local_zone_locks  = {clean(z) for z in ZONE_LOCKS}
+    local_btn_map     = {
+        clean(k): [clean(vi) for vi in (v if isinstance(v, list) else [v])]
+        for k, v in BUTTON_MAPPINGS.items()
+    }
+    local_all_buttons = set(local_btn_map.keys())
+    # Reverse lookup: zone_lock -> [buttons that unlock it]
+    zone_lock_buttons = {}
+    for btn, locks in local_btn_map.items():
+        for lock in locks:
+            zone_lock_buttons.setdefault(lock, []).append(btn)
 
-    if world.options.lamp.value == 0x00:
-        local_zone_locks.update({clean(z) for z in LAMP_ZONE_LOCKS})
-        for k, v in LAMP_BUTTON_MAPPINGS.items():
-            local_button_mappings[clean(k)] = [clean(v_i) for v_i in (v if isinstance(v, list) else [v])]
+    # Lamp equivalents
+    local_lamp_zone_locks = {clean(z) for z in LAMP_ZONE_LOCKS}
+    local_lamp_btn_map = {
+        clean(k): [clean(vi) for vi in (v if isinstance(v, list) else [v])]
+        for k, v in LAMP_BUTTON_MAPPINGS.items()
+    }
+    lamp_zone_lock_buttons = {}
+    for btn, locks in local_lamp_btn_map.items():
+        for lock in locks:
+            lamp_zone_lock_buttons.setdefault(lock, []).append(btn)
 
-    local_all_buttons = set(local_button_mappings.keys())
+    # Enforce lamp locks only when lamp option is off
+    lamp_off = (world.options.lamp.value == 0x00)  # adjust option name to match yours
 
-    # --- IMMUTABLES ---
-    BASE_IMMUTABLE = {clean(d) for d in BOSSES_SHUFFLE_DOOR}
-    if world.options.lamp.value == 0x00:
-        BASE_IMMUTABLE.update({clean(d) for d in LAMP_RESTRICTIVE_ROOMS})
+    # ── exclusion logic ───────────────────────────────────────────────────────
+    ALWAYS_EXCLUDED = boss_set
     if is_pairs:
-        # In Pairs mode, one-way transitions cannot be reliably coupled
-        BASE_IMMUTABLE.update(oneway_set | exit_only_set)
+        ALWAYS_EXCLUDED |= exit_only_set | oneway_set
+    if lamp_off:
+        ALWAYS_EXCLUDED |= lamp_set
 
+    def is_shufflable(d):
+        return d not in ALWAYS_EXCLUDED
+
+    def is_valid_src(d):
+        if not is_shufflable(d): return False
+        if not is_pairs and d in exit_only_set: return False  # Crossed: exits_only = dst only
+        return True
+
+    def is_valid_dst(d):
+        if not is_shufflable(d): return False
+        if not is_pairs and d in oneway_set: return False     # Crossed: oneway = src only
+        if d in logic_set and not (is_expert and ij_on): return False
+        return True
+
+    # ── transition count helpers ──────────────────────────────────────────────
+    def available_count(room):
+        """Static count — used for sorting priority only."""
+        return sum(1 for d in TransitionsPerRoom.get(room, [])
+                   if is_shufflable(d))
+
+    def remaining_count(room, placed_src, placed_dst):
+        """Dynamic count — how many shufflable doors in this room are still unplaced.
+        Used for the 1-transition dead-end guard."""
+        return sum(1 for d in TransitionsPerRoom.get(room, [])
+                   if is_shufflable(d)
+                   and d not in placed_src
+                   and d not in placed_dst)
+
+    def get_shufflable_exits(room):
+        return [d for d in TransitionsPerRoom.get(room, []) if is_shufflable(d)]
+
+    def is_zone_lock_button(d_cl):
+        if d_cl in local_all_buttons:
+            if any(lk in local_zone_locks for lk in local_btn_map.get(d_cl, [])):
+                return True
+        if lamp_off and d_cl in local_lamp_btn_map:
+            if any(lk in local_lamp_zone_locks for lk in local_lamp_btn_map.get(d_cl, [])):
+                return True
+        return False
+
+    def room_has_zone_lock_button(room):
+        return any(is_zone_lock_button(clean(d))
+                   for d in TransitionsPerRoom.get(room, []))
+
+    # ── pre-lock immutables ───────────────────────────────────────────────────
     for s, d in door_map.items():
-        if clean(s) in BASE_IMMUTABLE:
-            shuffled_map[s], door_labels[s] = d, "IMMUTABLE"
-            already_placed_src.add(clean(s))
-            already_placed_dst.add(clean(d))
+        s_cl, d_cl = clean(s), clean(d)
+        if not is_shufflable(s_cl) or not is_shufflable(d_cl):
+            shuffled_map[s] = d
+            already_placed_src.add(s_cl)
+            already_placed_dst.add(d_cl)
+            already_genuine_src.add(s_cl)  # pre-locked src is genuine
+            if is_pairs:
+                shuffled_map[d] = s
+                already_placed_src.add(d_cl)
+                already_placed_dst.add(s_cl)
+                # d_cl is NOT added to already_genuine_src — it's a pairs reverse
 
-    # --- MAIN LOOP ---
+    # ── level loop ────────────────────────────────────────────────────────────
     for level, rooms in roomsperlevel.items():
         level_rooms = {clean(r) for r in rooms}
         success = False
-        final_attempt_log = ""
+        last_attempt_log = ""
 
+        # Skip levels with too few shufflable transitions — would always be A↔B
+        level_shufflable = [
+            d for r in level_rooms
+            for d in TransitionsPerRoom.get(r, [])
+            if is_shufflable(clean(d))
+        ]
+        if len(level_shufflable) <= 2:
+            print(f"  [SKIP] Level {level}: only {len(level_shufflable)} shufflable "
+                  f"transition(s) — keeping vanilla.")
+            continue
         for attempt in range(APEESCAPE_MAX_ATTEMPTS):
-            temp_map, temp_labels, temp_src, temp_dst = {}, {}, set(), set()
+            temp_map = {}
+            temp_src, temp_dst = set(), set()
+            temp_genuine_src = set()  # only doors placed as actual source, not pairs reverse
             temp_triggered, temp_zones = set(), set()
+            # active_map: only immutable/pre-locked entries — shufflable vanilla
+            # entries are intentionally excluded so scan() doesn't use them to
+            # prematurely mark rooms as visited before the backbone places them
+            active_map = {
+                s: d for s, d in shuffled_map.items()
+                if clean(s) in already_placed_src or not is_shufflable(clean(s))
+            }
 
             try:
-                idx = list(roomsperlevel.keys()).index(level)
-                start_room = clean(sorted(world.firstrooms)[idx])
-            except:
+                idx          = list(roomsperlevel.keys()).index(level)
+                start_room   = clean(sorted(world.firstrooms)[idx])
+                start_doors  = TransitionsPerRoom.get(start_room, [])
+                start_transition = clean(start_doors[0]) if start_doors else None
+            except Exception:
                 break
 
-            # --- LOGGING: Start the trace with Level and Start Room ---
-            process_log = f"\n>> Level {level} (Attempt {attempt + 1})\n"
-            process_log += f"  [START ROOM] {start_room}\n"
+            process_log = (
+                f"\n>> Level {level} (Attempt {attempt + 1})\n"
+                f"  [START] room={start_room} entry={start_transition}\n"
+            )
 
             unvisited = set(level_rooms)
-            current_mainland = {start_room}
-            if start_room in unvisited: unvisited.remove(start_room)
+            unvisited.discard(start_room)
 
-            def attempt_commit(s, d, label):
-                nonlocal process_log
-                s_cl, d_cl = clean(s), clean(d)
-                s_rm, d_rm = get_room(s_cl), get_room(d_cl)
+            # Seed ALL doors of the starting room as immediately reachable
+            reachable_doors = {clean(d) for d in TransitionsPerRoom.get(start_room, [])}
 
-                if s_rm == d_rm: return False
-                if s_cl in already_placed_src or s_cl in temp_src: return False
-                if d_cl in already_placed_dst or d_cl in temp_dst: return False
-                if is_pairs:
-                    if d_cl in already_placed_src or d_cl in temp_src: return False
-                    if s_cl in already_placed_dst or s_cl in temp_dst: return False
-                if s_cl in local_zone_locks and s_cl not in temp_zones and s_cl not in local_all_buttons:
+            # Detect self-referential zone locks in start room — Spike spawns
+            # inside the locked area so no button traversal is needed
+            self_ref_zone_locks = {
+                clean(d) for d in TransitionsPerRoom.get(start_room, [])
+                if clean(d) in local_zone_locks
+                   and clean(d) in zone_lock_buttons.get(clean(d), [])
+            }
+
+            # ── closed-loop detection (Pairs only) ────────────────────────────
+            def would_create_closed_loop(s_cl, d_cl):
+                if not is_pairs:
+                    return False
+                s_room, d_room = get_room(s_cl), get_room(d_cl)
+                if s_room == d_room:
                     return False
 
-                temp_map[s], temp_labels[s] = d, label.upper()
+                all_used = already_placed_src | already_placed_dst | temp_src | temp_dst
+
+                def free_doors(room, exclude):
+                    return [x for x in TransitionsPerRoom.get(room, [])
+                            if (is_valid_src(x) or is_valid_dst(x))
+                            and x not in all_used and x != exclude]
+
+                s_rem = free_doors(s_room, s_cl)
+                d_rem = free_doors(d_room, d_cl)
+                if s_rem or d_rem:
+                    return False
+
+                combined = {clean(k): clean(v) for k, v in {**active_map, **temp_map}.items()}
+                combined[s_cl] = d_cl
+                combined[d_cl] = s_cl
+                s_targets = {get_room(v) for k, v in combined.items()
+                             if get_room(k) == s_room and v != "!!"}
+                d_targets = {get_room(v) for k, v in combined.items()
+                             if get_room(k) == d_room and v != "!!"}
+                return s_targets == {d_room} and d_targets == {s_room}
+
+            # ── attempt_commit ────────────────────────────────────────────────
+            def attempt_commit(s, d, label):
+                s_cl, d_cl = clean(s), clean(d)
+                s_room, d_room = get_room(s_cl), get_room(d_cl)
+
+                if not is_valid_src(s_cl): return False
+                if not is_valid_dst(d_cl): return False
+
+                if s_cl in (already_placed_src | temp_src): return False
+                if d_cl in (already_placed_dst | temp_dst): return False
+                if is_pairs:
+                    if d_cl in (already_placed_src | temp_src): return False
+                    if s_cl in (already_placed_dst | temp_dst): return False
+
+                # Same-room guard (mode-aware)
+                if s_room == d_room:
+                    if is_pairs:
+                        if s_cl not in same_room_exc or d_cl not in same_room_exc:
+                            return False
+                    # Crossed: same-room always allowed
+
+                # 1-transition room rule — static topology check
+                if available_count(s_room) <= 1 and available_count(d_room) <= 1:
+                    return False
+
+                # Closed-loop guard
+                if would_create_closed_loop(s_cl, d_cl):
+                    return False
+
+                # Zone-lock guards: the button unlocking a zone lock must be
+                # PLACED (mapped) before the zone lock can be used as src or dst
+                all_genuine_src = already_genuine_src | temp_genuine_src
+
+                # ZONE_LOCKS: button must be a genuine placed source
+                if s_cl in local_zone_locks and s_cl not in self_ref_zone_locks:
+                    required = zone_lock_buttons.get(s_cl, [])
+                    if not any(btn in all_genuine_src for btn in required):
+                        return False
+
+                if d_cl in local_zone_locks and d_cl not in self_ref_zone_locks:
+                    required = zone_lock_buttons.get(d_cl, [])
+                    if not any(btn in all_genuine_src for btn in required) \
+                            and s_cl not in required:
+                        return False
+
+                # LAMP_ZONE_LOCKS (only enforce when lamp is off)
+                if lamp_off:
+                    if s_cl in local_lamp_zone_locks:
+                        required = lamp_zone_lock_buttons.get(s_cl, [])
+                        if not any(btn in all_genuine_src for btn in required):
+                            return False
+
+                    if d_cl in local_lamp_zone_locks:
+                        required = lamp_zone_lock_buttons.get(d_cl, [])
+                        if not any(btn in all_genuine_src for btn in required) \
+                                and s_cl not in required:
+                            return False
+
+                # Commit
+                temp_map[s] = d
+                active_map[s] = d
                 temp_src.add(s_cl)
                 temp_dst.add(d_cl)
+                temp_genuine_src.add(s_cl)
+
+                # Unlock zone locks if this src is a button
+                all_genuine = already_genuine_src | temp_genuine_src
+                for zone_lock in local_btn_map.get(s_cl, []):
+                    if zone_lock == s_cl:
+                        continue
+                    zl_room = get_room(zone_lock)
+                    room_reachable = any(
+                        clean(rd) in reachable_doors
+                        for rd in TransitionsPerRoom.get(zl_room, [])
+                    )
+                    if room_reachable and zone_lock not in reachable_doors:
+                        reachable_doors.add(zone_lock)
+                if lamp_off:
+                    for zone_lock in local_lamp_btn_map.get(s_cl, []):
+                        if zone_lock == s_cl:
+                            continue
+                        zl_room = get_room(zone_lock)
+                        room_reachable = any(
+                            clean(rd) in reachable_doors
+                            for rd in TransitionsPerRoom.get(zl_room, [])
+                        )
+                        if room_reachable and zone_lock not in reachable_doors:
+                            reachable_doors.add(zone_lock)
+
+                nonlocal process_log
+                process_log += f"  [{label}] {s_room}({s_cl}) -> {d_room}({d_cl})\n"
+
                 if is_pairs:
-                    temp_map[d], temp_labels[d] = s, label.upper()
+                    temp_map[d] = s
+                    active_map[d] = s
                     temp_src.add(d_cl)
                     temp_dst.add(s_cl)
-
-                process_log += f"  [{label}] {s_rm}({s_cl}) -> {d_rm}({d_cl})\n"
+                    # Pairs reverse of a button is genuinely traversable —
+                    # Spike enters the room and the event fires automatically
+                    if is_zone_lock_button(d_cl):
+                        temp_genuine_src.add(d_cl)
+                        all_genuine = already_genuine_src | temp_genuine_src
+                        for zone_lock in local_btn_map.get(d_cl, []):
+                            if zone_lock == d_cl:
+                                continue
+                            zl_room = get_room(zone_lock)
+                            room_reachable = any(
+                                clean(rd) in reachable_doors
+                                for rd in TransitionsPerRoom.get(zl_room, [])
+                            )
+                            if room_reachable and zone_lock not in reachable_doors:
+                                reachable_doors.add(zone_lock)
+                        if lamp_off:
+                            for zone_lock in local_lamp_btn_map.get(d_cl, []):
+                                if zone_lock == d_cl:
+                                    continue
+                                zl_room = get_room(zone_lock)
+                                room_reachable = any(
+                                    clean(rd) in reachable_doors
+                                    for rd in TransitionsPerRoom.get(zl_room, [])
+                                )
+                                if room_reachable and zone_lock not in reachable_doors:
+                                    reachable_doors.add(zone_lock)
                 return True
 
+            # ── scan ──────────────────────────────────────────────────────────
             def scan():
                 changed = True
                 while changed:
                     changed = False
-                    combined = {clean(k): clean(v) for k, v in {**shuffled_map, **temp_map}.items()}
-                    for s, d in combined.items():
-                        if get_room(s) in current_mainland:
-                            if s in local_all_buttons and s not in temp_triggered:
-                                temp_triggered.add(s)
-                                temp_zones.update(local_button_mappings.get(s, []))
+                    all_genuine = already_genuine_src | temp_genuine_src
+                    current_state = {**active_map, **temp_map}
+                    for s_raw, d_raw in current_state.items():
+                        s_d, d_d = clean(s_raw), clean(d_raw)
+                        if s_d in reachable_doors:
+                            if s_d in local_all_buttons and s_d not in temp_triggered:
+                                temp_triggered.add(s_d)
+                                temp_zones.update(local_btn_map.get(s_d, []))
                                 changed = True
-                            if s not in local_zone_locks or s in temp_zones:
-                                d_rm = get_room(d)
-                                if d_rm in level_rooms and d_rm not in current_mainland:
-                                    current_mainland.add(d_rm)
-                                    if d_rm in unvisited: unvisited.remove(d_rm)
+                            # FIX: also allow propagation through zone locks
+                            # unlocked via genuine_src, not just temp_zones
+                            zone_unlocked = (
+                                s_d not in local_zone_locks
+                                or s_d in temp_zones
+                                or any(btn in all_genuine
+                                       for btn in zone_lock_buttons.get(s_d, []))
+                            )
+                            lamp_unlocked = (
+                                s_d not in local_lamp_zone_locks
+                                or not lamp_off
+                                or any(btn in all_genuine
+                                       for btn in lamp_zone_lock_buttons.get(s_d, []))
+                            )
+                            if zone_unlocked and lamp_unlocked:
+                                if d_d not in reachable_doors:
+                                    reachable_doors.add(d_d)
                                     changed = True
-
-            def get_usable_exit_count(room):
-                count = 0
-                for door in TransitionsPerRoom.get(room, []):
-                    d_cl = clean(door)
-                    if d_cl not in already_placed_src and d_cl not in temp_src:
-                        if d_cl not in exit_only_set:
-                            if not (is_pairs and d_cl in oneway_set):
-                                count += 1
-                return count
-
-            # --- BACKBONE CONSTRUCTION ---
-            while True:
+                                    d_rm = get_room(d_d)
+                                    unvisited.discard(d_rm)
+                                    for rm_door in TransitionsPerRoom.get(d_rm, []):
+                                        rd_cl = clean(rm_door)
+                                        if rd_cl not in reachable_doors:
+                                            zone_ok = (
+                                                rd_cl not in local_zone_locks
+                                                or rd_cl in temp_zones
+                                                or any(btn in all_genuine
+                                                       for btn in zone_lock_buttons.get(rd_cl, []))
+                                                or (rd_cl in zone_lock_buttons.get(rd_cl, []))
+                                            )
+                                            lamp_zone_ok = (
+                                                rd_cl not in local_lamp_zone_locks
+                                                or not lamp_off
+                                                or any(btn in all_genuine
+                                                       for btn in lamp_zone_lock_buttons.get(rd_cl, []))
+                                            )
+                                            if zone_ok and lamp_zone_ok:
+                                                reachable_doors.add(rd_cl)
+                                                changed = True
+            # ── backbone loop ─────────────────────────────────────────────────
+            while unvisited:
                 scan()
-                if not unvisited: break
-
-                all_mainland_doors = [t for r in current_mainland for t in TransitionsPerRoom.get(r, [])
-                                      if clean(t) not in already_placed_src and clean(t) not in temp_src
-                                      and clean(t) not in exit_only_set]
-
-                priority_srcs = [s for s in all_mainland_doors if clean(s) in local_all_buttons]
-                normal_srcs = [s for s in all_mainland_doors if
-                               clean(s) not in local_zone_locks or clean(s) in temp_zones]
-
-                if not priority_srcs and not normal_srcs:
-                    process_log += f"  [STALL] No valid exits. Unvisited: {len(unvisited)}\n"
+                if not unvisited:
                     break
 
-                target_list = sorted(list(unvisited), key=lambda r: get_usable_exit_count(r), reverse=True)
+                all_placed_src = already_placed_src | temp_src
+                all_placed_dst = already_placed_dst | temp_dst
+
+                available = [d for d in reachable_doors
+                             if is_valid_src(clean(d))
+                             and clean(d) not in all_placed_src]
+
+                # Priority 3: button doors go first as sources once reachable
+                priority_srcs = [d for d in available if is_zone_lock_button(clean(d))]
+                regular_srcs = [d for d in available if not is_zone_lock_button(clean(d))]
+
+                world.random.shuffle(priority_srcs)
+                world.random.shuffle(regular_srcs)
+                priority_srcs = sorted(priority_srcs,
+                                       key=lambda x: len(get_shufflable_exits(get_room(x))),
+                                       reverse=True)
+                regular_srcs = sorted(regular_srcs,
+                                      key=lambda x: len(get_shufflable_exits(get_room(x))),
+                                      reverse=True)
+                src_pool = priority_srcs + regular_srcs
+
+                if not src_pool:
+                    break
+
+                # Three-tier target classification:
+                # Tier 1 - button rooms (reach ASAP to fire events)
+                # Tier 2 - hub rooms (multi-transition, keep backbone moving)
+                # Tier 3 - dead-ends (defer until no better option)
+                button_rooms = [r for r in unvisited
+                                if room_has_zone_lock_button(r)]
+                hub_rooms = [r for r in unvisited
+                             if not room_has_zone_lock_button(r)
+                             and remaining_count(r, all_placed_src, all_placed_dst) > 1]
+                deadend_rooms = [r for r in unvisited
+                                 if not room_has_zone_lock_button(r)
+                                 and remaining_count(r, all_placed_src, all_placed_dst) <= 1]
+
+                world.random.shuffle(button_rooms)
+                world.random.shuffle(hub_rooms)
+                world.random.shuffle(deadend_rooms)
+
+                button_rooms = sorted(button_rooms,
+                                      key=lambda r: len(get_shufflable_exits(r)),
+                                      reverse=True)
+                hub_rooms = sorted(hub_rooms,
+                                   key=lambda r: len(get_shufflable_exits(r)),
+                                   reverse=True)
+
+                # Only allow dead-ends when no hubs or button rooms remain
+                if hub_rooms or button_rooms:
+                    target_rooms = button_rooms + hub_rooms
+                else:
+                    target_rooms = deadend_rooms
+
                 mapped = False
+                for target_room in target_rooms:
+                    dests = [d for d in TransitionsPerRoom.get(target_room, [])
+                             if is_valid_dst(clean(d))
+                             and clean(d) not in all_placed_dst]
+                    world.random.shuffle(dests)
 
-                for target_room in target_list:
-                    room_doors = TransitionsPerRoom.get(target_room, [])
-                    critical_dests = [d for d in room_doors if clean(d) in local_all_buttons
-                                      and clean(d) not in already_placed_dst and clean(d) not in temp_dst]
+                    # When targeting a button room, prefer sources from hub rooms
+                    # so dead-end sources aren't wasted routing to buttons
+                    if room_has_zone_lock_button(target_room):
+                        hub_srcs = [s for s in src_pool
+                                    if remaining_count(get_room(clean(s)),
+                                                       all_placed_src,
+                                                       all_placed_dst) > 1]
+                        deadend_srcs = [s for s in src_pool
+                                        if remaining_count(get_room(clean(s)),
+                                                           all_placed_src,
+                                                           all_placed_dst) <= 1]
+                        ordered_src = hub_srcs + deadend_srcs
+                    else:
+                        ordered_src = src_pool
 
-                    potential_dests = critical_dests if critical_dests else [d for d in room_doors
-                                                                             if clean(d) not in already_placed_dst
-                                                                             and clean(d) not in temp_dst
-                                                                             and clean(d) not in oneway_set]
-
-                    if not potential_dests: continue
-
-                    src_pool = priority_srcs if (priority_srcs and critical_dests) else normal_srcs
-                    if not src_pool: src_pool = normal_srcs
-
-                    world.random.shuffle(src_pool)
-                    world.random.shuffle(potential_dests)
-
-                    for s in src_pool:
-                        if len(normal_srcs) == 1 and not priority_srcs and len(unvisited) > 1 and get_usable_exit_count(
-                                target_room) <= 1:
-                            continue
-
-                        for d in potential_dests:
-                            label = "Button-Bridge" if clean(d) in local_all_buttons else "Backbone"
-                            if attempt_commit(s, d, label):
+                    for s in ordered_src:
+                        for d in dests:
+                            if attempt_commit(s, d, "Backbone"):
+                                scan()
                                 mapped = True
                                 break
                         if mapped: break
                     if mapped: break
-                if not mapped: break
-
+                if not mapped:
+                    break
+            # ── fill phase ────────────────────────────────────────────────────
             if not unvisited:
-                # --- FILL PHASE ---
-                rem_src = [t for r in level_rooms for t in TransitionsPerRoom.get(r, []) if
-                           clean(t) not in already_placed_src and clean(t) not in temp_src]
+                rem_src = [t for r in level_rooms for t in TransitionsPerRoom.get(r, [])
+                           if is_valid_src(clean(t))
+                           and clean(t) not in (already_placed_src | temp_src)]
+                world.random.shuffle(rem_src)
                 for s in rem_src:
-                    if clean(s) in temp_src: continue
-                    rem_dst = [t for r in level_rooms for t in TransitionsPerRoom.get(r, []) if
-                               clean(t) not in already_placed_dst and clean(t) not in temp_dst]
-                    if not rem_dst: break
+                    rem_dst = [t for r in level_rooms for t in TransitionsPerRoom.get(r, [])
+                               if is_valid_dst(clean(t))
+                               and clean(t) not in (already_placed_dst | temp_dst)]
                     world.random.shuffle(rem_dst)
                     for d in rem_dst:
-                        if attempt_commit(s, d, "Fill"): break
+                        if attempt_commit(s, d, "Fill"):
+                            break
 
                 shuffled_map.update(temp_map)
                 already_placed_src.update(temp_src)
                 already_placed_dst.update(temp_dst)
+                already_genuine_src.update(temp_genuine_src)  # persist
                 success = True
                 print(process_log + "  [SUCCESS]")
-                break
+                break  # next level
+            last_attempt_log = process_log  # store failed attempt log
 
-            final_attempt_log = process_log
-
+            # Log remaining unplaced transitions for debugging
+            remaining_src = [t for r in level_rooms for t in TransitionsPerRoom.get(r, [])
+                             if is_valid_src(clean(t))
+                             and clean(t) not in (already_placed_src | temp_src)]
+            remaining_dst = [t for r in level_rooms for t in TransitionsPerRoom.get(r, [])
+                             if is_valid_dst(clean(t))
+                             and clean(t) not in (already_placed_dst | temp_dst)]
+            last_attempt_log += (
+                f"  [REMAINING SRC] {[str(t) for t in remaining_src]}\n"
+                f"  [REMAINING DST] {[str(t) for t in remaining_dst]}\n"
+                f"  [UNVISITED ROOMS] {sorted(unvisited)}\n"
+            )
         if not success:
-            print(f"\n!! FAILSAFE TRIGGERED FOR LEVEL {level} !!")
-            print(final_attempt_log)
-            failsafe_summary.append(f"Level {level}: Failsafe used. Trace:\n{final_attempt_log}")
+            print(
+                f"\n  [FAIL] Level {level}: exhausted {APEESCAPE_MAX_ATTEMPTS} attempts "
+                f"— keeping vanilla for this level."
+                f"\n  [LAST ATTEMPT LOG]{last_attempt_log}"
+            )
 
-            # Map remaining level doors back to vanilla logic
-            for r in rooms:
-                for s in TransitionsPerRoom.get(clean(r), []):
-                    if clean(s) not in already_placed_src:
-                        vanilla_d = door_map.get(s, s)
-                        shuffled_map[s] = vanilla_d
-                        already_placed_src.add(clean(s))
-                        already_placed_dst.add(clean(vanilla_d))
-
-    if failsafe_summary:
-        print("\n" + "=" * 50 + "\n          DOOR SHUFFLE FAILSAFE SUMMARY\n" + "=" * 50)
-        for report in failsafe_summary:
-            print(report + "\n" + "-" * 30)
+    # ── final pairs symmetry pass ─────────────────────────────────────────────
+    if is_pairs:
+        for s, d in list(shuffled_map.items()):
+            s_cl, d_cl = clean(s), clean(d)
+            if s_cl not in already_placed_src \
+                    and is_shufflable(s_cl) \
+                    and is_shufflable(d_cl):
+                shuffled_map[d] = s
 
     world.shuffled_door_map = shuffled_map
     return shuffled_map

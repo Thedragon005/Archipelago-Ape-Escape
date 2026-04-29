@@ -1287,7 +1287,90 @@ class RAM:
         84 : [0x0BF21A,0x0BF21E],
         85 : [0x0BF0FA,0x0BF0FE],
     }
+    jacketsListLocal = {
+        #Array Order:
+        # JacketNumber : [JacketVisualSprite,JacketHitBoxPosition,DoesRepawn]
+        # JacketVisualSprite : 2 = Jacket Sprite(Not collected),0 = Collected
+        13 : {
+            251 : [0x0BEFAA,0x0BEFAE,False]
+        },
+        14 : {
+            252 : [0x0BEFF2,0x0BEFF6,False]
+        },
+        17 : {
+            253 : [0x0BF172,0x0BF176,False]
+        },
+        27 : {
+            254 : [0x0BF00A,0x0BF00E,False]
+        },
+        33 : {
+            255 : [0x0BF1EA,0x0BF1EE,False]
+        },
+        34 : {
+            256 : [0x0BF172,0x0BF176,False]
+        },
+        35 : {
+            257 : [0x0BF27A,0x0BF27E,False]
+        },
+        44: {
+            258: [0x0BF202, 0x0BF206, False]
+        },
+        47 : {
+            259 : [0x0BF232,0x0BF236,False]
+        },
+        55 : {
+            260 : [0x0BEFAA,0x0BEFAE,False]
+        },
+        60 : {
+            261 : [0x0BF232,0x0BF236,False]
+        },
+        61 : {
+            262 : [0x0BEFF2,0x0BEFF6,False]
+        },
+        73 : {
+            263 : [0x0BF1A2,0x0BF1A6,False]
+        },
+        80 : {
+            264 : [0x0BEFDA,0x0BEFDE,False]
+        },
+        81 : {
+            265: [0x0B1B74,0x0BF236,True],
+            266 : [0x0BF202,0x0BF206,False],
+            267 : [0x0BF21A,0x0BF21E,False]
+        },
+        82 : {
+            268: [0x0B1B74,0x0BF236,True],
+            269 : [0x0BF21A,0x0BF21E,False]
 
+        },
+        83: {
+            271: [0x0B1B74, 0x0BF236, True]
+        },  # This value is 1 after the box is broken,2 after the life is collected
+        84 : {
+            270 : [0x0BF03A,0x0BF03E,False]
+        },
+
+    }
+
+    # TODO Respawning Jackets Box values are not stable
+    respawningJacketsListLocal = {
+    # JacketNumber : [JacketBox,JacketBoxedValue,JacketVisualSprite,JacketHitBoxPosition]
+        #Respawning Jackets are like so : Check if it is Boxed, then check the
+        #Then check if the value is 0
+        #81 : [0x0E6FFA,0x01,0x0BF232,0x0BF236], #Box is F8 when opened, then Jacket visual is 2
+        #82 : [0x0E72A6,0x01,0x0BF232,0x0BF236],
+        #83 : [0x0E6AA2,0x01,0x0BF232,0x0BF236], #Not mapped
+        81 : {
+
+        },
+        82 : {
+
+        },
+        83: {
+            270: [0x0B1B74, 0x0BF236, True]
+        },  # This value is 1 after the box is broken,2 after the life is collected
+
+    }
 
     CoinHitBoxPositionOff = 0xFFB0
     localMonkeyHitbox1 = 0x0BBDF4
@@ -2549,6 +2632,7 @@ class RAM:
     worldIsScrollingRight = 0x139BD9 # 2 bytes: 0xFFFF = you are changing to the next world
     worldScrollToRightDPAD = 0x1381D4 # 2 bytes: Enabled = 0009, Disabled = 0000
     worldScrollToRightR1 = 0x138270  # 2 bytes: Enabled = 0009, Disabled = 0000
+    worldCanPressStart = 0x137FC8 # 2 bytes: Enabled = 1001, Disabled = 0000
 
     enteredWorldAddress = 0x0F461C
     enteredLevelAddress = 0x0F461D
