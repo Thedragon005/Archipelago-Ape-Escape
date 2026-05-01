@@ -145,6 +145,7 @@ def set_doors(self,logic):
 def set_transitions(self, logic):
     # I'm not sure if these have to be manually connected in both directions? I think they do because connections are asymmetric.
     # Time Station
+    # Hub
     connect_regions(self, AEDoor.TIME_ENTRY.value, AEDoor.TIME_MAIN_TRAINING.value,
                         lambda state: True)
     connect_regions(self, AEDoor.TIME_ENTRY.value, AEDoor.TIME_MAIN_MINIGAME.value,
@@ -153,6 +154,22 @@ def set_transitions(self, logic):
                         lambda state: True)
     connect_regions(self, AEDoor.TIME_MAIN_MINIGAME.value, AEDoor.TIME_ENTRY.value,
                         lambda state: True)
+    # Training Room
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_WATERNET.value,
+                        lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_RADAR.value,
+                        lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_SLING.value,
+                        lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_HOOP.value,
+                        lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_FLYER.value,
+                        lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_CAR.value,
+                        lambda state: True)
+    connect_regions(self, AEDoor.TIME_MAIN_TRAINING.value, AEDoor.TIME_TRAINING_PUNCH.value,
+                        lambda state: True)
+
 
     # Fossil Field (level contains a single room)
     # Primordial Ooze (level contains a single room)
@@ -856,6 +873,106 @@ def set_locations(self, logic):
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_MAIN.value, AELocation.Mailbox63.value,
                         lambda state: True)
+
+    # Training Rooms
+    # Water Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox64.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox65.value,
+                        lambda state: CanSwim(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox66.value,
+                        lambda state: CanDive(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox67.value,
+                        lambda state: (CanDive(state,self) and HasWaterNet(state,self)))
+    if self.options.trainingrooms == "completion":
+        connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.WaterTraining.value,
+                        lambda state: (CanDive(state,self) and HasWaterNet(state,self)))
+
+    #TODO NEXT LOGIC TO DO HERE ====>
+    # Radar Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.Mailbox68.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.Mailbox69.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.Mailbox70.value,
+                        lambda state: HasRadar(state,self))
+    if self.options.trainingrooms == "completion":
+        connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.RadarTraining.value,
+                        lambda state: HasRadar(state,self))
+    # Sling Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox71.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox72.value,
+                        lambda state: HasSling(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox73.value,
+                        lambda state: HasSling(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox74.value,
+                        lambda state: HasSling(state,self))
+    if self.options.trainingrooms == "completion":
+        connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.SlingTraining.value,
+                        lambda state: HasSling(state,self))
+    # Hoop Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox75.value,
+                        lambda state: True)
+        if logic == "normal":
+           connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox76.value,
+                            lambda state: HasHoop(state,self))
+        else:
+           connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox76.value,
+                            lambda state: True)
+        if logic == "normal" or logic == "hard":
+            connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox77.value,
+                            lambda state: HasHoop(state,self))
+        else:
+            connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox77.value,
+                            lambda state: True)
+    if self.options.trainingrooms == "completion":
+        if logic == "normal" or logic == "hard":
+            connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.HoopTraining.value,
+                            lambda state: HasHoop(state,self))
+        else:
+            connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.HoopTraining.value,
+                            lambda state: True)
+
+    # Flyer Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox78.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox79.value,
+                        lambda state: HasFlyer(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox80.value,
+                        lambda state: HasFlyer(state,self))
+    if self.options.trainingrooms == "completion":
+        connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.FlyerTraining.value,
+                        lambda state: HasFlyer(state,self))
+    # Car Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox81.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox82.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox83.value,
+                        lambda state: HasRC(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox84.value,
+                        lambda state: HasRC(state,self))
+    if self.options.trainingrooms == "completion":
+        connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.CarTraining.value,
+                        lambda state: HasRC(state,self))
+    # Punch Training
+    if self.options.trainingrooms == "mailboxes":
+        connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox85.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox86.value,
+                        lambda state: HasPunch(state,self))
+        connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox87.value,
+                        lambda state: HasPunch(state,self))
+    if self.options.trainingrooms == "completion":
+        connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.PunchTraining.value,
+                        lambda state: HasPunch(state,self))
 
     # Fossil Field
     connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1Noonan.value,

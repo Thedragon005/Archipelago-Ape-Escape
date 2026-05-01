@@ -275,10 +275,10 @@ class MailboxOption(Choice):
     default = option_false
 
 class JacketOption(Choice):
-    """Choose if static jacket should act as locations.
+    """Choose if static jackets should act as locations.
 
         false: Jackets are not locations.
-        true: The 20 available jackets are added as locations.
+        true: The 21 available jackets are added as locations.
 
         Supported values: false, true
         Default value: false
@@ -287,6 +287,23 @@ class JacketOption(Choice):
     display_name = "Jacket"
     option_false = 0x00
     option_true = 0x01
+    default = option_false
+
+class TrainingRoomsOption(Choice):
+    """Choose if locations inside training rooms should be included as checks.
+
+        false: Training rooms have no checks.
+        completion: Training rooms have 1 check on completion.
+        mailboxes: Training rooms have 1 check on completion.
+
+        Supported values: false, completion, mailboxes
+        Default value: false
+    """
+
+    display_name = "Training Rooms"
+    option_false = 0x00
+    option_completion = 0x01
+    option_mailboxes = 0x02
     default = option_false
 
 class LampOption(Choice):
@@ -604,6 +621,7 @@ class ApeEscapeOptions(PerGameCommonOptions):
     coin: CoinOption
     mailbox: MailboxOption
     jacket: JacketOption
+    trainingrooms: TrainingRoomsOption
     lamp: LampOption
     gadget: GadgetOption
     shufflenet: ShuffleNetOption

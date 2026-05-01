@@ -88,6 +88,7 @@ class ApeEscapeWorld(World):
         self.coin: Optional[int] = 0
         self.mailbox: Optional[int] = 0
         self.jacket: Optional[int] = 0
+        self.trainingrooms: Optional[int] = 0
         self.lamp: Optional[int] = 0
         self.gadget: Optional[int] = 0
         self.shufflenet: Optional[int] = 0
@@ -119,7 +120,8 @@ class ApeEscapeWorld(World):
         self.extrakeys = self.options.extrakeys.value
         self.coin = self.options.coin.value
         self.mailbox = self.options.mailbox.value
-        self.jacket = self.options.mailbox.value
+        self.jacket = self.options.jacket.value
+        self.trainingrooms = self.options.trainingrooms.value
         self.lamp = self.options.lamp.value
         self.gadget = self.options.gadget.value
         self.shufflenet = self.options.shufflenet.value
@@ -151,7 +153,8 @@ class ApeEscapeWorld(World):
                 self.options.extrakeys.value = self.passthrough["extrakeys"]
                 self.options.coin.value = self.passthrough["coin"]
                 self.options.mailbox.value = self.passthrough["mailbox"]
-                self.options.jacket.value = self.passthrough["mailbox"]
+                self.options.jacket.value = self.passthrough["jacket"]
+                self.options.trainingrooms.value = self.passthrough["trainingrooms"]
                 self.options.lamp.value = self.passthrough["lamp"]
                 self.options.gadget.value = self.passthrough["gadget"]
                 self.options.shufflenet.value = self.passthrough["shufflenet"]
@@ -504,7 +507,8 @@ class ApeEscapeWorld(World):
             "extrakeys": self.options.extrakeys.value,
             "coin": self.options.coin.value,
             "mailbox": self.options.mailbox.value,
-            "jacket": self.options.mailbox.value,
+            "jacket": self.options.jacket.value,
+            "trainingrooms": self.options.trainingrooms.value,
             "lamp": self.options.lamp.value,
             "gadget": self.options.gadget.value,
             "shufflenet": self.options.shufflenet.value,

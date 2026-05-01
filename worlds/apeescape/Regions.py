@@ -309,7 +309,15 @@ def create_regions(world: "ApeEscapeWorld"):
     TSR1T3 = Region(AEDoor.TIME_MAIN_MINIGAME.value, player, multiworld)
     TSR2T1 = Region(AEDoor.TIME_TRAINING_MAIN.value, player, multiworld)
     TSR2T2 = Region(AEDoor.TIME_TRAINING_WATERNET.value, player, multiworld)
+    TSR2T3 = Region(AEDoor.TIME_TRAINING_RADAR.value, player, multiworld)
+    TSR2T4 = Region(AEDoor.TIME_TRAINING_SLING.value, player, multiworld)
+    TSR2T5 = Region(AEDoor.TIME_TRAINING_HOOP.value, player, multiworld)
+    TSR2T6 = Region(AEDoor.TIME_TRAINING_FLYER.value, player, multiworld)
+    TSR2T7 = Region(AEDoor.TIME_TRAINING_CAR.value, player, multiworld)
+    TSR2T8 = Region(AEDoor.TIME_TRAINING_PUNCH.value, player, multiworld)
+    TSR2T2 = Region(AEDoor.TIME_TRAINING_WATERNET.value, player, multiworld)
     TSR3T1 = Region(AEDoor.TIME_MINIGAME_MAIN.value, player, multiworld)
+
 
     # 1-1
     L11 = Region(AEDoor.FF_ENTRY.value, player, multiworld)
@@ -987,7 +995,7 @@ def create_regions(world: "ApeEscapeWorld"):
     bg.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], bg) for loc_name in get_array([204])]
 
     regions = [menu,
-               TS, TSR1T2, TSR1T3, TSR2T1, TSR2T2, TSR3T1,
+               TS, TSR1T2, TSR1T3, TSR2T1, TSR2T2, TSR2T3, TSR2T4, TSR2T5, TSR2T6, TSR2T7, TSR2T8, TSR3T1,
                L11, noonan, jorjy, nati, trayc,
                L12, shay, drmonk, grunt, ahchoo, gornif, tyrone,
                L13, L13R1T2, L13R1T3, L13R2T1, L13R3T1, scotty, coco, jthomas, mattie, barney, rocky, moggan,
@@ -1154,6 +1162,109 @@ def create_regions(world: "ApeEscapeWorld"):
         mailbox63 = Region(AELocation.Mailbox63.value, player, multiworld)
         mailbox63.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox63) for loc_name in get_array([463])]
         regions += [mailbox60, mailbox61, mailbox62, mailbox63]
+
+    # Training Rooms mailboxes
+    if options.trainingrooms == "mailboxes":
+        mailbox64 = Region(AELocation.Mailbox64.value, player, multiworld)
+        mailbox64.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox64) for loc_name in
+                                get_array([464])]
+        mailbox65 = Region(AELocation.Mailbox65.value, player, multiworld)
+        mailbox65.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox65) for loc_name in
+                                get_array([465])]
+        mailbox66 = Region(AELocation.Mailbox66.value, player, multiworld)
+        mailbox66.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox66) for loc_name in
+                                get_array([466])]
+        mailbox67 = Region(AELocation.Mailbox67.value, player, multiworld)
+        mailbox67.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox67) for loc_name in
+                                get_array([467])]
+        mailbox68 = Region(AELocation.Mailbox68.value, player, multiworld)
+        mailbox68.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox68) for loc_name in
+                                get_array([468])]
+        mailbox69 = Region(AELocation.Mailbox69.value, player, multiworld)
+        mailbox69.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox69) for loc_name in
+                                get_array([469])]
+        mailbox70 = Region(AELocation.Mailbox70.value, player, multiworld)
+        mailbox70.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox70) for loc_name in
+                                get_array([470])]
+        mailbox71 = Region(AELocation.Mailbox71.value, player, multiworld)
+        mailbox71.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox71) for loc_name in
+                                get_array([471])]
+        mailbox72 = Region(AELocation.Mailbox72.value, player, multiworld)
+        mailbox72.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox72) for loc_name in
+                                get_array([472])]
+        mailbox73 = Region(AELocation.Mailbox73.value, player, multiworld)
+        mailbox73.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox73) for loc_name in
+                                get_array([473])]
+        mailbox74 = Region(AELocation.Mailbox74.value, player, multiworld)
+        mailbox74.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox74) for loc_name in
+                                get_array([474])]
+        mailbox75 = Region(AELocation.Mailbox75.value, player, multiworld)
+        mailbox75.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox75) for loc_name in
+                                get_array([475])]
+        mailbox76 = Region(AELocation.Mailbox76.value, player, multiworld)
+        mailbox76.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox76) for loc_name in
+                                get_array([476])]
+        mailbox77 = Region(AELocation.Mailbox77.value, player, multiworld)
+        mailbox77.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox77) for loc_name in
+                                get_array([477])]
+        mailbox78 = Region(AELocation.Mailbox78.value, player, multiworld)
+        mailbox78.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox78) for loc_name in
+                                get_array([478])]
+        mailbox79 = Region(AELocation.Mailbox79.value, player, multiworld)
+        mailbox79.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox79) for loc_name in
+                                get_array([479])]
+        mailbox80 = Region(AELocation.Mailbox80.value, player, multiworld)
+        mailbox80.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox80) for loc_name in
+                                get_array([480])]
+        mailbox81 = Region(AELocation.Mailbox81.value, player, multiworld)
+        mailbox81.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox81) for loc_name in
+                                get_array([481])]
+        mailbox82 = Region(AELocation.Mailbox82.value, player, multiworld)
+        mailbox82.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox82) for loc_name in
+                                get_array([482])]
+        mailbox83 = Region(AELocation.Mailbox83.value, player, multiworld)
+        mailbox83.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox83) for loc_name in
+                                get_array([483])]
+        mailbox84 = Region(AELocation.Mailbox84.value, player, multiworld)
+        mailbox84.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox84) for loc_name in
+                                get_array([484])]
+        mailbox85 = Region(AELocation.Mailbox85.value, player, multiworld)
+        mailbox85.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox85) for loc_name in
+                                get_array([485])]
+        mailbox86 = Region(AELocation.Mailbox86.value, player, multiworld)
+        mailbox86.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox86) for loc_name in
+                                get_array([486])]
+        mailbox87 = Region(AELocation.Mailbox87.value, player, multiworld)
+        mailbox87.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], mailbox87) for loc_name in
+                                get_array([487])]
+        regions += [mailbox64, mailbox65, mailbox66, mailbox67, mailbox68, mailbox69, mailbox70, mailbox71, mailbox72,
+                    mailbox73, mailbox74, mailbox75, mailbox76, mailbox77, mailbox78, mailbox79, mailbox80, mailbox81,
+                    mailbox82, mailbox83, mailbox84, mailbox85, mailbox86, mailbox87]
+    # Training Rooms Completions
+    if options.trainingrooms == "completion":
+        waterTraining = Region(AELocation.WaterTraining.value, player, multiworld)
+        waterTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], waterTraining) for
+                                    loc_name in get_array([AELocation.WaterTraining.value])]
+        radarTraining = Region(AELocation.RadarTraining.value, player, multiworld)
+        radarTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], radarTraining) for
+                                    loc_name in get_array([AELocation.RadarTraining.value])]
+        slingTraining = Region(AELocation.SlingTraining.value, player, multiworld)
+        slingTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], slingTraining) for
+                                    loc_name in get_array([AELocation.SlingTraining.value])]
+        hoopTraining = Region(AELocation.HoopTraining.value, player, multiworld)
+        hoopTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], hoopTraining) for loc_name
+                                   in get_array([AELocation.HoopTraining.value])]
+        flyerTraining = Region(AELocation.FlyerTraining.value, player, multiworld)
+        flyerTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], flyerTraining) for
+                                    loc_name in get_array([AELocation.FlyerTraining.value])]
+        carTraining = Region(AELocation.CarTraining.value, player, multiworld)
+        carTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], carTraining) for loc_name in
+                                  get_array([AELocation.CarTraining.value])]
+        punchTraining = Region(AELocation.PunchTraining.value, player, multiworld)
+        punchTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], punchTraining) for
+                                    loc_name in get_array([AELocation.PunchTraining.value])]
+        regions += [waterTraining, radarTraining, slingTraining, hoopTraining, flyerTraining, carTraining, punchTraining]
+
     # The rest are only needed for mailbox shuffle
     if options.mailbox == "true":
         # 1-1

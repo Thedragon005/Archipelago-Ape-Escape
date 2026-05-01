@@ -1600,7 +1600,46 @@ class RAM:
         },
         90: {  # Time station - Training Space
             463: 115
-        }
+        },
+        98: {  # Water Net Training
+            464: 96,
+            465: 97,
+            466: 98,
+            467: {99,116},
+        },
+        92: {  # Monkey Radar Training
+            468: 39,
+            469: 64,
+            470: {40,116}
+        },
+        93: {  # Slingback Shooter Training
+            471: 41,
+            472: 48,
+            473: 49,
+            474: {88,116}
+        },
+        94: {  # Super Hoop Training
+            475: 50,
+            476: 51,
+            477: {89,116}
+        },
+        96: {  # Sky Flyer Training
+            478: 53,
+            479: 54,
+            480: {102,116}
+        },
+        97: {  # RC Car Training
+            481: 55,
+            482: 56,
+            483: 57,
+            484: {52,116}
+        },
+        95: {  # Magic Punch Training
+            485: 0,
+            486: 1,
+            487: {2,116}
+        },
+
 
     }
 
