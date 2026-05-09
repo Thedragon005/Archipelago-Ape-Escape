@@ -875,7 +875,7 @@ def set_locations(self, logic):
                         lambda state: True)
 
     # Training Rooms
-    # Water Training
+    # Water Net Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox64.value,
                         lambda state: True)
@@ -889,8 +889,7 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.WaterTraining.value,
                         lambda state: (CanDive(state,self) and HasWaterNet(state,self)))
 
-    #TODO NEXT LOGIC TO DO HERE ====>
-    # Radar Training
+    # Monkey Radar Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.Mailbox68.value,
                         lambda state: True)
@@ -901,7 +900,8 @@ def set_locations(self, logic):
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.RadarTraining.value,
                         lambda state: HasRadar(state,self))
-    # Sling Training
+
+    # Slingback Shooter Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox71.value,
                         lambda state: True)
@@ -914,7 +914,8 @@ def set_locations(self, logic):
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.SlingTraining.value,
                         lambda state: HasSling(state,self))
-    # Hoop Training
+
+    # Super Hoop Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox75.value,
                         lambda state: True)
@@ -938,7 +939,7 @@ def set_locations(self, logic):
             connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.HoopTraining.value,
                             lambda state: True)
 
-    # Flyer Training
+    # Sky Flyer Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox78.value,
                         lambda state: True)
@@ -949,7 +950,8 @@ def set_locations(self, logic):
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.FlyerTraining.value,
                         lambda state: HasFlyer(state,self))
-    # Car Training
+
+    # RC Car Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox81.value,
                         lambda state: True)
@@ -962,7 +964,8 @@ def set_locations(self, logic):
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.CarTraining.value,
                         lambda state: HasRC(state,self))
-    # Punch Training
+
+    # Magic Punch Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox85.value,
                         lambda state: True)

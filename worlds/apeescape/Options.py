@@ -28,7 +28,7 @@ class GoalOption(Choice):
 
 class FastTokenGoalOption(Choice):
     """If this is enabled and the chosen goal is `mmtoken` or `ppmtoken`, provides easy access to the goal boss once enough Specter Tokens have been obtained.
-    When enough Specter Tokens have been obtained, hold START while confirming a stage in the level select to warp directly to your goal boss, skipping all other requirements.
+    When enough Specter Tokens have been obtained, hold START while confirming a stage in the level select to warp directly to your goal boss, bypassing all other requirements.
 
         off: MM/PPM will only be accessible through World Keys by normal means.
         on: You will be able to warp directly to your goal boss by holding START in the level select.
