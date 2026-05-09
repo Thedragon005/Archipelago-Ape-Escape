@@ -45,7 +45,7 @@ class FastTokenGoalOption(Choice):
 
 class AllowCollectOption(Toggle):
         """
-        Allows for the !collect command used by other players to catch monkeys or collect Specter Coins in your world. This behaves the same as automatically using the syncprogress command after someone !collects.
+        Allows for the !collect command used by other players to catch monkeys or collect Specter Coins in your world. This behaves the same as automatically using the /syncprogress command after someone !collects.
         """
         display_name = "Allow Collect"
 
@@ -174,27 +174,11 @@ class DoorShuffleOption(Choice):
     visibility = Visibility.none
     option_off = 0x00
     option_same_level = 0x01
-    #option_cross_level = 0x02
+    #option_same_level_decoupled = 0x02
+    #same_level_decoupled: Doors are shuffled within the same level, and returning through a door may take you somewhere different.
+    #option_cross_level = 0x03
+    #cross_level: Doors are shuffled across levels.
     default = option_off
-
-
-class DoorShuffleTypeOption(Choice):
-    """Determines the logic used when connecting doors.
-    This only applies if Door Shuffle is set to 'same_level'.
-
-    pairs: Two-way transitions. If Door A leads to Door B, then Door B
-           will always lead back to Door A.
-    crossed: One-way transitions. Door A might lead to Door B, while Door B
-             leads to Door C.
-
-    Supported values: pairs, crossed
-    Default value: pairs
-    """
-    display_name = "Door Shuffle"
-    visibility = Visibility.none
-    option_pairs = 0x00
-    option_crossed = 0x01
-    default = option_pairs
 
 
 class RandomizeStartingRoomOption(Choice):
@@ -263,23 +247,6 @@ class CoinOption(Choice):
     default = option_false
 
 
-class MailboxOption(Choice):
-    """Choose if mailboxes should act as locations.
-        Mailboxes in training rooms will never be locations.
-
-        false: Mailboxes are not locations.
-        true: The 63 available mailboxes are added as locations.
-
-        Supported values: false, true
-        Default value: false
-    """
-
-    display_name = "Mailbox"
-    option_false = 0x00
-    option_true = 0x01
-    default = option_false
-
-
 class JacketOption(Choice):
     """Choose if static jackets should act as locations.
 
@@ -291,6 +258,23 @@ class JacketOption(Choice):
     """
 
     display_name = "Jacket"
+    option_false = 0x00
+    option_true = 0x01
+    default = option_false
+
+
+class MailboxOption(Choice):
+    """Choose if mailboxes in the Time Station and levels should act as locations.
+        Training rooms are in a different option.
+
+        false: Mailboxes are not locations.
+        true: The 63 available mailboxes are added as locations.
+
+        Supported values: false, true
+        Default value: false
+    """
+
+    display_name = "Mailbox"
     option_false = 0x00
     option_true = 0x01
     default = option_false
@@ -623,13 +607,12 @@ class ApeEscapeOptions(PerGameCommonOptions):
     superflyer: SuperFlyerOption
     entrance: EntranceOption
     doorshuffle: DoorShuffleOption
-    doorshuffletype: DoorShuffleTypeOption
     randomizestartingroom: RandomizeStartingRoomOption
     unlocksperkey: KeyOption
     extrakeys: ExtraKeysOption
     coin: CoinOption
-    mailbox: MailboxOption
     jacket: JacketOption
+    mailbox: MailboxOption
     trainingrooms: TrainingRoomsOption
     lamp: LampOption
     gadget: GadgetOption

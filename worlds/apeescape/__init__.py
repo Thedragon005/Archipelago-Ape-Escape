@@ -81,7 +81,6 @@ class ApeEscapeWorld(World):
         self.superflyer: Optional[int] = 0
         self.entrance: Optional[int] = 0
         self.doorshuffle: Optional[int] = 0
-        self.doorshuffletype: Optional[int] = 0
         self.randomizestartingroom: Optional[int] = 0
         self.unlocksperkey: Optional[int] = 0
         self.extrakeys: Optional[int] = 0
@@ -117,7 +116,6 @@ class ApeEscapeWorld(World):
         self.superflyer = self.options.superflyer.value
         self.entrance = self.options.entrance.value
         self.doorshuffle = self.options.doorshuffle.value
-        self.doorshuffletype = self.options.doorshuffletype.value
         self.randomizestartingroom = self.options.randomizestartingroom.value
         self.unlocksperkey = self.options.unlocksperkey.value
         self.extrakeys = self.options.extrakeys.value
@@ -150,7 +148,6 @@ class ApeEscapeWorld(World):
                 self.options.superflyer.value = self.passthrough["superflyer"]
                 self.options.entrance.value = self.passthrough["entrance"]
                 self.options.doorshuffle.value = self.passthrough["doorshuffle"]
-                self.options.doorshuffletype.value = self.passthrough["doorshuffletype"]
                 self.options.randomizestartingroom.value = self.passthrough["randomizestartingroom"]
                 self.options.unlocksperkey.value = self.passthrough["unlocksperkey"]
                 self.options.extrakeys.value = self.passthrough["extrakeys"]
@@ -504,7 +501,6 @@ class ApeEscapeWorld(World):
             "superflyer": self.options.superflyer.value,
             "entrance": self.options.entrance.value,
             "doorshuffle": self.options.doorshuffle.value,
-            "doorshuffletype": self.options.doorshuffletype.value,
             "randomizestartingroom": self.options.randomizestartingroom.value,
             "unlocksperkey": self.options.unlocksperkey.value,
             "extrakeys": self.options.extrakeys.value,
@@ -556,7 +552,7 @@ class ApeEscapeWorld(World):
                     val = next(iter(val))
                 return val
 
-            is_pairs = (self.options.doorshuffletype.value == 0x00)
+            is_pairs = (self.options.doorshuffle.value == 0x01)
             door_arrow = " <==> " if is_pairs else " ==> "
 
             shuffled_map = getattr(self, "shuffled_door_map", {})
