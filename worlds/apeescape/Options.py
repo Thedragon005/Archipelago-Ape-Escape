@@ -294,7 +294,7 @@ class TrainingRoomsOption(Choice):
 
         false: Training rooms have no checks.
         completion: Training rooms have 1 check on completion.
-        mailboxes: Training rooms have 1 check on completion.
+        mailboxes: Training rooms mailboxes counts as checks.
 
         Supported values: false, completion, mailboxes
         Default value: false
