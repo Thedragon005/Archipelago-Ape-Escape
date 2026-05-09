@@ -290,9 +290,9 @@ class AELocation(Enum):
     Jacket14 = "9-1 Monkey Madness Jacket - Castle Main"
     Jacket15 = "9-1 Monkey Madness Jacket - Inside Climb (Respawning)"
     Jacket16 = "9-1 Monkey Madness Jacket - Inside Climb (Balance Beam)"
-    Jacket17 = "9-1 Monkey Madness Jacket - Inside Climb (Grid)"
+    Jacket17 = "9-1 Monkey Madness Jacket - Inside Climb (Top Chain Link)"
     Jacket18 = "9-1 Monkey Madness Jacket - Outside Climb (Respawning)"
-    Jacket19 = "9-1 Monkey Madness Jacket - Outside Climb (Near Barrels)"
+    Jacket19 = "9-1 Monkey Madness Jacket - Outside Climb (Above Barrels)"
     Jacket20 = "9-1 Monkey Madness Jacket - Monkey Head"
     Jacket21 = "9-1 Monkey Madness Jacket - Specter 1 Room (Respawning)"
     Mailbox1 = "1-1 Fossil Field Mailbox - Stun Club Tutorial (Main)"
@@ -387,7 +387,7 @@ class AELocation(Enum):
     SlingTraining = "Slingback Shooter Training - Completion"
     HoopTraining = "Super Hoop Training - Completion"
     FlyerTraining = "Sky Flyer Training - Completion"
-    CarTraining = "RC Car Training Training - Completion"
+    CarTraining = "RC Car Training - Completion"
     PunchTraining = "Magic Punch Training - Completion"
 
 
