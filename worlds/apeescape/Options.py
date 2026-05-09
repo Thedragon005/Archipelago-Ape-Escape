@@ -3,6 +3,7 @@ from Options import  Visibility, Choice , Range, DeathLink, PerGameCommonOptions
     Toggle, OptionList, DefaultOnToggle
 from .Items import AEItem
 
+
 class GoalOption(Choice):
     """Choose the victory condition for this world.
 
@@ -24,12 +25,13 @@ class GoalOption(Choice):
     option_ppmtoken = 0x04
     default = option_mm
 
-class FastTokenGoalOption(Choice):
-    """If this is enabled and the chosen Goal is `mmtoken` or `ppmtoken`, provides easy access to the end boss once enough tokens have been obtained.
-    When enough tokens have been collected, hold START while confirming a stage in the Level Select to warp directly to your Goal boss, skipping all other requirements.
 
-        off: MM/PPM will be unlocked through world keys and accessed normally via Level Select
-        on: A warp to your Goal boss becomes available in Level Select once enough tokens have been obtained (hold START to activate)
+class FastTokenGoalOption(Choice):
+    """If this is enabled and the chosen goal is `mmtoken` or `ppmtoken`, provides easy access to the goal boss once enough Specter Tokens have been obtained.
+    When enough Specter Tokens have been obtained, hold START while confirming a stage in the level select to warp directly to your goal boss, skipping all other requirements.
+
+        off: MM/PPM will only be accessible through World Keys by normal means.
+        on: You will be able to warp directly to your goal boss by holding START in the level select.
 
         Supported values: off, on
         Default value: off
@@ -40,9 +42,10 @@ class FastTokenGoalOption(Choice):
     option_on = 0x01
     default = option_off
 
+
 class AllowCollectOption(Toggle):
         """
-        Allows for !collect to catch Monkeys or collect Coins containing items for other players.
+        Allows for the !collect command used by other players to catch monkeys or collect Specter Coins in your world.
         """
         display_name = "Allow Collect"
 
@@ -155,6 +158,7 @@ class EntranceOption(Choice):
     option_lockmm = 0x02
     default = option_on
 
+
 class DoorShuffleOption(Choice):
     """Choose how the transitions between rooms (doors) are randomized.
     ***This option is currently disabled due to instability***
@@ -172,6 +176,7 @@ class DoorShuffleOption(Choice):
     option_same_level = 0x01
     #option_cross_level = 0x02
     default = option_off
+
 
 class DoorShuffleTypeOption(Choice):
     """Determines the logic used when connecting doors.
@@ -199,7 +204,7 @@ class RandomizeStartingRoomOption(Choice):
         on: The starting room for each level is a random room from within that level.
 
         Supported values: off, on
-        Default value: on
+        Default value: off
     """
 
     display_name = "Randomize Starting Room"
@@ -274,6 +279,7 @@ class MailboxOption(Choice):
     option_true = 0x01
     default = option_false
 
+
 class JacketOption(Choice):
     """Choose if static jackets should act as locations.
 
@@ -289,12 +295,13 @@ class JacketOption(Choice):
     option_true = 0x01
     default = option_false
 
+
 class TrainingRoomsOption(Choice):
     """Choose if locations inside training rooms should be included as checks.
 
         false: Training rooms have no checks.
         completion: Training rooms have 1 check on completion.
-        mailboxes: Training rooms mailboxes counts as checks.
+        mailboxes: Training room mailboxes count as checks.
 
         Supported values: false, completion, mailboxes
         Default value: false
@@ -305,6 +312,7 @@ class TrainingRoomsOption(Choice):
     option_completion = 0x01
     option_mailboxes = 0x02
     default = option_false
+
 
 class LampOption(Choice):
     """Choose if Monkey Lamps should be locked and shuffled into the multiworld.
@@ -512,6 +520,7 @@ class TrapsOnReconnect(OptionSet):
     valid_keys = frozenset({
         AEItem.BananaPeelTrap.value,AEItem.GadgetShuffleTrap.value, AEItem.MonkeyMashTrap.value, AEItem.IcyHotPantsTrap.value, AEItem.StunTrap.value, AEItem.CameraRotateTrap.value
     })
+
 
 class TrapLink(Toggle):
     """
