@@ -251,7 +251,7 @@ class JacketOption(Choice):
     """Choose if static jackets should act as locations.
 
         false: Jackets are not locations.
-        true: The 21 available jackets are added as locations.
+        true: The 22 available jackets are added as locations.
 
         Supported values: false, true
         Default value: false

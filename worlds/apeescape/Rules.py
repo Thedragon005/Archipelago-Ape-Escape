@@ -880,14 +880,14 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox64.value,
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox65.value,
-                        lambda state: CanSwim(state,self))
+                        lambda state: CanSwim(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox66.value,
-                        lambda state: CanDive(state,self))
+                        lambda state: CanDive(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.Mailbox67.value,
-                        lambda state: (CanDive(state,self) and HasWaterNet(state,self)))
+                        lambda state: (CanDive(state, self) and HasWaterNet(state, self)))
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_WATERNET.value, AELocation.WaterTraining.value,
-                        lambda state: (CanDive(state,self) and HasWaterNet(state,self)))
+                        lambda state: (CanDive(state, self) and HasWaterNet(state, self)))
 
     # Monkey Radar Training
     if self.options.trainingrooms == "mailboxes":
@@ -896,24 +896,24 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.Mailbox69.value,
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.Mailbox70.value,
-                        lambda state: HasRadar(state,self))
+                        lambda state: HasRadar(state, self))
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_RADAR.value, AELocation.RadarTraining.value,
-                        lambda state: HasRadar(state,self))
+                        lambda state: HasRadar(state, self))
 
     # Slingback Shooter Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox71.value,
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox72.value,
-                        lambda state: HasSling(state,self))
+                        lambda state: HasSling(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox73.value,
-                        lambda state: HasSling(state,self))
+                        lambda state: HasSling(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.Mailbox74.value,
-                        lambda state: HasSling(state,self))
+                        lambda state: HasSling(state, self))
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_SLING.value, AELocation.SlingTraining.value,
-                        lambda state: HasSling(state,self))
+                        lambda state: HasSling(state, self))
 
     # Super Hoop Training
     if self.options.trainingrooms == "mailboxes":
@@ -921,20 +921,20 @@ def set_locations(self, logic):
                         lambda state: True)
         if logic == "normal":
            connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox76.value,
-                            lambda state: HasHoop(state,self))
+                            lambda state: HasHoop(state, self))
         else:
            connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox76.value,
                             lambda state: True)
         if logic == "normal" or logic == "hard":
             connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox77.value,
-                            lambda state: HasHoop(state,self))
+                            lambda state: HasHoop(state, self))
         else:
             connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.Mailbox77.value,
                             lambda state: True)
     if self.options.trainingrooms == "completion":
         if logic == "normal" or logic == "hard":
             connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.HoopTraining.value,
-                            lambda state: HasHoop(state,self))
+                            lambda state: HasHoop(state, self))
         else:
             connect_regions(self, AEDoor.TIME_TRAINING_HOOP.value, AELocation.HoopTraining.value,
                             lambda state: True)
@@ -944,12 +944,12 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox78.value,
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox79.value,
-                        lambda state: HasFlyer(state,self))
+                        lambda state: HasFlyer(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.Mailbox80.value,
-                        lambda state: HasFlyer(state,self))
+                        lambda state: HasFlyer(state, self))
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_FLYER.value, AELocation.FlyerTraining.value,
-                        lambda state: HasFlyer(state,self))
+                        lambda state: HasFlyer(state, self))
 
     # RC Car Training
     if self.options.trainingrooms == "mailboxes":
@@ -958,24 +958,24 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox82.value,
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox83.value,
-                        lambda state: HasRC(state,self))
+                        lambda state: HasRC(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.Mailbox84.value,
-                        lambda state: HasRC(state,self))
+                        lambda state: HasRC(state, self))
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_CAR.value, AELocation.CarTraining.value,
-                        lambda state: HasRC(state,self))
+                        lambda state: HasRC(state, self))
 
     # Magic Punch Training
     if self.options.trainingrooms == "mailboxes":
         connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox85.value,
                         lambda state: True)
         connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox86.value,
-                        lambda state: HasPunch(state,self))
+                        lambda state: HasPunch(state, self))
         connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.Mailbox87.value,
-                        lambda state: HasPunch(state,self))
+                        lambda state: HasPunch(state, self))
     if self.options.trainingrooms == "completion":
         connect_regions(self, AEDoor.TIME_TRAINING_PUNCH.value, AELocation.PunchTraining.value,
-                        lambda state: HasPunch(state,self))
+                        lambda state: HasPunch(state, self))
 
     # Fossil Field
     connect_regions(self, AEDoor.FF_ENTRY.value, AELocation.W1L1Noonan.value,
@@ -1387,7 +1387,7 @@ def set_locations(self, logic):
                             lambda state: ((CanHitWheel(state, self) and CanSwim(state, self)) or IJ(state, self) or HasFlyer(state, self)))
         else:
             connect_regions(self, AEDoor.CR_MAIN_RUINS_PILLAR_ROOM.value, AELocation.Jacket3.value,
-                            lambda state: ((CanHitWheel(state, self) and CanSwim(state, self)) or IJ(state, self) or HasHoop(state,self) or HasFlyer(state, self)))
+                            lambda state: ((CanHitWheel(state, self) and CanSwim(state, self)) or IJ(state, self) or HasHoop(state, self) or HasFlyer(state, self)))
 
     # Stadium Attack
     if self.options.coin == "true":
@@ -1574,6 +1574,7 @@ def set_locations(self, logic):
     if self.options.jacket == "true":
         connect_regions(self, AEDoor.DI_TENTACLE.value, AELocation.Jacket4.value,
                         lambda state: True)
+
     # Snowy Mammoth
     connect_regions(self, AEDoor.SM_ENTRY.value, AELocation.W5L1Popcicle.value, 
                         lambda state: HasNet(state, self))
@@ -1744,7 +1745,7 @@ def set_locations(self, logic):
                         lambda state: True)
     if self.options.jacket == "true":
         connect_regions(self, AEDoor.HS_ENTRY_HOT_SPRING.value, AELocation.Jacket5.value,
-                        lambda state: (CanSwim(state,self)))
+                        lambda state: (CanSwim(state, self)))
         if logic == "normal":
             connect_regions(self, AEDoor.HS_HOT_SPRING.value, AELocation.Jacket6.value,
                             lambda state: (HasFlyer(state, self)))
@@ -1889,6 +1890,7 @@ def set_locations(self, logic):
     if self.options.jacket == "true":
         connect_regions(self, AEDoor.WSW_BARREL_OBSTACLE.value, AELocation.Jacket8.value,
                         lambda state: True)
+
     # Crumbling Castle
     # Outside
     connect_regions(self, AEDoor.CC_ENTRY.value, AELocation.W7L3Robart.value, 
@@ -2165,6 +2167,7 @@ def set_locations(self, logic):
                         lambda state: True)
         connect_regions(self, AEDoor.SF_CONVEYOR_LAVA.value, AELocation.Jacket12.value,
                         lambda state: True)
+
     # TV Tower
     # Outside
     connect_regions(self, AEDoor.TVT_OUTSIDE_LOBBY.value, AELocation.W8L3Fredo.value,
@@ -2418,33 +2421,35 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Jacket13.value,
                         lambda state: True)
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.Jacket14.value,
-                        lambda state: CanHitOnce(state,self))
+                        lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket15.value,
-                        lambda state: CanHitOnce(state,self))
+                        lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket16.value,
                         lambda state: True)
         connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket17.value,
                         lambda state: True)
         connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket18.value,
-                        lambda state: CanHitOnce(state,self))
+                        lambda state: CanHitOnce(state, self))
         if logic == "normal":
             connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
                             lambda state: HasFlyer(state, self))
         else:
             connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
-                            lambda state: HasFlyer(state, self) or IJ(state, self) or HasHoop(state,self))
+                            lambda state: HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self))
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+                        lambda state: True)
         if logic == "normal":
-            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
                             lambda state: HasSling(state, self) and HasFlyer(state, self))
         elif logic == "hard":
-            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
-                            lambda state: HasClub(state, self) or HasSling(state, self) or HasPunch(state,self) or HasFlyer(state, self))
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
+                            lambda state: HasClub(state, self) or HasSling(state, self) or HasPunch(state, self) or HasFlyer(state, self))
         else:
-            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
                             lambda state: CanHitWheel(state, self) or HasFlyer(state, self))
-
-        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket21.value,
+        connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Jacket22.value,
                         lambda state: CanHitOnce(state, self))
+
     # Peak Point Matrix
     if self.options.goal != "mm":
         connect_regions(self, AEDoor.PPM_ENTRY.value, AELocation.Specter2.value, 
@@ -2452,10 +2457,12 @@ def set_locations(self, logic):
     if self.options.fasttokengoal == self.options.fasttokengoal.option_on:
         if self.options.goal == "mmtoken":
             connect_regions(self, "Menu", AEDoor.MM_SPECTER1_ROOM.value,
-                            lambda state: Tokens(state, self,min(self.options.requiredtokens, self.options.totaltokens)))
+                            lambda state: Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens)))
         if self.options.goal == "ppmtoken":
             connect_regions(self, "Menu", AEDoor.PPM_ENTRY.value,
                             lambda state: Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens)))
+
+
 # Item Checking Helper Functions
 def Keys(state, world, count):
     return state.has(AEItem.Key.value, world.player, count)

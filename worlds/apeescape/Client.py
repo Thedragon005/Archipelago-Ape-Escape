@@ -2430,7 +2430,21 @@ class ApeEscapeClient(BizHawkClient):
         if InTraining:
             ClearConditions = (NearbyRoom != currentRoom) and transitionPhase == RAM.transitionPhase['InTransition']
             if ClearConditions:
-                TrainingLocID = 400 + currentRoom + self.offset
+            # IHNN note - I replaced the "nice" roomID+400 to have the location names be ordered in player-facing areas
+                if currentRoom == 98: # Water Net
+                    TrainingLocID = 492 + self.offset
+                elif currentRoom == 92: # Radar
+                    TrainingLocID = 493 + self.offset
+                elif currentRoom == 93: # Sling
+                    TrainingLocID = 494 + self.offset
+                elif currentRoom == 94: # Hoop
+                    TrainingLocID = 495 + self.offset
+                elif currentRoom == 96: # Flyer
+                    TrainingLocID = 496 + self.offset
+                elif currentRoom == 97: # Car
+                    TrainingLocID = 497 + self.offset
+                else: # Punch
+                    TrainingLocID = 498 + self.offset
                 if TrainingLocID not in self.locations_list:
                     trainingsToSend.add(TrainingLocID)
 
