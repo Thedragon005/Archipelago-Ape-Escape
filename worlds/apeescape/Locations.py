@@ -414,13 +414,13 @@ location_table = {
     AELocation.Mailbox87.value: 487,
 
     # Training Rooms
-    AELocation.WaterTraining.value: 491,
+    AELocation.WaterTraining.value: 498,
     AELocation.RadarTraining.value: 492,
     AELocation.SlingTraining.value: 493,
     AELocation.HoopTraining.value: 494,
-    AELocation.FlyerTraining.value: 495,
-    AELocation.CarTraining.value: 496,
-    AELocation.PunchTraining.value: 497,
+    AELocation.FlyerTraining.value: 496,
+    AELocation.CarTraining.value: 497,
+    AELocation.PunchTraining.value: 495,
 
     # Bosses
     AELocation.Boss73.value: 500,

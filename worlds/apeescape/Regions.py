@@ -1244,25 +1244,25 @@ def create_regions(world: "ApeEscapeWorld"):
     if options.trainingrooms == "completion":
         waterTraining = Region(AELocation.WaterTraining.value, player, multiworld)
         waterTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], waterTraining) for
-                                    loc_name in get_array([AELocation.WaterTraining.value])]
+                                    loc_name in get_array([498])]
         radarTraining = Region(AELocation.RadarTraining.value, player, multiworld)
         radarTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], radarTraining) for
-                                    loc_name in get_array([AELocation.RadarTraining.value])]
+                                    loc_name in get_array([492])]
         slingTraining = Region(AELocation.SlingTraining.value, player, multiworld)
         slingTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], slingTraining) for
-                                    loc_name in get_array([AELocation.SlingTraining.value])]
+                                    loc_name in get_array([493])]
         hoopTraining = Region(AELocation.HoopTraining.value, player, multiworld)
         hoopTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], hoopTraining) for loc_name
-                                   in get_array([AELocation.HoopTraining.value])]
+                                   in get_array([494])]
         flyerTraining = Region(AELocation.FlyerTraining.value, player, multiworld)
         flyerTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], flyerTraining) for
-                                    loc_name in get_array([AELocation.FlyerTraining.value])]
+                                    loc_name in get_array([496])]
         carTraining = Region(AELocation.CarTraining.value, player, multiworld)
         carTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], carTraining) for loc_name in
-                                  get_array([AELocation.CarTraining.value])]
+                                  get_array([497])]
         punchTraining = Region(AELocation.PunchTraining.value, player, multiworld)
         punchTraining.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], punchTraining) for
-                                    loc_name in get_array([AELocation.PunchTraining.value])]
+                                    loc_name in get_array([495])]
         regions += [waterTraining, radarTraining, slingTraining, hoopTraining, flyerTraining, carTraining, punchTraining]
 
     # The rest are only needed for mailbox shuffle

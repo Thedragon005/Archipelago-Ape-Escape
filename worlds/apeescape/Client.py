@@ -1469,7 +1469,7 @@ class ApeEscapeClient(BizHawkClient):
             self.tokencount = tokenCountFromServer
 
             # ======== Locations handling =========
-            Locations_Reads = [currentLevel,gameState,currentRoom,previousCoinStateRoom,currentCoinStateRoom,gameRunning,TVT_BossPhase,gotMail,mailboxID,jakeVictory,S1_P2_State,S1_P2_Life,S2_isCaptured,levelselect_coinlock_Address,CoinTable,TempCoinTable,monkeylevelcounts,currentApes,transitionPhase]
+            Locations_Reads = [currentLevel,gameState,currentRoom,previousCoinStateRoom,currentCoinStateRoom,gameRunning,TVT_BossPhase,gotMail,mailboxID,jakeVictory,S1_P2_State,S1_P2_Life,S2_isCaptured,levelselect_coinlock_Address,CoinTable,TempCoinTable,monkeylevelcounts,currentApes,transitionPhase,NearbyRoom]
             await self.locations_handling(ctx, Locations_Reads)
 
 
@@ -1697,7 +1697,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ========== Water Net ===========
             # Swim/Dive Prevention code
-            WN_Reads = [gameState, waternetState, gameRunning, spikeState2, swim_oxygenLevel, cookies, isUnderwater, watercatchState]
+            WN_Reads = [gameState, waternetState, gameRunning, spikeState2, swim_oxygenLevel, cookies, isUnderwater, watercatchState,currentRoom]
             await self.water_net_handling(ctx, WN_Reads)
             # ================================
 
@@ -2047,6 +2047,7 @@ class ApeEscapeClient(BizHawkClient):
         monkeylevelcounts = Locations_Reads[16]
         currentApes = Locations_Reads[17]
         transitionPhase = Locations_Reads[18]
+        NearbyRoom = Locations_Reads[19]
 
         locationsToSend = []
         monkeysToSend = set()
@@ -2055,6 +2056,7 @@ class ApeEscapeClient(BizHawkClient):
         bossesToSend = set()
         racesToSend = set()
         jacketsToSend = set()
+        trainingsToSend = set()
         allowcollect = 1 if self.allowcollect == 0x01 or self.forcecollect == True else 0
         SyncCount = 0
 
@@ -2347,8 +2349,6 @@ class ApeEscapeClient(BizHawkClient):
             key_list = list(jacketsaddrs.keys())
             val_list = list(jacketsaddrs.values())
 
-            # Make another loop here to check all values within the values
-
             for i in range(len(val_list)):
                 jacketVisualAddress = val_list[i][0]
                 jacketHitboxAddress = val_list[i][1]
@@ -2371,6 +2371,15 @@ class ApeEscapeClient(BizHawkClient):
                     if JacketVisual == 0x00:
                         if (key_list[i] + self.offset) not in self.locations_list:
                             jacketsToSend.add(key_list[i] + self.offset)
+
+        # Check for Training Room completions
+        InTraining = 92 <= currentRoom <= 98
+        if InTraining:
+            ClearConditions = (NearbyRoom != currentRoom) and transitionPhase == RAM.transitionPhase['InTransition']
+            if ClearConditions:
+                TrainingLocID = 400 + currentRoom + self.offset
+                if TrainingLocID not in self.locations_list:
+                    trainingsToSend.add(TrainingLocID)
 
         # Check for Jake Victory
         if currentRoom == 19 and gameState == RAM.gameState["JakeCleared"] and jakeVictory == 0x2:
@@ -2418,7 +2427,7 @@ class ApeEscapeClient(BizHawkClient):
                 ctx.finished_game = True
             self.PPM_Completed = True
 
-        locationsToSend = monkeysToSend | coinsToSend | mailToSend | bossesToSend | racesToSend | jacketsToSend
+        locationsToSend = monkeysToSend | coinsToSend | mailToSend | bossesToSend | racesToSend | jacketsToSend | trainingsToSend
         if locationsToSend != "" and locationsToSend != set():
             await ctx.check_locations(locationsToSend)
 
@@ -2548,94 +2557,144 @@ class ApeEscapeClient(BizHawkClient):
         punch_Writes = []
 
         # Training Rooms, do not trigger gadget replacement
-        if currentRoom > 90:
-            return
-        if gameState == RAM.gameState['InLevel']:
-
-            # Add radar to races if the level has been cleared and the player has radar, to allow radaring Jake
-            if (currentLevel == 0x07):
-                if (AEItem.Radar.value in currentGadgets) and (SAcomplete == 25):
-                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-            elif (currentLevel == 0x0E):
-                if (AEItem.Radar.value in currentGadgets) and (GAcomplete == 25):
-                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
-                if (heldGadget == 6) and (gadgetStateFromServer & 64 == 0):
+        InTraining = 92 <= currentRoom <= 98
+        if (gameState == RAM.gameState['TimeStation'] and InTraining):
+            if currentRoom == 92:
+                if (AEItem.Radar.value in currentGadgets):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                else:
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-        # Unequip the Time Net if it was shuffled. Note that just checking the Net option is not sufficient to known if the net was actually shuffled - we need to ensure there are locations in this world that don't require net to be sure.
-        if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true and (
-                ctx.slot_data["coin"] == CoinOption.option_true or ctx.slot_data[
-            "mailbox"] == MailboxOption.option_true):
-            if (crossGadget == 1) and (gadgetStateFromServer & 2 == 0):
-                gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
-        # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net if it wasn't shuffled.
-        if ((heldGadget == 0) and (gadgetStateFromServer % 2 == 0)):
-            if ctx.slot_data["gadget"] == GadgetOption.option_radar:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                gadgets_Writes += [(RAM.heldGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                triangleGadget = 0x02
-            elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
-                gadgets_Writes += [(RAM.heldGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
-                triangleGadget = 0x03
-            elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                gadgets_Writes += [(RAM.heldGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
-                triangleGadget = 0x04
-            elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
-                gadgets_Writes += [(RAM.heldGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
-                triangleGadget = 0x06
-            elif ctx.slot_data["gadget"] == GadgetOption.option_car:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
-                gadgets_Writes += [(RAM.heldGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
-                triangleGadget = 0x07
-            elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                gadgets_Writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
-                triangleGadget = 0x05
-            elif ctx.slot_data["gadget"] == GadgetOption.option_none or ctx.slot_data["gadget"] == GadgetOption.option_waternet:
-                gadgets_Writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
+            if currentRoom == 93:
+                if (AEItem.Sling.value in currentGadgets):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    # Add ammo there to make sure we have enough for the rooms?
+                else:
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-                elif ctx.slot_data["shufflenet"] == ShuffleNetOption.option_false:
-                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
 
-        # If Auto-Equip is on, still checks to exclude races from it
-        if self.autoequip == 1 and (currentRoom != 19 and currentRoom != 36):
-            if currentGadgets :
-                boolCrossGadget = crossGadget  == 0xFF
-                boolSquareGadget = squareGadget == 0xFF
-                boolCircleGadget = circleGadget == 0xFF
-                boolTriangleGadget = triangleGadget == 0xFF
-                boolFreeSpace = boolCrossGadget or boolSquareGadget or boolCircleGadget or boolTriangleGadget
-                boolNoGadgets = boolCrossGadget and boolSquareGadget and boolCircleGadget and boolTriangleGadget
-                if boolFreeSpace:
-                    for x in range(len(currentGadgets)):
-                        gadget = gadgetsValues[currentGadgets[x]]
-                        boolGadgetOnCross = crossGadget == gadget
-                        boolGadgetOnSquare = squareGadget == gadget
-                        boolGadgetOnCircle = circleGadget == gadget
-                        boolGadgetOnTriangle = triangleGadget == gadget
-                        boolGadgetAlreadyOn = boolGadgetOnCross or boolGadgetOnSquare or boolGadgetOnCircle or boolGadgetOnTriangle
-                        if not boolGadgetAlreadyOn:
-                            if boolCrossGadget:
-                                crossGadget = gadget
-                                gadgets_Writes += [(RAM.crossGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
-                                if boolNoGadgets:
-                                    gadgets_Writes += [(RAM.heldGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
-                                    boolNoGadgets = False
-                            elif boolSquareGadget:
-                                squareGadget = gadget
-                                gadgets_Writes += [(RAM.squareGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
-                            elif boolCircleGadget:
-                                circleGadget = gadget
-                                gadgets_Writes += [(RAM.circleGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
-                            elif boolTriangleGadget:
-                                triangleGadget = gadget
-                                gadgets_Writes += [(RAM.triangleGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
+            if currentRoom == 94:
+                if (AEItem.Hoop.value in currentGadgets):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+
+            if currentRoom == 96:
+                if (AEItem.Flyer.value in currentGadgets):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+
+            if currentRoom == 97:
+                if (AEItem.Car.value in currentGadgets):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+
+            if currentRoom == 95:
+                if (AEItem.Punch.value in currentGadgets):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                else:
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+
+        else:
+            if gameState == RAM.gameState['InLevel']:
+
+                # Add radar to races if the level has been cleared and the player has radar, to allow radaring Jake
+                if (currentLevel == 0x07):
+                    if (AEItem.Radar.value in currentGadgets) and (SAcomplete == 25):
+                        gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                elif (currentLevel == 0x0E):
+                    if (AEItem.Radar.value in currentGadgets) and (GAcomplete == 25):
+                        gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    # If the current level is Gladiator Attack, the Sky Flyer is currently equipped, and the player does not have the Sky Flyer: unequip it
+                    if (heldGadget == 6) and (gadgetStateFromServer & 64 == 0):
+                        gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                        gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+            # Unequip the Time Net if it was shuffled. Note that just checking the Net option is not sufficient to known if the net was actually shuffled - we need to ensure there are locations in this world that don't require net to be sure.
+            if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true and (
+                    ctx.slot_data["coin"] == CoinOption.option_true or ctx.slot_data[
+                "mailbox"] == MailboxOption.option_true):
+                if (crossGadget == 1) and (gadgetStateFromServer & 2 == 0):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+
+            # Equip the selected starting gadget onto the triangle button. Stun Club is the default and doesn't need changing. Additionally, in the "none" case, switch the selection to the Time Net if it wasn't shuffled.
+            if ((heldGadget == 0) and (gadgetStateFromServer % 2 == 0)):
+                if ctx.slot_data["gadget"] == GadgetOption.option_radar:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    triangleGadget = 0x02
+                elif ctx.slot_data["gadget"] == GadgetOption.option_sling:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
+                    triangleGadget = 0x03
+                elif ctx.slot_data["gadget"] == GadgetOption.option_hoop:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x04.to_bytes(1, "little"), "MainRAM")]
+                    triangleGadget = 0x04
+                elif ctx.slot_data["gadget"] == GadgetOption.option_flyer:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x06.to_bytes(1, "little"), "MainRAM")]
+                    triangleGadget = 0x06
+                elif ctx.slot_data["gadget"] == GadgetOption.option_car:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x07.to_bytes(1, "little"), "MainRAM")]
+                    triangleGadget = 0x07
+                elif ctx.slot_data["gadget"] == GadgetOption.option_punch:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x05.to_bytes(1, "little"), "MainRAM")]
+                    triangleGadget = 0x05
+                elif ctx.slot_data["gadget"] == GadgetOption.option_none or ctx.slot_data["gadget"] == GadgetOption.option_waternet:
+                    gadgets_Writes += [(RAM.triangleGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    if ctx.slot_data["shufflenet"] == ShuffleNetOption.option_true:
+                        gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    elif ctx.slot_data["shufflenet"] == ShuffleNetOption.option_false:
+                        gadgets_Writes += [(RAM.heldGadgetAddress, 0x01.to_bytes(1, "little"), "MainRAM")]
+
+            # If Auto-Equip is on, still checks to exclude races from it
+            if self.autoequip == 1 and (currentRoom != 19 and currentRoom != 36):
+                if currentGadgets :
+                    boolCrossGadget = crossGadget  == 0xFF
+                    boolSquareGadget = squareGadget == 0xFF
+                    boolCircleGadget = circleGadget == 0xFF
+                    boolTriangleGadget = triangleGadget == 0xFF
+                    boolFreeSpace = boolCrossGadget or boolSquareGadget or boolCircleGadget or boolTriangleGadget
+                    boolNoGadgets = boolCrossGadget and boolSquareGadget and boolCircleGadget and boolTriangleGadget
+                    if boolFreeSpace:
+                        for x in range(len(currentGadgets)):
+                            gadget = gadgetsValues[currentGadgets[x]]
+                            boolGadgetOnCross = crossGadget == gadget
+                            boolGadgetOnSquare = squareGadget == gadget
+                            boolGadgetOnCircle = circleGadget == gadget
+                            boolGadgetOnTriangle = triangleGadget == gadget
+                            boolGadgetAlreadyOn = boolGadgetOnCross or boolGadgetOnSquare or boolGadgetOnCircle or boolGadgetOnTriangle
+                            if not boolGadgetAlreadyOn:
+                                if boolCrossGadget:
+                                    crossGadget = gadget
+                                    gadgets_Writes += [(RAM.crossGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
+                                    if boolNoGadgets:
+                                        gadgets_Writes += [(RAM.heldGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
+                                        boolNoGadgets = False
+                                elif boolSquareGadget:
+                                    squareGadget = gadget
+                                    gadgets_Writes += [(RAM.squareGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
+                                elif boolCircleGadget:
+                                    circleGadget = gadget
+                                    gadgets_Writes += [(RAM.circleGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
+                                elif boolTriangleGadget:
+                                    triangleGadget = gadget
+                                    gadgets_Writes += [(RAM.triangleGadgetAddress, gadget.to_bytes(1, "little"), "MainRAM")]
 
         # Punch Visual glitch in menu fix
         # Replace all values from 0x0E78C0 to 0x0E78DF to this:
@@ -4044,10 +4103,13 @@ class ApeEscapeClient(BizHawkClient):
         cookies = WN_Reads[5]
         isUnderwater = WN_Reads[6]
         watercatchState = WN_Reads[7]
+        currentRoom = WN_Reads[8]
 
         WN_writes = []
 
+
         is_grounded = spikeState2 in grounded
+        InTraining = 92 <= currentRoom <= 98
         # Base variables
         if waternetState == 0x00:
             WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
@@ -4091,6 +4153,13 @@ class ApeEscapeClient(BizHawkClient):
                     # You died while swimming, reset Oxygen to "Limited" value prevent death loops
                     WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                     WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
+            if (gameState == RAM.gameState['TimeStation'] and InTraining):
+                if gameRunning == 0x01:
+                    if spikeState2 in swimming:
+                        # Special case since you cannot die of drowning in the Training Room
+                        #if swim_oxygenLevel == 0:
+                        WN_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
+                        WN_writes += [(RAM.instakillAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
 
         if waternetState == 0x01:
 
