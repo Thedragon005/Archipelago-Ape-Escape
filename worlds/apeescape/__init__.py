@@ -15,7 +15,7 @@ from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
-from .Options import ApeEscapeOptions
+from .Options import ApeEscapeOptions, DoorShuffleOption
 
 
 class ApeEscapeWeb(WebWorld):
@@ -104,6 +104,9 @@ class ApeEscapeWorld(World):
         super(ApeEscapeWorld, self).__init__(multiworld, player)
 
     def generate_early(self) -> None:
+        # Disable Door shuffle until stable
+        self.options.doorshuffle.value = DoorShuffleOption.option_off
+
         self.goal = self.options.goal.value
         self.requiredtokens = self.options.requiredtokens.value
         self.totaltokens = self.options.totaltokens.value
