@@ -45,7 +45,7 @@ class FastTokenGoalOption(Choice):
 
 class AllowCollectOption(Toggle):
         """
-        Allows for the !collect command used by other players to catch monkeys or collect Specter Coins in your world.
+        Allows for the !collect command used by other players to catch monkeys or collect Specter Coins in your world. This behaves the same as automatically using the syncprogress command after someone !collects.
         """
         display_name = "Allow Collect"
 
