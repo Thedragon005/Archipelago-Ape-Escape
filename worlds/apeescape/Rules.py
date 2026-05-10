@@ -29,7 +29,7 @@ def set_rules(world: "ApeEscapeWorld"):
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
             # Some levels need to be kept at a specific entrance - put those back.
-            world.levellist = fixed_levels(world.levellist, world.options.entrance, world.options.coin, world.options.goal)
+            world.levellist = fixed_levels(world.levellist, world.options.coin, world.options.goal, world.options.entrancepreset, world.options.entranceplando)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
         world.shuffled_doors = initialize_door_transitions(world, door_map, RAM.roomsperlevel, doorTransitions)
 
@@ -101,7 +101,7 @@ def set_entrances(self, logic):
     # If the goal is not token hunt, then there is a victory item on the worlds' final boss.
     if self.options.goal != "tokenhunt":
         # Redundant, but maybe relevant if we get more goals in the future
-        if self.options.goal in ("mm","mmtoken","ppm","ppmtoken"):
+        if self.options.goal in ("mm", "mmtoken", "ppm", "ppmtoken"):
             self.multiworld.completion_condition[self.player] = lambda state: state.has("Victory", self.player)
     else:
         self.multiworld.completion_condition[self.player] = lambda state: Tokens(state, self, min(self.options.requiredtokens, self.options.totaltokens))
@@ -2796,7 +2796,7 @@ def initialize_room_list(world, roomsperlevel, setlevelids = None, setroomids = 
 
         orderedfirstroomids = []
         excludedrooms_LampsOff = [27] # Exclude certain rooms if LampShuffle is off
-        excludedrooms = [48,68,70,71,83,86,73,74,75] #Exclude Boss rooms and coasters (Except Coaster Entrance)
+        excludedrooms = [48, 68, 70, 71, 83, 86, 73, 74, 75] # Exclude Boss rooms and coasters (Except Coaster Entrance)
         for x in range (0, 22):
 
             levelrooms = list(roomsperlevel[levelids[x]])
@@ -2828,7 +2828,7 @@ def initialize_room_list(world, roomsperlevel, setlevelids = None, setroomids = 
 # 23 is a lot closer?
 # 24 is...the one? :O
 # New 12 is the stable one
-# Idea to fix it : If lamps are off, make all the lamps transitions requires 2(?) other rooms to unlock them ?
+# Idea to fix it: If lamps are off, make all the lamps transitions require 2(?) other rooms to unlock them?
 
 def initialize_door_transitions(world, door_map, roomsperlevel, doorTransitions):
     if world.options.doorshuffle.value == 0x00:
@@ -3396,22 +3396,88 @@ def character_lookup(byte):
         return 141
     if ord(byte) == 58:  # Colon
         return 174
+        
 
+def fixed_levels(levellist, coinoption, goaloption, entpreset, entplando):
+    # Handle recommended preset assignments
+    preset = entpreset
+    if entpreset == 0x00: # recommended
+        if goaloption == 0x00:
+            preset = 0x03
+        elif goaloption == 0x01:
+            preset = 0x04
+        else:
+            preset = 0x01 # random
 
-def fixed_levels(levellist, entoption, coinoption, goaloption):
-    # Reset position of Peak Point Matrix for mm (postgame), ppm and ppm token (endgame)
-    # If MM is locked and mmtoken is the goal, then place PPM at the end anyway
-    if goaloption == 0x00 or goaloption == 0x01 or goaloption == 0x04 or (entoption == 0x02 and goaloption == 0x03):
+    # Set level positions for entrance presets
+    if preset == 0x02: # erashuffle
+        levelids = [0x07, 0x0E, 0x1E, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16] # Sorted by era, with Dimension X first and Monkey Madness removed
+        eraorder = [0, 1, 2, 3, 4, 5, 6]
+        world.random.shuffle(eraorder) # Dim. X, Lost Land, Mysterious, Oceana, Freezeland, Mayhem, Futurama
+
+        if goaloption == 0x01: # Force Dimension X to be on Dimension X for PPM goal
+            for x in range (0, 7):
+                if eraorder[x] == 0:
+                    eraorder[x], eraorder[0] = eraorder[0], eraorder[x]
         for x in range (0, 22):
-            if levellist[x].entrance == 0x1E:
-                levellist[x], levellist[21] = levellist[21], levellist[x]
-    # Reset position of Monkey Madness if the option requires it
-    if entoption == 0x02:
-        for x in range (0, 22):
-            if levellist[x].entrance == 0x18:
+            if levellist[x].entrance == 0x18: # Reset Monkey Madness - the only level in its own era
                 levellist[x], levellist[20] = levellist[20], levellist[x]
-    # Reset position of races if coin shuffle isn't on
-    if coinoption == 0x00:
+
+        for era in range (0, 7): # For each era, assign the entrances the levels for eraorder[era] to go to
+            if era == 0:
+                destinations = [6, 13, 21] # Dimension X
+            elif era == 1:
+                destinations = [0, 1, 2] # The Lost Land
+            elif era == 2:
+                destinations = [3, 4, 5] # Mysterious Age
+            elif era == 3:
+                destinations = [7, 8, 9] # Oceana
+            elif era == 4:
+                destinations = [10, 11, 12] # New Freezeland
+            elif era == 5:
+                destinations = [14, 15, 16] # Medieval Mayhem
+            else:
+                destinations = [17, 18, 19] # Futurama
+            world.random.shuffle(destinations) # Shuffle order of era
+            for level in range (0, 3):
+                for x in range (0, 22): # Place each desired level onto the next era entrance
+                    if levellist[x].entrance == levelids[eraorder[era] * 3 + level]:
+                        levellist[x], levellist[destinations[level]] = levellist[destinations[level]], levellist[x]
+
+    elif preset == 0x03: # lockendgame
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x18: # Reset Monkey Madness
+                levellist[x], levellist[20] = levellist[20], levellist[x]
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x1E: # Reset Peak Point Matrix
+                levellist[x], levellist[21] = levellist[21], levellist[x]
+
+    elif preset == 0x04: # lockppm
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x1E: # Reset Peak Point Matrix
+                levellist[x], levellist[21] = levellist[21], levellist[x]
+
+    elif preset == 0x05: # goallevelfirst
+        if goaloption == 0x00 or goaloption == 0x03: # mm, mmtoken
+            for x in range (0, 22):
+                if levellist[x].entrance == 0x18: # Place Monkey Madness first
+                    levellist[x], levellist[0] = levellist[0], levellist[x]
+        elif goaloption == 0x04: # ppmtoken
+            for x in range (0, 22):
+                if levellist[x].entrance == 0x1E: # Place Peak Point Matrix first
+                    levellist[x], levellist[0] = levellist[0], levellist[x]
+
+    else: # custom
+        preset = 0x00 # TODO
+
+    # Reset position of Peak Point Matrix for ppm goal, even for custom prseet
+    if goaloption == 0x00 or goaloption == 0x01:
+        for x in range (0, 22):
+            if levellist[x].entrance == 0x1E: # Reset Peak Point Matrix
+                levellist[x], levellist[21] = levellist[21], levellist[x]
+
+    # Reset position of races if coin shuffle isn't on and entrance preset isn't custom
+    if coinoption == 0x00 and entpreset != 0x06:
         for x in range (0, 22):
             if levellist[x].entrance == 0x07: # Stadium Attack
                 levellist[x], levellist[6] = levellist[6], levellist[x]

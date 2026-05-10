@@ -8,7 +8,7 @@ class GoalOption(Choice):
     """Choose the victory condition for this world.
 
         mm: First Specter fight in Monkey Madness, with the vanilla condition (just get there).
-        ppm: Second Specter fight in Peak Point Matrix, with the vanilla condition (catch all monkeys). Peak Point Matrix will only have the vanilla entry condition for Specter 1 and Specter 2 goals.
+        ppm: Second Specter fight in Peak Point Matrix, with the vanilla condition (catch all monkeys). Peak Point Matrix will have the vanilla entry condition.
         tokenhunt: Collecting enough Specter Token items throughout the world.
         mmtoken: First Specter fight in Monkey Madness, after collecting enough Specter Token items.
         ppmtoken: Second Specter fight in Peak Point Matrix, after collecting enough Specter Token items.
@@ -142,21 +142,54 @@ class SuperFlyerOption(Choice):
 
 
 class EntranceOption(Choice):
-    """Choose which level entrances should be randomized. Peak Point Matrix will always be the last level when it's postgame or the goal level. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
+    """Choose if level entrances should be randomized.
 
         off: Levels will be in the vanilla order.
         on: Levels will be in a random order.
-        lockmm: Levels will be in a random order, and Monkey Madness will be locked to its original entrance.
 
-        Supported values: off, on, lockmm
+        Supported values: off, on
         Default value: on
     """
 
     display_name = "Entrance"
     option_off = 0x00
     option_on = 0x01
-    option_lockmm = 0x02
     default = option_on
+
+
+class EntrancePresetOption(Choice):
+    """Choose how the level entrances should be randomized. Can be used to access Entrance Plando with the custom option. For "mm" and "ppm" goals, Peak Point Matrix will always be the last level with its vanilla unlock condition. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
+
+        recommended: The recommended preset for your chosen goal will be selected. For mm, this is "Lock Endgame". For ppm, this is "Lock PPM". For everything else, this is "Random".
+        random: Levels will be in a random order.
+        erashuffle: Each era will contain the levels from a random other era. Dimension X, containing the Jake races and Peak Point Matrix, counts as an era.
+        lockendgame: Levels will be in a random order, with Monkey Madness and Peak Point Matrix forced to the end.
+        lockppm: Levels will be in a random order, with Peak Point Matrix forced to the end.
+        goallevelfirst: Levels will be in a random order, with your goal level forced to the start.
+        custom: Uses the Entrance Plando option to determine level order, allowing any level to be placed at any entrance, with the rest placed randomly. This overrides coin shuffle race level placements, but does not override the ppm goal Peak Point Matrix placement.
+
+        Supported values: recommended, random, erashuffle, lockendgame, lockppm, goallevelfirst, custom
+        Default value: recommended
+    """
+    
+    display_name = "Entrance Preset"
+    option_recommended = 0x00
+    option_random = 0x01
+    option_erashuffle = 0x02
+    option_lockendgame = 0x03
+    option_lockppm = 0x04
+    option_goallevelfirst = 0x05
+    option_custom = 0x06
+
+
+# OptionList?
+class EntrancePlandoOption(OptionCounter):
+    """If Entrance Preset is Custom, forces the chosen levels to the chosen entrances. Note that if you plando a level to the Peak Point Matrix entrance for the ppm goal, this placement will be ignored!
+    
+        Valid levels: "Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"
+    """
+
+    display_name = "Entrance Plando"
 
 
 class DoorShuffleOption(Choice):
@@ -606,6 +639,8 @@ class ApeEscapeOptions(PerGameCommonOptions):
     infinitejump: InfiniteJumpOption
     superflyer: SuperFlyerOption
     entrance: EntranceOption
+    entrancepreset: EntrancePresetOption
+    entranceplando: EntrancePlandoOption
     doorshuffle: DoorShuffleOption
     randomizestartingroom: RandomizeStartingRoomOption
     unlocksperkey: KeyOption
