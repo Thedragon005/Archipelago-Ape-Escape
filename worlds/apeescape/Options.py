@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from Options import  Visibility, Choice , Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter, \
     Toggle, OptionList, DefaultOnToggle
 from .Items import AEItem
+from schema import Schema, Or, Optional
 
 
 class GoalOption(Choice):

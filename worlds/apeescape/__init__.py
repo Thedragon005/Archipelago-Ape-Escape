@@ -573,9 +573,9 @@ class ApeEscapeWorld(World):
                 actual_level_content = self.entranceorder[x]
 
                 if self.options.entrance.value != 0x00:
-                    spoiler_handle.write(f"\n      {vanilla_level.name} ==> {actual_level_content.name}:")
+                    spoiler_handle.write(f"\n      {vanilla_level.name} ==> {actual_level_content.name}")
                 else:
-                    spoiler_handle.write(f"\n      {vanilla_level.name}:")
+                    spoiler_handle.write(f"\n      {vanilla_level.name}")
 
                 if self.options.doorshuffle.value != 0:
                     current_level_id = actual_level_content.entrance
