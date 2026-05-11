@@ -143,24 +143,9 @@ class SuperFlyerOption(Choice):
 
 
 class EntranceOption(Choice):
-    """Choose if level entrances should be randomized.
-
-        off: Levels will be in the vanilla order.
-        on: Levels will be in a random order.
-
-        Supported values: off, on
-        Default value: on
-    """
-
-    display_name = "Entrance"
-    option_off = 0x00
-    option_on = 0x01
-    default = option_on
-
-
-class EntrancePresetOption(Choice):
     """Choose how the level entrances should be randomized. Can be used to access Entrance Plando with the custom option. For "mm" and "ppm" goals, Peak Point Matrix will always be the last level with its vanilla unlock condition. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
 
+        off: Levels will be in the vanilla order.
         recommended: The recommended preset for your chosen goal will be selected. For mm, this is "Lock Endgame". For ppm, this is "Lock PPM". For everything else, this is "Random".
         random: Levels will be in a random order.
         erashuffle: Each era will contain the levels from a random other era. Dimension X, containing the Jake races and Peak Point Matrix, counts as an era.
@@ -169,22 +154,24 @@ class EntrancePresetOption(Choice):
         goallevelfirst: Levels will be in a random order, with your goal level forced to the start.
         custom: Uses the Entrance Plando option to determine level order, allowing any level to be placed at any entrance, with the rest placed randomly. This overrides coin shuffle race level placements, but does not override the ppm goal Peak Point Matrix placement.
 
-        Supported values: recommended, random, erashuffle, lockendgame, lockppm, goallevelfirst, custom
+        Supported values: off, recommended, random, erashuffle, lockendgame, lockppm, goallevelfirst, custom
         Default value: recommended
     """
-    
-    display_name = "Entrance Preset"
-    option_recommended = 0x00
-    option_random = 0x01
-    option_erashuffle = 0x02
-    option_lockendgame = 0x03
-    option_lockppm = 0x04
-    option_goallevelfirst = 0x05
-    option_custom = 0x06
+
+    display_name = "Entrance"
+    option_off = 0x00
+    option_recommended = 0x01
+    option_random = 0x02
+    option_erashuffle = 0x03
+    option_lockendgame = 0x04
+    option_lockppm = 0x05
+    option_goallevelfirst = 0x06
+    option_custom = 0x07
+    default = option_recommended
 
 
 class EntrancePlandoOption(OptionDict):
-    """If Entrance Preset is Custom, forces the chosen levels to the chosen entrances. Note that if you plando a level to the Peak Point Matrix entrance for the ppm goal, this placement will be ignored!
+    """If Entrance is Custom, forces the chosen levels to the chosen entrances. Note that if you plando a level to the Peak Point Matrix entrance for the ppm goal, this placement will be ignored!
     
         Format is Entrance: Level. Monkey Madness: Dexter's Island will result in Dexter's Island being at the Monkey Madness entrance. Any entrance not set will have a random level. Any level assigned to more than one entrance will be placed at the later entrance.
         The default sequence is a "reverse lock endgame" sequence.
@@ -669,7 +656,6 @@ class ApeEscapeOptions(PerGameCommonOptions):
     infinitejump: InfiniteJumpOption
     superflyer: SuperFlyerOption
     entrance: EntranceOption
-    entrancepreset: EntrancePresetOption
     entranceplando: EntrancePlandoOption
     doorshuffle: DoorShuffleOption
     randomizestartingroom: RandomizeStartingRoomOption

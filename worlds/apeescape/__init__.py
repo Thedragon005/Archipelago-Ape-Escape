@@ -500,7 +500,6 @@ class ApeEscapeWorld(World):
             "infinitejump": self.options.infinitejump.value,
             "superflyer": self.options.superflyer.value,
             "entrance": self.options.entrance.value,
-            "entrancepreset": self.options.entrancepreset.value,
             "entranceplando": self.options.entranceplando.value,
             "doorshuffle": self.options.doorshuffle.value,
             "randomizestartingroom": self.options.randomizestartingroom.value,

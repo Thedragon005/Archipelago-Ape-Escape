@@ -29,7 +29,7 @@ def set_rules(world: "ApeEscapeWorld"):
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
             # Some levels need to be at specific entrances based on settings, also entrance plando
-            world.levellist = fixed_levels(world, world.levellist, world.options.coin, world.options.goal, world.options.entrancepreset, world.options.entranceplando)
+            world.levellist = fixed_levels(world, world.levellist, world.options.coin, world.options.goal, world.options.entrance, world.options.entranceplando)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
         world.shuffled_doors = initialize_door_transitions(world, door_map, RAM.roomsperlevel, doorTransitions)
 
@@ -3398,19 +3398,21 @@ def character_lookup(byte):
         return 174
         
 
-def fixed_levels(world, levellist, coinoption, goaloption, entpreset, entplando):
+def fixed_levels(world, levellist, coinoption, goaloption, entoption, entplando):
     # Handle recommended preset assignments
-    preset = entpreset
-    if entpreset == 0x00: # recommended
+    preset = entoption
+    if preset == 0x01: # recommended
         if goaloption == 0x00:
-            preset = 0x03
-        elif goaloption == 0x01:
             preset = 0x04
+        elif goaloption == 0x01:
+            preset = 0x05
         else:
-            preset = 0x01 # random
+            preset = 0x02 # random
+
+    # if preset == 0x02: # random. Obviously, do nothing extra here.
 
     # Set level positions for entrance presets
-    if preset == 0x02: # erashuffle
+    if preset == 0x03: # erashuffle
         levelids = [0x07, 0x0E, 0x1E, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16] # Sorted by era, with Dimension X first and Monkey Madness removed
         eraorder = [0, 1, 2, 3, 4, 5, 6]
         world.random.shuffle(eraorder) # Dim. X, Lost Land, Mysterious, Oceana, Freezeland, Mayhem, Futurama
@@ -3445,7 +3447,7 @@ def fixed_levels(world, levellist, coinoption, goaloption, entpreset, entplando)
                     if levellist[x].entrance == levelids[eraorder[era] * 3 + level]:
                         levellist[x], levellist[destinations[level]] = levellist[destinations[level]], levellist[x]
 
-    elif preset == 0x03: # lockendgame
+    elif preset == 0x04: # lockendgame
         for x in range (0, 22):
             if levellist[x].entrance == 0x18: # Reset Monkey Madness
                 levellist[x], levellist[20] = levellist[20], levellist[x]
@@ -3453,12 +3455,12 @@ def fixed_levels(world, levellist, coinoption, goaloption, entpreset, entplando)
             if levellist[x].entrance == 0x1E: # Reset Peak Point Matrix
                 levellist[x], levellist[21] = levellist[21], levellist[x]
 
-    elif preset == 0x04: # lockppm
+    elif preset == 0x05: # lockppm
         for x in range (0, 22):
             if levellist[x].entrance == 0x1E: # Reset Peak Point Matrix
                 levellist[x], levellist[21] = levellist[21], levellist[x]
 
-    elif preset == 0x05: # goallevelfirst
+    elif preset == 0x06: # goallevelfirst
         if goaloption == 0x00 or goaloption == 0x03: # mm, mmtoken
             for x in range (0, 22):
                 if levellist[x].entrance == 0x18: # Place Monkey Madness first
@@ -3468,16 +3470,17 @@ def fixed_levels(world, levellist, coinoption, goaloption, entpreset, entplando)
                 if levellist[x].entrance == 0x1E: # Place Peak Point Matrix first
                     levellist[x], levellist[0] = levellist[0], levellist[x]
 
-    else: # custom
+    elif preset == 0x07: # custom
         levelnames = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"] # Ordered list of level names
         levelids = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x14, 0x15, 0x16, 0x18, 0x1E] # Ordered list of level IDs
         for x in range (0, 22): # For each entrance
             for y in range (0, 22): # Find the original order (0 = FF, 1 = PO ... 21 = PPM)
-                if entplando[levelnames[x]] == levelnames[y]: # x is now the level index. y is now the level ID.
-                    for z in range (0, 22): # For each entry in the level list
-                        if levellist[z].entrance == levelids[y]: # If we found the correct level at index z
-                            # Swap the level in the level list (index z) with the desired entrance (index x)
-                            levellist[z], levellist[x] = levellist[x], levellist[z]
+                if levelnames[x] in entplando.keys(): # Make sure the key exists first
+                    if entplando[levelnames[x]] == levelnames[y]: # x is the level index. y is the level ID.
+                        for z in range (0, 22): # For each entry in the level list
+                            if levellist[z].entrance == levelids[y]: # If we found the correct level at index z
+                                # Swap the level in the level list (index z) with the desired entrance (index x)
+                                levellist[z], levellist[x] = levellist[x], levellist[z]
 
     # Reset position of Peak Point Matrix for mm and ppm goal, even for custom prseet
     if goaloption == 0x00 or goaloption == 0x01:
@@ -3486,7 +3489,7 @@ def fixed_levels(world, levellist, coinoption, goaloption, entpreset, entplando)
                 levellist[x], levellist[21] = levellist[21], levellist[x]
 
     # Reset position of races if coin shuffle isn't on and entrance preset isn't custom
-    if coinoption == 0x00 and entpreset != 0x06:
+    if coinoption == 0x00 and preset != 0x07:
         for x in range (0, 22):
             if levellist[x].entrance == 0x07: # Stadium Attack
                 levellist[x], levellist[6] = levellist[6], levellist[x]
