@@ -147,21 +147,21 @@ class EntranceOption(Choice):
 
         off: Levels will be in the vanilla order.
         recommended: The recommended preset for your chosen goal will be selected. For mm, this is "Lock Endgame". For ppm, this is "Lock PPM". For everything else, this is "Random".
-        random: Levels will be in a random order.
+        levelshuffle: Levels will be in a random order.
         erashuffle: Each era will contain the levels from a random other era. Dimension X, containing the Jake races and Peak Point Matrix, counts as an era.
         lockendgame: Levels will be in a random order, with Monkey Madness and Peak Point Matrix forced to the end.
         lockppm: Levels will be in a random order, with Peak Point Matrix forced to the end.
         goallevelfirst: Levels will be in a random order, with your goal level forced to the start.
         custom: Uses the Entrance Plando option to determine level order, allowing any level to be placed at any entrance, with the rest placed randomly. This overrides coin shuffle race level placements, but does not override the ppm goal Peak Point Matrix placement.
 
-        Supported values: off, recommended, random, erashuffle, lockendgame, lockppm, goallevelfirst, custom
+        Supported values: off, recommended, levelshuffle, erashuffle, lockendgame, lockppm, goallevelfirst, custom
         Default value: recommended
     """
 
     display_name = "Entrance"
     option_off = 0x00
     option_recommended = 0x01
-    option_random = 0x02
+    option_levelshuffle = 0x02
     option_erashuffle = 0x03
     option_lockendgame = 0x04
     option_lockppm = 0x05

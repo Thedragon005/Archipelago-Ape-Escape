@@ -3407,9 +3407,9 @@ def fixed_levels(world, levellist, coinoption, goaloption, entoption, entplando)
         elif goaloption == 0x01:
             preset = 0x05
         else:
-            preset = 0x02 # random
+            preset = 0x02 # levelshuffle
 
-    # if preset == 0x02: # random. Obviously, do nothing extra here.
+    # if preset == 0x02: # levelshuffle. Obviously, do nothing extra here.
 
     # Set level positions for entrance presets
     if preset == 0x03: # erashuffle
