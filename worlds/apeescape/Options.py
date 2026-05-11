@@ -182,14 +182,43 @@ class EntrancePresetOption(Choice):
     option_custom = 0x06
 
 
-# OptionList?
-class EntrancePlandoOption(OptionCounter):
+class EntrancePlandoOption(OptionDict):
     """If Entrance Preset is Custom, forces the chosen levels to the chosen entrances. Note that if you plando a level to the Peak Point Matrix entrance for the ppm goal, this placement will be ignored!
     
-        Valid levels: "Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"
+        Format is Entrance: Level. Monkey Madness: Dexter's Island will result in Dexter's Island being at the Monkey Madness entrance. Any entrance not set will have a random level. Any level assigned to more than one entrance will be placed at the later entrance.
+        The default sequence is a "reverse lock endgame" sequence.
+        Level names: "Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"
     """
 
     display_name = "Entrance Plando"
+    level_names = ["Fossil Field", "Primordial Ooze", "Molten Lava", "Thick Jungle", "Dark Ruins", "Cryptic Relics", "Stadium Attack", "Crabby Beach", "Coral Cave", "Dexter's Island", "Snowy Mammoth", "Frosty Retreat", "Hot Springs", "Gladiator Attack", "Sushi Temple", "Wabi Sabi Wall", "Crumbling Castle", "City Park", "Specter's Factory", "TV Tower", "Monkey Madness", "Peak Point Matrix"]
+    default = {
+        "Fossil Field": "TV Tower",
+        "Primordial Ooze": "Specter's Factory",
+        "Molten Lava": "City Park",
+        "Thick Jungle": "Crumbling Castle",
+        "Dark Ruins": "Wabi Sabi Wall",
+        "Cryptic Relics": "Sushi Temple",
+        "Stadium Attack": "Gladiator Attack",
+        "Crabby Beach": "Hot Springs",
+        "Coral Cave": "Frosty Retreat",
+        "Dexter's Island": "Snowy Mammoth",
+        "Snowy Mammoth": "Dexter's Island",
+        "Frosty Retreat": "Coral Cave",
+        "Hot Springs": "Crabby Beach",
+        "Gladiator Attack": "Stadium Attack",
+        "Sushi Temple": "Cryptic Relics",
+        "Wabi Sabi Wall": "Dark Ruins",
+        "Crumbling Castle": "Thick Jungle",
+        "City Park": "Molten Lava",
+        "Specter's Factory": "Primordial Ooze",
+        "TV Tower": "Fossil Field",
+        "Monkey Madness": "Monkey Madness",
+        "Peak Point Matrix": "Peak Point Matrix"
+    }
+    schema = Schema({
+        Optional(Or(*level_names)): Or(*level_names)
+    })
 
 
 class DoorShuffleOption(Choice):
