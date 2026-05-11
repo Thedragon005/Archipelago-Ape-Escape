@@ -3417,11 +3417,25 @@ def fixed_levels(world, levellist, coinoption, goaloption, entoption, entplando)
         eraorder = [0, 1, 2, 3, 4, 5, 6]
         world.random.shuffle(eraorder) # Dim. X, Lost Land, Mysterious, Oceana, Freezeland, Mayhem, Futurama
 
-        # Force Dimension X to be on Dimension X for PPM goal and coin shuffle off
-        if goaloption == 0x01 or coinoption == 0x00:
+        # Force Dimension X to be on Dimension X for MM goal, PPM goal, or coin shuffle off
+        if goaloption == 0x00 or goaloption == 0x01 or coinoption == 0x00:
             for x in range (0, 7):
                 if eraorder[x] == 0:
                     eraorder[x], eraorder[0] = eraorder[0], eraorder[x]
+        else: # Dimension X can be elsewhere
+            # Prevent Dimension X from being on Lost Land if there would be no sphere 1 locations, which happens with a very specific set of options.
+            # If someone really wants this for a multiworld they can plando it anyway.
+            # Worth noting that this can technically happen with a random level order too, but the odds are vanishingly unlikely. Since this only affects solo worlds, a failure that happens once in a million generations is a total non-issue. If it happens, generate again.
+            if eraorder[1] == 0: # If it's on Lost Land, check other options
+                # Check to see if any setting would guarantee a sphere 1 location (Time Station/No Keys/Race)
+                if (world.options.mailbox == 0x00) and (world.options.unlocksperkey != 0x03) and (world.options.shufflenet == 0x00) and (world.options.shufflewaternet != 0x00):
+                    # Check starting gadgets and training room availability.
+                    # There are no locations for club/none + training rooms completion.
+                    # There are no locations for a non-flyer/water net gadget + training rooms off.
+                    if ((world.options.gadget == 0x00 or world.options.gadget == 0x08) and world.options.trainingrooms == 0x01) or ((world.options.gadget != 0x04 and world.options.gadget != 0x07) and world.options.trainingrooms == 0x00):
+                        while eraorder[1] == 0: # Until Dimension X isn't on Lost Land
+                            world.random.shuffle(eraorder) # Reshuffle
+
         for x in range (0, 22):
             if levellist[x].entrance == 0x18: # Reset Monkey Madness - the only level in its own era
                 levellist[x], levellist[20] = levellist[20], levellist[x]
