@@ -29,7 +29,7 @@ def set_rules(world: "ApeEscapeWorld"):
         if (world.options.entrance != 0x00):
             world.random.shuffle(world.levellist)
             # Some levels need to be at specific entrances based on settings, also entrance plando
-            world.levellist = fixed_levels(world.levellist, world.options.coin, world.options.goal, world.options.entrancepreset, world.options.entranceplando)
+            world.levellist = fixed_levels(world, world.levellist, world.options.coin, world.options.goal, world.options.entrancepreset, world.options.entranceplando)
         world.firstrooms = initialize_room_list(world, RAM.roomsperlevel)
         world.shuffled_doors = initialize_door_transitions(world, door_map, RAM.roomsperlevel, doorTransitions)
 
@@ -3398,7 +3398,7 @@ def character_lookup(byte):
         return 174
         
 
-def fixed_levels(levellist, coinoption, goaloption, entpreset, entplando):
+def fixed_levels(world, levellist, coinoption, goaloption, entpreset, entplando):
     # Handle recommended preset assignments
     preset = entpreset
     if entpreset == 0x00: # recommended
@@ -3415,7 +3415,8 @@ def fixed_levels(levellist, coinoption, goaloption, entpreset, entplando):
         eraorder = [0, 1, 2, 3, 4, 5, 6]
         world.random.shuffle(eraorder) # Dim. X, Lost Land, Mysterious, Oceana, Freezeland, Mayhem, Futurama
 
-        if goaloption == 0x01: # Force Dimension X to be on Dimension X for PPM goal
+        # Force Dimension X to be on Dimension X for PPM goal and coin shuffle off
+        if goaloption == 0x01 or coinoption == 0x00:
             for x in range (0, 7):
                 if eraorder[x] == 0:
                     eraorder[x], eraorder[0] = eraorder[0], eraorder[x]
