@@ -653,7 +653,7 @@ def set_transitions(self, logic):
     if logic == "normal":
         connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AEDoor.SF_ENTRY.value,
                         lambda state: HasFlyer(state, self) or HasPunch(state, self))
-    elif logic == "hard":
+    else:
         connect_regions(self, AEDoor.SF_OUTSIDE_FACTORY.value, AEDoor.SF_ENTRY.value,
                         lambda state: HasFlyer(state, self) or HasPunch(state, self) or IJ(state, self))
     # Main Factory
