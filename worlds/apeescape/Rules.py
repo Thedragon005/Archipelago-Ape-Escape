@@ -3404,7 +3404,7 @@ def fixed_levels(world, levellist, coinoption, goaloption, entoption, entplando)
     if preset == 0x01: # recommended
         if goaloption == 0x00:
             preset = 0x04
-        elif goaloption == 0x01:
+        elif goaloption == 0x01 or goaloption == 0x04:
             preset = 0x05
         else:
             preset = 0x02 # levelshuffle
@@ -3417,8 +3417,8 @@ def fixed_levels(world, levellist, coinoption, goaloption, entoption, entplando)
         eraorder = [0, 1, 2, 3, 4, 5, 6]
         world.random.shuffle(eraorder) # Dim. X, Lost Land, Mysterious, Oceana, Freezeland, Mayhem, Futurama
 
-        # Force Dimension X to be on Dimension X for MM goal, PPM goal, or coin shuffle off
-        if goaloption == 0x00 or goaloption == 0x01 or coinoption == 0x00:
+        # Force Dimension X to be on Dimension X for MM, PPM, PPM Token goals, or coin shuffle off
+        if goaloption == 0x00 or goaloption == 0x01 or goaloption == 0x04 or coinoption == 0x00:
             for x in range (0, 7):
                 if eraorder[x] == 0:
                     eraorder[x], eraorder[0] = eraorder[0], eraorder[x]
@@ -3496,8 +3496,8 @@ def fixed_levels(world, levellist, coinoption, goaloption, entoption, entplando)
                                 # Swap the level in the level list (index z) with the desired entrance (index x)
                                 levellist[z], levellist[x] = levellist[x], levellist[z]
 
-    # Reset position of Peak Point Matrix for mm and ppm goal, even for custom prseet
-    if goaloption == 0x00 or goaloption == 0x01:
+    # Reset position of Peak Point Matrix for mm, ppm, ppmtoken goal, even for custom prseet
+    if goaloption == 0x00 or goaloption == 0x01 or goaloption == 0x04:
         for x in range (0, 22):
             if levellist[x].entrance == 0x1E: # Reset Peak Point Matrix
                 levellist[x], levellist[21] = levellist[21], levellist[x]

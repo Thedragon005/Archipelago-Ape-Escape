@@ -143,10 +143,10 @@ class SuperFlyerOption(Choice):
 
 
 class EntranceOption(Choice):
-    """Choose how the level entrances should be randomized. Can be used to access Entrance Plando with the custom option. For "mm" and "ppm" goals, Peak Point Matrix will always be the last level with its vanilla unlock condition. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
+    """Choose how the level entrances should be randomized. Can be used to access Entrance Plando with the custom option. For "mm", "ppm" and "ppmtoken" goals, Peak Point Matrix will always be the last level with its vanilla unlock condition. Races will be included in randomization if coin shuffle is on, and excluded otherwise.
 
         off: Levels will be in the vanilla order.
-        recommended: The recommended preset for your chosen goal will be selected. For mm, this is "Lock Endgame". For ppm, this is "Lock PPM". For everything else, this is "Random".
+        recommended: The recommended preset for your chosen goal will be selected. For mm, this is "Lock Endgame". For ppm and ppmtoken, this is "Lock PPM". For everything else, this is "Random".
         levelshuffle: Levels will be in a random order.
         erashuffle: Each era will contain the levels from a random other era. Dimension X, containing the Jake races and Peak Point Matrix, counts as an era.
         lockendgame: Levels will be in a random order, with Monkey Madness and Peak Point Matrix forced to the end.
