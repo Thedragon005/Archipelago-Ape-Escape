@@ -1654,8 +1654,12 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.FR_WATER_CAVERNS.value, AELocation.W5L2Droog.value, 
                         lambda state: (CanDive(state, self) or HasFlyer(state, self) or IJ(state, self)) and HasNet(state, self))
     # Caverns
-    connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.W5L2Gash.value, 
-                        lambda state: HasNet(state, self))
+    if logic == "normal":
+         connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.W5L2Gash.value, 
+                        lambda state: HasNet(state, self) or (CanDive(state, self) and HasWaterNet(state, self)))
+    else:
+         connect_regions(self, AEDoor.FR_CAVERNS_ENTRY.value, AELocation.W5L2Gash.value, 
+                        lambda state: HasNet(state, self) or HasWaterNet(state, self))
     connect_regions(self, AEDoor.FR_CAVERNS_WATER.value, AELocation.W5L2Kundra.value, 
                         lambda state: HasNet(state, self))
     if logic == "normal":
