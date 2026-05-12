@@ -826,9 +826,17 @@ def set_transitions(self, logic):
                         lambda state: True)
     connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value,
                         lambda state: MM_Lamp(state, self))
-    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
+    if logic == "normal":
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
+                        lambda state: HasFlyer(state, self))
+    else:
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_SIDE_ENTRY.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
                         lambda state: True)
-    connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
+    if logic == "normal":
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
+                        lambda state: HasFlyer(state, self))
+    else:
+        connect_regions(self, AEDoor.MM_OUTSIDE_CASTLE_CASTLE_MAIN.value, AEDoor.MM_OUTSIDE_CASTLE_CRATER.value,
                         lambda state: True)
     # Castle Foyer
     connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AEDoor.MM_CASTLE_MAIN_MONKEY_HEAD.value, 
