@@ -1455,8 +1455,10 @@ def create_regions(world: "ApeEscapeWorld"):
         jacket21.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket21) for loc_name in get_array([271])]
         jacket22 = Region(AELocation.Jacket22.value, player, multiworld)
         jacket22.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket22) for loc_name in get_array([272])]
+        jacket23 = Region(AELocation.Jacket23.value, player, multiworld)
+        jacket23.locations += [ApeEscapeLocation(player, loc_name, location_table[loc_name], jacket23) for loc_name in get_array([273])]
         regions += [jacket1, jacket2, jacket3, jacket4, jacket5, jacket6, jacket7, jacket8, jacket9, jacket10, jacket11, jacket12, jacket13, jacket14,
-                    jacket15, jacket16, jacket17, jacket18, jacket19, jacket20, jacket21, jacket22]
+                    jacket15, jacket16, jacket17, jacket18, jacket19, jacket20, jacket21, jacket22, jacket23]
     multiworld.regions.extend(regions)
     create_event_items(world)
 

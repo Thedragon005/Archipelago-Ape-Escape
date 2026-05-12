@@ -2433,33 +2433,35 @@ def set_locations(self, logic):
         connect_regions(self, AEDoor.MM_COASTER1_ENTRY.value, AELocation.Jacket13.value,
                         lambda state: True)
         connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.Jacket14.value,
-                        lambda state: CanHitOnce(state, self))
-        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket15.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.MM_CASTLE_MAIN_OUTSIDE_CASTLE.value, AELocation.Jacket15.value,
                         lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket16.value,
-                        lambda state: True)
+                        lambda state: CanHitOnce(state, self))
         connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket17.value,
                         lambda state: True)
-        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket18.value,
+        connect_regions(self, AEDoor.MM_INSIDE_CLIMB_CASTLE_MAIN.value, AELocation.Jacket18.value,
+                        lambda state: True)
+        connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
                         lambda state: CanHitOnce(state, self))
         if logic == "normal":
-            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
+            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket20.value,
                             lambda state: HasFlyer(state, self))
         else:
-            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket19.value,
+            connect_regions(self, AEDoor.MM_OUTSIDE_CLIMB_INSIDE_CLIMB.value, AELocation.Jacket20.value,
                             lambda state: HasFlyer(state, self) or IJ(state, self) or HasHoop(state, self))
-        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket20.value,
+        connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
                         lambda state: True)
         if logic == "normal":
-            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket22.value,
                             lambda state: HasSling(state, self) and HasFlyer(state, self))
         elif logic == "hard":
-            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket22.value,
                             lambda state: HasClub(state, self) or HasSling(state, self) or HasPunch(state, self) or HasFlyer(state, self))
         else:
-            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket21.value,
+            connect_regions(self, AEDoor.MM_MONKEY_HEAD_CASTLE_MAIN.value, AELocation.Jacket22.value,
                             lambda state: CanHitWheel(state, self) or HasFlyer(state, self))
-        connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Jacket22.value,
+        connect_regions(self, AEDoor.MM_SPECTER1_ROOM.value, AELocation.Jacket23.value,
                         lambda state: CanHitOnce(state, self))
 
     # Peak Point Matrix

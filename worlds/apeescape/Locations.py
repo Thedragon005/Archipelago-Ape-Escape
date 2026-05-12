@@ -261,6 +261,7 @@ location_table = {
     AELocation.Jacket20.value: 270,
     AELocation.Jacket21.value: 271,
     AELocation.Jacket22.value: 272,
+    AELocation.Jacket23.value: 273,
 
     # Coins
     AELocation.Coin1.value: 301,
