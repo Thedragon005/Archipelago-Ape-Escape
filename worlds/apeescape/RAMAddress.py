@@ -1331,23 +1331,24 @@ class RAM:
             263: [0x0BF1A2, 0x0BF1A6, False]
         },
         80: {
-            264: [0x0BEFDA, 0x0BEFDE, False]
+            264: [0x0BEFC2, 0x0BEFC6, False],
+            265: [0x0BEFDA, 0x0BEFDE, False]
         },
         81: {
-            265: [0x0B1B74, 0x0BF236, True],
-            266: [0x0BF202, 0x0BF206, False],
-            267: [0x0BF21A, 0x0BF21E, False]
+            266: [0x0B1B74, 0x0BF236, True],
+            267: [0x0BF202, 0x0BF206, False],
+            268: [0x0BF21A, 0x0BF21E, False]
         },
         82: {
-            268: [0x0B1B74, 0x0BF236, True],
-            269: [0x0BF21A, 0x0BF21E, False]
+            269: [0x0B1B74, 0x0BF236, True],
+            270: [0x0BF21A, 0x0BF21E, False]
         },
         83: {
-            272: [0x0B1B74, 0x0BF236, True]
+            273: [0x0B1B74, 0x0BF236, True]
         },  # This value is 1 after the box is broken, 2 after the life is collected
         84: {
-            270: [0x0BF022, 0x0BF026, False],
-            271: [0x0BF03A, 0x0BF03E, False]
+            271: [0x0BF022, 0x0BF026, False],
+            272: [0x0BF03A, 0x0BF03E, False]
         },
 
     }
@@ -1367,7 +1368,7 @@ class RAM:
 
         },
         83: {
-            270: [0x0B1B74, 0x0BF236, True]
+            273: [0x0B1B74, 0x0BF236, True]
         },  # This value is 1 after the box is broken,2 after the life is collected
 
     }

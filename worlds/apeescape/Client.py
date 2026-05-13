@@ -1810,10 +1810,8 @@ class ApeEscapeClient(BizHawkClient):
                     # Add entrance shuffle information to mailbox text
                     if ctx.slot_data["entrance"] == EntranceOption.option_off:
                         mailboxtext = "Entrance: Off"
-                    elif ctx.slot_data["entrance"] == EntranceOption.option_on:
-                        mailboxtext = "Entrance: On"
                     else:
-                        mailboxtext = "Entrance: Lock MM"
+                        mailboxtext = "Entrance: On"
                     mailboxbytes += text_to_bytes(mailboxtext)
                     mailboxbytes += [13]
 
