@@ -2394,7 +2394,7 @@ class ApeEscapeClient(BizHawkClient):
                         if (redkey_list[i] + self.offset) not in self.locations_list:
                             mailToSend.add(redkey_list[i] + self.offset)
         # Check for Jackets
-        if (localcondition) and (currentRoom in jacketsRooms) and (gameState == RAM.gameState["InLevel"] or gameState == RAM.gameState["TimeStation"]):
+        if (localcondition) and (currentRoom in jacketsRooms) and (gameState == RAM.gameState["InLevel"] or gameState == RAM.gameState["TimeStation"]) and transitionPhase != RAM.transitionPhase['InTransition']:
             jacketsaddrs = RAM.jacketsListLocal[currentRoom]
 
             key_list = list(jacketsaddrs.keys())
@@ -2406,7 +2406,6 @@ class ApeEscapeClient(BizHawkClient):
                 jacketDoesRespawn = val_list[i][2]
                 addresses = []
 
-                jacketaddresses = [jacketVisualAddress, jacketHitboxAddress]
                 addresses.append((jacketVisualAddress, 1, "MainRAM"))
                 addresses.append((jacketHitboxAddress, 2, "MainRAM"))
 
