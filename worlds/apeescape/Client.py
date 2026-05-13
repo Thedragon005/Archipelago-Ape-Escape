@@ -2623,10 +2623,15 @@ class ApeEscapeClient(BizHawkClient):
         # Training Rooms, do not trigger gadget replacement
         InTraining = 92 <= currentRoom <= 98
         if (gameState == RAM.gameState['TimeStation'] and InTraining):
+            if currentRoom == 98:
+                #Special Case, remove the Stun Club for Water Net room
+                if (crossGadget == 0x00):
+                    gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
             if currentRoom == 92:
                 if (AEItem.Radar.value in currentGadgets):
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
-                    gadgets_Writes += [(RAM.crossGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
+                    gadgets_Writes += [(RAM.heldGadgetAddress, 0x02.to_bytes(1, "little"), "MainRAM")]
                 else:
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
@@ -2635,7 +2640,6 @@ class ApeEscapeClient(BizHawkClient):
                 if (AEItem.Sling.value in currentGadgets):
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0x03.to_bytes(1, "little"), "MainRAM")]
-                    # Add ammo there to make sure we have enough for the rooms?
                 else:
                     gadgets_Writes += [(RAM.crossGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     gadgets_Writes += [(RAM.heldGadgetAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
@@ -4059,7 +4063,7 @@ class ApeEscapeClient(BizHawkClient):
                 LS_Writes += [(RAM.temp_SA_CompletedAddress, current_SA_Completed.to_bytes(1, "little"), "MainRAM")]
             if current_GA_Completed != Temp_GA_Completed:
                 #print("Wrote To TempGA")
-                LS_Writes += [(RAM.temp_GA_CompletedAddress, current_SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                LS_Writes += [(RAM.temp_GA_CompletedAddress, current_GA_Completed.to_bytes(1, "little"), "MainRAM")]
 
             if SA == 1:
                 LS_Writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
@@ -4196,20 +4200,13 @@ class ApeEscapeClient(BizHawkClient):
 
         # Oxygen Handling
         if waternetState == 0x00:
-            if gameState == RAM.gameState["InLevel"] or gameState == RAM.gameState["InLevelTT"]:
+            if gameState == RAM.gameState["InLevel"]:
                 if gameRunning == 0x01:
                     # Set the air to the "Limited" value if 2 conditions:
-                    # Oxygen is higher that "Limited" value AND spike is Swimming or Grounded
-                    if spikeState2 in swimming:
-                        if (swim_oxygenLevel > limited_OxygenLevel):
-                            WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-                    else:
-                        # if self.waterHeight != 0:
-                        # self.waterHeight = 0
-                        if is_grounded:
+                    # Spike is Swimming or Grounded AND Oxygen is higher that "Limited" value
+                    if (spikeState2 in swimming or is_grounded) and (swim_oxygenLevel > limited_OxygenLevel):
                             WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
 
-                #else:
                 # Game Not running
                 #if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
                 if swim_oxygenLevel == 0 and cookies == 0:
@@ -4223,16 +4220,22 @@ class ApeEscapeClient(BizHawkClient):
                         #if swim_oxygenLevel == 0:
                         WN_writes += [(RAM.cookieAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                         WN_writes += [(RAM.instakillAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
-
+            if isUnderwater == 0x01 and is_grounded:
+                # You exited the level while underwater, reset oxygen and underwater state
+                WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
         if waternetState == 0x01:
-
             if isUnderwater == 0x00 and swim_oxygenLevel != limited_OxygenLevel:
                 WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-            if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
+            #if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
+            if swim_oxygenLevel == 0 and cookies == 0:
                 # You died while swimming, reset Oxygen to "Limited" value prevent death loops
                 WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                 WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
-
+            if isUnderwater == 0x01 and is_grounded:
+                # You exited the level while underwater, reset oxygen and underwater state
+                WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
         # WaterCatch unlocking stuff bellow
         if watercatchState == 0x00:
             WN_writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
