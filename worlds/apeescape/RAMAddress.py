@@ -1353,7 +1353,6 @@ class RAM:
 
     }
 
-    # TODO Respawning Jackets Box values are not stable
     respawningJacketsListLocal = {
     # JacketNumber: [JacketBox, JacketBoxedValue, JacketVisualSprite, JacketHitBoxPosition]
         #Respawning Jackets are like so: Check if it is Boxed, then check the

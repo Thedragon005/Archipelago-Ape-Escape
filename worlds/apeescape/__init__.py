@@ -15,7 +15,7 @@ from .Rules import set_rules, get_required_keys
 from .Client import ApeEscapeClient
 from .Strings import AEItem, AELocation
 from .RAMAddress import RAM
-from .Options import ApeEscapeOptions, DoorShuffleOption
+from .Options import ApeEscapeOptions, DoorShuffleOption, ape_escape_option_groups
 
 
 class ApeEscapeWeb(WebWorld):
@@ -39,6 +39,7 @@ class ApeEscapeWeb(WebWorld):
         ["Thedragon005"]
     )
 
+    option_groups = ape_escape_option_groups
     tutorials = [setup_en, setup_fr]
 
 

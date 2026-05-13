@@ -1,6 +1,9 @@
 from dataclasses import dataclass
-from Options import  Visibility, Choice , Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, OptionCounter, \
-    Toggle, OptionList, DefaultOnToggle
+from typing import Dict, Any
+
+from Options import Visibility, Choice, Range, DeathLink, PerGameCommonOptions, OptionDict, FreeText, OptionSet, \
+    OptionCounter, \
+    Toggle, OptionList, DefaultOnToggle, OptionGroup
 from .Items import AEItem
 from schema import Schema, Or, Optional
 
@@ -682,3 +685,50 @@ class ApeEscapeOptions(PerGameCommonOptions):
     spikecolor: SpikeColor
     customspikecolor: CustomSpikeColor
     death_link: DeathLink
+
+ape_escape_option_groups = [
+    OptionGroup("Goal", [
+        GoalOption,
+        FastTokenGoalOption,
+        RequiredTokensOption,
+        TotalTokensOption,
+        TokenLocationsOption,
+    ]),
+    OptionGroup("Logic & Abilities", [
+        LogicOption,
+        InfiniteJumpOption,
+        SuperFlyerOption,
+        GadgetOption,
+    ]),
+    OptionGroup("Entrance & World", [
+        EntranceOption,
+        EntrancePlandoOption,
+        RandomizeStartingRoomOption,
+        KeyOption,
+        ExtraKeysOption,
+    ]),
+    OptionGroup("Items & Locations", [
+        CoinOption,
+        JacketOption,
+        MailboxOption,
+        TrainingRoomsOption,
+        LampOption,
+        ShuffleNetOption,
+        ShuffleWaterNetOption,
+    ]),
+    OptionGroup("Filler & Traps", [
+        FillerPreset,
+        CustomFillerWeights,
+        TrapPercentage,
+        TrapWeights,
+        TrapsOnReconnect,
+    ]),
+    OptionGroup("Quality of Life", [
+        LowOxygenSounds,
+        ItemDisplayOption,
+        KickoutPreventionOption,
+        AutoEquipOption,
+        SpikeColor,
+        CustomSpikeColor,
+    ]),
+]
