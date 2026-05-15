@@ -178,7 +178,7 @@ class WargrooveContext(CommonContext):
         self.remove_communication_files()
         atexit.register(self.remove_communication_files)
         if not os.path.isdir(appdata_wargroove):
-            print_error_and_close("WargrooveClient couldn't find Wargoove in appdata!"
+            print_error_and_close("WargrooveClient couldn't find Wargoove in appdata! "
                                   "Boot Wargroove and then close it to attempt to fix this error")
         mods_directory = os.path.join(appdata_wargroove, "mods", "ArchipelagoMod")
         save_directory = os.path.join(appdata_wargroove, "save")
@@ -593,6 +593,12 @@ def launch(*launch_args: str):
 
     parser = get_base_parser(description="Wargroove Client, for text interfacing.")
 
+<<<<<<<< HEAD:WargrooveClient.py
+    args, rest = parser.parse_known_args()
+    colorama.just_fix_windows_console()
+    asyncio.run(main(args))
+========
     colorama.just_fix_windows_console()
     asyncio.run(main())
+>>>>>>>> main:worlds/wargroove/Client.py
     colorama.deinit()
