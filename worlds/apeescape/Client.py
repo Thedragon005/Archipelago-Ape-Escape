@@ -977,6 +977,8 @@ class ApeEscapeClient(BizHawkClient):
                 "WaterCatchStateFromServer": (RAM.tempWaterCatchAddress, 1, "MainRAM"),
                 "isUnderwater": (RAM.isUnderwater, 1, "MainRAM"),  # Underwater variable
                 "swim_oxygenLevel": (RAM.swim_oxygenLevelAddress, 2, "MainRAM"),
+                "swim_oxygenreplenishMax": (RAM.swim_oxygenreplenishMaxAddress, 2, "MainRAM"),
+                "swim_initialAirAmount": (RAM.swim_initialAirAmountAddress, 2, "MainRAM"),
                 "spike_UsingBoat": (RAM.spike_UsingBoat, 1, "MainRAM"),
 
                 # Lamp Reads
@@ -1156,6 +1158,8 @@ class ApeEscapeClient(BizHawkClient):
             WaterCatchStateFromServer = readValues["WaterCatchStateFromServer"]
             isUnderwater = readValues["isUnderwater"]
             swim_oxygenLevel = readValues["swim_oxygenLevel"]
+            swim_oxygenreplenishMax = readValues["swim_oxygenreplenishMax"]
+            swim_initialAirAmount = readValues["swim_initialAirAmount"]
             spike_UsingBoat = readValues["spike_UsingBoat"]
 
             CBLampStateFromServer = readValues["CBLampStateFromServer"]
@@ -1659,7 +1663,7 @@ class ApeEscapeClient(BizHawkClient):
 
             # ========== Water Net ===========
             # Swim/Dive Prevention code
-            WN_Reads = [gameState, waternetState, gameRunning, spikeState2, swim_oxygenLevel, cookies, isUnderwater, watercatchState, currentRoom,spike_UsingBoat]
+            WN_Reads = [gameState, waternetState, gameRunning, spikeState2, swim_oxygenLevel, cookies, isUnderwater, watercatchState, currentRoom,spike_UsingBoat,swim_oxygenreplenishMax,swim_initialAirAmount]
             await self.water_net_handling(ctx, WN_Reads)
             # ================================
 
@@ -4186,6 +4190,8 @@ class ApeEscapeClient(BizHawkClient):
         watercatchState = WN_Reads[7]
         currentRoom = WN_Reads[8]
         spike_UsingBoat = WN_Reads[9]
+        swim_oxygenreplenishMax = WN_Reads[10]
+        swim_initialAirAmount = WN_Reads[11]
 
         WN_writes = []
 
@@ -4203,9 +4209,9 @@ class ApeEscapeClient(BizHawkClient):
         elif waternetState == 0x01:
             WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
             WN_writes += [(RAM.canDiveAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            WN_writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            WN_writes += [(RAM.swim_ReplenishOxygenUWAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
-            WN_writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0x00000000.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_oxygenReplenishSoundAddress, 0x0C021DFE.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_ReplenishOxygenUWAddress, 0xA4500018.to_bytes(4, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_replenishOxygenOnEntryAddress, 0xA4434DC8.to_bytes(4, "little"), "MainRAM")]
         else:
             # (waternetstate > 0x01)
             WN_writes += [(RAM.swim_surfaceDetectionAddress, 0x0801853A.to_bytes(4, "little"), "MainRAM")]
@@ -4243,17 +4249,10 @@ class ApeEscapeClient(BizHawkClient):
                 WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                 WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
         if waternetState == 0x01:
-            if isUnderwater == 0x00 and swim_oxygenLevel != limited_OxygenLevel:
-                WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-            #if swim_oxygenLevel == 0 and cookies == 0 and gameRunning == 0:
-            if swim_oxygenLevel == 0 and cookies == 0:
-                # You died while swimming, reset Oxygen to "Limited" value prevent death loops
-                WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-                WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
-            if isUnderwater == 0x01 and is_grounded:
-                # You exited the level while underwater, reset oxygen and underwater state
-                WN_writes += [(RAM.swim_oxygenLevelAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-                WN_writes += [(RAM.isUnderwater, 0x00.to_bytes(1, "little"), "MainRAM")]
+            if swim_oxygenreplenishMax != limited_OxygenLevel:
+                WN_writes += [(RAM.swim_oxygenreplenishMaxAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+                WN_writes += [(RAM.swim_initialAirAmountAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
+
         # WaterCatch unlocking stuff bellow
         if watercatchState == 0x00:
             WN_writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]

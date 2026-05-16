@@ -2580,9 +2580,11 @@ class RAM:
     canDiveAddress = 0x061970 #08018664 - default value (4 bytes)
     canWaterCatchAddress = 0x063C35 # 04 - default value
     swim_oxygenLevelAddress = 0x0F4DC8 # 0x258 = 20 seconds, 0x64 = 3 seconds
+    swim_oxygenreplenishMaxAddress = 0x0613C8 # The max oxygen that you will be able to replenish on surfacing : 0x258 = 20 seconds, 0x64 = 3 seconds
     swim_oxygenReplenishSoundAddress = 0x06140C # Default: 0C021DFE, disable: 00000000 4 bytes
     swim_ReplenishOxygenUWAddress = 0x06141C # Default: A4500018, Disable: 00000000 4 bytes
     swim_replenishOxygenOnEntryAddress = 0x0665E8  # Default: A4434DC8, Disable: 00000000 4 bytes
+    swim_initialAirAmountAddress = 0x0665E4 #Oxygen level when entering water 0x258 = 20 seconds, 0x64 = 3 seconds
     swim_surfaceDetectionAddress = 0x061420 # Default: 0801853A, disable: 0
     swim_oxygenLowLevelSoundAddress = 0x061458  # Default: 3C02800F, disable: 3C028004 4 bytes
     swim_oxygenMidLevelSoundAddress = 0x061490  # Default: 3C02800F, disable: 3C028004 4 bytes
