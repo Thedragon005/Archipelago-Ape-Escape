@@ -958,7 +958,7 @@ class ApeEscapeClient(BizHawkClient):
                 "menuState": (RAM.menuStateAddress, 1, "MainRAM"),
                 "menuState2": (RAM.menuState2Address, 1, "MainRAM"),
                 "newGameAddress": (RAM.newGameAddress, 1, "MainRAM"),
-                "worldCanPressStart": (RAM.worldCanPressStart, 1, "MainRAM"),
+                "worldCanPressStart": (RAM.worldCanPressStart, 2, "MainRAM"),
                 # Level Select Coin hiding
                 "CoinTable": (RAM.startingCoinAddress, 100, "MainRAM"),
                 "TempCoinTable": (RAM.temp_startingCoinAddress, 100, "MainRAM"),
@@ -1138,7 +1138,7 @@ class ApeEscapeClient(BizHawkClient):
             menuState = readValues["menuState"]
             menuState2 = readValues["menuState2"]
             newGameAddress = readValues["newGameAddress"]
-            worldCanPressStart = readValues["newGameAddress"]
+            worldCanPressStart = readValues["worldCanPressStart"]
             # Level Select Coin hiding
             CoinTable = readValues["CoinTable"]
             TempCoinTable = readValues["TempCoinTable"]
@@ -3845,8 +3845,12 @@ class ApeEscapeClient(BizHawkClient):
         # Code to send Spike to the right transition (If needed)
         if gameState in (RAM.gameState["InLevel"], RAM.gameState["InLevelTT"]):
             #Disable FastWarp when exiting level?
-            if self.FastWarp and (transitionPhase == RAM.transitionPhase['NotSpawned'] or is_dead):
-                self.FastWarp = False
+            if (self.FastWarp):
+                if currentRoom == 83:
+                    if (transitionPhase == RAM.transitionPhase['NotSpawned'] or is_dead):
+                        self.FastWarp = False
+                else:
+                    self.FastWarp = False
             if currentRoom == 88:
                 return
             # For all the Monkey Madness levels, treat it as Monkey Madness
@@ -4159,11 +4163,12 @@ class ApeEscapeClient(BizHawkClient):
                 LS_Writes += [(RAM.worldCanPressStart, 0x0000.to_bytes(2, "little"), "MainRAM")]
             if TokenGoal:
                 # Check if the user is pressing start (About 1 second)
+
                 if (BUTTON_BYTE_ADDR_LOW & 8) == 0:
                     # Press X and keep a variable up as you enter the goal region
                     token = self.tokencount
                     FastTokenUnlocked = token >= min(ctx.slot_data["requiredtokens"], ctx.slot_data["totaltokens"])
-                    if (self.FastWarp == False and FastTokenUnlocked):
+                    if (FastTokenUnlocked):
                         self.FastWarp = True
                         LS_Writes += [(RAM.Controls_TriggersShapes, 0xBF.to_bytes(1, "little"), "MainRAM")]
         await bizhawk.write(ctx.bizhawk_ctx, LS_Writes)
@@ -4252,7 +4257,9 @@ class ApeEscapeClient(BizHawkClient):
             if swim_oxygenreplenishMax != limited_OxygenLevel:
                 WN_writes += [(RAM.swim_oxygenreplenishMaxAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
                 WN_writes += [(RAM.swim_initialAirAmountAddress, limited_OxygenLevel.to_bytes(2, "little"), "MainRAM")]
-
+        if waternetState == 0x02:
+            WN_writes += [(RAM.swim_oxygenreplenishMaxAddress, 0x258.to_bytes(2, "little"), "MainRAM")]
+            WN_writes += [(RAM.swim_initialAirAmountAddress, 0x258.to_bytes(2, "little"), "MainRAM")]
         # WaterCatch unlocking stuff bellow
         if watercatchState == 0x00:
             WN_writes += [(RAM.canWaterCatchAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
