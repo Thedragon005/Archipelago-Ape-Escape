@@ -1486,7 +1486,7 @@ class ApeEscapeClient(BizHawkClient):
             self.tokencount = tokenCountFromServer
 
             # ======== Locations handling =========
-            Locations_Reads = [currentLevel, gameState, currentRoom, previousCoinStateRoom, currentCoinStateRoom, gameRunning, TVT_BossPhase, gotMail, mailboxID, jakeVictory, S1_P2_State, S1_P2_Life, S2_isCaptured, levelselect_coinlock_Address, CoinTable, TempCoinTable, monkeylevelcounts, currentApes, transitionPhase, NearbyRoom,cookies]
+            Locations_Reads = [currentLevel, gameState, currentRoom, previousCoinStateRoom, currentCoinStateRoom, gameRunning, TVT_BossPhase, gotMail, mailboxID, jakeVictory, S1_P2_State, S1_P2_Life, S2_isCaptured, levelselect_coinlock_Address, CoinTable, TempCoinTable, monkeylevelcounts, currentApes, transitionPhase, NearbyRoom,cookies,SA_Completed,GA_Completed,temp_SA_Completed,temp_GA_Completed]
             await self.locations_handling(ctx, Locations_Reads)
 
             # Write Array
@@ -1532,6 +1532,7 @@ class ApeEscapeClient(BizHawkClient):
                     if temp_SA_Completed == 0xFF:
                         writes += [(RAM.SA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_SA_CompletedAddress, SA_Completed.to_bytes(1, "little"), "MainRAM")]
+                    if temp_GA_Completed == 0xFF:
                         writes += [(RAM.GA_CompletedAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_GA_CompletedAddress, GA_Completed.to_bytes(1, "little"), "MainRAM")]
                 elif RAM.gameState["LevelSelect"] != gameState:
@@ -1541,7 +1542,7 @@ class ApeEscapeClient(BizHawkClient):
                         writes += [(RAM.SA_CompletedAddress, temp_SA_Completed.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_SA_CompletedAddress, 0xFF.to_bytes(1, "little"), "MainRAM")]
                     # Maybe not needed for GA since it will result in 0 but kept just to be safe
-                    if temp_SA_Completed != 0xFF:
+                    if temp_GA_Completed != 0x00:
                         writes += [(RAM.GA_CompletedAddress, temp_GA_Completed.to_bytes(1, "little"), "MainRAM")]
                         writes += [(RAM.temp_GA_CompletedAddress, 0x00.to_bytes(1, "little"), "MainRAM")]
                 if localLevelState != 0x00:
@@ -2067,7 +2068,10 @@ class ApeEscapeClient(BizHawkClient):
         transitionPhase = Locations_Reads[18]
         NearbyRoom = Locations_Reads[19]
         cookies = Locations_Reads[20]
-
+        SA_Completed = Locations_Reads[21]
+        GA_Completed = Locations_Reads[22]
+        temp_SA_Completed = Locations_Reads[23]
+        temp_GA_Completed = Locations_Reads[24]
         is_dead = (cookies == 0x00)
 
         locationsToSend = []
@@ -2117,6 +2121,12 @@ class ApeEscapeClient(BizHawkClient):
         GlobalIDToValueTable  = dict(zip(keyList, globalMonkeys))
         # localmonkeys = await bizhawk.read(ctx.bizhawk_ctx, addresses)
         # Check if in level select or in time hub, then read global monkeys
+
+        # Check completion of Races (All coins unlocked) and write to the Right address
+        # Only trigger the function if allowcollect is on
+        trueSA_Completed = temp_SA_Completed if levelselect_coinlock_Address == 0x01 else SA_Completed
+        trueGA_Completed = temp_GA_Completed if levelselect_coinlock_Address == 0x01 else GA_Completed
+        await self.collect_races(ctx,trueSA_Completed,trueGA_Completed,levelselect_coinlock_Address)
 
         temp_counter = currentApes
         if gameState == RAM.gameState["LevelSelect"] or currentLevel == RAM.levels["Time"] or (level == 0x18 and gameState == RAM.gameState["InLevel"]) or self.forcecollect and transitionPhase != 0x06:
@@ -2226,7 +2236,6 @@ class ApeEscapeClient(BizHawkClient):
                                             #print(levelsToSync)
                 if temp_counter > currentApes:
                     locationWrites += [(RAM.currentApesAddress, temp_counter.to_bytes(1, "little"), "MainRAM")]
-
         # Check for Coins
 
         # New Coins System !
@@ -2234,7 +2243,6 @@ class ApeEscapeClient(BizHawkClient):
         # If a coin is collected and is not in the server it will then send
 
         # When allowcollect is on, the inverse is also true: Any coin the server have that is not in the game will be put in the game
-
         targetCoinTable = TempCoinTable if levelselect_coinlock_Address == 0x01 else CoinTable
         targetTableAddress = RAM.temp_startingCoinAddress if levelselect_coinlock_Address == 0x01 else RAM.startingCoinAddress
 
@@ -3956,6 +3964,28 @@ class ApeEscapeClient(BizHawkClient):
 
         await bizhawk.write(ctx.bizhawk_ctx, ER_writes)
 
+    async def collect_races(self, ctx: "BizHawkClientContext", trueSA_Completed, trueGA_Completed, levelselect_coinlock_Address):
+        targetSA_CompleteAddress = RAM.temp_SA_CompletedAddress if levelselect_coinlock_Address == 0x01 else RAM.SA_CompletedAddress
+        targetGA_CompleteAddress = RAM.temp_GA_CompletedAddress if levelselect_coinlock_Address == 0x01 else RAM.GA_CompletedAddress
+        CR_Writes = []
+
+        if self.allowcollect:
+            # Get all coins from locations_list
+            SA_Coins = [item for item in RAM.coinsperlevel.get(7)]
+            GA_Coins = [item for item in RAM.coinsperlevel.get(14)]
+            SA_CollectedCoins = [item for item in SA_Coins if (item + self.offset + 200) in self.locations_list]
+            GA_CollectedCoins = [item for item in GA_Coins if (item + self.offset + 200) in self.locations_list]
+
+            #If this is true, SA Coins are all found/collected
+            if trueSA_Completed != 0x19 and set(RAM.coinsperlevel.get(7)).issubset(set(SA_CollectedCoins)):
+                print("Synced SA_Completed from collect")
+                CR_Writes += [(targetSA_CompleteAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+            # If this is true, GA Coins are all found/collected
+            if trueGA_Completed != 0x19 and set(RAM.coinsperlevel.get(14)).issubset(set(GA_CollectedCoins)):
+                print("Synced GA_Completed from collect")
+                CR_Writes += [(targetGA_CompleteAddress, 0x19.to_bytes(1, "little"), "MainRAM")]
+        if CR_Writes:
+            await bizhawk.write(ctx.bizhawk_ctx,CR_Writes)
     def format_cointable(self, ctx: "BizHawkClientContext", CoinTable, SA_Completed, GA_Completed, usage = ""):
         SA = 0
         GA = 0
@@ -3993,7 +4023,6 @@ class ApeEscapeClient(BizHawkClient):
                 coins_list += [item for item in RAM.coinsperlevel.get(entranceID)]
             if GA_Completed == 0x19 and entranceID == 14:
                 coins_list += [item for item in RAM.coinsperlevel.get(entranceID)]
-            #print(f"BaseLevelID:{baseLevelID}")
 
             if RAM.coinsperlevel.get(entranceID) != {}:
                 #print(set(RAM.coinsperlevel.get(entranceID)))
@@ -4037,7 +4066,6 @@ class ApeEscapeClient(BizHawkClient):
         worldCanPressStart = LSO_Reads[11]
         BUTTON_BYTE_ADDR_LOW = LSO_Reads[12]
         BUTTON_BYTE_ADDR_HIGH = LSO_Reads[13]
-
 
         LS_Writes = []
         if RAM.gameState["LevelSelect"] == gameState:
