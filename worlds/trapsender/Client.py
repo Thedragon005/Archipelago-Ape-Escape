@@ -7,7 +7,7 @@ tracker_loaded = True
 from worlds.tracker import DeferredEntranceMode
 from worlds.tracker.TrackerClient import TrackerGameContext, TrackerCommandProcessor
 from settings import get_settings
-from trap_tab import TrapPanel, get_trap_names
+from trap_utils import get_trap_names, EXCLUDED_TRAPS
 
 class TrapSenderCommandProcessor(TrackerCommandProcessor):
     def _cmd_time(self, time_min=None, time_max=None):
@@ -117,8 +117,7 @@ class TrapSenderContext(TrackerGameContext):
                 print("Manual mode activated, no traps are sending")
             if CanCheat and DelayedModeSend and ManualMode:
                 Items = world.item_names
-                ExcludeTraps = ["Palm Punch Trap"]
-                TrapNames = [x for x in Items if x.__contains__("Trap") and x not in ExcludeTraps]
+                TrapNames = [x for x in Items if x.__contains__("Trap") and x not in EXCLUDED_TRAPS]
                 RandomTrapNum = random.randint(0,len(TrapNames) -1)
                 RandomTrap = TrapNames[RandomTrapNum]
                 await self.cheat_item(RandomTrap)
@@ -136,6 +135,13 @@ class TrapSenderContext(TrackerGameContext):
     def make_gui(self):
         ui = super().make_gui()
         ui.base_title = "Trap Sender Client"
+
+        # kvui.py must be the first thing to import kivy -- super().make_gui()
+        # above is what triggers that import (via CommonClient's make_gui'
+        # "from kvui import GameManager"). trap_tab imports kivymd/kivy at
+        # module level, so it can only be imported AFTER this point, never
+        # at the top of this file.
+        from trap_tab import TrapPanel
 
         class TrapSenderManager(ui):
             def build(self):

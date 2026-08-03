@@ -1,9 +1,16 @@
 """
-Traps tab for TrapSenderContext (AP-SlowRelease / Universal Tracker based).
+Traps tab widget (kivymd-based) for TrapSenderContext.
 
-kvui.py in this fork is kivymd-based -- tabs are MDNavigationBar / MDScreen,
-added via GameManager.add_client_tab(). This widget is plain tab content,
-not a TabbedPanelItem.
+IMPORTANT: this module imports kivymd, which imports kivy, at module level.
+kvui.py requires that IT be the first thing to import kivy (it sets DPI /
+env-var config before kivy's window subsystem initializes -- see the
+assert at the top of kvui.py). That means this module must NOT be imported
+at the top of Client.py. Import it lazily, inside make_gui(), AFTER
+super().make_gui() has already triggered kvui's import. See
+TrapSenderClient.py for the exact pattern.
+
+Plain extraction logic that has no kivy dependency lives in trap_utils.py
+instead, and is safe to import normally.
 """
 
 from kivy.metrics import dp
@@ -16,41 +23,11 @@ from kivymd.app import MDApp
 import asyncio
 
 
-def get_trap_names(world, exclude=("Palm Punch Trap",)):
-    """
-    Same logic your autoplayer() already uses: substring match against
-    world.item_names (the static, per-game name list -- works even when
-    the seed has traps disabled, since it isn't limited to placed items).
-
-    Consider replacing the inline TrapNames computation in autoplayer()
-    with a call to this function too, so there's one source of truth for
-    the exclusion list instead of two copies that can drift apart.
-    """
-    return sorted(x for x in world.item_names if "Trap" in x and x not in exclude)
-
-
 class TrapPanel(MDBoxLayout):
     """
-    Usage -- inside TrapSenderContext.make_gui(), subclassing the ui class
-    super().make_gui() returns (this is the same pattern Universal Tracker
-    itself uses to add its own tab):
-
-        def make_gui(self):
-            ui = super().make_gui()
-            ui.base_title = "Trap Sender Client"
-
-            class TrapSenderManager(ui):
-                def build(self):
-                    container = super().build()
-                    self.trap_panel = TrapPanel(trap_list=[])
-                    self.add_client_tab("Traps", self.trap_panel)
-                    return container
-
-            return TrapSenderManager
-
-    Starts empty -- call trap_panel.populate(get_trap_names(world)) once
-    the tracker's world is actually loaded (see populate_trap_tab() in the
-    integration snippet), since it isn't ready yet when build() runs.
+    Content widget for the "Traps" tab. Starts empty -- call
+    trap_panel.populate(get_trap_names(world)) once the tracker's world is
+    actually loaded (see populate_trap_tab() in TrapSenderClient.py).
     """
 
     def __init__(self, trap_list=None, **kwargs):
