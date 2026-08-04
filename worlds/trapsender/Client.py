@@ -1,3 +1,5 @@
+import logging
+
 from CommonClient import ClientCommandProcessor, CommonContext, logger, server_loop, gui_enabled, get_base_parser
 from worlds.AutoWorld import World
 from BaseClasses import Region, ItemClassification
@@ -55,11 +57,17 @@ class TrapSenderContext(TrackerGameContext):
 
         logger.info(f"Set delayed checks to {self.delayedchecks}")
 
-    async def cheat_item (self,itemname=None):
+    async def cheat_item(self, item_name: str):
+        """Sends the standard Archipelago !getitem command to the server"""
+        if not self.server_task or self.server_task.done():
+            logger.error("Cannot send trap: Not connected to server.")
+            return
 
-        if itemname:
-            print(f"You should have sent {itemname}")
-            asyncio.create_task(self.send_msgs([{"cmd": "Say", "text": f"!getitem {itemname}"}]))
+        trap_logger = logging.getLogger("TrapSender")
+        trap_logger.info(f"Sending trap: {item_name}")
+
+        # Send the chat command to the server
+        await self.send_msgs([{"cmd": "Say", "text": f"!getitem {item_name}"}])
 
     async def autoplayer(self):
         print("Autoplayer")
