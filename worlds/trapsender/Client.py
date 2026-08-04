@@ -7,7 +7,7 @@ tracker_loaded = True
 from worlds.tracker import DeferredEntranceMode
 from worlds.tracker.TrackerClient import TrackerGameContext, TrackerCommandProcessor
 from settings import get_settings
-from trap_utils import get_trap_names, EXCLUDED_TRAPS
+from .trap_utils import get_trap_names, EXCLUDED_TRAPS
 
 class TrapSenderCommandProcessor(TrackerCommandProcessor):
     def _cmd_time(self, time_min=None, time_max=None):
@@ -139,9 +139,10 @@ class TrapSenderContext(TrackerGameContext):
         # kvui.py must be the first thing to import kivy -- super().make_gui()
         # above is what triggers that import (via CommonClient's make_gui'
         # "from kvui import GameManager"). trap_tab imports kivymd/kivy at
-        # module level, so it can only be imported AFTER this point, never
-        # at the top of this file.
-        from trap_tab import TrapPanel
+        # module level, so it can ONLY be imported here, never at the top
+        # of this file. (Relative import: this file is a package member,
+        # worlds/trapsender/Client.py, so it's `.trap_tab`, not `trap_tab`.)
+        from .trap_tab import TrapPanel
 
         class TrapSenderManager(ui):
             def build(self):

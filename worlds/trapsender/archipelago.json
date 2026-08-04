@@ -2,7 +2,7 @@
     "game": "Trap Sender",
     "minimum_ap_version": "0.6.4",
     "authors": "Thedragon005",
-    "world_version": "0.0.3",
+    "world_version": "0.0.4",
     "compatible_version": 7,
     "version": 7
 }
