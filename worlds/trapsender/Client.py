@@ -9,7 +9,7 @@ tracker_loaded = True
 from worlds.tracker import DeferredEntranceMode
 from worlds.tracker.TrackerClient import TrackerGameContext, TrackerCommandProcessor
 from settings import get_settings
-from .trap_utils import get_trap_names, EXCLUDED_TRAPS
+from .trap_utils import get_trap_names, EXCLUDED_TRAPS, DISABLED_TRAPS
 
 class TrapSenderCommandProcessor(TrackerCommandProcessor):
     def _cmd_time(self, time_min=None, time_max=None):
@@ -76,40 +76,10 @@ class TrapSenderContext(TrackerGameContext):
             await asyncio.sleep(1)
         world: World = self.tracker_core.multiworld.worlds[self.tracker_core.player_id]
         while True:
-            #if len(self.tracker_core.locations_available) > 0:
-                #inbk = False
-                #goal_location = None
-                #visited_regions = []
-                #regions = [*map(lambda e: e.connected_region,self.tracker_core.multiworld.get_region(world.origin_region_name, self.tracker_core.player_id).get_exits())]
-                #if self.region_mode:
-                #    while not goal_location:
-                #        randolocs = self.tracker_core.locations_available.copy()
-                #        random.shuffle(randolocs)
-                #        for location in randolocs:
-                #            location = world.get_location(world.location_id_to_name[location])
-                #            if location.parent_region == current_region:
-                #                goal_location = location.address
-                #                self.autoplayer_log(f"Going for {self.location_names.lookup_in_game(goal_location)}")
-                #                break
-                #        if not goal_location:
-                #            current_region = random.choice(regions)
-                #            if current_region not in visited_regions:
-                #                regions += [*filter(lambda e: e not in regions and e not in visited_regions, map(lambda e: e.connected_region, current_region.get_exits()))]
-                #            visited_regions.append(current_region)
-                #            regions.remove(current_region)
-                #            self.autoplayer_log(f"Attempting to go to: {current_region.name}")
-                #            await asyncio.sleep(0.1)
-                #else:
-                #    goal_location = random.choice(self.tracker_core.locations_available)
-                #    self.autoplayer_log(f"Going for {self.location_names.lookup_in_game(goal_location)}")
             await asyncio.sleep(random.uniform(self.time_per_min, self.time_per_max))
 
-            # TODO For now take Item Names containing Traps,organize later to make it take all items classified as trap
             settings = get_settings()
             CanCheat = settings.server_options.disable_item_cheat == False
-            # Maybe add self.ctx.locations_checked >= 1 to quick start
-            # Send conditions
-            #DelayedModeSend = False if self.delayed_mode == False else len(self.locations_checked) >= 1
             if self.delayedchecks == 0:
                 DelayedModeSend = True
             else:
@@ -125,10 +95,13 @@ class TrapSenderContext(TrackerGameContext):
                 print("Manual mode activated, no traps are sending")
             if CanCheat and DelayedModeSend and ManualMode:
                 Items = world.item_names
-                TrapNames = [x for x in Items if x.__contains__("Trap") and x not in EXCLUDED_TRAPS]
-                RandomTrapNum = random.randint(0,len(TrapNames) -1)
-                RandomTrap = TrapNames[RandomTrapNum]
-                await self.cheat_item(RandomTrap)
+                TrapNames = [x for x in Items if x.__contains__("Trap") and x not in EXCLUDED_TRAPS and x not in DISABLED_TRAPS]
+                if TrapNames:
+                    RandomTrapNum = random.randint(0,len(TrapNames) -1)
+                    RandomTrap = TrapNames[RandomTrapNum]
+                    await self.cheat_item(RandomTrap)
+                else:
+                    logging.getLogger("TrapSender").info("No enabled traps available to send right now (all disabled or none found).")
                 await asyncio.sleep(0.1)
 
     async def populate_trap_tab(self):
@@ -144,18 +117,11 @@ class TrapSenderContext(TrackerGameContext):
         ui = super().make_gui()
         ui.base_title = "Trap Sender Client"
 
-        # kvui.py must be the first thing to import kivy -- super().make_gui()
-        # above is what triggers that import (via CommonClient's make_gui'
-        # "from kvui import GameManager"). trap_tab imports kivymd/kivy at
-        # module level, so it can ONLY be imported here, never at the top
-        # of this file. (Relative import: this file is a package member,
-        # worlds/trapsender/Client.py, so it's `.trap_tab`, not `trap_tab`.)
         from .trap_tab import TrapPanel
 
         class TrapSenderManager(ui):
             def build(self):
                 container = super().build()
-                # starts empty -- tracker_core.player_id isn't set yet here
                 self.trap_panel = TrapPanel(trap_list=[])
                 self.add_client_tab("Traps", self.trap_panel)
                 return container
@@ -192,6 +158,8 @@ class TrapSenderContext(TrackerGameContext):
             self.autoplayer_task.cancel()
         if "Tracker" not in self.tags:
             self.tags.append("Tracker")
+        if self.ui is not None and hasattr(self.ui, "trap_panel") and self.ui.trap_panel:
+            self.ui.trap_panel.on_disconnect()
         return super().disconnect(*args)
 def launch(*args):
 
@@ -220,7 +188,6 @@ def launch(*args):
     parser.add_argument("url", nargs="?", help="Archipelago connection url")
     args = parser.parse_args(args)
 
-    # handle if text client is launched using the "archipelago://name:pass@host:port" url from webhost
     if args.url:
         import urllib
         url = urllib.parse.urlparse(args.url)
@@ -233,7 +200,6 @@ def launch(*args):
         else:
             parser.error(f"bad url, found {args.url}, expected url in form of archipelago://archipelago.gg:38281")
 
-    # use colorama to display colored text highlighting on windows
     colorama.init()
 
     asyncio.run(main(args))
