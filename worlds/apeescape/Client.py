@@ -520,10 +520,14 @@ class ApeEscapeClient(BizHawkClient):
         if cmd == "Bounced":
             if "tags" in args:
                 assert ctx.slot is not None
-                source_name = args["data"]["source"]
-                if "DeathLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
+                data = args.get("data")
+                if not data:
+                    #If there is no data, skip the bounce packet
+                    return
+                source_name = data["source"]
+                if "DeathLink" in args["tags"] and source_name != ctx.slot_info[ctx.slot].name:
                     self.on_deathlink(ctx)
-                if "TrapLink" in args["tags"] and args["data"]["source"] != ctx.slot_info[ctx.slot].name:
+                if "TrapLink" in args["tags"] and source_name != ctx.slot_info[ctx.slot].name:
                     trap_name: str = args["data"]["trap_name"]
 
                     if trap_name not in trap_to_local_traps:
