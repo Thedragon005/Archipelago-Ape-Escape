@@ -36,6 +36,13 @@ EXPECTED_ROM_NAME = "ape escape / AP 2"
 
 logger = logging.getLogger("Client")
 
+
+#def cmd_test_bounce(self: "BizHawkClientCommandProcessor") -> None:
+#    logger.info(f"Sent Empty Bounce? to self:{self.ctx.slot}")
+#    Utils.async_start(self.ctx.send_msgs([{
+#        "cmd": "Bounce", 'games': [] , 'tags': [],"slots":[1],'data': None
+#    }]))
+
 def cmd_ae_commands(self: "BizHawkClientCommandProcessor") -> None:
     """Show what commands are available for Ape Escape Archipelago"""
     from worlds._bizhawk.context import BizHawkClientContext
